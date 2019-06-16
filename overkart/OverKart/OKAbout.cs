@@ -8,13 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PorkChop
+namespace OverKart64
 {
     public partial class OKAbout : Form
     {
         public OKAbout()
         {
             InitializeComponent();
+        }
+
+        private void PictureBox2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -41,6 +41,9 @@
     <Reference Include="Be.IO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Be.IO.1.0.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+Xamarin.iOS10+MonoTouch10\Be.IO.dll</HintPath>
     </Reference>
+    <Reference Include="MarioKart">
+      <HintPath>..\MarioKart.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,6 +57,30 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CourseSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CourseSelect.Designer.cs">
+      <DependentUpon>CourseSelect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sky.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sky.Designer.cs">
+      <DependentUpon>Sky.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VertConvert.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VertConvert.Designer.cs">
+      <DependentUpon>VertConvert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MIO0.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MIO0.Designer.cs">
+      <DependentUpon>MIO0.cs</DependentUpon>
+    </Compile>
     <Compile Include="OKAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -68,6 +95,12 @@
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="CourseSelect.resx">
+      <DependentUpon>CourseSelect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sky.resx">
+      <DependentUpon>Sky.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="OKAbout.resx">
       <DependentUpon>OKAbout.cs</DependentUpon>
     </EmbeddedResource>
@@ -78,6 +111,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MIO0.resx">
+      <DependentUpon>MIO0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VertConvert.resx">
+      <DependentUpon>VertConvert.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

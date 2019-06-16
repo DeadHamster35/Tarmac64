@@ -4,16 +4,15 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Be.IO;
 using System.Diagnostics;
 
 
-namespace PorkChop
+namespace OverKart64
 {
 
 
-
+   
 
 
     public partial class PorkChop : Form
@@ -28,19 +27,29 @@ namespace PorkChop
         float[] ccextra = new float[8];
         float[] ccbattle = new float[8];
         float[] weigh = new float[8];
-        float[,] acceler = new float[8,10];
+        float[,] acceler = new float[8, 10];
         float[] steerin = new float[8];
         float[] friction = new float[8];
         float[] gravity = new float[8];
         float[] jump = new float[8];
         float[] fall = new float[8];
         float[] top = new float[8];
+        float[] tcoa = new float[8];
+        float[] tcob = new float[8];
+        float[] bbox = new float[8];
+        byte enhancedbyte = new byte();
+        Int16 enhancedint16 = new Int16();
+
+
+
+
+
         int mkversion = new int();
         bool overwrite = new bool();
 
 
         string filePath = "";
-        
+
 
         OpenFileDialog romopen = new OpenFileDialog();
 
@@ -49,26 +58,31 @@ namespace PorkChop
         public PorkChop()
         {
             InitializeComponent();
-            string[] items = { "Mario","Luigi","Yoshi","Toad","DK","Wario","Peach", "Bowser" };
+           
+
+
+        }
+
+
+
+
+
+
+
+        private void OverKart_Load(object sender, EventArgs e)
+        {
+            string[] items = { "Mario", "Luigi", "Yoshi", "Toad", "DK", "Wario", "Peach", "Bowser" };
 
             foreach (string item in items)
             {
                 racer.Items.Add(item);
             }
-
-                       
-        }
-
-
-
-        private void PorkChop_Load(object sender, EventArgs e)
-        {
-
         }
 
       
         private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            
             OKAbout f2 = new OKAbout();
             f2.ShowDialog();
         }
@@ -203,6 +217,12 @@ namespace PorkChop
 
                         }
 
+                        for (int i = 0; i != 8; i++)
+                        {
+                            bbox[i] = br.ReadSingle();
+
+                        }
+
                         br.BaseStream.Seek(930352, SeekOrigin.Begin);
 
                         if (mkversion == 2)
@@ -243,18 +263,29 @@ namespace PorkChop
 
                         }
 
-                        br.BaseStream.Seek(1187232, SeekOrigin.Begin);
+
+                        br.BaseStream.Seek(934512, SeekOrigin.Begin);
 
                         if (mkversion == 2)
                         {
-                            br.BaseStream.Seek(256, SeekOrigin.Current);
+                            br.BaseStream.Seek(32, SeekOrigin.Current);
                         }
 
                         for (int i = 0; i != 8; i++)
                         {
-                            weigh[i] = br.ReadSingle();
+                            tcoa[i] = br.ReadSingle();
 
                         }
+
+                        for (int i = 0; i != 8; i++)
+                        {
+                            tcob[i] = br.ReadSingle();
+
+                        }
+
+
+
+
 
                         br.BaseStream.Seek(934608, SeekOrigin.Begin);
 
@@ -282,6 +313,71 @@ namespace PorkChop
 
                         }
 
+                        br.BaseStream.Seek(1016511, SeekOrigin.Begin);
+
+                        if (mkversion == 2)
+                        {
+                            br.BaseStream.Seek(96, SeekOrigin.Current);
+                        }
+
+                        if (br.ReadByte() == 58)
+                        {
+                            enhance.Checked = false;
+                        }
+                        else
+                        {
+                            enhance.Checked = true;
+                        }
+
+
+                        br.BaseStream.Seek(1187232, SeekOrigin.Begin);
+
+                        if (mkversion == 2)
+                        {
+                            br.BaseStream.Seek(256, SeekOrigin.Current);
+                        }
+
+                        for (int i = 0; i != 8; i++)
+                        {
+                            weigh[i] = br.ReadSingle();
+
+                        }
+
+
+
+
+
+                        br.BaseStream.Seek(1187232, SeekOrigin.Begin);
+
+                        fiftycc.Enabled = true;
+                        hundocc.Enabled = true;
+                        hundofiftycc.Enabled = true;
+                        extracc.Enabled = true;
+                        battlecc.Enabled = true;
+                        topspeed.Enabled = true;
+                        weight.Enabled = true;
+                        steering.Enabled = true;
+                        frict.Enabled = true;
+                        grav.Enabled = true;
+                        jumper.Enabled = true;
+                        faller.Enabled = true;
+                        aa.Enabled = true;
+                        ab.Enabled = true;
+                        ac.Enabled = true;
+                        ad.Enabled = true;
+                        ae.Enabled = true;
+                        af.Enabled = true;
+                        ag.Enabled = true;
+                        ah.Enabled = true;
+                        ai.Enabled = true;
+                        aj.Enabled = true;
+                        bbbox.Enabled = true;
+                        tcoboxa.Enabled = true;
+                        tcoboxb.Enabled = true;
+
+
+
+
                         fiftycc.Text = cc50[0].ToString();
                         hundocc.Text = cc100[0].ToString();
                         hundofiftycc.Text = cc150[0].ToString();
@@ -295,6 +391,10 @@ namespace PorkChop
                         grav.Text = gravity[0].ToString();
                         jumper.Text = jump[0].ToString();
                         faller.Text = fall[0].ToString();
+                        tcoboxa.Text = tcoa[0].ToString();
+                        tcoboxb.Text = tcob[0].ToString();
+                        bbbox.Text = bbox[0].ToString();
+
 
                         aa.Text = acceler[0, 0].ToString();
                         ab.Text = acceler[0, 1].ToString();
@@ -342,6 +442,9 @@ namespace PorkChop
             grav.Text = gravity[i].ToString();
             jumper.Text = jump[i].ToString();
             faller.Text = fall[i].ToString();
+            tcoboxa.Text = tcoa[i].ToString();
+            tcoboxb.Text = tcob[i].ToString();
+            bbbox.Text = bbox[i].ToString();
 
 
             aa.Text = acceler[i, 0].ToString();
@@ -466,6 +569,30 @@ namespace PorkChop
 
                 for (int i = 0; i != 8; i++)
                 {
+
+                    writetext = racer.Items[i] + " - Turn Speed Reduction Coefficient A  -" + tcoa[i].ToString();
+                    System.IO.File.AppendAllText(listfile, writetext);
+                    System.IO.File.AppendAllText(listfile, Environment.NewLine);
+                }
+
+                for (int i = 0; i != 8; i++)
+                {
+
+                    writetext = racer.Items[i] + " - Turn Speed Reduction Coefficient B -" + tcob[i].ToString();
+                    System.IO.File.AppendAllText(listfile, writetext);
+                    System.IO.File.AppendAllText(listfile, Environment.NewLine);
+                }
+
+                for (int i = 0; i != 8; i++)
+                {
+
+                    writetext = racer.Items[i] + " - Bounding Box -" + bbox[i].ToString();
+                    System.IO.File.AppendAllText(listfile, writetext);
+                    System.IO.File.AppendAllText(listfile, Environment.NewLine);
+                }
+
+                for (int i = 0; i != 8; i++)
+                {
                     
                     writetext = racer.Items[i] + " - Acceleration -" + acceler[i,0].ToString() +","+ acceler[i,1].ToString() +"," + acceler[i,2].ToString() +"," + acceler[i,3].ToString() +"," + acceler[i,4].ToString() +"," + acceler[i,5].ToString() +"," + acceler[i,6].ToString() +"," + acceler[i,7].ToString() +"," + acceler[i,8].ToString() +"," + acceler[i,9].ToString() +",";
                     System.IO.File.AppendAllText(listfile, writetext);
@@ -531,6 +658,89 @@ namespace PorkChop
 
 
 
+                        br.BaseStream.Seek(738596, SeekOrigin.Begin);
+                        if (enhance.Checked == true)
+                        {
+                            enhancedint16 = 9216;
+                            bw.Write(enhancedint16);
+                        }
+                        else
+                        {
+                            enhancedint16 = 4160;
+                            bw.Write(enhancedint16);
+                        }
+
+                        br.BaseStream.Seek(16, SeekOrigin.Begin);
+                        if (enhance.Checked == true)
+                        {
+                            enhancedint16 = 32767;
+                            bw.Write(enhancedint16);
+                        }
+                        else
+                        {
+                            enhancedint16 = -32768;
+                            bw.Write(enhancedint16);
+                        }
+
+
+
+
+                        br.BaseStream.Seek(738724, SeekOrigin.Begin);
+                        if (enhance.Checked == true)
+                        {
+                            enhancedint16 = 9216;
+                            bw.Write(enhancedint16);
+                        }
+                        else
+                        {
+                            enhancedint16 = 4160;
+                            bw.Write(enhancedint16);
+                        }
+
+
+                        br.BaseStream.Seek(16, SeekOrigin.Begin);
+                        if (enhance.Checked == true)
+                        {
+                            enhancedint16 = 32767;
+                            bw.Write(enhancedint16);
+                        }
+                        else
+                        {
+                            enhancedint16 = -32768;
+                            bw.Write(enhancedint16);
+                        }
+
+
+                        br.BaseStream.Seek(738872, SeekOrigin.Begin);
+                        if (enhance.Checked == true)
+                        {
+                            enhancedint16 = 9216;
+                            bw.Write(enhancedint16);
+                        }
+                        else
+                        {
+                            enhancedint16 = 4160;
+                            bw.Write(enhancedint16);
+                        }
+
+
+                        br.BaseStream.Seek(20, SeekOrigin.Begin);
+                        if (enhance.Checked == true)
+                        {
+                            enhancedint16 = 32767;
+                            bw.Write(enhancedint16);
+                        }
+                        else
+                        {
+                            enhancedint16 = -32768;
+                            bw.Write(enhancedint16);
+                        }
+
+
+
+
+
+
                         br.BaseStream.Seek(932560, SeekOrigin.Begin);
 
                         if (mkversion == 2)
@@ -542,8 +752,14 @@ namespace PorkChop
                             {
                                 for (int g = 0; g != 10; g++)
                                 {
-                                    bw.Write(acceler[i, g]);
-
+                                    if (equalbox.Checked == true)
+                                    {
+                                        bw.Write(acceler[0, g]);
+                                    }
+                                    else
+                                    {
+                                        bw.Write(acceler[i, g]);
+                                    }
                                 }
 
                             }
@@ -559,36 +775,70 @@ namespace PorkChop
 
                         for (int i = 0; i != 8; i++)
                         {
-                          bw.Write(cc50[i]);
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(cc50[0]);
+                            }
+                            else
+                            {
+                                bw.Write(cc50[i]);
+                            }
 
 
 
                         }
                         for (int i = 0; i != 8; i++)
                         {
-                            bw.Write(cc100[i]);
-                            
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(cc100[0]);
+                            }
+                            else
+                            {
+                                bw.Write(cc100[i]);
+                            }
 
 
                         }
                         for (int i = 0; i != 8; i++)
                         {
-                            bw.Write(cc150[i]);
 
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(cc150[0]);
+                            }
+                            else
+                            {
+                                bw.Write(cc150[i]);
+                            }
 
 
                         }
                         for (int i = 0; i != 8; i++)
                         {
-                            bw.Write(ccextra[i]);
 
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(ccextra[0]);
+                            }
+                            else
+                            {
+                                bw.Write(ccextra[i]);
+                            }
 
 
                         }
                         for (int i = 0; i != 8; i++)
                         {
-                            bw.Write(ccbattle[i]);
 
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(ccbattle[0]);
+                            }
+                            else
+                            {
+                                bw.Write(ccbattle[i]);
+                            }
 
 
                         }
@@ -601,13 +851,31 @@ namespace PorkChop
                         }
 
                         for (int i = 0; i != 8; i++)
+                        {
+
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(top[0]);
+                            }
+                            else
                             {
                                 bw.Write(top[i]);
-
-
                             }
+                        }
 
-                            br.BaseStream.Seek(930352, SeekOrigin.Begin);
+                        for (int i = 0; i != 8; i++)
+                        {
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(bbox[0]);
+                            }
+                            else
+                            {
+                                bw.Write(bbox[i]);
+                            }
+                        }
+
+                        br.BaseStream.Seek(930352, SeekOrigin.Begin);
 
                         if (mkversion == 2)
                         {
@@ -615,11 +883,17 @@ namespace PorkChop
                         }
 
                         for (int i = 0; i != 8; i++)
+                        {
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(friction[0]);
+                            }
+                            else
                             {
                                 bw.Write(friction[i]);
-
-
                             }
+
+                        }
 
                             br.BaseStream.Seek(934448, SeekOrigin.Begin);
 
@@ -629,11 +903,18 @@ namespace PorkChop
                         }
 
                         for (int i = 0; i != 8; i++)
+                         {
+
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(steerin[0]);
+                            }
+                            else
                             {
                                 bw.Write(steerin[i]);
-
-
                             }
+
+                         }
 
 
                             br.BaseStream.Seek(930416, SeekOrigin.Begin);
@@ -644,25 +925,52 @@ namespace PorkChop
                         }
 
                         for (int i = 0; i != 8; i++)
+                         {
+
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(gravity[0]);
+                            }
+                            else
                             {
                                 bw.Write(gravity[i]);
-
-
                             }
 
-                            br.BaseStream.Seek(1187232, SeekOrigin.Begin);
+                         }
+
+
+                        br.BaseStream.Seek(934512, SeekOrigin.Begin);
 
                         if (mkversion == 2)
                         {
-                            br.BaseStream.Seek(256, SeekOrigin.Current);
+                            br.BaseStream.Seek(32, SeekOrigin.Current);
                         }
 
                         for (int i = 0; i != 8; i++)
+                        {
+                            if (equalbox.Checked == true)
                             {
-                                bw.Write(weigh[i]);
-
-
+                                bw.Write(tcoa[0]);
                             }
+                            else
+                            {
+                                bw.Write(tcoa[i]);
+                            }
+                        }
+
+                        for (int i = 0; i != 8; i++)
+                        {
+
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(tcob[0]);
+                            }
+                            else
+                            {
+                                bw.Write(tcob[i]);
+                            }
+                        }
+
 
                             br.BaseStream.Seek(934608, SeekOrigin.Begin);
 
@@ -673,8 +981,15 @@ namespace PorkChop
 
                         for (int i = 0; i != 8; i++)
                             {
-                                bw.Write(jump[i]);
 
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(jump[0]);
+                            }
+                            else
+                            {
+                                bw.Write(jump[i]);
+                            }
 
                             }
 
@@ -687,12 +1002,83 @@ namespace PorkChop
 
                         for (int i = 0; i != 8; i++)
                             {
-                                bw.Write(fall[i]);
 
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(fall[0]);
+                            }
+                            else
+                            {
+                                bw.Write(fall[i]);
+                            }
 
                             }
 
-                            fs.Position = 0;
+                        br.BaseStream.Seek(1016511, SeekOrigin.Begin);
+
+                        if (mkversion == 2)
+                        {
+                            br.BaseStream.Seek(96, SeekOrigin.Current);
+                        }
+
+                        if ( enhance.Checked == true)
+                        {
+                            enhancedbyte = 0;
+                            bw.Write(enhancedbyte);
+                        }
+                        else
+                        {
+                            enhancedbyte = 58;
+                            bw.Write(enhancedbyte);
+                        }
+
+                        br.BaseStream.Seek(1019879, SeekOrigin.Begin);
+
+                        if (mkversion == 2)
+                        {
+                            br.BaseStream.Seek(96, SeekOrigin.Current);
+                        }
+
+                        if (enhance.Checked == true)
+                        {
+                            enhancedbyte = 0;
+                            bw.Write(enhancedbyte);
+                        }
+                        else
+                        {
+                            enhancedbyte = 23;
+                            bw.Write(enhancedbyte);
+                        }
+
+
+
+                        br.BaseStream.Seek(1187232, SeekOrigin.Begin);
+
+                        if (mkversion == 2)
+                        {
+                            br.BaseStream.Seek(256, SeekOrigin.Current);
+                        }
+
+                        for (int i = 0; i != 8; i++)
+                        {
+
+                            if (equalbox.Checked == true)
+                            {
+                                bw.Write(weigh[0]);
+                            }
+                            else
+                            {
+                                bw.Write(weigh[i]);
+                            }
+
+                        }
+
+                        
+
+
+
+
+                        fs.Position = 0;
                             ds.Position = 0;
                             ms.Position = 0;
                             if (overwrite == true)
@@ -739,114 +1125,235 @@ namespace PorkChop
 
         private void Fiftycc_TextChanged(object sender, EventArgs e)
         {
-            cc50[racer.SelectedIndex] = Convert.ToSingle(fiftycc.Text);
+            
+            Single.TryParse(fiftycc.Text, out cc50[racer.SelectedIndex]);
         }
 
         private void Hundocc_TextChanged(object sender, EventArgs e)
         {
-            cc100[racer.SelectedIndex] = Convert.ToSingle(hundocc.Text);
+         
+            Single.TryParse(hundocc.Text, out cc100[racer.SelectedIndex]);
         }
 
         private void Hundofiftycc_TextChanged(object sender, EventArgs e)
         {
-            cc150[racer.SelectedIndex] = Convert.ToSingle(hundofiftycc.Text);
+            
+            Single.TryParse(hundofiftycc.Text, out cc150[racer.SelectedIndex]);
         }
 
-        private void Extracc_TextChanged(object sender, EventArgs e)
-        {
-            ccextra[racer.SelectedIndex] = Convert.ToSingle(extracc.Text);
+        private void Extracc_TextChanged(object sender, EventArgs e)        {
+            
+            Single.TryParse(extracc.Text, out ccextra[racer.SelectedIndex]);
         }
 
         private void Battlecc_TextChanged(object sender, EventArgs e)
         {
-            ccbattle[racer.SelectedIndex] = Convert.ToSingle(battlecc.Text);
+            
+            Single.TryParse(battlecc.Text, out ccbattle[racer.SelectedIndex]);
         }
 
         private void Topspeed_TextChanged(object sender, EventArgs e)
         {
-            top[racer.SelectedIndex] = Convert.ToSingle(topspeed.Text);
+            
+            Single.TryParse(topspeed.Text, out top[racer.SelectedIndex]);
         }
 
         private void Frict_TextChanged(object sender, EventArgs e)
         {
-            friction[racer.SelectedIndex] = Convert.ToSingle(frict.Text);
+            
+            Single.TryParse(frict.Text, out friction[racer.SelectedIndex]);
         }
 
         private void Weight_TextChanged(object sender, EventArgs e)
         {
-            weigh[racer.SelectedIndex] = Convert.ToSingle(weight.Text);
+            
+            Single.TryParse(weight.Text, out weigh[racer.SelectedIndex]);
         }
 
         private void Steering_TextChanged(object sender, EventArgs e)
         {
-            steerin[racer.SelectedIndex] = Convert.ToSingle(steering.Text);
+            
+            Single.TryParse(steering.Text, out steerin[racer.SelectedIndex]);
         }
 
         private void Grav_TextChanged(object sender, EventArgs e)
         {
-            gravity[racer.SelectedIndex] = Convert.ToSingle(grav.Text);
+         
+            Single.TryParse(grav.Text, out gravity[racer.SelectedIndex]);
         }
 
         private void Jumper_TextChanged(object sender, EventArgs e)
         {
-            jump[racer.SelectedIndex] = Convert.ToSingle(jumper.Text);
+            
+            Single.TryParse(jumper.Text, out jump[racer.SelectedIndex]);
         }
 
         private void Faller_TextChanged(object sender, EventArgs e)
         {
-            fall[racer.SelectedIndex] = Convert.ToSingle(faller.Text);
+            
+            Single.TryParse(faller.Text, out fall[racer.SelectedIndex]);
         }
 
         private void Aa_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex,0] = Convert.ToSingle(aa.Text);
+            
+            Single.TryParse(aa.Text, out acceler[racer.SelectedIndex,0]);
         }
 
         private void Ab_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex, 1] = Convert.ToSingle(ab.Text);
+            
+            Single.TryParse(ab.Text, out acceler[racer.SelectedIndex, 1]);
         }
 
         private void Ac_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex, 2] = Convert.ToSingle(ac.Text);
+            
+            Single.TryParse(ac.Text, out acceler[racer.SelectedIndex, 2]);
         }
 
         private void Ad_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex, 3] = Convert.ToSingle(ad.Text);
+            
+            Single.TryParse(ad.Text, out acceler[racer.SelectedIndex, 3]);
         }
 
         private void Ae_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex, 4] = Convert.ToSingle(ae.Text);
+            
+            Single.TryParse(ae.Text, out acceler[racer.SelectedIndex, 4]);
         }
 
         private void Af_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex, 5] = Convert.ToSingle(af.Text);
+            
+            Single.TryParse(af.Text, out acceler[racer.SelectedIndex, 5]);
         }
 
         private void Ag_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex, 6] = Convert.ToSingle(ag.Text);
+            
+            Single.TryParse(ag.Text, out acceler[racer.SelectedIndex, 6]);
         }
 
         private void Ah_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex, 7] = Convert.ToSingle(ah.Text);
+            
+            Single.TryParse(ah.Text, out acceler[racer.SelectedIndex, 7]);
         }
 
         private void Ai_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex, 8] = Convert.ToSingle(ai.Text);
+            
+            Single.TryParse(ai.Text, out acceler[racer.SelectedIndex, 8]);
         }
-
         private void Aj_TextChanged(object sender, EventArgs e)
         {
-            acceler[racer.SelectedIndex, 9] = Convert.ToSingle(aj.Text);
+            
+            Single.TryParse(aj.Text, out acceler[racer.SelectedIndex, 9]);
         }
 
         
+
+       
+
+      
+
+
+    
+
+        private void Equalbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (equalbox.Checked == true)
+            {
+                racer.SelectedIndex = 0;
+                racer.Enabled = false;                
+            }
+            else
+            {
+                racer.Enabled = true;
+            }
+        }
+
+        private void OverKart_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (racer.Enabled == true)
+            {
+                if (e.Modifiers == Keys.Control && e.KeyCode == Keys.Up)
+                {
+                    if (racer.SelectedIndex > 0)
+                    {
+                        racer.SelectedIndex = racer.SelectedIndex - 1;
+                    }
+                }
+                if (e.Modifiers == Keys.Control && e.KeyCode == Keys.Down)
+                {
+                    if (racer.SelectedIndex < 7)
+                    {
+                        racer.SelectedIndex = racer.SelectedIndex + 1;
+                    }
+                }
+            }
+        }
+
+        private void Topspeed_TextChanged(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void Grav_TextChanged(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void Steering_TextChanged(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void Equalbox_CheckedChanged_1(object sender, EventArgs e)
+        {
+            if (racer.Enabled == true)
+            {
+                if (equalbox.Checked == true)
+                {
+                    racer.SelectedIndex = 0;
+                    racer.Enabled = false;
+                }
+                else
+                {
+                    racer.Enabled = true;
+                }
+            }
+        }
+
+        private void TextureExporterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MIO0 f2 = new MIO0();
+            f2.ShowDialog();
+        }
+
+        private void VertConverterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            VertConvert f2 = new VertConvert();
+            f2.ShowDialog();
+        }
+
+        private void SkyColorEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Sky f2 = new Sky();
+            f2.ShowDialog();
+        }
+
+        private void Extracc_TextChanged(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void CupEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CourseSelect f2 = new CourseSelect();
+            f2.ShowDialog();
+        }
     }
 }

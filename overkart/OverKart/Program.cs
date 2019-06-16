@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Windows.Forms;
 
 namespace PorkChop
@@ -13,7 +14,7 @@ namespace PorkChop
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new PorkChop());
+            Application.Run(new OverKart64.PorkChop());
         }
     }
 }
