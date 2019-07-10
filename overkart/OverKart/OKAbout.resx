@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label1.Text" xml:space="preserve">
-    <value>OverKart 64 is a tool that edits racer data in Mario Kart 64. It supports the USA or European version of the ROM. This tool will not work on a ROM that has had it's offsets or data adjusted, so it should be used before a ROM is expanded or any additional data is added to it with another tool. "Enhanced MP" allows multiple players to use the same character and activates music in 3P / 4P Versus Modes.</value>
+    <value>OverKart64 is a ROM editing program for the USA 1.0 version of Mario Kart 64. It edits the Racer data of all the available Racers and contains tools to edit some aspects of the Courses and Cups. It currently exports Course level geometry and decompresses or dumps ROM segments as well, which can be used to help understand the Course format for those looking to make their own Courses.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

@@ -79,14 +79,13 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textureExporterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vertConverterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.skyColorEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cupEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textureExporterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label12 = new System.Windows.Forms.Label();
             this.export = new System.Windows.Forms.Button();
             this.equalbox = new System.Windows.Forms.CheckBox();
-            this.enhance = new System.Windows.Forms.CheckBox();
-            this.cupEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -109,6 +108,7 @@
             this.fiftycc.Size = new System.Drawing.Size(100, 20);
             this.fiftycc.TabIndex = 1;
             this.fiftycc.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.fiftycc.TextChanged += new System.EventHandler(this.Fiftycc_TextChanged_1);
             this.fiftycc.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Fiftycc_TextChanged);
             // 
             // hundocc
@@ -240,6 +240,7 @@
             this.bbbox.Size = new System.Drawing.Size(100, 20);
             this.bbbox.TabIndex = 15;
             this.bbbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.bbbox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Bbbox_KeyUp);
             // 
             // label14
             // 
@@ -260,6 +261,7 @@
             this.tcoboxb.Size = new System.Drawing.Size(100, 20);
             this.tcoboxb.TabIndex = 14;
             this.tcoboxb.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.tcoboxb.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Tcoboxb_KeyUp);
             // 
             // label15
             // 
@@ -280,6 +282,7 @@
             this.tcoboxa.Size = new System.Drawing.Size(100, 20);
             this.tcoboxa.TabIndex = 13;
             this.tcoboxa.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.tcoboxa.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Tcoboxa_KeyUp);
             // 
             // label6
             // 
@@ -585,7 +588,7 @@
             // 
             this.racer.Enabled = false;
             this.racer.FormattingEnabled = true;
-            this.racer.Location = new System.Drawing.Point(233, 42);
+            this.racer.Location = new System.Drawing.Point(230, 43);
             this.racer.Name = "racer";
             this.racer.Size = new System.Drawing.Size(100, 21);
             this.racer.TabIndex = 27;
@@ -631,26 +634,19 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.textureExporterToolStripMenuItem,
             this.vertConverterToolStripMenuItem,
             this.skyColorEditorToolStripMenuItem,
-            this.cupEditorToolStripMenuItem});
+            this.cupEditorToolStripMenuItem,
+            this.textureExporterToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // textureExporterToolStripMenuItem
-            // 
-            this.textureExporterToolStripMenuItem.Name = "textureExporterToolStripMenuItem";
-            this.textureExporterToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.textureExporterToolStripMenuItem.Text = "MIO0 Decompressor";
-            this.textureExporterToolStripMenuItem.Click += new System.EventHandler(this.TextureExporterToolStripMenuItem_Click);
             // 
             // vertConverterToolStripMenuItem
             // 
             this.vertConverterToolStripMenuItem.Name = "vertConverterToolStripMenuItem";
             this.vertConverterToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.vertConverterToolStripMenuItem.Text = "Vert Converter";
+            this.vertConverterToolStripMenuItem.Text = "Level Exporter";
             this.vertConverterToolStripMenuItem.Click += new System.EventHandler(this.VertConverterToolStripMenuItem_Click);
             // 
             // skyColorEditorToolStripMenuItem
@@ -660,13 +656,26 @@
             this.skyColorEditorToolStripMenuItem.Text = "Sky Color Editor";
             this.skyColorEditorToolStripMenuItem.Click += new System.EventHandler(this.SkyColorEditorToolStripMenuItem_Click);
             // 
+            // cupEditorToolStripMenuItem
+            // 
+            this.cupEditorToolStripMenuItem.Name = "cupEditorToolStripMenuItem";
+            this.cupEditorToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.cupEditorToolStripMenuItem.Text = "Cup Editor";
+            this.cupEditorToolStripMenuItem.Click += new System.EventHandler(this.CupEditorToolStripMenuItem_Click);
+            // 
+            // textureExporterToolStripMenuItem
+            // 
+            this.textureExporterToolStripMenuItem.Name = "textureExporterToolStripMenuItem";
+            this.textureExporterToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.textureExporterToolStripMenuItem.Text = "MIO0 Decompressor";
+            this.textureExporterToolStripMenuItem.Click += new System.EventHandler(this.TextureExporterToolStripMenuItem_Click);
+            // 
             // label12
             // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(233, 27);
+            this.label12.Location = new System.Drawing.Point(230, 24);
             this.label12.MinimumSize = new System.Drawing.Size(100, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(100, 13);
+            this.label12.Size = new System.Drawing.Size(100, 16);
             this.label12.TabIndex = 27;
             this.label12.Text = "Character";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -684,7 +693,7 @@
             // 
             // equalbox
             // 
-            this.equalbox.Location = new System.Drawing.Point(336, 40);
+            this.equalbox.Location = new System.Drawing.Point(336, 41);
             this.equalbox.Name = "equalbox";
             this.equalbox.Size = new System.Drawing.Size(100, 24);
             this.equalbox.TabIndex = 26;
@@ -692,28 +701,11 @@
             this.equalbox.UseVisualStyleBackColor = true;
             this.equalbox.CheckedChanged += new System.EventHandler(this.Equalbox_CheckedChanged_1);
             // 
-            // enhance
-            // 
-            this.enhance.Location = new System.Drawing.Point(442, 40);
-            this.enhance.Name = "enhance";
-            this.enhance.Size = new System.Drawing.Size(100, 24);
-            this.enhance.TabIndex = 30;
-            this.enhance.Text = "Enhanced MP";
-            this.enhance.UseVisualStyleBackColor = true;
-            // 
-            // cupEditorToolStripMenuItem
-            // 
-            this.cupEditorToolStripMenuItem.Name = "cupEditorToolStripMenuItem";
-            this.cupEditorToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.cupEditorToolStripMenuItem.Text = "Cup Editor";
-            this.cupEditorToolStripMenuItem.Click += new System.EventHandler(this.CupEditorToolStripMenuItem_Click);
-            // 
             // PorkChop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(563, 391);
-            this.Controls.Add(this.enhance);
             this.Controls.Add(this.equalbox);
             this.Controls.Add(this.export);
             this.Controls.Add(this.label12);
@@ -792,7 +784,6 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox tcoboxa;
         private System.Windows.Forms.CheckBox equalbox;
-        private System.Windows.Forms.CheckBox enhance;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem textureExporterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem vertConverterToolStripMenuItem;

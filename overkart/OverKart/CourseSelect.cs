@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Be.IO;
+using PeepsCompress;
 using System.Diagnostics;
 
 namespace OverKart64
@@ -72,8 +72,8 @@ namespace OverKart64
 
                     using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                     using (var ms = new MemoryStream())
-                    using (var bw = new BeBinaryWriter(ms))
-                    using (var br = new BeBinaryReader(ms))
+                    using (var bw = new BigEndianBinaryWriter(ms))
+                    using (var br = new BigEndianBinaryReader(ms))
 
                     {
                         fs.CopyTo(ms);
@@ -184,8 +184,8 @@ namespace OverKart64
                     using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                     using (var ds = new FileStream(rompath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                     using (var ms = new MemoryStream())
-                    using (var bw = new BeBinaryWriter(ms))
-                    using (var br = new BeBinaryReader(ms))
+                    using (var bw = new BigEndianBinaryWriter(ms))
+                    using (var br = new BigEndianBinaryReader(ms))
 
                     {
 

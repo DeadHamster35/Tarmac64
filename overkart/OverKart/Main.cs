@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Be.IO;
+using PeepsCompress;
 using System.Diagnostics;
 
 
@@ -12,7 +12,7 @@ namespace OverKart64
 {
 
 
-   
+
 
 
     public partial class PorkChop : Form
@@ -38,7 +38,7 @@ namespace OverKart64
         float[] tcob = new float[8];
         float[] bbox = new float[8];
         byte enhancedbyte = new byte();
-        Int16 enhancedint16 = new Int16();
+
 
 
 
@@ -58,7 +58,7 @@ namespace OverKart64
         public PorkChop()
         {
             InitializeComponent();
-           
+
 
 
         }
@@ -79,10 +79,10 @@ namespace OverKart64
             }
         }
 
-      
+
         private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
             OKAbout f2 = new OKAbout();
             f2.ShowDialog();
         }
@@ -108,7 +108,7 @@ namespace OverKart64
                 //Read the contents of the file into a stream
 
                 string filetype = filePath.Substring(filePath.Length - 3);
-                
+
                 if (filetype == "n64" || filetype == "v64")
                 {
                     MessageBox.Show("Only Supports .Z64 format");
@@ -117,28 +117,15 @@ namespace OverKart64
                 {
                     using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                     using (var ms = new MemoryStream())
-                    using (var bw = new BeBinaryWriter(ms))
-                    using (var br = new BeBinaryReader(ms))
+                    using (var bw = new BigEndianBinaryWriter(ms))
+                    using (var br = new BigEndianBinaryReader(ms))
 
                     {
-                        fs.CopyTo(ms);
-                        ms.Position = 0;
+                            fs.CopyTo(ms);
+                            ms.Position = 0;
+                        
 
-
-
-
-                        br.BaseStream.Seek(16, SeekOrigin.Begin);
-                        mkversion = br.ReadInt16();
-
-                        if (mkversion == 15952)
-                        {
-                            mkversion = 1;
-                        }
-
-                        if (mkversion == 9591)
-                        {
-                            mkversion = 2;
-                        }
+                        
 
                         //0   MARIO
                         //1   LUIGI
@@ -151,10 +138,7 @@ namespace OverKart64
 
                         br.BaseStream.Seek(932560, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
-                        }
+                        
 
                         for (int i = 0; i != 8; i++)
                         {
@@ -168,10 +152,6 @@ namespace OverKart64
 
                         br.BaseStream.Seek(930172, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
-                        }
 
                         for (int i = 0; i != 8; i++)
                         {
@@ -206,10 +186,7 @@ namespace OverKart64
 
                         br.BaseStream.Seek(930448, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
-                        }
+                        
 
                         for (int i = 0; i != 8; i++)
                         {
@@ -225,10 +202,7 @@ namespace OverKart64
 
                         br.BaseStream.Seek(930352, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
-                        }
+                        
 
                         for (int i = 0; i != 8; i++)
                         {
@@ -238,10 +212,7 @@ namespace OverKart64
 
                         br.BaseStream.Seek(934448, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
-                        }
+                        
 
                         for (int i = 0; i != 8; i++)
                         {
@@ -252,11 +223,7 @@ namespace OverKart64
 
                         br.BaseStream.Seek(930416, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
-                        }
-
+                        
                         for (int i = 0; i != 8; i++)
                         {
                             gravity[i] = br.ReadSingle();
@@ -266,10 +233,7 @@ namespace OverKart64
 
                         br.BaseStream.Seek(934512, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
-                        }
+                        
 
                         for (int i = 0; i != 8; i++)
                         {
@@ -289,10 +253,7 @@ namespace OverKart64
 
                         br.BaseStream.Seek(934608, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
-                        }
+                        
 
                         for (int i = 0; i != 8; i++)
                         {
@@ -313,29 +274,12 @@ namespace OverKart64
 
                         }
 
-                        br.BaseStream.Seek(1016511, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(96, SeekOrigin.Current);
-                        }
-
-                        if (br.ReadByte() == 58)
-                        {
-                            enhance.Checked = false;
-                        }
-                        else
-                        {
-                            enhance.Checked = true;
-                        }
 
 
                         br.BaseStream.Seek(1187232, SeekOrigin.Begin);
 
-                        if (mkversion == 2)
-                        {
-                            br.BaseStream.Seek(256, SeekOrigin.Current);
-                        }
+                        
 
                         for (int i = 0; i != 8; i++)
                         {
@@ -344,7 +288,9 @@ namespace OverKart64
                         }
 
 
-
+                        
+                        //DataFlip();   // flips the endian of each data value
+                        
 
 
                         br.BaseStream.Seek(1187232, SeekOrigin.Begin);
@@ -474,15 +420,15 @@ namespace OverKart64
                 string writetext = "";
 
 
-                for (int i = 0; i!= 8; i++)
+                for (int i = 0; i != 8; i++)
                 {
-                    
-                    writetext = racer.Items[i] + " - 50CC -"+ cc50[i].ToString();
+
+                    writetext = racer.Items[i] + " - 50CC -" + cc50[i].ToString();
                     System.IO.File.AppendAllText(listfile, writetext);
                     System.IO.File.AppendAllText(listfile, Environment.NewLine);
                 }
 
-                for (int i = 0; i!= 8; i++)
+                for (int i = 0; i != 8; i++)
                 {
 
                     writetext = racer.Items[i] + " - 100CC -" + cc100[i].ToString();
@@ -593,14 +539,14 @@ namespace OverKart64
 
                 for (int i = 0; i != 8; i++)
                 {
-                    
-                    writetext = racer.Items[i] + " - Acceleration -" + acceler[i,0].ToString() +","+ acceler[i,1].ToString() +"," + acceler[i,2].ToString() +"," + acceler[i,3].ToString() +"," + acceler[i,4].ToString() +"," + acceler[i,5].ToString() +"," + acceler[i,6].ToString() +"," + acceler[i,7].ToString() +"," + acceler[i,8].ToString() +"," + acceler[i,9].ToString() +",";
+
+                    writetext = racer.Items[i] + " - Acceleration -" + acceler[i, 0].ToString() + "," + acceler[i, 1].ToString() + "," + acceler[i, 2].ToString() + "," + acceler[i, 3].ToString() + "," + acceler[i, 4].ToString() + "," + acceler[i, 5].ToString() + "," + acceler[i, 6].ToString() + "," + acceler[i, 7].ToString() + "," + acceler[i, 8].ToString() + "," + acceler[i, 9].ToString() + ",";
                     System.IO.File.AppendAllText(listfile, writetext);
                     System.IO.File.AppendAllText(listfile, Environment.NewLine);
 
                 }
 
-                
+
             }
         }
 
@@ -621,26 +567,33 @@ namespace OverKart64
                 }
 
 
-                    string filetype = filePath.Substring(filePath.Length - 3);
-                    if (filetype == "n64" || filetype == "v64")
+                string filetype = filePath.Substring(filePath.Length - 3);
+                if (filetype == "n64" || filetype == "v64")
+                {
+
+
+                    MessageBox.Show("Only Supports .Z64 format");
+
+                }
+                else
+                {
+
+
+                    //DataFlip();   // flips the endian of each data value
+
+
+                   
+                    using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                    using (var ds = new FileStream(rompath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                    using (var ms = new MemoryStream())
+                    using (var bw = new BigEndianBinaryWriter(ms))
+                    using (var bs = new BigEndianBinaryWriter (ms))
+                    using (var br = new BigEndianBinaryReader(ms))
+
                     {
+                        fs.CopyTo(ms);
 
-                       
-                            MessageBox.Show("Only Supports .Z64 format");
-                       
-                    }
-                    else
-                    {
-                        using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-                        using (var ds = new FileStream(rompath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-                        using (var ms = new MemoryStream())
-                        using (var bw = new BeBinaryWriter(ms))
-                        using (var br = new BeBinaryReader(ms))
-
-                        {
-                            fs.CopyTo(ms);
-
-                            ms.Position = 0;
+                        ms.Position = 0;
 
 
                         br.BaseStream.Seek(16, SeekOrigin.Begin);
@@ -656,7 +609,7 @@ namespace OverKart64
                             mkversion = 2;
                         }
 
-
+                        /*
 
                         br.BaseStream.Seek(738596, SeekOrigin.Begin);
                         if (enhance.Checked == true)
@@ -736,41 +689,41 @@ namespace OverKart64
                             bw.Write(enhancedint16);
                         }
 
+                        */
 
 
 
 
-
-                        br.BaseStream.Seek(932560, SeekOrigin.Begin);
+                        bw.BaseStream.Seek(932560, SeekOrigin.Begin);
 
                         if (mkversion == 2)
                         {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
+                            bw.BaseStream.Seek(32, SeekOrigin.Current);
                         }
 
                         for (int i = 0; i != 8; i++)
+                        {
+                            for (int g = 0; g != 10; g++)
                             {
-                                for (int g = 0; g != 10; g++)
-                                {
-                                    if (equalbox.Checked == true)
-                                    {
-                                        bw.Write(acceler[0, g]);
-                                    }
-                                    else
-                                    {
-                                        bw.Write(acceler[i, g]);
-                                    }
+                                if (equalbox.Checked == true)
+                                {                                    
+                                    bw.Write(acceler[0, g]);
                                 }
-
+                                else
+                                {
+                                    bw.Write(acceler[i, g]);
+                                }
                             }
 
+                        }
 
-                            br.BaseStream.Seek(930172, SeekOrigin.Begin);
+
+                        bw.BaseStream.Seek(930172, SeekOrigin.Begin);
 
 
                         if (mkversion == 2)
                         {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
+                            bw.BaseStream.Seek(32, SeekOrigin.Current);
                         }
 
                         for (int i = 0; i != 8; i++)
@@ -843,11 +796,11 @@ namespace OverKart64
 
                         }
 
-                            br.BaseStream.Seek(930448, SeekOrigin.Begin);
+                            bw.BaseStream.Seek(930448, SeekOrigin.Begin);
 
                         if (mkversion == 2)
                         {
-                            br.BaseStream.Seek(32, SeekOrigin.Current);
+                            bw.BaseStream.Seek(32, SeekOrigin.Current);
                         }
 
                         for (int i = 0; i != 8; i++)
@@ -875,7 +828,7 @@ namespace OverKart64
                             }
                         }
 
-                        br.BaseStream.Seek(930352, SeekOrigin.Begin);
+                        bw.BaseStream.Seek(930352, SeekOrigin.Begin);
 
                         if (mkversion == 2)
                         {
@@ -895,7 +848,7 @@ namespace OverKart64
 
                         }
 
-                            br.BaseStream.Seek(934448, SeekOrigin.Begin);
+                            bw.BaseStream.Seek(934448, SeekOrigin.Begin);
 
                         if (mkversion == 2)
                         {
@@ -917,7 +870,7 @@ namespace OverKart64
                          }
 
 
-                            br.BaseStream.Seek(930416, SeekOrigin.Begin);
+                            bw.BaseStream.Seek(930416, SeekOrigin.Begin);
 
                         if (mkversion == 2)
                         {
@@ -939,7 +892,7 @@ namespace OverKart64
                          }
 
 
-                        br.BaseStream.Seek(934512, SeekOrigin.Begin);
+                        bs.BaseStream.Seek(934512, SeekOrigin.Begin);
 
                         if (mkversion == 2)
                         {
@@ -950,11 +903,13 @@ namespace OverKart64
                         {
                             if (equalbox.Checked == true)
                             {
-                                bw.Write(tcoa[0]);
+                                
+                                bs.Write(tcoa[0]);
                             }
                             else
                             {
-                                bw.Write(tcoa[i]);
+                                
+                                bs.Write(tcoa[i]);
                             }
                         }
 
@@ -1021,16 +976,7 @@ namespace OverKart64
                             br.BaseStream.Seek(96, SeekOrigin.Current);
                         }
 
-                        if ( enhance.Checked == true)
-                        {
-                            enhancedbyte = 0;
-                            bw.Write(enhancedbyte);
-                        }
-                        else
-                        {
-                            enhancedbyte = 58;
-                            bw.Write(enhancedbyte);
-                        }
+                        
 
                         br.BaseStream.Seek(1019879, SeekOrigin.Begin);
 
@@ -1039,16 +985,7 @@ namespace OverKart64
                             br.BaseStream.Seek(96, SeekOrigin.Current);
                         }
 
-                        if (enhance.Checked == true)
-                        {
-                            enhancedbyte = 0;
-                            bw.Write(enhancedbyte);
-                        }
-                        else
-                        {
-                            enhancedbyte = 23;
-                            bw.Write(enhancedbyte);
-                        }
+                        
 
 
 
@@ -1123,6 +1060,144 @@ namespace OverKart64
             }
         }
 
+
+
+        private void DataFlip()
+        {
+
+            byte[] flip = new byte[4];
+
+            // c# binary writer defaults to the endian setup of the system running it. 
+            // so values read or written are always little endian. However, MK64 stats are
+            // written in Big Endian. This requires us to do a bit of extra work to flip byte order.
+            // set all the values to little endian to be written properly by the writer.
+            for (int i = 0; i != 8; i++)
+            {
+                
+                flip = BitConverter.GetBytes(cc50[i]);
+                Array.Reverse(flip);
+                cc50[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                
+                flip = BitConverter.GetBytes(cc100[i]);
+                Array.Reverse(flip);
+                cc100[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                
+                flip = BitConverter.GetBytes(cc150[i]);
+                Array.Reverse(flip);
+                cc150[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                
+                flip = BitConverter.GetBytes(ccextra[i]);
+                Array.Reverse(flip);
+                ccextra[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                
+                flip = BitConverter.GetBytes(ccbattle[i]);
+                Array.Reverse(flip);
+                ccbattle[i] = BitConverter.ToSingle(flip, 0);
+            }
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(top[i]);
+                Array.Reverse(flip);
+                top[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(weigh[i]);
+                Array.Reverse(flip);
+                weigh[i] = BitConverter.ToSingle(flip, 0);
+            }
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(steerin[i]);
+                Array.Reverse(flip);
+                steerin[i] = BitConverter.ToSingle(flip, 0);
+            }
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(friction[i]);
+                Array.Reverse(flip);
+                friction[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(gravity[i]);
+                Array.Reverse(flip);
+                gravity[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(jump[i]);
+                Array.Reverse(flip);
+                jump[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(fall[i]);
+                Array.Reverse(flip);
+                fall[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(tcoa[i]);
+                Array.Reverse(flip);
+                tcoa[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(tcob[i]);
+                Array.Reverse(flip);
+                tcob[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int i = 0; i != 8; i++)
+            {
+                flip = BitConverter.GetBytes(bbox[i]);
+                Array.Reverse(flip);
+                bbox[i] = BitConverter.ToSingle(flip, 0);
+            }
+
+            for (int n = 0; n != 8; n++)
+            {
+                for (int i = 0; i != 10; i++)
+                {
+                    flip = BitConverter.GetBytes(acceler[n, i]);
+                    Array.Reverse(flip);
+                    acceler[n, i] = BitConverter.ToSingle(flip, 0);
+                }
+
+            }
+
+
+            // finish fixing bytes
+            // finish fixing bytes
+            // finish fixing bytes
+            // finish fixing bytes
+
+        }
+
+
         private void Fiftycc_TextChanged(object sender, EventArgs e)
         {
             
@@ -1155,7 +1230,7 @@ namespace OverKart64
         private void Topspeed_TextChanged(object sender, EventArgs e)
         {
             
-            Single.TryParse(topspeed.Text, out top[racer.SelectedIndex]);
+            
         }
 
         private void Frict_TextChanged(object sender, EventArgs e)
@@ -1170,17 +1245,7 @@ namespace OverKart64
             Single.TryParse(weight.Text, out weigh[racer.SelectedIndex]);
         }
 
-        private void Steering_TextChanged(object sender, EventArgs e)
-        {
-            
-            Single.TryParse(steering.Text, out steerin[racer.SelectedIndex]);
-        }
-
-        private void Grav_TextChanged(object sender, EventArgs e)
-        {
-         
-            Single.TryParse(grav.Text, out gravity[racer.SelectedIndex]);
-        }
+        
 
         private void Jumper_TextChanged(object sender, EventArgs e)
         {
@@ -1298,17 +1363,17 @@ namespace OverKart64
 
         private void Topspeed_TextChanged(object sender, KeyEventArgs e)
         {
-
+            Single.TryParse(topspeed.Text, out top[racer.SelectedIndex]);
         }
 
         private void Grav_TextChanged(object sender, KeyEventArgs e)
         {
-
+            Single.TryParse(grav.Text, out gravity[racer.SelectedIndex]);
         }
 
         private void Steering_TextChanged(object sender, KeyEventArgs e)
         {
-
+            Single.TryParse(steering.Text, out steerin[racer.SelectedIndex]);
         }
 
         private void Equalbox_CheckedChanged_1(object sender, EventArgs e)
@@ -1355,5 +1420,26 @@ namespace OverKart64
             CourseSelect f2 = new CourseSelect();
             f2.ShowDialog();
         }
+
+        private void Tcoboxa_KeyUp(object sender, KeyEventArgs e)
+        {
+            Single.TryParse(tcoboxa.Text, out tcoa[racer.SelectedIndex]);
+        }
+
+        private void Tcoboxb_KeyUp(object sender, KeyEventArgs e)
+        {
+            Single.TryParse(tcoboxb.Text, out tcob[racer.SelectedIndex]);
+        }
+
+        private void Bbbox_KeyUp(object sender, KeyEventArgs e)
+        {
+            Single.TryParse(bbbox.Text, out bbox[racer.SelectedIndex]);
+        }
+
+        private void Fiftycc_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }

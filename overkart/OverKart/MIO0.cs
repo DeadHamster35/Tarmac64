@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections;
-using Be.IO;
-
+using PeepsCompress;
 
 namespace OverKart64
 
@@ -36,7 +35,7 @@ namespace OverKart64
         {
 
             FileStream inputFile = File.Open(path, FileMode.Open);
-            BeBinaryReader br = new BeBinaryReader(inputFile);
+            BigEndianBinaryReader br = new BigEndianBinaryReader(inputFile);
 
             byte[] file = br.ReadBytes((int)inputFile.Length);
 
