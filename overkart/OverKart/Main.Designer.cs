@@ -80,12 +80,17 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vertConverterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.vertexEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.itemEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pathEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.skyColorEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cupEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textureExporterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debuggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.notForRetailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label12 = new System.Windows.Forms.Label();
             this.export = new System.Windows.Forms.Button();
             this.equalbox = new System.Windows.Forms.CheckBox();
+            this.courseImporterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -108,7 +113,6 @@
             this.fiftycc.Size = new System.Drawing.Size(100, 20);
             this.fiftycc.TabIndex = 1;
             this.fiftycc.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.fiftycc.TextChanged += new System.EventHandler(this.Fiftycc_TextChanged_1);
             this.fiftycc.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Fiftycc_TextChanged);
             // 
             // hundocc
@@ -609,7 +613,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.helpToolStripMenuItem,
-            this.toolsToolStripMenuItem});
+            this.toolsToolStripMenuItem,
+            this.debuggingToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(563, 24);
@@ -635,9 +640,12 @@
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.vertConverterToolStripMenuItem,
+            this.courseImporterToolStripMenuItem,
+            this.vertexEditorToolStripMenuItem,
+            this.itemEditorToolStripMenuItem,
+            this.pathEditorToolStripMenuItem,
             this.skyColorEditorToolStripMenuItem,
-            this.cupEditorToolStripMenuItem,
-            this.textureExporterToolStripMenuItem});
+            this.cupEditorToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -645,30 +653,59 @@
             // vertConverterToolStripMenuItem
             // 
             this.vertConverterToolStripMenuItem.Name = "vertConverterToolStripMenuItem";
-            this.vertConverterToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.vertConverterToolStripMenuItem.Text = "Level Exporter";
+            this.vertConverterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.vertConverterToolStripMenuItem.Text = "Course Exporter";
             this.vertConverterToolStripMenuItem.Click += new System.EventHandler(this.VertConverterToolStripMenuItem_Click);
+            // 
+            // vertexEditorToolStripMenuItem
+            // 
+            this.vertexEditorToolStripMenuItem.Name = "vertexEditorToolStripMenuItem";
+            this.vertexEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.vertexEditorToolStripMenuItem.Text = "Vertex Editor";
+            this.vertexEditorToolStripMenuItem.Click += new System.EventHandler(this.VertexEditorToolStripMenuItem_Click);
+            // 
+            // itemEditorToolStripMenuItem
+            // 
+            this.itemEditorToolStripMenuItem.Name = "itemEditorToolStripMenuItem";
+            this.itemEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.itemEditorToolStripMenuItem.Text = "Item Editor";
+            this.itemEditorToolStripMenuItem.Click += new System.EventHandler(this.ItemEditorToolStripMenuItem_Click);
+            // 
+            // pathEditorToolStripMenuItem
+            // 
+            this.pathEditorToolStripMenuItem.Name = "pathEditorToolStripMenuItem";
+            this.pathEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.pathEditorToolStripMenuItem.Text = "Path Editor";
+            this.pathEditorToolStripMenuItem.Click += new System.EventHandler(this.PathEditorToolStripMenuItem_Click);
             // 
             // skyColorEditorToolStripMenuItem
             // 
             this.skyColorEditorToolStripMenuItem.Name = "skyColorEditorToolStripMenuItem";
-            this.skyColorEditorToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.skyColorEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.skyColorEditorToolStripMenuItem.Text = "Sky Color Editor";
             this.skyColorEditorToolStripMenuItem.Click += new System.EventHandler(this.SkyColorEditorToolStripMenuItem_Click);
             // 
             // cupEditorToolStripMenuItem
             // 
             this.cupEditorToolStripMenuItem.Name = "cupEditorToolStripMenuItem";
-            this.cupEditorToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.cupEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.cupEditorToolStripMenuItem.Text = "Cup Editor";
             this.cupEditorToolStripMenuItem.Click += new System.EventHandler(this.CupEditorToolStripMenuItem_Click);
             // 
-            // textureExporterToolStripMenuItem
+            // debuggingToolStripMenuItem
             // 
-            this.textureExporterToolStripMenuItem.Name = "textureExporterToolStripMenuItem";
-            this.textureExporterToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.textureExporterToolStripMenuItem.Text = "MIO0 Decompressor";
-            this.textureExporterToolStripMenuItem.Click += new System.EventHandler(this.TextureExporterToolStripMenuItem_Click);
+            this.debuggingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.notForRetailToolStripMenuItem});
+            this.debuggingToolStripMenuItem.Name = "debuggingToolStripMenuItem";
+            this.debuggingToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
+            this.debuggingToolStripMenuItem.Text = "Debugging";
+            // 
+            // notForRetailToolStripMenuItem
+            // 
+            this.notForRetailToolStripMenuItem.Name = "notForRetailToolStripMenuItem";
+            this.notForRetailToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.notForRetailToolStripMenuItem.Text = "Not for Retail";
+            this.notForRetailToolStripMenuItem.Click += new System.EventHandler(this.NotForRetailToolStripMenuItem_Click);
             // 
             // label12
             // 
@@ -700,6 +737,13 @@
             this.equalbox.Text = "Equalize Stats";
             this.equalbox.UseVisualStyleBackColor = true;
             this.equalbox.CheckedChanged += new System.EventHandler(this.Equalbox_CheckedChanged_1);
+            // 
+            // courseImporterToolStripMenuItem
+            // 
+            this.courseImporterToolStripMenuItem.Name = "courseImporterToolStripMenuItem";
+            this.courseImporterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.courseImporterToolStripMenuItem.Text = "Course Importer";
+            this.courseImporterToolStripMenuItem.Click += new System.EventHandler(this.CourseImporterToolStripMenuItem_Click);
             // 
             // PorkChop
             // 
@@ -785,9 +829,14 @@
         private System.Windows.Forms.TextBox tcoboxa;
         private System.Windows.Forms.CheckBox equalbox;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem textureExporterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem vertConverterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem skyColorEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cupEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem debuggingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem notForRetailToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem vertexEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pathEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem itemEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem courseImporterToolStripMenuItem;
     }
 }

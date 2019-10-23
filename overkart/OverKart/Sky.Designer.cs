@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Sky));
             this.button1 = new System.Windows.Forms.Button();
             this.coursebox = new System.Windows.Forms.ComboBox();
             this.rtbox = new System.Windows.Forms.TextBox();
@@ -218,6 +219,8 @@
             this.Controls.Add(this.rtbox);
             this.Controls.Add(this.coursebox);
             this.Controls.Add(this.button1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Sky";
             this.Text = "Sky Editor";
             this.Load += new System.EventHandler(this.Sky_Load);

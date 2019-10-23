@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CourseSelect));
             this.c1 = new System.Windows.Forms.ComboBox();
             this.savebtn = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -185,8 +186,10 @@
             this.Controls.Add(this.savebtn);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.c1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CourseSelect";
-            this.Text = "CourseSelect";
+            this.Text = "Cup Editor";
             this.Load += new System.EventHandler(this.CourseSelect_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -118,7 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label1.Text" xml:space="preserve">
-    <value>OverKart64 is a ROM editing program for the USA 1.0 version of Mario Kart 64. It edits the Racer data of all the available Racers and contains tools to edit some aspects of the Courses and Cups. It currently exports Course level geometry and decompresses or dumps ROM segments as well, which can be used to help understand the Course format for those looking to make their own Courses.</value>
+    <value>OverKart64 is a ROM editing program for the USA 1.0 version of Mario Kart 64. It edits the Racer data of all the available Racers and contains tools to edit some aspects of the Courses and Cups. It currently exports Course level geometry and decompresses or dumps ROM segments as well, which can be used to help understand the Course format for those looking to make their own Courses.
+
+This is the product of a contribution of knowledge gathered by multiple people.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

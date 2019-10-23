@@ -43,6 +43,7 @@
     <Reference Include="MarioKart">
       <HintPath>..\MarioKart.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,11 +59,43 @@
   <ItemGroup>
     <Compile Include="BigEndianBinaryReader.cs" />
     <Compile Include="BigEndianBinaryWriter.cs" />
-    <Compile Include="CourseSelect.cs">
+    <Compile Include="CourseImporter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CourseSelect.Designer.cs">
-      <DependentUpon>CourseSelect.cs</DependentUpon>
+    <Compile Include="CourseImporter.Designer.cs">
+      <DependentUpon>CourseImporter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DebugTools.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DebugTools.Designer.cs">
+      <DependentUpon>DebugTools.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ItemEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ItemEditor.designer.cs">
+      <DependentUpon>ItemEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PathEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PathEditor.designer.cs">
+      <DependentUpon>PathEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VertEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VertEditor.Designer.cs">
+      <DependentUpon>VertEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="N64Graphics.cs" />
+    <Compile Include="OK64.cs" />
+    <Compile Include="CupEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CupEditor.Designer.cs">
+      <DependentUpon>CupEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Sky.cs">
       <SubType>Form</SubType>
@@ -70,17 +103,11 @@
     <Compile Include="Sky.Designer.cs">
       <DependentUpon>Sky.cs</DependentUpon>
     </Compile>
-    <Compile Include="VertConvert.cs">
+    <Compile Include="CourseExporter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="VertConvert.Designer.cs">
-      <DependentUpon>VertConvert.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MIO0.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MIO0.Designer.cs">
-      <DependentUpon>MIO0.cs</DependentUpon>
+    <Compile Include="CourseExporter.Designer.cs">
+      <DependentUpon>CourseExporter.cs</DependentUpon>
     </Compile>
     <Compile Include="OKAbout.cs">
       <SubType>Form</SubType>
@@ -96,8 +123,23 @@
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="CourseSelect.resx">
-      <DependentUpon>CourseSelect.cs</DependentUpon>
+    <EmbeddedResource Include="CourseImporter.resx">
+      <DependentUpon>CourseImporter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CupEditor.resx">
+      <DependentUpon>CupEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DebugTools.resx">
+      <DependentUpon>DebugTools.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ItemEditor.resx">
+      <DependentUpon>ItemEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PathEditor.resx">
+      <DependentUpon>PathEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VertEditor.resx">
+      <DependentUpon>VertEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sky.resx">
       <DependentUpon>Sky.cs</DependentUpon>
@@ -113,11 +155,8 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="MIO0.resx">
-      <DependentUpon>MIO0.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VertConvert.resx">
-      <DependentUpon>VertConvert.cs</DependentUpon>
+    <EmbeddedResource Include="CourseExporter.resx">
+      <DependentUpon>CourseExporter.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="OverKart64.ruleset" />
     <None Include="Properties\Settings.settings">

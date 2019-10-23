@@ -20,7 +20,7 @@ namespace OverKart64
         string settings_path = Path.Combine(Environment.GetFolderPath(
             Environment.SpecialFolder.ApplicationData), "PorkChop.txt");
 
-
+        int debugmode = 0;
         float[] cc50 = new float[8];
         float[] cc100 = new float[8];
         float[] cc150 = new float[8];
@@ -37,9 +37,9 @@ namespace OverKart64
         float[] tcoa = new float[8];
         float[] tcob = new float[8];
         float[] bbox = new float[8];
-        byte enhancedbyte = new byte();
 
 
+        bool loaded = new bool();
 
 
 
@@ -71,6 +71,9 @@ namespace OverKart64
 
         private void OverKart_Load(object sender, EventArgs e)
         {
+            debuggingToolStripMenuItem.Visible = false;
+            debuggingToolStripMenuItem.Enabled = false;
+
             string[] items = { "Mario", "Luigi", "Yoshi", "Toad", "DK", "Wario", "Peach", "Bowser" };
 
             foreach (string item in items)
@@ -89,7 +92,8 @@ namespace OverKart64
 
         private void Load_Click(object sender, EventArgs e)
         {
-
+            debuggingToolStripMenuItem.Visible = false;
+            debuggingToolStripMenuItem.Enabled = false;
 
 
 
@@ -357,7 +361,7 @@ namespace OverKart64
 
 
                         racer.SelectedIndex = 0;
-
+                        loaded = true;
 
                         br.Close();
                         bw.Close();
@@ -1378,7 +1382,7 @@ namespace OverKart64
 
         private void Equalbox_CheckedChanged_1(object sender, EventArgs e)
         {
-            if (racer.Enabled == true)
+            if (loaded == true)
             {
                 if (equalbox.Checked == true)
                 {
@@ -1390,17 +1394,27 @@ namespace OverKart64
                     racer.Enabled = true;
                 }
             }
+            else
+            {
+                equalbox.CheckState = CheckState.Unchecked;
+                debugmode = debugmode + 1;
+                if (debugmode >= 10)
+                {
+                    debuggingToolStripMenuItem.Visible=true;                   
+                }
+                if (debugmode >= 14)
+                {
+                    debuggingToolStripMenuItem.Enabled = true;
+                }
+
+            }
         }
 
-        private void TextureExporterToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MIO0 f2 = new MIO0();
-            f2.ShowDialog();
-        }
+        
 
         private void VertConverterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            VertConvert f2 = new VertConvert();
+            CourseExporter f2 = new CourseExporter();
             f2.ShowDialog();
         }
 
@@ -1408,11 +1422,6 @@ namespace OverKart64
         {
             Sky f2 = new Sky();
             f2.ShowDialog();
-        }
-
-        private void Extracc_TextChanged(object sender, KeyEventArgs e)
-        {
-
         }
 
         private void CupEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1436,10 +1445,34 @@ namespace OverKart64
             Single.TryParse(bbbox.Text, out bbox[racer.SelectedIndex]);
         }
 
-        private void Fiftycc_TextChanged_1(object sender, EventArgs e)
+        private void NotForRetailToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            DebugTools f2 = new DebugTools();
+            f2.ShowDialog();
         }
 
+        private void VertexEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            VertEditor f2 = new VertEditor();
+            f2.ShowDialog();
+        }
+
+        private void PathEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PathEditor f2 = new PathEditor();
+            f2.ShowDialog();
+        }
+
+        private void ItemEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ItemEditor f2 = new ItemEditor();
+            f2.ShowDialog();
+        }
+
+        private void CourseImporterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CourseImporter f2 = new CourseImporter();
+            f2.ShowDialog();
+        }
     }
 }
