@@ -10,6 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AssimpSharp;
+
+
 
 namespace OverKart64
 {
@@ -170,124 +173,24 @@ namespace OverKart64
 
         OpenFileDialog romopen = new OpenFileDialog();
         SaveFileDialog romsave = new SaveFileDialog();
-        private void decompress(int offset, string path)
-        {
-
-            FileStream inputFile = File.Open(path, FileMode.Open);
-            BigEndianBinaryReader br = new BigEndianBinaryReader(inputFile);
-
-            byte[] file = br.ReadBytes((int)inputFile.Length);
-
-
-            List<byte> newFile = new List<byte>();
-
-
-            br.BaseStream.Position = offset;
-            string magicNumber = Encoding.ASCII.GetString(br.ReadBytes(4));
-
-            if (magicNumber == "MIO0")
-            {
-                int decompressedLength = br.ReadInt32();
-                int compressedOffset = br.ReadInt32() + offset;
-                int uncompressedOffset = br.ReadInt32() + offset;
-                int currentOffset;
-
-                try
-                {
-
-                    while (newFile.Count < decompressedLength)
-                    {
-
-                        byte bits = br.ReadByte(); //byte of layout bits
-                        BitArray arrayOfBits = new BitArray(new byte[1] { bits });
-
-                        for (int i = 7; i > -1 && (newFile.Count < decompressedLength); i--) //iterate through layout bits
-                        {
-
-                            if (arrayOfBits[i] == true)
-                            {
-                                //non-compressed
-                                //add one byte from uncompressedOffset to newFile
-
-                                currentOffset = (int)inputFile.Position;
-
-                                inputFile.Seek(uncompressedOffset, SeekOrigin.Begin);
-
-                                newFile.Add(br.ReadByte());
-                                uncompressedOffset++;
-
-                                inputFile.Seek(currentOffset, SeekOrigin.Begin);
-
-                            }
-                            else
-                            {
-                                //compressed
-                                //read 2 bytes
-                                //4 bits = length
-                                //12 bits = offset
-
-                                currentOffset = (int)inputFile.Position;
-                                inputFile.Seek(compressedOffset, SeekOrigin.Begin);
-
-                                byte byte1 = br.ReadByte();
-                                byte byte2 = br.ReadByte();
-                                compressedOffset += 2;
-
-                                //Note: For Debugging, binary representations can be printed with:  Convert.ToString(numberVariable, 2);
-
-                                byte byte1Upper = (byte)((byte1 & 0x0F));//offset bits
-                                byte byte1Lower = (byte)((byte1 & 0xF0) >> 4); //length bits
-
-                                int combinedOffset = ((byte1Upper << 8) | byte2);
-
-                                int finalOffset = 1 + combinedOffset;
-                                int finalLength = 3 + byte1Lower;
-
-                                for (int k = 0; k < finalLength; k++) //add data for finalLength iterations
-                                {
-                                    newFile.Add(newFile[newFile.Count - finalOffset]); //add byte at offset (fileSize - finalOffset) to file
-                                }
-
-                                inputFile.Seek(currentOffset, SeekOrigin.Begin); //return to layout bits
-
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-
-                inputFile.Close();
-
-                if (romsave.ShowDialog() == DialogResult.OK)
-                {
-
-                    byte[] saveFile = newFile.ToArray();
-                    File.WriteAllBytes(romsave.FileName, saveFile);
-                }
-                else
-                {
-                    MessageBox.Show("This is not an MIO0 file.");
-
-                }
-            }
-
-
-        }
-
 
 
         private void export_Click(object sender, EventArgs e)
         {
+            OK64 mk = new OK64();
             int miooffset = new int();
             miooffset = 0;
             int.TryParse(offsetbox.Text, out miooffset);
             if (romopen.ShowDialog() == DialogResult.OK)
             {
-                decompress(miooffset, romopen.FileName);
+                List<byte> lfile =mk.decompress_MIO0(miooffset, romopen.FileName);
+                byte[] afile = lfile.ToArray();
 
+                if (romsave.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(romsave.FileName, afile);
+
+                }
             }
         }
 
@@ -317,7 +220,8 @@ namespace OverKart64
             //MessageBox.Show(testflag.ToString());
 
 
-            flip4 = BitConverter.GetBytes(Convert.ToInt32((((ImgType << 0x19) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3));
+
+            flip4 = BitConverter.GetBytes(Convert.ToUInt32((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3));
             Array.Reverse(flip4);
             //MessageBox.Show("F5 String--" + BitConverter.ToString(flip4).Replace("-", ""));
             f5out.Text = f5out.Text + BitConverter.ToString(flip4).Replace("-", "");
@@ -447,6 +351,87 @@ namespace OverKart64
 
 
 
+        }
+
+        private void Button5_Click(object sender, EventArgs e)
+        {
+
+            byte[] value = BitConverter.GetBytes(Convert.ToInt64(pitbox.Text, 16));
+
+            byte tempByte = value[0];
+
+            int Line = BitConverter.ToUInt16(value, 1);
+            Line = Line >> 1 & 0x01FF;
+            int TMem = BitConverter.ToUInt16(value, 2);
+            TMem = TMem & 0x01FF;
+
+            int Tile = value[4] & 0x0F;
+
+
+            int Palette = (value[5] >> 4) & 0x0F;
+
+
+            ushort temp = BitConverter.ToUInt16(value, 5);
+            tempByte = Convert.ToByte((temp >> 10) & 0x03);
+            //int CMTMirror = (TextureMirrorSetting)(tempByte & 0x01);
+            //int CMTWrap = (TextureWrapSetting)(tempByte & 0x02);
+            byte MaskT = Convert.ToByte((temp >> 6) & 0x0F);
+            byte ShiftT = Convert.ToByte((temp >> 2) & 0x0F);
+            tempByte = Convert.ToByte(temp & 0x03);
+            //CMSMirror = (TextureMirrorSetting)(tempByte & 0x01);
+            //CMSWrap = (TextureWrapSetting)(tempByte & 0x02);
+            tempByte = value[7];
+            byte MaskS = Convert.ToByte((tempByte >> 4) & 0x0F);
+            byte ShiftS = Convert.ToByte(tempByte & 0x0F);
+
+            byte ShiftU = Convert.ToByte(Tile >> 10 & 0xF);
+            byte ShiftV = Convert.ToByte(Tile >> 10 & 0xF);
+            MessageBox.Show(ShiftS.ToString()+"-"+ShiftT.ToString() + "-" + ShiftU.ToString() + "-" + ShiftV.ToString());
+        }
+
+
+        protected string filename;
+        protected AssimpSharp.Scene fbx;
+        
+
+
+
+
+        private void Button6_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog romopen = new OpenFileDialog();
+            if (romopen.ShowDialog() == DialogResult.OK)
+            {
+                var assimpSharpImporter = new AssimpSharp.FBX.FBXImporter();
+                fbx = new AssimpSharp.Scene();
+                fbx = assimpSharpImporter.ReadFile(romopen.FileName);
+                var searchNode = fbx.RootNode.FindNode("Course Paths");
+                var pathNode = searchNode.Children[0];
+
+                var pathObject = fbx.Meshes[pathNode.Meshes[0]];
+
+                MessageBox.Show(pathObject.Vertices[0].X.ToString());
+
+
+            }
+            
+
+        }
+
+        private void Button7_Click(object sender, EventArgs e)
+        {
+            OK64 mk = new OK64();
+            int x1 = Convert.ToInt32(n1.Text);
+            int x2 = Convert.ToInt32(n2.Text);
+            MessageBox.Show(mk.GetMax(x1, x2).ToString());
+        }
+
+        private void Button8_Click(object sender, EventArgs e)
+        {
+            OK64 mk = new OK64();
+            int x1 = Convert.ToInt32(n1.Text);
+            int x2 = Convert.ToInt32(n2.Text);
+            MessageBox.Show(mk.GetMin(x1, x2).ToString());
         }
     }
 }

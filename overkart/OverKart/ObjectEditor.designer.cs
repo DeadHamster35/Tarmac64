@@ -1,6 +1,6 @@
 ﻿namespace OverKart64
 {
-    partial class ItemEditor
+    partial class ObjectEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ItemEditor));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ObjectEditor));
             this.button1 = new System.Windows.Forms.Button();
             this.coursebox = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -263,6 +263,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.impbtn);
             this.Controls.Add(this.button1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ItemEditor";
             this.Text = "Item Editor";

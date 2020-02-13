@@ -79,5 +79,15 @@ namespace OverKart64.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] popResources {
+            get {
+                object obj = ResourceManager.GetObject("popResources", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

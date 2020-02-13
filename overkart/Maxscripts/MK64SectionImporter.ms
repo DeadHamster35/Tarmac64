@@ -3,14 +3,15 @@ vertfile = #()
 object_array = #()
 garbage = "string"
 vertname = "string"
+position = #()
 
 
-	rollout MK64Section "S-Importer" width:80 height:68
+	rollout MK64Section "S-Importer" width:175 height:68
 		(	
-			GroupBox grp3 "S-Importer" pos:[3,0] width:75 height:62	
+			GroupBox grp3 "S-Importer" pos:[5,0] width:165 height:62
 			label Lbl "<3 Hamp" enabled:false pos:[10,53]
 			button impBtn "Import" pos:[10,20] width:60 height:25
-			
+			checkbox split "Split Sections" pos:[75,25] checked:true
 			
 			
 			on duckDodget open do
@@ -78,11 +79,11 @@ vertname = "string"
 									if i > 1 then
 									(
 										
-										
-										vertbox.pos = [n*5000,m*5000,0]																				
+										if split.Checked == true do
+										(
+											vertbox.pos = [n*10000,m*10000,0]	
+										)
 										vertbox.name = vertname
-										
-										
 										
 										vertbox = undefined
 										
@@ -99,13 +100,39 @@ vertname = "string"
 								)
 								else
 								(
-									execute vertlist
+									facelist = FilterString vertlist ";"
+									print "facelist"
+									print facelist[1]
+									print facelist[2]
+									print facelist[3]
+									print "---"
+									
+									for face in facelist do
+									(
+										vert = FilterString face ","
+										print "verts"
+										print vert[1]
+										print vert[2]
+										print vert[3]
+										print "---"
+										join position vert 
+										
+									)
+									
+									print "i value"
+									print i as string
+									print "---"
+									
+									
+									vertbox = mesh vertices:#([position[1] as float,position[2] as float,position[3] as float],[position[4] as float,position[5] as float,position[6] as float],[position[7] as float,position[8] as float,position[9] as float]) faces:#([1,2,3]) MaterialIDS:#(1) 		
 									object_array[i] = vertbox	
-									if (i > 1) then
+									position.Count = 0
+									
+									
+									if (i > 1) do
 									(
 										meshop.attach object_array[i] object_array[i-1]									
 									)
-									
 										
 									i=i+1
 								)

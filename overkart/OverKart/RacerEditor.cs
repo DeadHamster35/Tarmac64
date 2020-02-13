@@ -15,7 +15,7 @@ namespace OverKart64
 
 
 
-    public partial class PorkChop : Form
+    public partial class RacerEditor : Form
     {
         string settings_path = Path.Combine(Environment.GetFolderPath(
             Environment.SpecialFolder.ApplicationData), "PorkChop.txt");
@@ -55,12 +55,9 @@ namespace OverKart64
 
 
 
-        public PorkChop()
+        public RacerEditor()
         {
             InitializeComponent();
-
-
-
         }
 
 
@@ -71,8 +68,7 @@ namespace OverKart64
 
         private void OverKart_Load(object sender, EventArgs e)
         {
-            debuggingToolStripMenuItem.Visible = false;
-            debuggingToolStripMenuItem.Enabled = false;
+            
 
             string[] items = { "Mario", "Luigi", "Yoshi", "Toad", "DK", "Wario", "Peach", "Bowser" };
 
@@ -83,17 +79,10 @@ namespace OverKart64
         }
 
 
-        private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            OKAbout f2 = new OKAbout();
-            f2.ShowDialog();
-        }
 
         private void Load_Click(object sender, EventArgs e)
         {
-            debuggingToolStripMenuItem.Visible = false;
-            debuggingToolStripMenuItem.Enabled = false;
+            
 
 
 
@@ -1382,54 +1371,8 @@ namespace OverKart64
 
         private void Equalbox_CheckedChanged_1(object sender, EventArgs e)
         {
-            if (loaded == true)
-            {
-                if (equalbox.Checked == true)
-                {
-                    racer.SelectedIndex = 0;
-                    racer.Enabled = false;
-                }
-                else
-                {
-                    racer.Enabled = true;
-                }
-            }
-            else
-            {
-                equalbox.CheckState = CheckState.Unchecked;
-                debugmode = debugmode + 1;
-                if (debugmode >= 10)
-                {
-                    debuggingToolStripMenuItem.Visible=true;                   
-                }
-                if (debugmode >= 14)
-                {
-                    debuggingToolStripMenuItem.Enabled = true;
-                }
-
-            }
+            
         }
-
-        
-
-        private void VertConverterToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CourseExporter f2 = new CourseExporter();
-            f2.ShowDialog();
-        }
-
-        private void SkyColorEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Sky f2 = new Sky();
-            f2.ShowDialog();
-        }
-
-        private void CupEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CourseSelect f2 = new CourseSelect();
-            f2.ShowDialog();
-        }
-
         private void Tcoboxa_KeyUp(object sender, KeyEventArgs e)
         {
             Single.TryParse(tcoboxa.Text, out tcoa[racer.SelectedIndex]);
@@ -1445,34 +1388,7 @@ namespace OverKart64
             Single.TryParse(bbbox.Text, out bbox[racer.SelectedIndex]);
         }
 
-        private void NotForRetailToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            DebugTools f2 = new DebugTools();
-            f2.ShowDialog();
-        }
 
-        private void VertexEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            VertEditor f2 = new VertEditor();
-            f2.ShowDialog();
-        }
 
-        private void PathEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PathEditor f2 = new PathEditor();
-            f2.ShowDialog();
-        }
-
-        private void ItemEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ItemEditor f2 = new ItemEditor();
-            f2.ShowDialog();
-        }
-
-        private void CourseImporterToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CourseImporter f2 = new CourseImporter();
-            f2.ShowDialog();
-        }
     }
 }

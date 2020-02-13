@@ -45,13 +45,20 @@
             this.imgbox2 = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button8 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.n2 = new System.Windows.Forms.TextBox();
+            this.n1 = new System.Windows.Forms.TextBox();
+            this.button6 = new System.Windows.Forms.Button();
+            this.pitbox = new System.Windows.Forms.TextBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.offsetbox = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.parabox = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.f5out = new System.Windows.Forms.TextBox();
-            this.offsetbox = new System.Windows.Forms.TextBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -205,6 +212,13 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.button8);
+            this.groupBox2.Controls.Add(this.button7);
+            this.groupBox2.Controls.Add(this.n2);
+            this.groupBox2.Controls.Add(this.n1);
+            this.groupBox2.Controls.Add(this.button6);
+            this.groupBox2.Controls.Add(this.pitbox);
+            this.groupBox2.Controls.Add(this.button5);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.offsetbox);
             this.groupBox2.Controls.Add(this.button3);
@@ -221,10 +235,87 @@
             this.groupBox2.Controls.Add(this.v0box);
             this.groupBox2.Location = new System.Drawing.Point(209, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(308, 208);
+            this.groupBox2.Size = new System.Drawing.Size(493, 208);
             this.groupBox2.TabIndex = 37;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "OK64 Emu";
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(377, 113);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(40, 23);
+            this.button8.TabIndex = 51;
+            this.button8.Text = "Min";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.Button8_Click);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(331, 113);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(40, 23);
+            this.button7.TabIndex = 37;
+            this.button7.Text = "Max";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.Button7_Click);
+            // 
+            // n2
+            // 
+            this.n2.Location = new System.Drawing.Point(377, 88);
+            this.n2.Name = "n2";
+            this.n2.Size = new System.Drawing.Size(40, 20);
+            this.n2.TabIndex = 50;
+            // 
+            // n1
+            // 
+            this.n1.Location = new System.Drawing.Point(331, 88);
+            this.n1.Name = "n1";
+            this.n1.Size = new System.Drawing.Size(40, 20);
+            this.n1.TabIndex = 49;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(412, 171);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 47;
+            this.button6.Text = "Pina Collada";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.Button6_Click);
+            // 
+            // pitbox
+            // 
+            this.pitbox.Location = new System.Drawing.Point(331, 31);
+            this.pitbox.Name = "pitbox";
+            this.pitbox.Size = new System.Drawing.Size(156, 20);
+            this.pitbox.TabIndex = 45;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(412, 57);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 46;
+            this.button5.Text = "ST Scales";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.Button5_Click);
+            // 
+            // label2
+            // 
+            this.label2.Location = new System.Drawing.Point(143, 113);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(78, 15);
+            this.label2.TabIndex = 37;
+            this.label2.Text = "MIO0 Offset";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // offsetbox
+            // 
+            this.offsetbox.Location = new System.Drawing.Point(146, 137);
+            this.offsetbox.Name = "offsetbox";
+            this.offsetbox.Size = new System.Drawing.Size(156, 20);
+            this.offsetbox.TabIndex = 44;
             // 
             // button3
             // 
@@ -235,6 +326,16 @@
             this.button3.Text = "0xFD";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.Button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(227, 108);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.TabIndex = 43;
+            this.button4.Text = "Decompress";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.export_Click);
             // 
             // parabox
             // 
@@ -262,39 +363,14 @@
             this.f5out.TabIndex = 14;
             this.f5out.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             // 
-            // offsetbox
-            // 
-            this.offsetbox.Location = new System.Drawing.Point(146, 137);
-            this.offsetbox.Name = "offsetbox";
-            this.offsetbox.Size = new System.Drawing.Size(156, 20);
-            this.offsetbox.TabIndex = 44;
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(227, 108);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 23);
-            this.button4.TabIndex = 43;
-            this.button4.Text = "Decompress";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.export_Click);
-            // 
-            // label2
-            // 
-            this.label2.Location = new System.Drawing.Point(143, 113);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(78, 15);
-            this.label2.TabIndex = 37;
-            this.label2.Text = "MIO0 Offset";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
             // DebugTools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(529, 229);
+            this.ClientSize = new System.Drawing.Size(713, 229);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "DebugTools";
             this.Text = "Debug Tools";
             this.Load += new System.EventHandler(this.DebugTools_Load);
@@ -332,5 +408,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox offsetbox;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.TextBox pitbox;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.TextBox n2;
+        private System.Windows.Forms.TextBox n1;
     }
 }

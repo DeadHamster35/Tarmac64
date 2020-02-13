@@ -70,8 +70,8 @@ rollout MK64Vimport "V-Importer" width:80 height:85
 						v1z = readLine in_file as float
 						v1y = readLine in_file as float
 						
-						mybox = box length:0.25 width:0.25 height:0.25 
-						mybox.pos=[v1x/-100,v1y/100,v1z/100]
+						mybox = box length:60 width:60 height:60
+						mybox.pos=[v1x*-1,v1y,v1z]
 						mybox.name = i as string
 						i=i+1
 					)
@@ -116,7 +116,7 @@ rollout MK64Vimport "V-Importer" width:80 height:85
 			
 					searchstring = i as string
 					sourceobj = getNodeByName searchstring exact:true
-					printstring = (sourceobj.pos.x*-100) as string +","+(sourceobj.pos.y*100) as string +","+(sourceobj.pos.z*100) as string
+					printstring = (sourceobj.pos.x*-1) as string +","+(sourceobj.pos.y) as string +","+(sourceobj.pos.z) as string
 					format printstring to:txt
 					format "\n" to:txt
 					i= i+1

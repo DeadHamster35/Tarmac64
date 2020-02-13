@@ -14,7 +14,7 @@ namespace PorkChop
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new OverKart64.PorkChop());
+            Application.Run(new OverKart64.OKAbout());
         }
     }
 }

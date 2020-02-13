@@ -24,7 +24,7 @@ namespace OverKart64
 
         OpenFileDialog romopen = new OpenFileDialog();
         SaveFileDialog romsave = new SaveFileDialog();
-
+         
         private void Button1_Click(object sender, EventArgs e)
         {
             if (romopen.ShowDialog() == DialogResult.OK)

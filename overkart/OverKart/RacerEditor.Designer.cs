@@ -1,6 +1,6 @@
 ﻿namespace OverKart64
 {
-    partial class PorkChop
+    partial class RacerEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PorkChop));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RacerEditor));
             this.load = new System.Windows.Forms.Button();
             this.fiftycc = new System.Windows.Forms.TextBox();
             this.hundocc = new System.Windows.Forms.TextBox();
@@ -75,29 +75,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this.racer = new System.Windows.Forms.ComboBox();
             this.save = new System.Windows.Forms.Button();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.vertConverterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.vertexEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.itemEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pathEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.skyColorEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cupEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.debuggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.notForRetailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label12 = new System.Windows.Forms.Label();
             this.export = new System.Windows.Forms.Button();
             this.equalbox = new System.Windows.Forms.CheckBox();
-            this.courseImporterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // load
             // 
-            this.load.Location = new System.Drawing.Point(18, 40);
+            this.load.Location = new System.Drawing.Point(19, 25);
             this.load.Name = "load";
             this.load.Size = new System.Drawing.Size(60, 23);
             this.load.TabIndex = 0;
@@ -219,7 +207,7 @@
             this.groupBox1.Controls.Add(this.weight);
             this.groupBox1.Controls.Add(this.extracc);
             this.groupBox1.Controls.Add(this.hundofiftycc);
-            this.groupBox1.Location = new System.Drawing.Point(12, 69);
+            this.groupBox1.Location = new System.Drawing.Point(13, 54);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(537, 306);
             this.groupBox1.TabIndex = 9;
@@ -592,7 +580,7 @@
             // 
             this.racer.Enabled = false;
             this.racer.FormattingEnabled = true;
-            this.racer.Location = new System.Drawing.Point(230, 43);
+            this.racer.Location = new System.Drawing.Point(217, 27);
             this.racer.Name = "racer";
             this.racer.Size = new System.Drawing.Size(100, 21);
             this.racer.TabIndex = 27;
@@ -601,7 +589,7 @@
             // save
             // 
             this.save.Enabled = false;
-            this.save.Location = new System.Drawing.Point(84, 40);
+            this.save.Location = new System.Drawing.Point(85, 25);
             this.save.Name = "save";
             this.save.Size = new System.Drawing.Size(60, 23);
             this.save.TabIndex = 28;
@@ -609,107 +597,9 @@
             this.save.UseVisualStyleBackColor = true;
             this.save.Click += new System.EventHandler(this.Save_Click);
             // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.helpToolStripMenuItem,
-            this.toolsToolStripMenuItem,
-            this.debuggingToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(563, 24);
-            this.menuStrip1.TabIndex = 12;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "&Help";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
-            this.aboutToolStripMenuItem.Text = "&About...";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.AboutToolStripMenuItem_Click);
-            // 
-            // toolsToolStripMenuItem
-            // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.vertConverterToolStripMenuItem,
-            this.courseImporterToolStripMenuItem,
-            this.vertexEditorToolStripMenuItem,
-            this.itemEditorToolStripMenuItem,
-            this.pathEditorToolStripMenuItem,
-            this.skyColorEditorToolStripMenuItem,
-            this.cupEditorToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // vertConverterToolStripMenuItem
-            // 
-            this.vertConverterToolStripMenuItem.Name = "vertConverterToolStripMenuItem";
-            this.vertConverterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.vertConverterToolStripMenuItem.Text = "Course Exporter";
-            this.vertConverterToolStripMenuItem.Click += new System.EventHandler(this.VertConverterToolStripMenuItem_Click);
-            // 
-            // vertexEditorToolStripMenuItem
-            // 
-            this.vertexEditorToolStripMenuItem.Name = "vertexEditorToolStripMenuItem";
-            this.vertexEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.vertexEditorToolStripMenuItem.Text = "Vertex Editor";
-            this.vertexEditorToolStripMenuItem.Click += new System.EventHandler(this.VertexEditorToolStripMenuItem_Click);
-            // 
-            // itemEditorToolStripMenuItem
-            // 
-            this.itemEditorToolStripMenuItem.Name = "itemEditorToolStripMenuItem";
-            this.itemEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.itemEditorToolStripMenuItem.Text = "Item Editor";
-            this.itemEditorToolStripMenuItem.Click += new System.EventHandler(this.ItemEditorToolStripMenuItem_Click);
-            // 
-            // pathEditorToolStripMenuItem
-            // 
-            this.pathEditorToolStripMenuItem.Name = "pathEditorToolStripMenuItem";
-            this.pathEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.pathEditorToolStripMenuItem.Text = "Path Editor";
-            this.pathEditorToolStripMenuItem.Click += new System.EventHandler(this.PathEditorToolStripMenuItem_Click);
-            // 
-            // skyColorEditorToolStripMenuItem
-            // 
-            this.skyColorEditorToolStripMenuItem.Name = "skyColorEditorToolStripMenuItem";
-            this.skyColorEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.skyColorEditorToolStripMenuItem.Text = "Sky Color Editor";
-            this.skyColorEditorToolStripMenuItem.Click += new System.EventHandler(this.SkyColorEditorToolStripMenuItem_Click);
-            // 
-            // cupEditorToolStripMenuItem
-            // 
-            this.cupEditorToolStripMenuItem.Name = "cupEditorToolStripMenuItem";
-            this.cupEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.cupEditorToolStripMenuItem.Text = "Cup Editor";
-            this.cupEditorToolStripMenuItem.Click += new System.EventHandler(this.CupEditorToolStripMenuItem_Click);
-            // 
-            // debuggingToolStripMenuItem
-            // 
-            this.debuggingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.notForRetailToolStripMenuItem});
-            this.debuggingToolStripMenuItem.Name = "debuggingToolStripMenuItem";
-            this.debuggingToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
-            this.debuggingToolStripMenuItem.Text = "Debugging";
-            // 
-            // notForRetailToolStripMenuItem
-            // 
-            this.notForRetailToolStripMenuItem.Name = "notForRetailToolStripMenuItem";
-            this.notForRetailToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.notForRetailToolStripMenuItem.Text = "Not for Retail";
-            this.notForRetailToolStripMenuItem.Click += new System.EventHandler(this.NotForRetailToolStripMenuItem_Click);
-            // 
             // label12
             // 
-            this.label12.Location = new System.Drawing.Point(230, 24);
+            this.label12.Location = new System.Drawing.Point(217, 8);
             this.label12.MinimumSize = new System.Drawing.Size(100, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(100, 16);
@@ -720,7 +610,7 @@
             // export
             // 
             this.export.Enabled = false;
-            this.export.Location = new System.Drawing.Point(150, 40);
+            this.export.Location = new System.Drawing.Point(151, 25);
             this.export.Name = "export";
             this.export.Size = new System.Drawing.Size(60, 23);
             this.export.TabIndex = 29;
@@ -730,47 +620,47 @@
             // 
             // equalbox
             // 
-            this.equalbox.Location = new System.Drawing.Point(336, 41);
+            this.equalbox.Location = new System.Drawing.Point(323, 25);
             this.equalbox.Name = "equalbox";
-            this.equalbox.Size = new System.Drawing.Size(100, 24);
+            this.equalbox.Size = new System.Drawing.Size(67, 24);
             this.equalbox.TabIndex = 26;
-            this.equalbox.Text = "Equalize Stats";
+            this.equalbox.Text = "Equalize";
             this.equalbox.UseVisualStyleBackColor = true;
             this.equalbox.CheckedChanged += new System.EventHandler(this.Equalbox_CheckedChanged_1);
             // 
-            // courseImporterToolStripMenuItem
+            // pictureBox1
             // 
-            this.courseImporterToolStripMenuItem.Name = "courseImporterToolStripMenuItem";
-            this.courseImporterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.courseImporterToolStripMenuItem.Text = "Course Importer";
-            this.courseImporterToolStripMenuItem.Click += new System.EventHandler(this.CourseImporterToolStripMenuItem_Click);
+            this.pictureBox1.Image = global::OverKart64.Properties.Resources.overkarttext;
+            this.pictureBox1.Location = new System.Drawing.Point(410, 17);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(140, 36);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 30;
+            this.pictureBox1.TabStop = false;
             // 
-            // PorkChop
+            // RacerEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(563, 391);
+            this.ClientSize = new System.Drawing.Size(563, 371);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.equalbox);
             this.Controls.Add(this.export);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.load);
             this.Controls.Add(this.save);
             this.Controls.Add(this.racer);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
-            this.Name = "PorkChop";
+            this.Name = "RacerEditor";
             this.Text = "OverKart64";
             this.Load += new System.EventHandler(this.OverKart_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -794,9 +684,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox racer;
         private System.Windows.Forms.Button save;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox frict;
         private System.Windows.Forms.Label label12;
@@ -828,15 +715,6 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox tcoboxa;
         private System.Windows.Forms.CheckBox equalbox;
-        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem vertConverterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem skyColorEditorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem cupEditorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem debuggingToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem notForRetailToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem vertexEditorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pathEditorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem itemEditorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem courseImporterToolStripMenuItem;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

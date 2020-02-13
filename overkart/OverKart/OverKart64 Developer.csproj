@@ -8,16 +8,17 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>OverKart64</RootNamespace>
     <AssemblyName>OverKart64</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\Developer\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +28,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\Developer\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,10 +41,31 @@
     <ApplicationIcon>kart64_tTF_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssimpSharp">
+      <HintPath>Resources\AssimpSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="AssimpSharp.FBX">
+      <HintPath>Resources\AssimpSharp.FBX.dll</HintPath>
+    </Reference>
     <Reference Include="MarioKart">
       <HintPath>..\MarioKart.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio, Version=1.7.1.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.7.1\lib\net35\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NVorbis.0.8.3.0\lib\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.1.1.1589.5941\lib\NET40\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="SharpDX">
+      <HintPath>Resources\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>Resources\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -59,11 +81,17 @@
   <ItemGroup>
     <Compile Include="BigEndianBinaryReader.cs" />
     <Compile Include="BigEndianBinaryWriter.cs" />
-    <Compile Include="CourseImporter.cs">
+    <Compile Include="SectionViewEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CourseImporter.Designer.cs">
-      <DependentUpon>CourseImporter.cs</DependentUpon>
+    <Compile Include="SectionViewEditor.Designer.cs">
+      <DependentUpon>SectionViewEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SegmentCompiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SegmentCompiler.Designer.cs">
+      <DependentUpon>SegmentCompiler.cs</DependentUpon>
     </Compile>
     <Compile Include="DebugTools.cs">
       <SubType>Form</SubType>
@@ -71,17 +99,29 @@
     <Compile Include="DebugTools.Designer.cs">
       <DependentUpon>DebugTools.cs</DependentUpon>
     </Compile>
-    <Compile Include="ItemEditor.cs">
+    <Compile Include="GeometryCompiler.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ItemEditor.designer.cs">
-      <DependentUpon>ItemEditor.cs</DependentUpon>
+    <Compile Include="GeometryCompiler.Designer.cs">
+      <DependentUpon>GeometryCompiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ObjectEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ObjectEditor.designer.cs">
+      <DependentUpon>ObjectEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="PathEditor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="PathEditor.designer.cs">
       <DependentUpon>PathEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BitmapConverter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BitmapConverter.Designer.cs">
+      <DependentUpon>BitmapConverter.cs</DependentUpon>
     </Compile>
     <Compile Include="VertEditor.cs">
       <SubType>Form</SubType>
@@ -103,11 +143,11 @@
     <Compile Include="Sky.Designer.cs">
       <DependentUpon>Sky.cs</DependentUpon>
     </Compile>
-    <Compile Include="CourseExporter.cs">
+    <Compile Include="SegmentExporter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CourseExporter.Designer.cs">
-      <DependentUpon>CourseExporter.cs</DependentUpon>
+    <Compile Include="SegmentExporter.Designer.cs">
+      <DependentUpon>SegmentExporter.cs</DependentUpon>
     </Compile>
     <Compile Include="OKAbout.cs">
       <SubType>Form</SubType>
@@ -116,15 +156,18 @@
       <DependentUpon>OKAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="Main.cs">
+    <Compile Include="RacerEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main.Designer.cs">
-      <DependentUpon>Main.cs</DependentUpon>
+    <Compile Include="RacerEditor.Designer.cs">
+      <DependentUpon>RacerEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="CourseImporter.resx">
-      <DependentUpon>CourseImporter.cs</DependentUpon>
+    <EmbeddedResource Include="SectionViewEditor.resx">
+      <DependentUpon>SectionViewEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SegmentCompiler.resx">
+      <DependentUpon>SegmentCompiler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CupEditor.resx">
       <DependentUpon>CupEditor.cs</DependentUpon>
@@ -132,11 +175,17 @@
     <EmbeddedResource Include="DebugTools.resx">
       <DependentUpon>DebugTools.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ItemEditor.resx">
-      <DependentUpon>ItemEditor.cs</DependentUpon>
+    <EmbeddedResource Include="GeometryCompiler.resx">
+      <DependentUpon>GeometryCompiler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ObjectEditor.resx">
+      <DependentUpon>ObjectEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PathEditor.resx">
       <DependentUpon>PathEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BitmapConverter.resx">
+      <DependentUpon>BitmapConverter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VertEditor.resx">
       <DependentUpon>VertEditor.cs</DependentUpon>
@@ -147,18 +196,20 @@
     <EmbeddedResource Include="OKAbout.resx">
       <DependentUpon>OKAbout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Main.resx">
-      <DependentUpon>Main.cs</DependentUpon>
+    <EmbeddedResource Include="RacerEditor.resx">
+      <DependentUpon>RacerEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="CourseExporter.resx">
-      <DependentUpon>CourseExporter.cs</DependentUpon>
+    <EmbeddedResource Include="SegmentExporter.resx">
+      <DependentUpon>SegmentExporter.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="OverKart64.ruleset" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -173,6 +224,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\popResources.bin" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="kart64_tTF_icon.ico" />

@@ -84,7 +84,7 @@ rollout MK64Vimport "P-Importer" width:80 height:85
 						if readstring == "NEW GROUP" then
 						(
 							grandparentpath = undefined
-							grandparentpath = box length:0.25 width:0.25 height:0.25 
+							grandparentpath = box length:25 width:25 height:25 
 							readstring = readLine in_file							
 							grandparentpath.name = readstring	
 							xval = readLine in_file as float
@@ -96,7 +96,7 @@ rollout MK64Vimport "P-Importer" width:80 height:85
 							if readstring == "NEW PATH" then
 							(
 								parentpath = undefined
-								parentpath = box length:0.25 width:0.25 height:0.25 
+								parentpath = box length:25 width:25 height:25 
 								readstring = readLine in_file							
 								parentpath.name = readstring	
 								
@@ -121,8 +121,8 @@ rollout MK64Vimport "P-Importer" width:80 height:85
 								
 								)
 								
-								mybox = box length:0.25 width:0.25 height:0.25 
-								mybox.pos=[v1x/-100,v1y/100,v1z/100]
+								mybox = box length:25 width:25 height:25 
+								mybox.pos=[v1x*-1,v1y,v1z]
 								mybox.name = "marker"+i as string+" - "+flag as string
 								mybox.parent = parentpath
 								mybox.wirecolor = color boxr boxg boxb
@@ -191,7 +191,7 @@ rollout MK64Vimport "P-Importer" width:80 height:85
 							
 							markerobj = paobj.children[i]
 							
-							printstring = (markerobj.pos.x*-100) as string +","+(markerobj.pos.y*100) as string +","+(markerobj.pos.z*100) as string
+							printstring = (markerobj.pos.x*-1) as string +","+(markerobj.pos.y) as string +","+(markerobj.pos.z) as string
 							format printstring to:txt
 							format "\n" to:txt
 							i= i+1

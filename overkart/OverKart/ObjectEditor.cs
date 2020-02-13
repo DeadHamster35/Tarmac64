@@ -15,9 +15,9 @@ using PeepsCompress;
 
 namespace OverKart64
 {
-    public partial class ItemEditor : Form
+    public partial class ObjectEditor : Form
     {
-        public ItemEditor()
+        public ObjectEditor()
         {
             InitializeComponent();
         }
@@ -27,129 +27,102 @@ namespace OverKart64
             
         }
 
-        
+
+
         public class Offset
         {
             public List<int> offset { get; set; }
         }
 
-        public class Pathgroup
-        {
-            public List<Pathlist> pathlist { get; set; }
-        }
-
-        public class Pathlist
-        {
-            
-            public List<Marker> pathmarker { get; set; }
-
-           
-
-        }
-
-        public class Marker
-        {
-
-            public int xval { get; set; }
-            public int yval { get; set; }
-            public int zval { get; set; }
-            public int flag { get; set; }
-
-        }
-
-        
 
 
 
-        List<Offset> MKOffsets = new List<Offset>();
 
-        List<Pathgroup> pathgroup = new List<Pathgroup>();
+        List<OK64.Pathgroup> pathgroup = new List<OK64.Pathgroup>();
 
-        
 
-        int[] pathoffset = { 0x5568, 0x4480, 0x4F90, 0x4578, 0xD780, 0x34A0, 0xADE0, 0xB5B8, 0xA540, 0xEC80, 0x3B80, 0x6AC8, 0x4BF8, 0x1D90, 0x56A0, 0x71F0 };
-
+        List<Offset> objOffsets = new List<Offset>();
         private void loadoffsets()
         {
             
-            MKOffsets.Add(new Offset { });
+            objOffsets.Add(new Offset { });
 
-            MKOffsets[0].offset = new List<int>();
-            MKOffsets[0].offset.Add(0x9498);            
-            MKOffsets[0].offset.Add(0x9518);            
-            MKOffsets[0].offset.Add(0x9570);            
-            MKOffsets.Add(new Offset { });
-            MKOffsets[1].offset = new List<int>();
-            MKOffsets[1].offset.Add(0x7250);
-            MKOffsets[1].offset.Add(0x7230);
-            MKOffsets[1].offset.Add(0x4480);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[2].offset = new List<int>();
-            MKOffsets[2].offset.Add(0x9290);
-            MKOffsets[2].offset.Add(0x9370);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[3].offset = new List<int>();
-            MKOffsets[3].offset.Add(0xB3D0);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[4].offset = new List<int>();
-            MKOffsets[4].offset.Add(0X180A0);
-            MKOffsets[4].offset.Add(0x18110);           
-            MKOffsets.Add(new Offset { });
-            MKOffsets[5].offset = new List<int>();
-            MKOffsets[5].offset.Add(0x7718);
-            MKOffsets[5].offset.Add(0x7810);
-            MKOffsets[5].offset.Add(0x34A0);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[6].offset = new List<int>();
-            MKOffsets[6].offset.Add(0x18E78);
-            MKOffsets[6].offset.Add(0x187F0);
-            MKOffsets[6].offset.Add(0xADE0);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[7].offset = new List<int>();
-            MKOffsets[7].offset.Add(0xDA78);
-            MKOffsets[7].offset.Add(0xDB80);
-            MKOffsets[7].offset.Add(0xD9F0);
-            MKOffsets[7].offset.Add(0xB5B8);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[8].offset = new List<int>();
-            MKOffsets[8].offset.Add(0xFE80);
-            MKOffsets[8].offset.Add(0xFDE8);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[9].offset = new List<int>();
-            MKOffsets[9].offset.Add(0x14330);
-            MKOffsets[9].offset.Add(0x143E0);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[10].offset = new List<int>();
-            MKOffsets[10].offset.Add(0x22AE0);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[11].offset = new List<int>();
-            MKOffsets[11].offset.Add(0x22F08);
-            MKOffsets[11].offset.Add(0x22E8);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[12].offset = new List<int>();
-            MKOffsets[12].offset.Add(0x9B80);
-            MKOffsets[12].offset.Add(0x4BF8);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[13].offset = new List<int>();
-            MKOffsets[13].offset.Add(0x16338);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[14].offset = new List<int>();
-            MKOffsets[14].offset.Add(0xCB40);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[15].offset = new List<int>();
-            MKOffsets[15].offset.Add(0x38);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[15].offset = new List<int>();
-            MKOffsets[15].offset.Add(0X80);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[15].offset = new List<int>();
-            MKOffsets[15].offset.Add(0x28);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[15].offset = new List<int>();
-            MKOffsets[15].offset.Add(0x13EC0);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[15].offset = new List<int>();
-            MKOffsets[15].offset.Add(0x58);
+            objOffsets[0].offset = new List<int>();
+            objOffsets[0].offset.Add(0x9498);            
+            objOffsets[0].offset.Add(0x9518);            
+            objOffsets[0].offset.Add(0x9570);            
+            objOffsets.Add(new Offset { });
+            objOffsets[1].offset = new List<int>();
+            objOffsets[1].offset.Add(0x7250);
+            objOffsets[1].offset.Add(0x7230);
+            objOffsets[1].offset.Add(0x4480);
+            objOffsets.Add(new Offset { });
+            objOffsets[2].offset = new List<int>();
+            objOffsets[2].offset.Add(0x9290);
+            objOffsets[2].offset.Add(0x9370);
+            objOffsets.Add(new Offset { });
+            objOffsets[3].offset = new List<int>();
+            objOffsets[3].offset.Add(0xB3D0);
+            objOffsets.Add(new Offset { });
+            objOffsets[4].offset = new List<int>();
+            objOffsets[4].offset.Add(0X180A0);
+            objOffsets[4].offset.Add(0x18110);           
+            objOffsets.Add(new Offset { });
+            objOffsets[5].offset = new List<int>();
+            objOffsets[5].offset.Add(0x7718);
+            objOffsets[5].offset.Add(0x7810);
+            objOffsets[5].offset.Add(0x34A0);
+            objOffsets.Add(new Offset { });
+            objOffsets[6].offset = new List<int>();
+            objOffsets[6].offset.Add(0x18E78);
+            objOffsets[6].offset.Add(0x187F0);
+            objOffsets[6].offset.Add(0xADE0);
+            objOffsets.Add(new Offset { });
+            objOffsets[7].offset = new List<int>();
+            objOffsets[7].offset.Add(0xDA78);
+            objOffsets[7].offset.Add(0xDB80);
+            objOffsets[7].offset.Add(0xD9F0);
+            objOffsets[7].offset.Add(0xB5B8);
+            objOffsets.Add(new Offset { });
+            objOffsets[8].offset = new List<int>();
+            objOffsets[8].offset.Add(0xFE80);
+            objOffsets[8].offset.Add(0xFDE8);
+            objOffsets.Add(new Offset { });
+            objOffsets[9].offset = new List<int>();
+            objOffsets[9].offset.Add(0x14330);
+            objOffsets[9].offset.Add(0x143E0);
+            objOffsets.Add(new Offset { });
+            objOffsets[10].offset = new List<int>();
+            objOffsets[10].offset.Add(0x22AE0);
+            objOffsets.Add(new Offset { });
+            objOffsets[11].offset = new List<int>();
+            objOffsets[11].offset.Add(0x22F08);
+            objOffsets[11].offset.Add(0x22E8);
+            objOffsets.Add(new Offset { });
+            objOffsets[12].offset = new List<int>();
+            objOffsets[12].offset.Add(0x9B80);
+            objOffsets[12].offset.Add(0x4BF8);
+            objOffsets.Add(new Offset { });
+            objOffsets[13].offset = new List<int>();
+            objOffsets[13].offset.Add(0x16338);
+            objOffsets.Add(new Offset { });
+            objOffsets[14].offset = new List<int>();
+            objOffsets[14].offset.Add(0xCB40);
+            objOffsets.Add(new Offset { });
+            objOffsets[15].offset = new List<int>();
+            objOffsets[15].offset.Add(0x38);
+            objOffsets.Add(new Offset { });
+            objOffsets[15].offset = new List<int>();
+            objOffsets[15].offset.Add(0X80);
+            objOffsets.Add(new Offset { });
+            objOffsets[15].offset = new List<int>();
+            objOffsets[15].offset.Add(0x28);
+            objOffsets.Add(new Offset { });
+            objOffsets[15].offset = new List<int>();
+            objOffsets[15].offset.Add(0x13EC0);
+            objOffsets.Add(new Offset { });
+            objOffsets[15].offset = new List<int>();
+            objOffsets[15].offset.Add(0x58);
         }
 
 
@@ -227,67 +200,15 @@ namespace OverKart64
                 savePath = vertsave.FileName;
 
                 cID = coursebox.SelectedIndex;
+                byte[] rombytes = File.ReadAllBytes(filePath);
+                byte[] seg6 = mk.dumpseg6(cID, rombytes);
+                List<byte> list_seg6 = mk.decompress_MIO0(0, seg6);
+                seg6 = list_seg6.ToArray();
+                seg6 = mk.AddMarkers(seg6, cID, pathgroup, false);
+                byte[] cseg6 = mk.compress_MIO0(seg6, 0);
 
-                byte[] seg6 = dump_segment_6();
-                List<byte> tempbytes = mk.decompress_MIO0(0, seg6);
-                seg6 = tempbytes.ToArray();
-
-                bs = new MemoryStream(seg6);
-
-                bw = new BinaryWriter(bs);
-                br = new BinaryReader(bs);
-                bool endpath = true;
-                bool endlist = true;
-
-                
-                int x = 0;
-                foreach (Pathgroup group in pathgroup)
-                {
-
-
-                    br.BaseStream.Position = MKOffsets[cID].offset[x];
-                    for (int n = 0; n < pathgroup[x].pathlist.Count; n = n + 1)
-                    {
-                        endpath = true;
-
-
-
-                        for (int i = 0; i < pathgroup[x].pathlist[n].pathmarker.Count; i = i + 1)
-                        {
-
-
-
-                            int[] tempint = new int[4];
-
-
-
-                            flip2 = BitConverter.GetBytes(Convert.ToInt16(pathgroup[x].pathlist[n].pathmarker[i].xval));
-                            Array.Reverse(flip2);
-                            bw.Write(flip2);  //x
-
-                            flip2 = BitConverter.GetBytes(Convert.ToInt16(pathgroup[x].pathlist[n].pathmarker[i].zval));
-                            Array.Reverse(flip2);
-                            bw.Write(flip2);  //z
-
-                            flip2 = BitConverter.GetBytes(Convert.ToInt16(pathgroup[x].pathlist[n].pathmarker[i].yval));
-                            Array.Reverse(flip2);
-                            bw.Write(flip2);  //y 
-
-                            flip2 = BitConverter.GetBytes(Convert.ToUInt16(pathgroup[x].pathlist[n].pathmarker[i].flag));
-                            Array.Reverse(flip2);
-                            bw.Write(flip2);  //flag
-
-
-
-
-
-
-                        }
-                    }
-                    x = x + 1;
-                }
-                seg6 = mk.compress_MIO0(seg6, 0);
-                File.WriteAllBytes(savePath, seg6);
+                File.WriteAllBytes(savePath + ".raw.bin", seg6);
+                File.WriteAllBytes(savePath, cseg6);
 
                 MessageBox.Show("Finished");
             }
@@ -312,25 +233,25 @@ namespace OverKart64
             int x = 0;
             
             
-            foreach (int off in MKOffsets[cID].offset)
+            foreach (int off in objOffsets[cID].offset)
             {
                 bool endpath = true;
                 bool endlist = true;
-                br.BaseStream.Position = MKOffsets[cID].offset[x];
+                br.BaseStream.Position = objOffsets[cID].offset[x];
 
-                pathgroup.Add(new Pathgroup { });
-                pathgroup[x].pathlist = new List<Pathlist>();
+                pathgroup.Add(new OK64.Pathgroup { });
+                pathgroup[x].pathlist = new List<OK64.Pathlist>();
                 int n = 0;
                 for (; endlist;)
                 {
                     endpath = true;
                     
-                    pathgroup[x].pathlist.Add(new Pathlist { });
+                    pathgroup[x].pathlist.Add(new OK64.Pathlist { });
 
 
 
 
-                    pathgroup[x].pathlist[n].pathmarker = new List<Marker>();
+                    pathgroup[x].pathlist[n].pathmarker = new List<OK64.Marker>();
 
                     for (int i = 0; endpath; i = i + 1)
                     {
@@ -371,7 +292,7 @@ namespace OverKart64
                         else
                         {
 
-                            pathgroup[x].pathlist[n].pathmarker.Add(new Marker
+                            pathgroup[x].pathlist[n].pathmarker.Add(new OK64.Marker
                             {
                                 xval = tempint[0],
                                 zval = tempint[1],
@@ -392,10 +313,10 @@ namespace OverKart64
             }
 
             x = 0;
-            foreach (Pathgroup group in pathgroup)
+            foreach (OK64.Pathgroup group in pathgroup)
             {
                 int f = 0;
-                pathgroupbox.Items.Add("0x"+MKOffsets[cID].offset[x].ToString("X"));
+                pathgroupbox.Items.Add("0x"+objOffsets[cID].offset[x].ToString("X"));
                 
                 x = x + 1;
             }
@@ -685,47 +606,10 @@ namespace OverKart64
             if (vertopen.ShowDialog() == DialogResult.OK)
             {
 
-                string importpath = vertopen.FileName;
+                string file_3PL = vertopen.FileName;
 
-                string[] reader = File.ReadAllLines(importpath);
-                string[] positions = new string[3];
-
-
-                int n = -1;
-                int x = -1;
-                int i = 0;
-                for (int m = 0; m < reader.Length; m++)
-                {
-                    if (reader[m] == "NEW GROUP")
-                    {
-                        x = x + 1;
-                        n = -1;
-                        i = 0;
-                    }
-                    else
-                    {
-
-
-                        if (reader[m] == "NEW PATH")
-                        {
-                            n = n + 1;
-                            i = 0;
-                        }
-                        else
-                        {
-
-                            positions = reader[m].Split(',').ToArray();
-                            pathgroup[x].pathlist[n].pathmarker[i].xval = Convert.ToInt32(Convert.ToDouble(positions[0]));
-                            pathgroup[x].pathlist[n].pathmarker[i].yval = Convert.ToInt32(Convert.ToDouble(positions[1]));
-                            pathgroup[x].pathlist[n].pathmarker[i].zval = Convert.ToInt32(Convert.ToDouble(positions[2]));
-                            i = i + 1;
-                        }
-                    }
-                    
-                }
-
-
-
+                //load the pathgroups from the external .SVL file provided
+                pathgroup = mk.Load_3PL(file_3PL);
 
             }
         }
@@ -735,25 +619,25 @@ namespace OverKart64
             cID = coursebox.SelectedIndex;
             if (vertsave.ShowDialog() == DialogResult.OK)
             {
-                
-                
+
+
                 savePath = vertsave.FileName;
                 System.IO.File.AppendAllText(savePath, pathgroup.Count() + Environment.NewLine);
                 int x = 0;
-                foreach (Pathgroup group in pathgroup)
+                foreach (OK64.Pathgroup group in pathgroup)
                 {
                     int n = 0;
-                    System.IO.File.AppendAllText(savePath, "NEW GROUP" + Environment.NewLine);
-                    System.IO.File.AppendAllText(savePath, "GROUP " + x.ToString()+ Environment.NewLine);
+
+                    System.IO.File.AppendAllText(savePath, "GROUP " + x.ToString() + Environment.NewLine);
                     System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist.Count() + Environment.NewLine);
-                    foreach (Pathlist path in pathgroup[x].pathlist)
+                    foreach (OK64.Pathlist path in pathgroup[x].pathlist)
                     {
-                        
+
                         int i = 0;
-                        System.IO.File.AppendAllText(savePath, "NEW PATH" + Environment.NewLine);
+
                         System.IO.File.AppendAllText(savePath, "PATH " + n.ToString() + Environment.NewLine);
-                        
-                        foreach (Marker mark in pathgroup[x].pathlist[n].pathmarker)
+                        System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker.Count() + Environment.NewLine);
+                        foreach (OK64.Marker mark in pathgroup[x].pathlist[n].pathmarker)
                         {
 
                             System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker[i].xval.ToString() + Environment.NewLine);
@@ -768,7 +652,7 @@ namespace OverKart64
                 }
                 MessageBox.Show("Finished");
                 CloseStreams();
-                
+
             }
         }
 
@@ -784,7 +668,7 @@ namespace OverKart64
             int f = 0;
             
             
-            foreach (Marker mark in pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker)
+            foreach (OK64.Marker mark in pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker)
             {
                 markerselect.Items.Add("Marker" + f.ToString());
                 f = f + 1;
@@ -813,7 +697,7 @@ namespace OverKart64
             int f = 0;
             
             
-            foreach (Pathlist path in pathgroup[pathgroupbox.SelectedIndex].pathlist)
+            foreach (OK64.Pathlist path in pathgroup[pathgroupbox.SelectedIndex].pathlist)
             {
                 pathselect.Items.Add("Item" + f.ToString());
                 f = f + 1;

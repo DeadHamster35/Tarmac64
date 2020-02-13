@@ -1,6 +1,6 @@
 ﻿namespace OverKart64
 {
-    partial class CourseImporter
+    partial class SegmentCompiler
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CourseImporter));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SegmentCompiler));
             this.LoadButton = new System.Windows.Forms.Button();
             this.coursebox = new System.Windows.Forms.ComboBox();
             this.seg6a = new System.Windows.Forms.TextBox();
@@ -528,7 +528,7 @@
             this.seg7rom.Size = new System.Drawing.Size(100, 20);
             this.seg7rom.TabIndex = 29;
             // 
-            // CourseImporter
+            // SegmentCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -566,8 +566,9 @@
             this.Controls.Add(this.LoadButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "CourseImporter";
-            this.Text = "Course Importer";
+            this.Name = "SegmentCompiler";
+            this.Text = "Segment Compiler";
+            this.Load += new System.EventHandler(this.CourseImporter_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
