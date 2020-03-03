@@ -59,6 +59,7 @@
             this.parabox = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.f5out = new System.Windows.Forms.TextBox();
+            this.button9 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -212,6 +213,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.button9);
             this.groupBox2.Controls.Add(this.button8);
             this.groupBox2.Controls.Add(this.button7);
             this.groupBox2.Controls.Add(this.n2);
@@ -363,6 +365,16 @@
             this.f5out.TabIndex = 14;
             this.f5out.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(331, 172);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(75, 23);
+            this.button9.TabIndex = 52;
+            this.button9.Text = "Patch Seg4";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.Button9_Click);
+            // 
             // DebugTools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -415,5 +427,6 @@
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.TextBox n2;
         private System.Windows.Forms.TextBox n1;
+        private System.Windows.Forms.Button button9;
     }
 }

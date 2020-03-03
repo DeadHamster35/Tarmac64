@@ -4,8 +4,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using PeepsCompress;
 using System.Diagnostics;
+using PeepsCompress;
 
 
 namespace OverKart64

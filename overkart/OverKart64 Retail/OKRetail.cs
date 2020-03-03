@@ -47,7 +47,20 @@ namespace OverKart64
 
         private void OKAbout_Load(object sender, EventArgs e)
         {
+            outLabel.Text = buildDate.ToString().Replace("/", "");
+        }
 
+        private void ROMManagerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            okManager f2 = new okManager();
+            f2.Size = new System.Drawing.Size(470, 270);
+            f2.ShowDialog();
+        }
+
+        private void TextureListsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            GeometryCompiler f2 = new GeometryCompiler();
+            f2.ShowDialog();
         }
     }
 }

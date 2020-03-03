@@ -3430,7 +3430,7 @@ namespace OverKart64
             /// This is used exclusively by Mario Kart 64's Segment 7.
 
 
-            int cID = SegmentExporter.cID;
+            int cID = 0;
 
             int v0 = 0;
             int v1 = 0;

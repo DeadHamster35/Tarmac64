@@ -36,6 +36,18 @@
     <ApplicationIcon>kart64_tTF_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssimpSharp">
+      <HintPath>..\OverKart\Resources\AssimpSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="AssimpSharp.FBX">
+      <HintPath>..\OverKart\Resources\AssimpSharp.FBX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>..\OverKart\Resources\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>..\OverKart\Resources\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,18 +61,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
+    <Compile Include="BigEndianBinaryReader.cs" />
+    <Compile Include="BigEndianBinaryWriter.cs" />
     <Compile Include="GeometryCompiler.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GeometryCompiler.Designer.cs">
       <DependentUpon>GeometryCompiler.cs</DependentUpon>
     </Compile>
+    <Compile Include="N64Graphics.cs" />
+    <Compile Include="OK64.cs" />
     <Compile Include="OKRetail.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -75,9 +85,12 @@
     <Compile Include="RacerEditor.Designer.cs">
       <DependentUpon>RacerEditor.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="okManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="okManager.Designer.cs">
+      <DependentUpon>okManager.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="GeometryCompiler.resx">
       <DependentUpon>GeometryCompiler.cs</DependentUpon>
     </EmbeddedResource>
@@ -96,6 +109,9 @@
     </Compile>
     <EmbeddedResource Include="RacerEditor.resx">
       <DependentUpon>RacerEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="okManager.resx">
+      <DependentUpon>okManager.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

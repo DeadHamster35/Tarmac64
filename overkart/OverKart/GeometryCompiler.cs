@@ -163,7 +163,6 @@ namespace OverKart64
 
             byte[] rom = File.ReadAllBytes(romPath);
 
-            byte[] tempBytes = new byte[0];
 
             byte[] segment4 = new byte[0];
             byte[] segment6 = new byte[0];
@@ -176,7 +175,7 @@ namespace OverKart64
 
 
             byte[] popData = Resources.popResources;
-            byte[] textureTable = new byte[0];
+            
             byte[] surfaceTable = new byte[0];
             byte[] displayTable = new byte[0];
 
@@ -192,19 +191,11 @@ namespace OverKart64
 
             // This command writes all the bitmaps to the end of the ROM
 
-            tempBytes = mk.writeTextures(rom, textureArray);
-            textureTable = mk.compiletextureTable(textureArray);
+            rom = mk.writeTextures(rom, textureArray);
+            segment9 = mk.compiletextureTable(textureArray);
 
             //
             //
-
-
-
-
-            rom = tempBytes;
-
-
-
             //
             //
 
@@ -212,19 +203,14 @@ namespace OverKart64
             //build segment 7 out of the main course objects and surface geometry
             //build segment 4 out of the same objects.
 
-            segment7 = mk.compileF3DObject(ref vertMagic, ref segment4, fbx, segment7, masterObjects, textureArray, vertMagic);
+            mk.compileF3DObject(ref vertMagic, ref segment4, ref segment7, fbx, segment4, segment7, masterObjects, textureArray, vertMagic);
+            byte[] tempBytes = new byte[0];
+            mk.compileF3DObject(ref vertMagic, ref segment4, ref segment7, fbx, segment4, segment7, surfaceObjects, textureArray, vertMagic);
             
-            segment7 = mk.compileF3DObject(ref vertMagic, ref tempBytes, fbx, segment7, surfaceObjects, textureArray, vertMagic);
+
+
+
             
-
-
-
-            bs = new MemoryStream();
-            br = new BinaryReader(bs);
-            bw = new BinaryWriter(bs);
-            bw.Write(segment4);
-            bw.Write(tempBytes);
-            segment4 = bs.ToArray();
 
 
             //
@@ -287,39 +273,28 @@ namespace OverKart64
             segment6 = bs.ToArray();
 
 
-            //And now Segment 9
-
-            bs = new MemoryStream();
-            br = new BinaryReader(bs);
-            bw = new BinaryWriter(bs);
-
-            
-            bw.Write(textureTable);
-
-            segment9 = bs.ToArray();
-
-            
             //Compress appropriate segment data
 
             byte[] cseg7 = mk.compress_seg7(segment7);
-
-            // this uses the compileSegment that doesn't update the course header table.
 
 
 
             string courseName = nameBox.Text;
             string previewImage = previewBox.Text;
             string bannerImage = bannerBox.Text;
+            string mapImage = mapBox.Text;
             string customASM = asmBox.Text;
+
+            int[] mapCoords = new int[]{ Convert.ToInt16(xBox.Text), Convert.ToInt16(yBox.Text) };
             
             colorUpdate();
 
-
-
-            rom = mk.compileHotswap(segment4, segment6, cseg7, segment9, courseName, previewImage, bannerImage, customASM, skyColor, rom, cID, setID);
-
             byte[] cseg4 = mk.fakeCompress(segment4);
             byte[] cseg6 = mk.fakeCompress(segment6);
+
+            rom = mk.compileHotswap(cseg4, cseg6, cseg7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, skyColor, rom, cID, setID);
+
+
 
             string savepath = "";
             
@@ -327,18 +302,26 @@ namespace OverKart64
             File.WriteAllBytes(savepath, rom);
             savepath = Path.Combine(outputDirectory , "Segment 4.bin");
             File.WriteAllBytes(savepath, segment4);
-            savepath = Path.Combine(outputDirectory , "Compressed Segment 4.bin");
+
+            savepath = Path.Combine(outputDirectory, "Compressed Segment 4.bin");
             File.WriteAllBytes(savepath, cseg4);
-            savepath = Path.Combine(outputDirectory , "Segment 6.bin");
+
+            savepath = Path.Combine(outputDirectory, "Segment 6.bin");
             File.WriteAllBytes(savepath, segment6);
+
             savepath = Path.Combine(outputDirectory , "Compressed Segment 6.bin");
             File.WriteAllBytes(savepath, cseg6);
+            
             savepath = Path.Combine(outputDirectory , "Segment 7.bin");
             File.WriteAllBytes(savepath, segment7);
-            savepath = Path.Combine(outputDirectory , "Compressed Segment 7.bin");
+
+            savepath = Path.Combine(outputDirectory, "Compressed Segment 7.bin");
             File.WriteAllBytes(savepath, cseg7);
-            savepath = Path.Combine(outputDirectory , "Segment 9.bin");
+
+            savepath = Path.Combine(outputDirectory, "Segment 9.bin");
             File.WriteAllBytes(savepath, segment9);
+
+
             MessageBox.Show("Finished");
 
         }
@@ -837,6 +820,71 @@ namespace OverKart64
             }
             colorUpdate();
 
+        }
+
+        private void RomBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                romBox.Text = vertopen.FileName;
+            }
+
+        }
+
+        private void PathBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                pathBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void PreviewBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                previewBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void BannerBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                bannerBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void MapBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                mapBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void AsmBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                asmBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void OutBtn_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fb = new FolderBrowserDialog();
+            if (fb.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                outBox.Text = fb.SelectedPath;
+            }
         }
     }
 }

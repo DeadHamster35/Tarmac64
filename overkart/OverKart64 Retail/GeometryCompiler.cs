@@ -12,10 +12,10 @@ using System.Drawing;
 using System.Text;
 using System.Collections;
 using PeepsCompress;
-using System.Windows.Media.Imaging;
+
 using OverKart64;
 using System.Text.RegularExpressions;
-using OverKart64.Properties;
+using OverKart64_Retail.Properties;
 
 namespace OverKart64
 {
@@ -79,6 +79,9 @@ namespace OverKart64
         int[] img_widths = new int[] { 32, 64, 32, 32, 64, 32 };
 
 
+
+        byte[] skyColor = new byte[6];
+
         AssimpSharp.FBX.FBXImporter assimpSharpImporter = new AssimpSharp.FBX.FBXImporter();
         AssimpSharp.Scene fbx = new AssimpSharp.Scene();
 
@@ -92,7 +95,49 @@ namespace OverKart64
             courseBox.SelectedIndex = 0;
             cupBox.SelectedIndex = 0;
             setBox.SelectedIndex = 0;
+
+            rbbox.Text = "216";
+            gbbox.Text = "232";
+            bbbox.Text = "248";
+
+
+            rtbox.Text = "128";
+            gtbox.Text = "184";
+            btbox.Text = "248";
+            colorUpdate();
         }
+
+
+
+
+        private void colorUpdate()
+        {
+
+            int rr = 0;
+            int.TryParse(rtbox.Text, out rr);
+            int gg = 0;
+            int.TryParse(gtbox.Text, out gg);
+            int bb = 0;
+            int.TryParse(btbox.Text, out bb);
+            Color tbuttoncolor = Color.FromArgb(rr, gg, bb);
+
+
+
+            rr = 0;
+            int.TryParse(rbbox.Text, out rr);
+            gg = 0;
+            int.TryParse(gbbox.Text, out gg);
+            bb = 0;
+            int.TryParse(bbbox.Text, out bb);
+            Color bbuttoncolor = Color.FromArgb(rr, gg, bb);
+
+            cptop.BackColor = tbuttoncolor;
+            cpbot.BackColor = bbuttoncolor;
+
+        }
+
+
+
 
         private void Button6_Click(object sender, EventArgs e)
         {
@@ -118,7 +163,6 @@ namespace OverKart64
 
             byte[] rom = File.ReadAllBytes(romPath);
 
-            byte[] tempBytes = new byte[0];
 
             byte[] segment4 = new byte[0];
             byte[] segment6 = new byte[0];
@@ -131,7 +175,7 @@ namespace OverKart64
 
 
             byte[] popData = Resources.popResources;
-            byte[] textureTable = new byte[0];
+            
             byte[] surfaceTable = new byte[0];
             byte[] displayTable = new byte[0];
 
@@ -140,25 +184,33 @@ namespace OverKart64
             int vertMagic = 0;
 
 
+
+
+
+
+
+            // This command writes all the bitmaps to the end of the ROM
+
+            rom = mk.writeTextures(rom, textureArray);
+            segment9 = mk.compiletextureTable(textureArray);
+
             //
             //
+            //
+            //
+
 
             //build segment 7 out of the main course objects and surface geometry
             //build segment 4 out of the same objects.
-            
-            segment7 = mk.compileF3DObject(ref vertMagic, ref segment4, fbx, segment7, masterObjects, textureArray, vertMagic);
-            
-            segment7 = mk.compileF3DObject(ref vertMagic, ref tempBytes, fbx, segment7, surfaceObjects, textureArray, vertMagic);
+
+            mk.compileF3DObject(ref vertMagic, ref segment4, ref segment7, fbx, segment4, segment7, masterObjects, textureArray, vertMagic);
+            byte[] tempBytes = new byte[0];
+            mk.compileF3DObject(ref vertMagic, ref segment4, ref segment7, fbx, segment4, segment7, surfaceObjects, textureArray, vertMagic);
             
 
 
 
-            bs = new MemoryStream();
-            br = new BinaryReader(bs);
-            bw = new BinaryWriter(bs);
-            bw.Write(segment4);
-            bw.Write(tempBytes);
-            segment4 = bs.ToArray();
+            
 
 
             //
@@ -173,17 +225,7 @@ namespace OverKart64
 
 
 
-            // This command writes all the bitmaps to the end of the ROM
-            
-            tempBytes = mk.writeTextures(rom, textureArray);
-            textureTable = mk.compiletextureTable(textureArray);
-
-            //
-            //
-
-
-            
-            
+           
 
             surfaceTable = mk.compilesurfaceTable(surfaceObjects);
 
@@ -206,8 +248,6 @@ namespace OverKart64
 
 
 
-
-            rom = tempBytes;
 
             //First, let's build Segment 6.
 
@@ -233,29 +273,28 @@ namespace OverKart64
             segment6 = bs.ToArray();
 
 
-            //And now Segment 9
-
-            bs = new MemoryStream();
-            br = new BinaryReader(bs);
-            bw = new BinaryWriter(bs);
-
-            
-            bw.Write(textureTable);
-
-            segment9 = bs.ToArray();
-
-            
             //Compress appropriate segment data
 
             byte[] cseg7 = mk.compress_seg7(segment7);
 
-            // this uses the compileSegment that doesn't update the course header table.
 
+
+            string courseName = nameBox.Text;
+            string previewImage = previewBox.Text;
+            string bannerImage = bannerBox.Text;
+            string mapImage = mapBox.Text;
+            string customASM = asmBox.Text;
+
+            int[] mapCoords = new int[]{ Convert.ToInt16(xBox.Text), Convert.ToInt16(yBox.Text) };
             
-            rom = mk.compileSegment(segment4, segment6, cseg7, segment9, rom, cID, setID);
+            colorUpdate();
 
             byte[] cseg4 = mk.fakeCompress(segment4);
             byte[] cseg6 = mk.fakeCompress(segment6);
+
+            rom = mk.compileHotswap(cseg4, cseg6, cseg7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, skyColor, rom, cID, setID);
+
+
 
             string savepath = "";
             
@@ -263,18 +302,26 @@ namespace OverKart64
             File.WriteAllBytes(savepath, rom);
             savepath = Path.Combine(outputDirectory , "Segment 4.bin");
             File.WriteAllBytes(savepath, segment4);
-            savepath = Path.Combine(outputDirectory , "Compressed Segment 4.bin");
+
+            savepath = Path.Combine(outputDirectory, "Compressed Segment 4.bin");
             File.WriteAllBytes(savepath, cseg4);
-            savepath = Path.Combine(outputDirectory , "Segment 6.bin");
+
+            savepath = Path.Combine(outputDirectory, "Segment 6.bin");
             File.WriteAllBytes(savepath, segment6);
+
             savepath = Path.Combine(outputDirectory , "Compressed Segment 6.bin");
             File.WriteAllBytes(savepath, cseg6);
+            
             savepath = Path.Combine(outputDirectory , "Segment 7.bin");
             File.WriteAllBytes(savepath, segment7);
-            savepath = Path.Combine(outputDirectory , "Compressed Segment 7.bin");
+
+            savepath = Path.Combine(outputDirectory, "Compressed Segment 7.bin");
             File.WriteAllBytes(savepath, cseg7);
-            savepath = Path.Combine(outputDirectory , "Segment 9.bin");
+
+            savepath = Path.Combine(outputDirectory, "Segment 9.bin");
             File.WriteAllBytes(savepath, segment9);
+
+
             MessageBox.Show("Finished");
 
         }
@@ -603,7 +650,7 @@ namespace OverKart64
                 int objectIndex = surfaceobjectBox.SelectedIndex;
 
                 surfsectionBox.SelectedIndex = surfaceObjects[objectIndex].surfaceID - 1;
-                int materialIndex = Array.IndexOf(surfaceTypeID,surfaceObjects[objectIndex].materialID);
+                int materialIndex = Array.IndexOf(surfaceTypeID,surfaceObjects[objectIndex].surfaceMaterial);
                 surfmaterialBox.SelectedIndex = materialIndex;
                 surfcheckA.Checked = surfaceObjects[objectIndex].flagA;
                 surfcheckB.Checked = surfaceObjects[objectIndex].flagB;
@@ -679,6 +726,166 @@ namespace OverKart64
             int surfaceIndex = Convert.ToInt32(surfacesplit[0], 16);
         }
 
+        private void Rtbox_TextChanged(object sender, EventArgs e)
+        {
+            Byte.TryParse(rtbox.Text, out skyColor[0]);
+            colorUpdate();
+        }
+
+        private void Gtbox_TextChanged(object sender, EventArgs e)
+        {
+            Byte.TryParse(gtbox.Text, out skyColor[1]);
+            colorUpdate();
+        }
+
+        private void Btbox_TextChanged(object sender, EventArgs e)
+        {
+            Byte.TryParse(btbox.Text, out skyColor[2]);
+            colorUpdate();
+        }
+
+        private void Rbbox_TextChanged(object sender, EventArgs e)
+        {
+            Byte.TryParse(rbbox.Text, out skyColor[3]);
+            colorUpdate();
+        }
+
+        private void Gbbox_TextChanged(object sender, EventArgs e)
+        {
+            Byte.TryParse(gbbox.Text, out skyColor[4]);
+            colorUpdate();
+        }
+
+        private void Bbox_TextChanged(object sender, EventArgs e)
+        {
+            Byte.TryParse(bbbox.Text, out skyColor[5]);
+            colorUpdate();
+        }
+
+        private void Cptop_Click(object sender, EventArgs e)
+        {
+            ColorDialog skyDialog = new ColorDialog();
+
+            skyDialog.AllowFullOpen = true;
+            skyDialog.ShowHelp = true;
+
+
+            int rr = 0;
+            int.TryParse(rtbox.Text, out rr);
+            int gg = 0;
+            int.TryParse(gtbox.Text, out gg);
+            int bb = 0;
+            int.TryParse(btbox.Text, out bb);
+            Color buttonColor = Color.FromArgb(rr, gg, bb);
+
+            skyDialog.Color = buttonColor;
+
+            // Update the text box color if the user clicks OK 
+            if (skyDialog.ShowDialog() == DialogResult.OK)
+            {
+                buttonColor = skyDialog.Color;
+                rtbox.Text = skyDialog.Color.R.ToString();
+                gtbox.Text = skyDialog.Color.G.ToString();
+                btbox.Text = skyDialog.Color.B.ToString();
+            }
+            colorUpdate();
+
+        }
+
+        private void Cpbot_Click(object sender, EventArgs e)
+        {
+            ColorDialog skyDialog = new ColorDialog();
+
+            skyDialog.AllowFullOpen = true;
+            skyDialog.ShowHelp = true;
+
+
+            int rr = 0;
+            int.TryParse(rbbox.Text, out rr);
+            int gg = 0;
+            int.TryParse(gbbox.Text, out gg);
+            int bb = 0;
+            int.TryParse(bbbox.Text, out bb);
+            Color buttonColor = Color.FromArgb(rr, gg, bb);
+
+            skyDialog.Color = buttonColor;
+
+            // Update the text box color if the user clicks OK 
+            if (skyDialog.ShowDialog() == DialogResult.OK)
+            {
+                buttonColor = skyDialog.Color;
+                rbbox.Text = skyDialog.Color.R.ToString();
+                gbbox.Text = skyDialog.Color.G.ToString();
+                bbbox.Text = skyDialog.Color.B.ToString();
+            }
+            colorUpdate();
+
+        }
+
+        private void RomBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                romBox.Text = vertopen.FileName;
+            }
+
+        }
+
+        private void PathBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                pathBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void PreviewBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                previewBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void BannerBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                bannerBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void MapBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                mapBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void AsmBtn_Click(object sender, EventArgs e)
+        {
+            if (vertopen.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                asmBox.Text = vertopen.FileName;
+            }
+        }
+
+        private void OutBtn_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fb = new FolderBrowserDialog();
+            if (fb.ShowDialog() == DialogResult.OK)
+            {
+                //Get the path of specified file
+                outBox.Text = fb.SelectedPath;
+            }
+        }
     }
 }
 

@@ -24,7 +24,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OKRetail));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.outLabel = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -32,6 +32,7 @@
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.racerEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureListsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.rOMManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -56,16 +57,16 @@
             this.label2.Text = "DeadHamster 2020";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label3
+            // outLabel
             // 
-            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(361, 518);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(64, 17);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "1";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.outLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.outLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outLabel.Location = new System.Drawing.Point(361, 518);
+            this.outLabel.Name = "outLabel";
+            this.outLabel.Size = new System.Drawing.Size(64, 17);
+            this.outLabel.TabIndex = 3;
+            this.outLabel.Text = "1";
+            this.outLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pictureBox2
             // 
@@ -111,7 +112,8 @@
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.racerEditorToolStripMenuItem,
-            this.textureListsToolStripMenuItem1});
+            this.textureListsToolStripMenuItem1,
+            this.rOMManagerToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -119,15 +121,23 @@
             // racerEditorToolStripMenuItem
             // 
             this.racerEditorToolStripMenuItem.Name = "racerEditorToolStripMenuItem";
-            this.racerEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.racerEditorToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.racerEditorToolStripMenuItem.Text = "Racer Editor";
             this.racerEditorToolStripMenuItem.Click += new System.EventHandler(this.RacerEditorToolStripMenuItem_Click);
             // 
             // textureListsToolStripMenuItem1
             // 
             this.textureListsToolStripMenuItem1.Name = "textureListsToolStripMenuItem1";
-            this.textureListsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.textureListsToolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
             this.textureListsToolStripMenuItem1.Text = "Geometry Compiler";
+            this.textureListsToolStripMenuItem1.Click += new System.EventHandler(this.TextureListsToolStripMenuItem1_Click);
+            // 
+            // rOMManagerToolStripMenuItem
+            // 
+            this.rOMManagerToolStripMenuItem.Name = "rOMManagerToolStripMenuItem";
+            this.rOMManagerToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.rOMManagerToolStripMenuItem.Text = "ROM Manager";
+            this.rOMManagerToolStripMenuItem.Click += new System.EventHandler(this.ROMManagerToolStripMenuItem_Click);
             // 
             // OKRetail
             // 
@@ -137,7 +147,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.outLabel);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
@@ -161,12 +171,13 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label outLabel;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem racerEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem textureListsToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem rOMManagerToolStripMenuItem;
     }
 }

@@ -1388,7 +1388,5 @@ namespace OverKart64
             Single.TryParse(bbbox.Text, out bbox[racer.SelectedIndex]);
         }
 
-
-
     }
 }

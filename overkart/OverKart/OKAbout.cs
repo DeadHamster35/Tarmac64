@@ -20,41 +20,7 @@ namespace OverKart64
 
     {
 
-        int clickcount = 0;
-
-
-        public Timer debugtimer;
         
-        
-
-        private void button1_MouseDown(object sender, MouseEventArgs e)
-        {
-            
-            debugtimer = new Timer();
-            debugtimer.Interval = 100;
-            debugtimer.Tick += new EventHandler(Do_Something);
-            debugtimer.Start();
-        }
-
-        private void Do_Something(object sender, EventArgs e)
-        {
-            clickcount = clickcount + 1;
-            label3.Text = clickcount.ToString();
-            if (clickcount == 64)
-            {
-                debuggingToolStripMenuItem.Visible = true;
-                debuggingToolStripMenuItem.Enabled = true;
-            }
-        }
-
-        private void button1_MouseUp(object sender, MouseEventArgs e)
-        {
-            debugtimer.Stop();
-            debugtimer = null;
-        }
-
-
-
 
 
         DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
@@ -77,8 +43,7 @@ namespace OverKart64
 
         private void OKAbout_Load(object sender, EventArgs e)
         {
-            debuggingToolStripMenuItem.Visible = false;
-            debuggingToolStripMenuItem.Enabled = false;
+            
             string outlabel = buildDate.ToString().Replace("/","");
             label3.Text = "OK641."+outlabel;
         }

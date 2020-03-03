@@ -433,5 +433,36 @@ namespace OverKart64
             int x2 = Convert.ToInt32(n2.Text);
             MessageBox.Show(mk.GetMin(x1, x2).ToString());
         }
+
+        private void Button9_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileOpen = new OpenFileDialog();
+            SaveFileDialog fileSave = new SaveFileDialog();
+
+
+            if (fileOpen.ShowDialog() == DialogResult.OK)
+            {
+                if (fileSave.ShowDialog() == DialogResult.OK)
+                {
+                    MemoryStream bs = new MemoryStream();
+                    BinaryReader br = new BinaryReader(bs);
+                    BinaryWriter bw = new BinaryWriter(bs);
+
+                    byte[] inputSegment4 = File.ReadAllBytes(fileOpen.FileName);
+
+                    for (int currentPosition = 0; currentPosition < inputSegment4.Length; )
+                    {
+                        bw.Write(inputSegment4, currentPosition, 6);
+                        currentPosition = currentPosition + 6;
+                        bw.Write(Convert.ToUInt16(0));
+                        bw.Write(inputSegment4, currentPosition, 8);
+                        currentPosition = currentPosition + 8;
+                    }
+
+                    File.WriteAllBytes(fileSave.FileName, bs.ToArray());
+
+                }
+            }
+        }
     }
 }

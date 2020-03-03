@@ -630,7 +630,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::OverKart64.Properties.Resources.overkarttext;
+            this.pictureBox1.Image = global::OverKart64_Retail.Properties.Resources.overkarttext;
             this.pictureBox1.Location = new System.Drawing.Point(410, 17);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(140, 36);
