@@ -45,6 +45,7 @@
             this.imgbox2 = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button9 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.n2 = new System.Windows.Forms.TextBox();
@@ -59,7 +60,9 @@
             this.parabox = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.f5out = new System.Windows.Forms.TextBox();
-            this.button9 = new System.Windows.Forms.Button();
+            this.f3dBtn = new System.Windows.Forms.Button();
+            this.f3dBox = new System.Windows.Forms.TextBox();
+            this.button10 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -242,6 +245,16 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "OK64 Emu";
             // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(331, 172);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(75, 23);
+            this.button9.TabIndex = 52;
+            this.button9.Text = "Patch Seg4";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.Button9_Click);
+            // 
             // button8
             // 
             this.button8.Location = new System.Drawing.Point(377, 113);
@@ -365,22 +378,42 @@
             this.f5out.TabIndex = 14;
             this.f5out.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             // 
-            // button9
+            // f3dBtn
             // 
-            this.button9.Location = new System.Drawing.Point(331, 172);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(75, 23);
-            this.button9.TabIndex = 52;
-            this.button9.Text = "Patch Seg4";
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.Button9_Click);
+            this.f3dBtn.Location = new System.Drawing.Point(21, 249);
+            this.f3dBtn.Name = "f3dBtn";
+            this.f3dBtn.Size = new System.Drawing.Size(115, 23);
+            this.f3dBtn.TabIndex = 38;
+            this.f3dBtn.Text = "Export F3DEX";
+            this.f3dBtn.UseVisualStyleBackColor = true;
+            this.f3dBtn.Click += new System.EventHandler(this.f3dBtn_Click);
+            // 
+            // f3dBox
+            // 
+            this.f3dBox.Location = new System.Drawing.Point(21, 226);
+            this.f3dBox.Name = "f3dBox";
+            this.f3dBox.Size = new System.Drawing.Size(115, 20);
+            this.f3dBox.TabIndex = 37;
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(227, 249);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(75, 23);
+            this.button10.TabIndex = 43;
+            this.button10.Text = "button10";
+            this.button10.UseVisualStyleBackColor = true;
+            
             // 
             // DebugTools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(713, 229);
+            this.ClientSize = new System.Drawing.Size(713, 353);
+            this.Controls.Add(this.button10);
+            this.Controls.Add(this.f3dBtn);
             this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.f3dBox);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "DebugTools";
@@ -391,6 +424,7 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -428,5 +462,8 @@
         private System.Windows.Forms.TextBox n2;
         private System.Windows.Forms.TextBox n1;
         private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button f3dBtn;
+        private System.Windows.Forms.TextBox f3dBox;
+        private System.Windows.Forms.Button button10;
     }
 }

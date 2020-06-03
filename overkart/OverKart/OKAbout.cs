@@ -60,18 +60,6 @@ namespace OverKart64
             f2.ShowDialog();
         }
 
-        private void SkyColorEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Sky f2 = new Sky();
-            f2.ShowDialog();
-        }
-
-        private void CupEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CourseSelect f2 = new CourseSelect();
-            f2.ShowDialog();
-        }
-
         
 
         private void NotForRetailToolStripMenuItem_Click(object sender, EventArgs e)
@@ -98,11 +86,6 @@ namespace OverKart64
             f2.ShowDialog();
         }
 
-        private void TextureListsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            BitmapConverter f2 = new BitmapConverter();
-            f2.ShowDialog();
-        }
 
         private void SegmentToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
@@ -116,11 +99,7 @@ namespace OverKart64
             f2.ShowDialog();
         }
 
-        private void SectionViewsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SectionViewEditor f2 = new SectionViewEditor();
-            f2.ShowDialog();
-        }
+      
 
         private void RacerEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -131,6 +110,12 @@ namespace OverKart64
         private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
 
+        }
+
+        private void debugTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            renderDebug f2 = new renderDebug();
+            f2.ShowDialog();
         }
     }
 }

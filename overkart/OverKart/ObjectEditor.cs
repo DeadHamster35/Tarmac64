@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Text;
 using System.Collections;
 using PeepsCompress;
+using OverKart64_Library;
 
 namespace OverKart64
 {
@@ -38,7 +39,7 @@ namespace OverKart64
 
 
 
-        List<OK64.Pathgroup> pathgroup = new List<OK64.Pathgroup>();
+        List<OK64_Paths.Pathgroup> pathgroup = new List<OK64_Paths.Pathgroup>();
 
 
         List<Offset> objOffsets = new List<Offset>();
@@ -145,6 +146,7 @@ namespace OverKart64
 
 
         OK64 mk = new OK64();
+        OK64_Paths mkPath = new OK64_Paths();
 
         string filePath = "";
         string savePath = "";
@@ -192,27 +194,6 @@ namespace OverKart64
             vr.Close();
         }
 
-        public void SaveMarkers()
-        {
-            if (vertsave.ShowDialog() == DialogResult.OK)
-            {
-
-                savePath = vertsave.FileName;
-
-                cID = coursebox.SelectedIndex;
-                byte[] rombytes = File.ReadAllBytes(filePath);
-                byte[] seg6 = mk.dumpseg6(cID, rombytes);
-                List<byte> list_seg6 = mk.decompress_MIO0(0, seg6);
-                seg6 = list_seg6.ToArray();
-                seg6 = mk.AddMarkers(seg6, cID, pathgroup, false);
-                byte[] cseg6 = mk.compress_MIO0(seg6, 0);
-
-                File.WriteAllBytes(savePath + ".raw.bin", seg6);
-                File.WriteAllBytes(savePath, cseg6);
-
-                MessageBox.Show("Finished");
-            }
-        }
 
         public void LoadPath()
         {
@@ -220,8 +201,8 @@ namespace OverKart64
             cID = coursebox.SelectedIndex;
 
             byte[] seg6 = dump_segment_6();
-            List<byte> tempbytes = mk.decompress_MIO0(0, seg6);
-            seg6 = tempbytes.ToArray();
+            seg6 = mk.decompressMIO0(seg6);
+            
 
             bs = new MemoryStream(seg6);
             
@@ -239,19 +220,21 @@ namespace OverKart64
                 bool endlist = true;
                 br.BaseStream.Position = objOffsets[cID].offset[x];
 
-                pathgroup.Add(new OK64.Pathgroup { });
-                pathgroup[x].pathlist = new List<OK64.Pathlist>();
+                pathgroup.Add(new OK64_Paths.Pathgroup { });
+
+                List<OK64_Paths.Pathlist> tempList = new List<OK64_Paths.Pathlist>();
+
                 int n = 0;
                 for (; endlist;)
                 {
                     endpath = true;
-                    
-                    pathgroup[x].pathlist.Add(new OK64.Pathlist { });
+
+                    tempList.Add(new OK64_Paths.Pathlist { });
 
 
 
 
-                    pathgroup[x].pathlist[n].pathmarker = new List<OK64.Marker>();
+                    pathgroup[x].pathList[n].pathmarker = new List<OK64_Paths.Marker>();
 
                     for (int i = 0; endpath; i = i + 1)
                     {
@@ -292,7 +275,7 @@ namespace OverKart64
                         else
                         {
 
-                            pathgroup[x].pathlist[n].pathmarker.Add(new OK64.Marker
+                            pathgroup[x].pathList[n].pathmarker.Add(new OK64_Paths.Marker
                             {
                                 xval = tempint[0],
                                 zval = tempint[1],
@@ -309,11 +292,14 @@ namespace OverKart64
                     }
                     n = n + 1;
                 }
+
+
+                pathgroup[x].pathList = tempList.ToArray();
                 x = x + 1;
             }
 
             x = 0;
-            foreach (OK64.Pathgroup group in pathgroup)
+            foreach (OK64_Paths.Pathgroup group in pathgroup)
             {
                 int f = 0;
                 pathgroupbox.Items.Add("0x"+objOffsets[cID].offset[x].ToString("X"));
@@ -515,7 +501,7 @@ namespace OverKart64
             {
                 if (int.TryParse(xbox.Text, out tempint))
                 {
-                    pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].xval = tempint;
+                    pathgroup[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].xval = tempint;
                 }
 
 
@@ -529,7 +515,7 @@ namespace OverKart64
             {
                 if (int.TryParse(ybox.Text, out tempint))
                 {
-                    pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].yval = tempint;
+                    pathgroup[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].yval = tempint;
                 }
 
 
@@ -543,7 +529,7 @@ namespace OverKart64
             {
                 if (int.TryParse(zbox.Text, out tempint))
                 {
-                    pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].zval = tempint;
+                    pathgroup[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].zval = tempint;
                 }
 
 
@@ -601,18 +587,6 @@ namespace OverKart64
             }
         }
 
-        private void Impbtn_Click(object sender, EventArgs e)
-        {
-            if (vertopen.ShowDialog() == DialogResult.OK)
-            {
-
-                string file_3PL = vertopen.FileName;
-
-                //load the pathgroups from the external .SVL file provided
-                pathgroup = mk.Load_3PL(file_3PL);
-
-            }
-        }
 
         private void expbtn_Click(object sender, EventArgs e)
         {
@@ -624,26 +598,26 @@ namespace OverKart64
                 savePath = vertsave.FileName;
                 System.IO.File.AppendAllText(savePath, pathgroup.Count() + Environment.NewLine);
                 int x = 0;
-                foreach (OK64.Pathgroup group in pathgroup)
+                foreach (OK64_Paths.Pathgroup group in pathgroup)
                 {
                     int n = 0;
 
                     System.IO.File.AppendAllText(savePath, "GROUP " + x.ToString() + Environment.NewLine);
-                    System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist.Count() + Environment.NewLine);
-                    foreach (OK64.Pathlist path in pathgroup[x].pathlist)
+                    System.IO.File.AppendAllText(savePath, pathgroup[x].pathList.Count() + Environment.NewLine);
+                    foreach (OK64_Paths.Pathlist path in pathgroup[x].pathList)
                     {
 
                         int i = 0;
 
                         System.IO.File.AppendAllText(savePath, "PATH " + n.ToString() + Environment.NewLine);
-                        System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker.Count() + Environment.NewLine);
-                        foreach (OK64.Marker mark in pathgroup[x].pathlist[n].pathmarker)
+                        System.IO.File.AppendAllText(savePath, pathgroup[x].pathList[n].pathmarker.Count() + Environment.NewLine);
+                        foreach (OK64_Paths.Marker mark in pathgroup[x].pathList[n].pathmarker)
                         {
 
-                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker[i].xval.ToString() + Environment.NewLine);
-                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker[i].yval.ToString() + Environment.NewLine);
-                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker[i].zval.ToString() + Environment.NewLine);
-                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker[i].flag.ToString() + Environment.NewLine);
+                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathList[n].pathmarker[i].xval.ToString() + Environment.NewLine);
+                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathList[n].pathmarker[i].yval.ToString() + Environment.NewLine);
+                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathList[n].pathmarker[i].zval.ToString() + Environment.NewLine);
+                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathList[n].pathmarker[i].flag.ToString() + Environment.NewLine);
                             i = i + 1;
                         }
                         n = n + 1;
@@ -668,7 +642,7 @@ namespace OverKart64
             int f = 0;
             
             
-            foreach (OK64.Marker mark in pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker)
+            foreach (OK64_Paths.Marker mark in pathgroup[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker)
             {
                 markerselect.Items.Add("Marker" + f.ToString());
                 f = f + 1;
@@ -679,16 +653,12 @@ namespace OverKart64
 
         private void Markerselect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            xbox.Text = pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].xval.ToString();
-            ybox.Text = pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].yval.ToString();
-            zbox.Text = pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].zval.ToString();
-            fbox.Text = pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].flag.ToString();
+            xbox.Text = pathgroup[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].xval.ToString();
+            ybox.Text = pathgroup[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].yval.ToString();
+            zbox.Text = pathgroup[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].zval.ToString();
+            fbox.Text = pathgroup[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].flag.ToString();
         }
 
-        private void dumpseg6_btn(object sender, EventArgs e)
-        {
-            SaveMarkers();
-        }
 
         private void Pathgroupbox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -697,7 +667,7 @@ namespace OverKart64
             int f = 0;
             
             
-            foreach (OK64.Pathlist path in pathgroup[pathgroupbox.SelectedIndex].pathlist)
+            foreach (OK64_Paths.Pathlist path in pathgroup[pathgroupbox.SelectedIndex].pathList)
             {
                 pathselect.Items.Add("Item" + f.ToString());
                 f = f + 1;
@@ -712,7 +682,7 @@ namespace OverKart64
             {
                 if (int.TryParse(fbox.Text, out tempint))
                 {
-                    pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].flag = tempint;
+                    pathgroup[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].flag = tempint;
                 }
 
 

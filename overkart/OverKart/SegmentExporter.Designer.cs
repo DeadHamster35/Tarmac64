@@ -66,7 +66,6 @@
             this.proc6btn = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.seg5btn = new System.Windows.Forms.Button();
-            this.debug_btn = new System.Windows.Forms.Button();
             this.cseg4btn = new System.Windows.Forms.Button();
             this.cseg7btn = new System.Windows.Forms.Button();
             this.cseg6btn = new System.Windows.Forms.Button();
@@ -80,6 +79,7 @@
             this.dump9btn = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
             this.seg7rom = new System.Windows.Forms.TextBox();
+            this.headerBox = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -93,7 +93,7 @@
             this.proc7btn.TabIndex = 18;
             this.proc7btn.Text = "Process Seg 7 - (Faces)";
             this.proc7btn.UseVisualStyleBackColor = true;
-            this.proc7btn.Click += new System.EventHandler(this.DumpFaces);
+            this.proc7btn.Click += new System.EventHandler(this.dumpface2);
             // 
             // LoadButton
             // 
@@ -407,7 +407,6 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.seg5btn);
-            this.groupBox2.Controls.Add(this.debug_btn);
             this.groupBox2.Controls.Add(this.cseg4btn);
             this.groupBox2.Controls.Add(this.cseg7btn);
             this.groupBox2.Controls.Add(this.cseg6btn);
@@ -437,17 +436,6 @@
             this.seg5btn.Text = "Decompress Seg 5";
             this.seg5btn.UseVisualStyleBackColor = true;
             this.seg5btn.Click += new System.EventHandler(this.Seg5btn_Click);
-            // 
-            // debug_btn
-            // 
-            this.debug_btn.Enabled = false;
-            this.debug_btn.Location = new System.Drawing.Point(320, 143);
-            this.debug_btn.Name = "debug_btn";
-            this.debug_btn.Size = new System.Drawing.Size(140, 25);
-            this.debug_btn.TabIndex = 35;
-            this.debug_btn.Text = "Debugging Tool";
-            this.debug_btn.UseVisualStyleBackColor = true;
-            this.debug_btn.Click += new System.EventHandler(this.Debug_btn_Click);
             // 
             // cseg4btn
             // 
@@ -585,13 +573,28 @@
             this.seg7rom.Name = "seg7rom";
             this.seg7rom.Size = new System.Drawing.Size(100, 20);
             this.seg7rom.TabIndex = 33;
-            this.seg7rom.TextChanged += new System.EventHandler(this.Seg7rom_TextChanged);
+            // 
+            // headerBox
+            // 
+            this.headerBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.headerBox.FormattingEnabled = true;
+            this.headerBox.Items.AddRange(new object[] {
+            "Stock",
+            "Set 1",
+            "Set 2",
+            "Set 3",
+            "Set 4"});
+            this.headerBox.Location = new System.Drawing.Point(12, 66);
+            this.headerBox.Name = "headerBox";
+            this.headerBox.Size = new System.Drawing.Size(75, 21);
+            this.headerBox.TabIndex = 35;
             // 
             // SegmentExporter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(654, 335);
+            this.Controls.Add(this.headerBox);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.seg7rom);
             this.Controls.Add(this.groupBox2);
@@ -628,7 +631,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SegmentExporter";
             this.Text = "Segment Exporter";
-            this.Load += new System.EventHandler(this.VertConvert_Load);
+            this.Load += new System.EventHandler(this.SegmentExporter_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -685,9 +688,9 @@
         private System.Windows.Forms.Button cseg4btn;
         private System.Windows.Forms.Button cseg7btn;
         private System.Windows.Forms.Button cseg6btn;
-        private System.Windows.Forms.Button debug_btn;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox seg7rom;
         private System.Windows.Forms.Button seg5btn;
+        private System.Windows.Forms.ComboBox headerBox;
     }
 }

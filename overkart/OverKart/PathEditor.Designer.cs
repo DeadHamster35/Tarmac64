@@ -48,7 +48,6 @@
             this.xbox = new System.Windows.Forms.TextBox();
             this.expbtn = new System.Windows.Forms.Button();
             this.impbtn = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -240,17 +239,7 @@
             this.impbtn.TabIndex = 9;
             this.impbtn.Text = "Import";
             this.impbtn.UseVisualStyleBackColor = true;
-            this.impbtn.Click += new System.EventHandler(this.Impbtn_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(222, 195);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 11;
-            this.button2.Text = "Dump Seg6";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.dumpseg6_btn);
+            this.impbtn.Click += new System.EventHandler(this.impbtn_Click);
             // 
             // PathEditor
             // 
@@ -258,7 +247,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(307, 222);
             this.Controls.Add(this.coursebox);
-            this.Controls.Add(this.button2);
             this.Controls.Add(this.expbtn);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.impbtn);
@@ -278,7 +266,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ComboBox coursebox;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox zbox;
         private System.Windows.Forms.TextBox ybox;
         private System.Windows.Forms.TextBox xbox;

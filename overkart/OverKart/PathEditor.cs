@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Text;
 using System.Collections;
 using PeepsCompress;
+using OverKart64_Library;
 
 namespace OverKart64
 {
@@ -33,78 +34,20 @@ namespace OverKart64
             public List<int> offset { get; set; }
         }
 
-        
 
-        
+        byte[] dataBytes = new byte[0];
+
+
 
 
 
         List<Offset> MKOffsets = new List<Offset>();
 
-        List<OK64.Pathgroup> pathgroup = new List<OK64.Pathgroup>();
+        OK64_Paths.Pathgroup[] coursePaths = new OK64_Paths.Pathgroup[20];
 
         
 
         int[] pathoffset = { 0x5568, 0x4480, 0x4F90, 0x4578, 0xD780, 0x34A0, 0xADE0, 0xB5B8, 0xA540, 0xEC80, 0x3B80, 0x6AC8, 0x4BF8, 0x1D90, 0x56A0, 0x71F0 };
-
-        private void loadoffsets()
-        {
-            
-            MKOffsets.Add(new Offset { });
-
-            MKOffsets[0].offset = new List<int>();
-            MKOffsets[0].offset.Add(0x0008);            
-            MKOffsets.Add(new Offset { });
-            MKOffsets[1].offset = new List<int>();
-            MKOffsets[1].offset.Add(0x4480);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[2].offset = new List<int>();
-            MKOffsets[2].offset.Add(0x4F90);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[3].offset = new List<int>();
-            MKOffsets[3].offset.Add(0x4578);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[4].offset = new List<int>();
-            MKOffsets[4].offset.Add(0xD780);
-            MKOffsets[4].offset.Add(0xD9C8);
-            MKOffsets[4].offset.Add(0xDC18);
-            MKOffsets[4].offset.Add(0xDEA8);            
-            MKOffsets.Add(new Offset { });
-            MKOffsets[5].offset = new List<int>();
-            MKOffsets[5].offset.Add(0x34A0);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[6].offset = new List<int>();
-            MKOffsets[6].offset.Add(0xADE0);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[7].offset = new List<int>();
-            MKOffsets[7].offset.Add(0xB5B8);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[8].offset = new List<int>();
-            MKOffsets[8].offset.Add(0xA540);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[9].offset = new List<int>();
-            MKOffsets[9].offset.Add(0xEC80);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[10].offset = new List<int>();
-            MKOffsets[10].offset.Add(0x3B80);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[11].offset = new List<int>();
-            MKOffsets[11].offset.Add(0x6AC8);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[12].offset = new List<int>();
-            MKOffsets[12].offset.Add(0x4BF8);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[13].offset = new List<int>();
-            MKOffsets[13].offset.Add(0x19D0);
-            MKOffsets[13].offset.Add(0x1CF8);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[14].offset = new List<int>();
-            MKOffsets[14].offset.Add(0x56A0);
-            MKOffsets.Add(new Offset { });
-            MKOffsets[15].offset = new List<int>();
-            MKOffsets[15].offset.Add(0x71F0);
-            
-        }
 
 
         int cID = new int();
@@ -114,23 +57,15 @@ namespace OverKart64
         int[,] pathmarkers = new int[0, 0];
 
 
-        FileStream fs = new FileStream("null", FileMode.OpenOrCreate);
-        MemoryStream bs = new MemoryStream();
-        BinaryReader br = new BinaryReader(Stream.Null);
-        BinaryWriter bw = new BinaryWriter(Stream.Null);
-        MemoryStream ds = new MemoryStream();
-        BinaryReader dr = new BinaryReader(Stream.Null);
-        BinaryWriter dw = new BinaryWriter(Stream.Null);
-        MemoryStream vs = new MemoryStream();
-        BinaryReader vr = new BinaryReader(Stream.Null);
+        MemoryStream memoryStream = new MemoryStream();
+        BinaryWriter binaryWriter = new BinaryWriter(Stream.Null);
+        BinaryReader binaryReader = new BinaryReader(Stream.Null);
 
 
         OK64 mk = new OK64();
+        OK64_Paths mkPath = new OK64_Paths();
 
         string filePath = "";
-        string savePath = "";
-
-        Int16 valuesign16 = new Int16();
 
         byte[] flip4 = new byte[4];
         byte[] flip2 = new byte[2];
@@ -138,203 +73,140 @@ namespace OverKart64
         int[] img_types = new int[] { 0, 0, 0, 3, 3, 3 };
         int[] img_heights = new int[] { 32, 32, 64, 32, 32, 64 };
         int[] img_widths = new int[] { 32, 64, 32, 32, 64, 32 };
-        public static UInt32[] seg6_addr = new UInt32[20];      //(0x00) ROM address at which segment 6 file begins
-        public static UInt32[] seg6_end = new UInt32[20];       //(0x04) ROM address at which segment 6 file ends
-        public static UInt32[] seg4_addr = new UInt32[20];      //(0x08) ROM address at which segment 4 file begins
-        public static UInt32[] seg7_end = new UInt32[20];       //(0x0C) ROM address at which segment 7 (not 4) file ends
-        public static UInt32[] seg9_addr = new UInt32[20];      //(0x10) ROM address at which segment 9 file begins
-        public static UInt32[] seg9_end = new UInt32[20];       //(0x14) ROM address at which segment 9 file ends
-        public static UInt32[] seg47_buf = new UInt32[20];      //(0x18) RSP address of compressed segments 4 and 7
-        public static UInt32[] numVtxs = new UInt32[20];        //(0x1C) number of vertices in the vertex file
-        public static UInt32[] seg7_ptr = new UInt32[20];       //(0x20) RSP address at which segment 7 data begins
-        public static UInt32[] seg7_size = new UInt32[20];      //(0x24) Size of segment 7 data after decompression, minus 8 bytes for some reason
-        public static UInt32[] texture_addr = new UInt32[20];   //(0x28) RSP address of texture list
-        public static UInt16[] flag = new UInt16[20];           //(0x2C) Unknown
-        public static UInt16[] unused = new UInt16[20];         //(0x2E) Padding
+        
 
         public static UInt32[] seg7_romptr = new UInt32[20];    // math derived from above data.
 
-        OpenFileDialog vertopen = new OpenFileDialog();
-        SaveFileDialog vertsave = new SaveFileDialog();
+        OpenFileDialog fileOpen = new OpenFileDialog();
+        SaveFileDialog fileSave = new SaveFileDialog();
 
 
 
 
-        private void CloseStreams()
-        {
-            fs.Close();
-            bs.Close();
-            br.Close();
-            bw.Close();
-            ds.Close();
-            dr.Close();
-            dw.Close();
-            vs.Close();
-            vr.Close();
-        }
-
-        public void SaveMarkers()
-        {
-            if (vertsave.ShowDialog() == DialogResult.OK)
-            {
-
-                savePath = vertsave.FileName;
-
-                cID = coursebox.SelectedIndex;
-                byte[] rombytes = File.ReadAllBytes(filePath);
-                byte[] seg6 = mk.dumpseg6(cID, rombytes);
-                List<byte> list_seg6 = mk.decompress_MIO0(0, seg6);
-                seg6 = list_seg6.ToArray();
-                seg6 = mk.AddMarkers(seg6, cID, pathgroup, false);
-                byte[] cseg6 = mk.compress_MIO0(seg6, 0);
-
-                File.WriteAllBytes(savePath + ".raw.bin", seg6);
-                File.WriteAllBytes(savePath, cseg6);
-
-                MessageBox.Show("Finished");
-            }
-        }
-
+        
         public void LoadPath()
         {
-            loadoffsets();
+            
             cID = coursebox.SelectedIndex;
 
-            byte[] seg6 = dump_segment_6();
-            List<byte> tempbytes = mk.decompress_MIO0(0, seg6);
-            seg6 = tempbytes.ToArray();
 
-            bs = new MemoryStream(seg6);
-            
-            bw = new BinaryWriter(bs);
-            br = new BinaryReader(bs);
 
-            pathgroup.Clear();
+            byte[] fileData = File.ReadAllBytes(filePath);
+            memoryStream = new MemoryStream(fileData);
+            binaryReader = new BinaryReader(memoryStream);
+
+
+
+            int[] markerCount = mkPath.loadmarkerCount(cID, fileData);
+            int[] markerOffset = mkPath.loadmarkerOffsets(cID, fileData);
+
+
+
+            byte[] seg6 = mk.dumpseg6(cID, fileData);
+            seg6 = mk.decompressMIO0(seg6);
             
-            int x = 0;
-            
-            
-            foreach (int off in MKOffsets[cID].offset)
+
+            memoryStream = new MemoryStream(seg6);
+            binaryWriter= new BinaryWriter(memoryStream);
+            binaryReader= new BinaryReader(memoryStream);
+
+
+
+           
+
+            for (int currentGroup = 0; currentGroup < 4; currentGroup++)
             {
-                bool endpath = true;
-                bool endlist = true;
-                br.BaseStream.Position = MKOffsets[cID].offset[x];
-
-                pathgroup.Add(new OK64.Pathgroup { });
-                pathgroup[x].pathlist = new List<OK64.Pathlist>();
-                int n = 0;
-                for (; endlist;)
+                bool endpath = false;
+                bool endlist = false;
+                List<OK64_Paths.Pathlist> tempList = new List<OK64_Paths.Pathlist>();
+                if (markerOffset[currentGroup] != -2146580616)   
                 {
-                    endpath = true;
+                    binaryReader.BaseStream.Position = markerOffset[currentGroup];
+
                     
-                    pathgroup[x].pathlist.Add(new OK64.Pathlist { });
 
 
-
-
-                    pathgroup[x].pathlist[n].pathmarker = new List<OK64.Marker>();
-
-                    for (int i = 0; endpath; i = i + 1)
+                    for (int currentPath = 0; endlist == false; currentPath++)
                     {
+                        endpath = false;
 
+                        tempList.Add(new OK64_Paths.Pathlist());
+                        tempList[currentPath].pathmarker = new List<OK64_Paths.Marker>();
 
-
-                        int[] tempint = new int[4];
-
-                        if (br.BaseStream.Position == br.BaseStream.Length)
+                        for (int currentMarker = 0; (currentMarker < markerCount[currentGroup]) & endpath == false; currentMarker++)
                         {
-                            endpath = true;
-                        }
-                        else
-                        {
+                            int[] tempint = new int[4];
 
-                            flip2 = BitConverter.GetBytes(br.ReadInt16());
-                            Array.Reverse(flip2);
-                            tempint[0] = BitConverter.ToInt16(flip2, 0);  //x
-
-                            flip2 = BitConverter.GetBytes(br.ReadInt16());
-                            Array.Reverse(flip2);
-                            tempint[1] = BitConverter.ToInt16(flip2, 0);  //z
-
-                            flip2 = BitConverter.GetBytes(br.ReadInt16());
-                            Array.Reverse(flip2);
-                            tempint[2] = BitConverter.ToInt16(flip2, 0);  //y 
-
-                            flip2 = BitConverter.GetBytes(br.ReadUInt16());
-                            Array.Reverse(flip2);
-                            tempint[3] = BitConverter.ToUInt16(flip2, 0);
-                            if (br.BaseStream.Position > 26400)
+                            if (binaryReader.BaseStream.Position == binaryReader.BaseStream.Length)
                             {
-
-                            }
-                            if (tempint[0] == -32768)
-                            {
-                                endpath = false;
-                                if (tempint[1] == -32768)
-                                {
-                                    endlist = false;
-                                }
-
+                                endpath = true;
                             }
                             else
                             {
 
-                                pathgroup[x].pathlist[n].pathmarker.Add(new OK64.Marker
-                                {
-                                    xval = tempint[0],
-                                    zval = tempint[1],
-                                    yval = tempint[2],
-                                    flag = tempint[3],
+                                flip2 = BitConverter.GetBytes(binaryReader.ReadInt16());
+                                Array.Reverse(flip2);
+                                tempint[0] = BitConverter.ToInt16(flip2, 0);  //x
 
+                                flip2 = BitConverter.GetBytes(binaryReader.ReadInt16());
+                                Array.Reverse(flip2);
+                                tempint[1] = BitConverter.ToInt16(flip2, 0);  //z
+
+                                flip2 = BitConverter.GetBytes(binaryReader.ReadInt16());
+                                Array.Reverse(flip2);
+                                tempint[2] = BitConverter.ToInt16(flip2, 0);  //y 
+
+                                flip2 = BitConverter.GetBytes(binaryReader.ReadUInt16());
+                                Array.Reverse(flip2);
+                                tempint[3] = BitConverter.ToUInt16(flip2, 0);
+                                if (binaryReader.BaseStream.Position > 26400)
+                                {
 
                                 }
-                                );
+                                if (tempint[0] == -32768)
+                                {
+                                    endpath = true;
+                                    if (tempint[1] == -32768)
+                                    {
+                                        endlist = true;
+                                    }
 
+                                }
+                                else
+                                {
+                                    tempList[currentPath].pathmarker.Add(new OK64_Paths.Marker
+                                    {
+                                        xval = tempint[0],
+                                        zval = tempint[1],
+                                        yval = tempint[2],
+                                        flag = tempint[3],
+                                    });
+                                }
                             }
                         }
 
+                        tempList[currentPath].pathName = "path";
+
                     }
-                    n = n + 1;
                 }
-                x = x + 1;
+
+                coursePaths[currentGroup] = new OK64_Paths.Pathgroup();
+                coursePaths[currentGroup].pathList = tempList.ToArray();
+                
             }
             //PATH OFFSET
             //Use below messagebox to find offset of end of path list. 
             //For reversing segment 6.
-            //MessageBox.Show(cID.ToString() + "-- Offset " + br.BaseStream.Position.ToString());
+            //MessageBox.Show(cID.ToString() + "-- Offset " + binaryReader.BaseStream.Position.ToString());
 
-            x = 0;
-            foreach (OK64.Pathgroup group in pathgroup)
-            {
-                int f = 0;
-                pathgroupbox.Items.Add("0x"+MKOffsets[cID].offset[x].ToString("X"));
-                
-                x = x + 1;
+            for(int currentGroup = 0; currentGroup < 4; currentGroup++)
+            {   
+                pathgroupbox.Items.Add("0x"+ markerOffset[currentGroup].ToString("X"));
             }
             pathgroupbox.SelectedIndex = 0;
             
         }
 
-        public byte[] dump_segment_6()
-        {
-
-
-            cID = coursebox.SelectedIndex;
-            
-            
-            uint seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
-            
-
-            byte[] rombytes = File.ReadAllBytes(filePath);
-            byte[] seg6 = new byte[(seg6_end[cID] - seg6_addr[cID])];
-
-            Buffer.BlockCopy(rombytes, Convert.ToInt32(seg6_addr[cID]), seg6, 0, (Convert.ToInt32(seg6_end[cID]) - Convert.ToInt32(seg6_addr[cID])));
-
-            CloseStreams();
-
-            return seg6;
-            
-        }
 
 
 
@@ -349,12 +221,12 @@ namespace OverKart64
         private void Button1_Click(object sender, EventArgs e)
         {
             
-            if (vertopen.ShowDialog() == DialogResult.OK)
+            if (fileOpen.ShowDialog() == DialogResult.OK)
             {
 
 
                 //Get the path of specified file
-                filePath = vertopen.FileName;
+                filePath = fileOpen.FileName;
 
                 //Read the contents of the file into a stream
 
@@ -367,121 +239,29 @@ namespace OverKart64
                 else
                 {
 
-                       
+
+                    string[] items = { "Mario Raceway", "Choco Mountain", "Bowser's Castle", "Banshee Boardwalk", "Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway", "Luigi's Turnpike", "Moo Moo Farm", "Toad's Turnpike", "Kalimari Desert", "Sherbet Land", "Rainbow Road", "Wario Stadium", "Block Fort", "Skyscraper", "Double Decker", "DK's Jungle Parkway", "Big Donut" };
 
 
-
-                    fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
-                    bw = new BinaryWriter(fs);
-                    br = new BinaryReader(fs);
+                    foreach (string item in items)
                     {
-                        br.BaseStream.Seek(1188752, SeekOrigin.Begin);
+                        coursebox.Items.Add(item);
 
-                        for (int i = 0; i < 20; i++)
-                        {
-                            seg6_addr[i] = br.ReadUInt32();
-                            seg6_end[i] = br.ReadUInt32();
-                            seg4_addr[i] = br.ReadUInt32();
-                            seg7_end[i] = br.ReadUInt32();
-                            seg9_addr[i] = br.ReadUInt32();
-                            seg9_end[i] = br.ReadUInt32();
-                            seg47_buf[i] = br.ReadUInt32();
-                            numVtxs[i] = br.ReadUInt32();
-                            seg7_ptr[i] = br.ReadUInt32();
-                            seg7_size[i] = br.ReadUInt32();
-                            texture_addr[i] = br.ReadUInt32();
-                            flag[i] = br.ReadUInt16();
-                            unused[i] = br.ReadUInt16();
+                    }
 
-
-                            byte[] flip = new byte[4];
-
-                            flip = BitConverter.GetBytes(seg6_addr[i]);
-                            Array.Reverse(flip);
-                            seg6_addr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg6_end[i]);
-                            Array.Reverse(flip);
-                            seg6_end[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg4_addr[i]);
-                            Array.Reverse(flip);
-                            seg4_addr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg7_end[i]);
-                            Array.Reverse(flip);
-                            seg7_end[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg9_addr[i]);
-                            Array.Reverse(flip);
-                            seg9_addr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg9_end[i]);
-                            Array.Reverse(flip);
-                            seg9_end[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg47_buf[i]);
-                            Array.Reverse(flip);
-                            seg47_buf[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(numVtxs[i]);
-                            Array.Reverse(flip);
-                            numVtxs[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg7_ptr[i]);
-                            Array.Reverse(flip);
-                            seg7_ptr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg7_size[i]);
-                            Array.Reverse(flip);
-                            seg7_size[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(texture_addr[i]);
-                            Array.Reverse(flip);
-                            texture_addr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            byte[] flop = new byte[2];
-
-                            flop = BitConverter.GetBytes(flag[i]);
-                            Array.Reverse(flip);
-                            flag[i] = BitConverter.ToUInt16(flip, 0);
-
-                            flop = BitConverter.GetBytes(unused[i]);
-                            Array.Reverse(flip);
-                            unused[i] = BitConverter.ToUInt16(flip, 0);
-
-
-
-                            seg7_romptr[i] = seg7_ptr[i] - seg47_buf[i] + seg4_addr[i];
-
-                        }
-
-
-
-                        CloseStreams();
-                        string[] items = { "Mario Raceway", "Choco Mountain", "Bowser's Castle", "Banshee Boardwalk", "Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway", "Luigi's Turnpike", "Moo Moo Farm", "Toad's Turnpike", "Kalimari Desert", "Sherbet Land", "Rainbow Road", "Wario Stadium","DK's Jungle Parkway"};
+                    impbtn.Enabled = true;
+                    expbtn.Enabled = true;
+                    coursebox.SelectedIndex = 0;
+                    coursebox.Enabled = true;
+                    pathselect.Enabled = true;
+                    markerselect.Enabled = true;
+                    loaded = true;
                         
-                        foreach (string item in items)
-                        {
-                            coursebox.Items.Add(item);
-
-                        }
-
-                        impbtn.Enabled = true;
-                        expbtn.Enabled = true;
-                        coursebox.SelectedIndex = 0;
-                        coursebox.Enabled = true;
-                        pathselect.Enabled = true;
-                        markerselect.Enabled = true;
-                        loaded = true;
-                        
-                        MessageBox.Show("ROM Loaded");
+                    MessageBox.Show("ROM Loaded");
                        
                             
-                    }
+                    
                 }
-                CloseStreams();
             }
             
         }
@@ -505,7 +285,7 @@ namespace OverKart64
             {
                 if (int.TryParse(fbox.Text, out tempint))
                 {
-                    pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].flag = tempint;
+                    coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].flag = tempint;
                 }
                 
                 
@@ -519,7 +299,7 @@ namespace OverKart64
             {
                 if (int.TryParse(xbox.Text, out tempint))
                 {
-                    pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].xval = tempint;
+                    coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].xval = tempint;
                 }
 
 
@@ -533,7 +313,7 @@ namespace OverKart64
             {
                 if (int.TryParse(ybox.Text, out tempint))
                 {
-                    pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].yval = tempint;
+                    coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].yval = tempint;
                 }
 
 
@@ -547,7 +327,7 @@ namespace OverKart64
             {
                 if (int.TryParse(zbox.Text, out tempint))
                 {
-                    pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].zval = tempint;
+                    coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].zval = tempint;
                 }
 
 
@@ -560,108 +340,28 @@ namespace OverKart64
       
         
 
-        private void Button2_Click_1(object sender, EventArgs e)
-        {
-            if (loaded)
-            {
-                if (vertsave.ShowDialog() == DialogResult.OK)
-                {
-
-                    savePath = vertsave.FileName;
-
-                    ds = new MemoryStream();
-                    dw = new BinaryWriter(ds);
-                    for (int i = 0; i < vertcount; i++)
-                    {
-                       // flip2 = BitConverter.GetBytes(Convert.ToInt16(xcor[i]));
-                        Array.Reverse(flip2);
-                        dw.Write(BitConverter.ToInt16(flip2, 0));
-
-                       // flip2 = BitConverter.GetBytes(Convert.ToInt16(zcor[i]));
-                        Array.Reverse(flip2);
-                        dw.Write(BitConverter.ToInt16(flip2, 0));
-
-                       // flip2 = BitConverter.GetBytes(Convert.ToInt16(ycor[i]));
-                        Array.Reverse(flip2);
-                        dw.Write(BitConverter.ToInt16(flip2, 0));
-
-                       // flip2 = BitConverter.GetBytes(Convert.ToInt16(scor[i]));
-                        Array.Reverse(flip2);
-                        dw.Write(BitConverter.ToInt16(flip2, 0));
-
-                       // flip2 = BitConverter.GetBytes(Convert.ToInt16(tcor[i]));
-                        Array.Reverse(flip2);
-                        dw.Write(BitConverter.ToInt16(flip2, 0));
-
-                     
-                        
-                    }
-                    byte[] seg4 = ds.ToArray();
-                    File.WriteAllBytes(savePath, seg4);
-
-                    MessageBox.Show("Finished");
-
-                }
-            }
-        }
-
-        private void Impbtn_Click(object sender, EventArgs e)
-        {
-            if (vertopen.ShowDialog() == DialogResult.OK)
-            {
-
-                string file_3PL = vertopen.FileName;
-
-                //load the pathgroups from the external .SVL file provided
-                pathgroup = mk.Load_3PL(file_3PL);
-
-            }
-        }
-
         private void expbtn_Click(object sender, EventArgs e)
         {
             cID = coursebox.SelectedIndex;
-            vertsave.Filter = "OK64 3PL (.OK64.3PL)|*.OK64.3PL";
+            fileSave.Filter = "OK64 3PL (.OK64.3PL)|*.OK64.3PL";
 
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (fileSave.ShowDialog() == DialogResult.OK)
             {
                 
                 
-                savePath = vertsave.FileName;
-                System.IO.File.AppendAllText(savePath, pathgroup.Count() + Environment.NewLine);
-                int x = 0;
-                foreach (OK64.Pathgroup group in pathgroup)
-                {
-                    int n = 0;
-                   
-                    System.IO.File.AppendAllText(savePath, "GROUP " + x.ToString()+ Environment.NewLine);
-                    System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist.Count() + Environment.NewLine);
-                    foreach (OK64.Pathlist path in pathgroup[x].pathlist)
-                    {
-                        
-                        int i = 0;
-                        
-                        System.IO.File.AppendAllText(savePath, "PATH " + n.ToString() + Environment.NewLine);
-                        System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker.Count() + Environment.NewLine);
-                        foreach (OK64.Marker mark in pathgroup[x].pathlist[n].pathmarker)
-                        {
+                string savePath = fileSave.FileName;
 
-                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker[i].xval.ToString() + Environment.NewLine);
-                            System.IO.File.AppendAllText(savePath, (pathgroup[x].pathlist[n].pathmarker[i].yval).ToString() + Environment.NewLine);
-                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker[i].zval.ToString() + Environment.NewLine);
-                            System.IO.File.AppendAllText(savePath, pathgroup[x].pathlist[n].pathmarker[i].flag.ToString() + Environment.NewLine);
-                            i = i + 1;
-                        }
-                        n = n + 1;
-                    }
-                    x = x + 1;
-                }
+                byte[] outputFile = mkPath.savePOP(coursePaths);
+
+                File.WriteAllBytes(savePath, outputFile);
+
                 MessageBox.Show("Finished");
-                CloseStreams();
                 
             }
-            vertsave.Filter = "";
+            fileSave.Filter = "";
         }
+
+
 
         private void Coursebox_SelectedIndexChanged_1(object sender, EventArgs e)
         {
@@ -673,12 +373,18 @@ namespace OverKart64
         {
             markerselect.Items.Clear();
             int f = 0;
-            
-            
-            foreach (OK64.Marker mark in pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker)
+
+            if (coursePaths[pathgroupbox.SelectedIndex].pathList.Length > 0)
             {
-                markerselect.Items.Add("Marker" + f.ToString());
-                f = f + 1;
+                foreach (OK64_Paths.Marker mark in coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker)
+                {
+                    markerselect.Items.Add("Marker" + f.ToString());
+                    f = f + 1;
+                }
+            }
+            else
+            {
+                markerselect.Items.Add("No Markers");
             }
             markerselect.SelectedIndex = 0;
 
@@ -686,16 +392,32 @@ namespace OverKart64
 
         private void Markerselect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            xbox.Text = pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].xval.ToString();
-            ybox.Text = pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].yval.ToString();
-            zbox.Text = pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].zval.ToString();
-            fbox.Text = pathgroup[pathgroupbox.SelectedIndex].pathlist[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].flag.ToString();
+            if(coursePaths[pathgroupbox.SelectedIndex].pathList.Length > 0)
+            {
+                if (coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker.Count > 0)
+                {
+                    xbox.Text = coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].xval.ToString();
+                    ybox.Text = coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].yval.ToString();
+                    zbox.Text = coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].zval.ToString();
+                    fbox.Text = coursePaths[pathgroupbox.SelectedIndex].pathList[pathselect.SelectedIndex].pathmarker[markerselect.SelectedIndex].flag.ToString();
+                }
+                else
+                {
+                    xbox.Text = "";
+                    ybox.Text = "";
+                    zbox.Text = "";
+                    fbox.Text = "";
+                }
+            }
+            else
+            {
+                xbox.Text = "";
+                ybox.Text = "";
+                zbox.Text = "";
+                fbox.Text = "";
+            }
         }
 
-        private void dumpseg6_btn(object sender, EventArgs e)
-        {
-            SaveMarkers();
-        }
 
         private void Pathgroupbox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -704,15 +426,112 @@ namespace OverKart64
             int f = 0;
             
             
-            foreach (OK64.Pathlist path in pathgroup[pathgroupbox.SelectedIndex].pathlist)
+            foreach (OK64_Paths.Pathlist path in coursePaths[pathgroupbox.SelectedIndex].pathList)
             {
                 pathselect.Items.Add("Path" + f.ToString());
                 f = f + 1;
             }
+            if (coursePaths[pathgroupbox.SelectedIndex].pathList.Length == 0)
+            {
+                pathselect.Items.Add("Empty");
+            }
             pathselect.SelectedIndex = 0;
         }
 
-        
+        private void impbtn_Click(object sender, EventArgs e)
+        {
+
+            if (fileOpen.ShowDialog() == DialogResult.OK)
+            {
+                string popPath = fileOpen.FileName;
+
+                OK64_Paths.Pathgroup[] importPath = mkPath.loadPOP(popPath);
+                byte[] popData = mkPath.popMarkers(popPath);
+
+
+
+                cID = coursebox.SelectedIndex;
+
+                byte[] fileData = File.ReadAllBytes(filePath);
+
+                byte[] seg6 = mk.dumpseg6(cID, fileData);
+                seg6 = mk.decompressMIO0(seg6);
+
+
+                memoryStream = new MemoryStream();
+
+                memoryStream.Write(seg6, 0, seg6.Length);
+                binaryWriter = new BinaryWriter(memoryStream);
+                binaryReader = new BinaryReader(memoryStream);
+
+                int[] markerCount = new int[4];
+                markerCount[0] = importPath[0].pathList[0].pathmarker.Count;
+                int[] popOffset = new int[4] { seg6.Length, 0, 0, 0 };               
+                popOffset[0] = seg6.Length;
+                int[] segmentOffset = new int[2];
+
+                
+                binaryWriter.Write(popData);
+
+                seg6 = memoryStream.ToArray();
+
+
+                memoryStream = new MemoryStream();
+                memoryStream.Write(fileData, 0, fileData.Length);
+                binaryWriter = new BinaryWriter(memoryStream);
+                binaryReader = new BinaryReader(memoryStream);
+
+                segmentOffset[0] = fileData.Length;
+
+                byte[] compressedSegment6 = mk.compressMIO0(seg6);
+
+                binaryWriter.Write(compressedSegment6);
+
+
+                int addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+                if (addressAlign == 4)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+                
+
+                //0x800DC778
+
+                fileData = memoryStream.ToArray();
+                segmentOffset[1] = fileData.Length;
+
+
+                fileData = mkPath.savemarkerCount(cID, fileData, markerCount);
+                fileData = mkPath.savemarkerOffsets(cID, fileData, popOffset);
+
+
+                memoryStream = new MemoryStream(fileData);
+                binaryWriter = new BinaryWriter(memoryStream);
+                binaryReader = new BinaryReader(memoryStream);
+
+                binaryWriter.BaseStream.Position = (0x122390 + (0x30 * cID));
+
+                byte[] segmentOffbyte = BitConverter.GetBytes(segmentOffset[0]);
+                Array.Reverse(segmentOffbyte);
+                binaryWriter.Write(segmentOffbyte);
+
+                segmentOffbyte = BitConverter.GetBytes(segmentOffset[1]);
+                Array.Reverse(segmentOffbyte);
+                binaryWriter.Write(segmentOffbyte);
+
+                if (fileSave.ShowDialog() == DialogResult.OK)
+                {
+                    string outputPath = fileSave.FileName;
+
+                    File.WriteAllBytes(outputPath, fileData);
+
+                }
+
+
+            }
+        }
     }
 }
 

@@ -94,8 +94,8 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(402, 104);
             this.label4.TabIndex = 30;
-            this.label4.Text = "Micro500  -  RenaKunisaki\r\nshygoo -  mib-f8sm9c\r\nTriclon - Rain\r\nPeter Lemon - dw" +
-    "mkerr\r\nqueueRAM - Daniel McCarthy\r\nzouzzz - red\r\nYumi";
+            this.label4.Text = "Micro500  -  RenaKunisaki \r\nTriclon - QueueRAM\r\nmib-f8sm9c - Rain\r\nMegaMech - shy" +
+    "goo\r\nPeter Lemon - dwmkerr\r\nzouzzz - red\r\nYumi";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // menuStrip1

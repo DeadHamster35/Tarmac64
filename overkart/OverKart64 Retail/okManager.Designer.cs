@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(okManager));
             this.proc7btn = new System.Windows.Forms.Button();
             this.LoadButton = new System.Windows.Forms.Button();
-            this.coursebox = new System.Windows.Forms.ComboBox();
+            this.cupBox = new System.Windows.Forms.ComboBox();
             this.seg6a = new System.Windows.Forms.TextBox();
             this.seg6e = new System.Windows.Forms.TextBox();
             this.seg7e = new System.Windows.Forms.TextBox();
@@ -77,7 +77,7 @@
             this.dmio0Btn = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
             this.seg7rom = new System.Windows.Forms.TextBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.setBox = new System.Windows.Forms.ComboBox();
             this.label15 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -95,7 +95,7 @@
             this.imageDisplay = new System.Windows.Forms.PictureBox();
             this.textDisplay = new System.Windows.Forms.TextBox();
             this.label23 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.courseBox = new System.Windows.Forms.ComboBox();
             this.label25 = new System.Windows.Forms.Label();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.label26 = new System.Windows.Forms.Label();
@@ -150,14 +150,19 @@
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.Load_Click);
             // 
-            // coursebox
+            // cupBox
             // 
-            this.coursebox.FormattingEnabled = true;
-            this.coursebox.Location = new System.Drawing.Point(212, 39);
-            this.coursebox.Name = "coursebox";
-            this.coursebox.Size = new System.Drawing.Size(113, 21);
-            this.coursebox.TabIndex = 2;
-            this.coursebox.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
+            this.cupBox.FormattingEnabled = true;
+            this.cupBox.Items.AddRange(new object[] {
+            "Mushroom Cup",
+            "Flower Cup",
+            "Star Cup",
+            "Special Cup"});
+            this.cupBox.Location = new System.Drawing.Point(212, 39);
+            this.cupBox.Name = "cupBox";
+            this.cupBox.Size = new System.Drawing.Size(113, 21);
+            this.cupBox.TabIndex = 3;
+            this.cupBox.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
             // 
             // seg6a
             // 
@@ -591,19 +596,20 @@
             this.seg7rom.Size = new System.Drawing.Size(100, 20);
             this.seg7rom.TabIndex = 33;
             // 
-            // comboBox1
+            // setBox
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
+            this.setBox.FormattingEnabled = true;
+            this.setBox.Items.AddRange(new object[] {
             "Default",
-            "Custom A",
-            "Custom B",
-            "Custom C",
-            "Custom D"});
-            this.comboBox1.Location = new System.Drawing.Point(93, 39);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(113, 21);
-            this.comboBox1.TabIndex = 35;
+            "Custom 1",
+            "Custom 2",
+            "Custom 3",
+            "Custom 4"});
+            this.setBox.Location = new System.Drawing.Point(93, 39);
+            this.setBox.Name = "setBox";
+            this.setBox.Size = new System.Drawing.Size(113, 21);
+            this.setBox.TabIndex = 2;
+            this.setBox.SelectedIndexChanged += new System.EventHandler(this.SetBox_SelectedIndexChanged);
             // 
             // label15
             // 
@@ -707,6 +713,7 @@
             this.label21.TabIndex = 47;
             this.label21.Text = "Cup";
             this.label21.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label21.Click += new System.EventHandler(this.Label21_Click);
             // 
             // label22
             // 
@@ -753,13 +760,19 @@
             this.label23.Text = "Course";
             this.label23.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // comboBox2
+            // courseBox
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(331, 39);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(113, 21);
-            this.comboBox2.TabIndex = 52;
+            this.courseBox.FormattingEnabled = true;
+            this.courseBox.Items.AddRange(new object[] {
+            "Course 1",
+            "Course 2",
+            "Course 3 ",
+            "Course 4"});
+            this.courseBox.Location = new System.Drawing.Point(331, 39);
+            this.courseBox.Name = "courseBox";
+            this.courseBox.Size = new System.Drawing.Size(113, 21);
+            this.courseBox.TabIndex = 4;
+            this.courseBox.SelectedIndexChanged += new System.EventHandler(this.CourseBox_SelectedIndexChanged);
             // 
             // label25
             // 
@@ -982,7 +995,7 @@
             this.Controls.Add(this.textBox8);
             this.Controls.Add(this.comboBox4);
             this.Controls.Add(this.label23);
-            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.courseBox);
             this.Controls.Add(this.imageDisplay);
             this.Controls.Add(this.label22);
             this.Controls.Add(this.textBox6);
@@ -998,7 +1011,7 @@
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox5);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.setBox);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.seg7rom);
             this.Controls.Add(this.groupBox2);
@@ -1029,7 +1042,7 @@
             this.Controls.Add(this.seg4a);
             this.Controls.Add(this.seg6e);
             this.Controls.Add(this.seg6a);
-            this.Controls.Add(this.coursebox);
+            this.Controls.Add(this.cupBox);
             this.Controls.Add(this.LoadButton);
             this.Controls.Add(this.textDisplay);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
@@ -1056,7 +1069,7 @@
 
         private System.Windows.Forms.Button proc7btn;
         private System.Windows.Forms.Button LoadButton;
-        private System.Windows.Forms.ComboBox coursebox;
+        private System.Windows.Forms.ComboBox cupBox;
         private System.Windows.Forms.TextBox seg6a;
         private System.Windows.Forms.TextBox seg6e;
         private System.Windows.Forms.TextBox seg7e;
@@ -1101,7 +1114,7 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox seg7rom;
         private System.Windows.Forms.Button seg5btn;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox setBox;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label16;
@@ -1120,7 +1133,7 @@
         private System.Windows.Forms.PictureBox imageDisplay;
         private System.Windows.Forms.TextBox textDisplay;
         private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox courseBox;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.ComboBox comboBox4;
         private System.Windows.Forms.Label label26;

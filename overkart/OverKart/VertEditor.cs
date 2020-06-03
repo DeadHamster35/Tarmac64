@@ -115,18 +115,21 @@ namespace OverKart64
             cID = coursebox.SelectedIndex;
             
             vertselect.Items.Clear();
+
+            int seg4Size = Convert.ToInt32(seg7_romptr[cID] - seg4_addr[cID]);
+
+            byte[] romBytes = File.ReadAllBytes(filePath);
+            byte[] segment4 = new byte[seg4Size];
                 
+            Array.Copy(romBytes, seg4_addr[cID], segment4, 0, seg4Size);
 
-            List<byte> decompressedverts = mk.decompress_MIO0(Convert.ToInt32(seg4_addr[cID]), filePath);
-            byte[] Verts = decompressedverts.ToArray();
-
-            // we do a sloppy copy and don't convert the verts to their 16byte "proper" form.
-
+            byte[] vertBytes = mk.decompressMIO0(segment4);
+            
             bool VertEnd = true;
 
             // all need to be read and written as 16bit unsigned integers
 
-            vertcount = Verts.Length / 14;
+            vertcount = vertBytes.Length / 14;
 
 
             Array.Resize(ref xcor, vertcount);
@@ -142,7 +145,7 @@ namespace OverKart64
 
 
 
-            ds = new MemoryStream(Verts);
+            ds = new MemoryStream(vertBytes);
             dr = new BinaryReader(ds);
             {
                 dr.BaseStream.Position = 0;
@@ -466,7 +469,7 @@ namespace OverKart64
                         
                     }
                     byte[] seg4 = ds.ToArray();
-                    seg4 = mk.compress_MIO0(seg4, 0);
+                    seg4 = mk.compressMIO0(seg4);
                     File.WriteAllBytes(savePath, seg4);
 
                     MessageBox.Show("Finished");

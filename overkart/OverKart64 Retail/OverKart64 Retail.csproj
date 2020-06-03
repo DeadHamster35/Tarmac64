@@ -8,10 +8,26 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>OverKart64_Retail</RootNamespace>
     <AssemblyName>OverKart64 Retail</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,20 +52,43 @@
     <ApplicationIcon>kart64_tTF_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AssimpSharp">
-      <HintPath>..\OverKart\Resources\AssimpSharp.dll</HintPath>
+    <Reference Include="AssimpSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\modified assimp\AssimpSharp.dll</HintPath>
     </Reference>
-    <Reference Include="AssimpSharp.FBX">
-      <HintPath>..\OverKart\Resources\AssimpSharp.FBX.dll</HintPath>
+    <Reference Include="AssimpSharp.FBX, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\modified assimp\AssimpSharp.FBX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX">
-      <HintPath>..\OverKart\Resources\SharpDX.dll</HintPath>
+    <Reference Include="Cereal64.Common">
+      <HintPath>..\cereal64\Cereal64.Common.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Mathematics">
-      <HintPath>..\OverKart\Resources\SharpDX.Mathematics.dll</HintPath>
+    <Reference Include="Cereal64.Microcodes">
+      <HintPath>..\cereal64\Cereal64.Microcodes.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\modified assimp\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\modified assimp\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpGL.2.4.1.2\lib\net40-client\SharpGL.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL.SceneGraph, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpGL.SceneGraph.2.4.1.2\lib\net40\SharpGL.SceneGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL.WinForms, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpGL.WinForms.2.4.1.2\lib\net40\SharpGL.WinForms.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -61,15 +100,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BigEndianBinaryReader.cs" />
-    <Compile Include="BigEndianBinaryWriter.cs" />
-    <Compile Include="GeometryCompiler.cs">
-      <SubType>Form</SubType>
+    <Compile Include="..\OverKart64 Library\N64Graphics.cs">
+      <Link>N64Graphics.cs</Link>
     </Compile>
-    <Compile Include="GeometryCompiler.Designer.cs">
-      <DependentUpon>GeometryCompiler.cs</DependentUpon>
-    </Compile>
-    <Compile Include="N64Graphics.cs" />
     <Compile Include="OK64.cs" />
     <Compile Include="OKRetail.cs">
       <SubType>Form</SubType>
@@ -79,21 +112,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RacerEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="RacerEditor.Designer.cs">
-      <DependentUpon>RacerEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="okManager.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="okManager.Designer.cs">
       <DependentUpon>okManager.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="GeometryCompiler.resx">
-      <DependentUpon>GeometryCompiler.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="OKRetail.resx">
       <DependentUpon>OKRetail.cs</DependentUpon>
     </EmbeddedResource>
@@ -107,12 +131,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="RacerEditor.resx">
-      <DependentUpon>RacerEditor.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="okManager.resx">
       <DependentUpon>okManager.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -144,6 +166,26 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="kart64_tTF_icon.ico" />
+    <Content Include="SharpGL.ico" />
+    <Content Include="SharpGL.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OverKart64 Library\OverKart64 Library.csproj">
+      <Project>{bd044bbd-727b-40ac-b6ba-087e81864333}</Project>
+      <Name>OverKart64 Library</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

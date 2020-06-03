@@ -1,18 +1,14 @@
-﻿using PeepsCompress;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AssimpSharp;
-
-
+using System.IO;
+using AssimpSharp.FBX;
+using System.Text;
+using System.Windows.Media.Effects;
+using System.Globalization;
 
 namespace OverKart64
 {
@@ -32,6 +28,10 @@ namespace OverKart64
         Int16 value16 = new Int16();
         
         Int32 value32 = new Int32();
+
+
+        OpenFileDialog fileOpen = new OpenFileDialog();
+        SaveFileDialog fileSave = new SaveFileDialog();
 
         public DebugTools()
         {
@@ -171,24 +171,29 @@ namespace OverKart64
 
 
 
-        OpenFileDialog romopen = new OpenFileDialog();
-        SaveFileDialog romsave = new SaveFileDialog();
+
 
 
         private void export_Click(object sender, EventArgs e)
         {
             OK64 mk = new OK64();
-            int miooffset = new int();
-            miooffset = 0;
-            int.TryParse(offsetbox.Text, out miooffset);
-            if (romopen.ShowDialog() == DialogResult.OK)
+            
+            int targetOffset = 0;
+            int.TryParse(offsetbox.Text, out targetOffset);
+            if (fileOpen.ShowDialog() == DialogResult.OK)
             {
-                List<byte> lfile =mk.decompress_MIO0(miooffset, romopen.FileName);
-                byte[] afile = lfile.ToArray();
+                byte[] inputFile = File.ReadAllBytes(fileOpen.FileName);
 
-                if (romsave.ShowDialog() == DialogResult.OK)
+                byte[] compressedFile = new byte[inputFile.Length - targetOffset];
+
+                Array.Copy(inputFile, targetOffset, compressedFile, 0, inputFile.Length - targetOffset);
+
+                byte[] decompressedFile =mk.decompressMIO0(compressedFile);
+                
+
+                if (fileSave.ShowDialog() == DialogResult.OK)
                 {
-                    File.WriteAllBytes(romsave.FileName, afile);
+                    File.WriteAllBytes(fileSave.FileName, decompressedFile);
 
                 }
             }
@@ -399,12 +404,12 @@ namespace OverKart64
 
         private void Button6_Click(object sender, EventArgs e)
         {
-            OpenFileDialog romopen = new OpenFileDialog();
-            if (romopen.ShowDialog() == DialogResult.OK)
+            OpenFileDialog fileOpen = new OpenFileDialog();
+            if (fileOpen.ShowDialog() == DialogResult.OK)
             {
                 var assimpSharpImporter = new AssimpSharp.FBX.FBXImporter();
                 fbx = new AssimpSharp.Scene();
-                fbx = assimpSharpImporter.ReadFile(romopen.FileName);
+                fbx = assimpSharpImporter.ReadFile(fileOpen.FileName);
                 var searchNode = fbx.RootNode.FindNode("Course Paths");
                 var pathNode = searchNode.Children[0];
 
@@ -464,5 +469,12 @@ namespace OverKart64
                 }
             }
         }
+
+        private void f3dBtn_Click(object sender, EventArgs e)
+        {
+            int targetOffset = new int();
+            targetOffset = int.Parse(f3dBox.Text, NumberStyles.HexNumber);
+        }
+
     }
 }

@@ -57,6 +57,7 @@ namespace OverKart64
         int v1 = 0;
         int v2 = 0;
 
+        int[] headerOffset = new int[] { 0x122390, 0xBEA700, 0xBEAAC0, 0xBEAE80, 0xBEB240 };
 
         int current_offset = 0;
        
@@ -94,9 +95,9 @@ namespace OverKart64
 
         public static UInt32[] seg7_romptr = new UInt32[20];    // math derived from above data.
 
-        OpenFileDialog vertopen = new OpenFileDialog();
-        SaveFileDialog vertsave = new SaveFileDialog();
-        FolderBrowserDialog textsave = new FolderBrowserDialog();
+        OpenFileDialog vertOpen = new OpenFileDialog();
+        SaveFileDialog vertSave = new SaveFileDialog();
+        FolderBrowserDialog textSave = new FolderBrowserDialog();
 
 
 
@@ -114,64 +115,6 @@ namespace OverKart64
         }
 
 
-        private void DumpTextures()
-        {
-
-
-            if (textsave.ShowDialog() == DialogResult.OK)
-            {
-                string outputdir = textsave.SelectedPath;
-
-                cID = coursebox.SelectedIndex;
-
-
-                byte[] rombytes = File.ReadAllBytes(filePath);
-                byte[] seg9 = new byte[(seg9_end[cID] - seg9_addr[cID])];
-
-                Buffer.BlockCopy(rombytes, Convert.ToInt32(seg9_addr[cID]), seg9, 0, (Convert.ToInt32(seg9_end[cID]) - Convert.ToInt32(seg9_addr[cID])));
-
-
-
-                string[] coursename = { "Mario Raceway", "Choco Mountain", "Bowser's Castle", "Banshee Boardwalk", "Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway", "Luigi's Turnpike", "Moo Moo Farm", "Toad's Turnpike", "Kalimari Desert", "Sherbet Land", "Rainbow Road", "Wario Stadium", "Block Fort", "Skyscraper", "Double Decker", "DK's Jungle Parkway", "Big Donut" };
-
-
-                bs = new MemoryStream(seg9);
-
-                bw = new BinaryWriter(bs);
-                br = new BinaryReader(bs);
-                int moffset = new int();
-                for (int i = 0;br.BaseStream.Position<br.BaseStream.Length ;i++)
-                {
-                    flip4 = br.ReadBytes(4);
-                    Array.Reverse(flip4);
-                    moffset = BitConverter.ToInt32(flip4,0);
-                    if (moffset != 0)
-                    {
-                        moffset = (moffset & 0xFFFFFF) + 0x641F70;
-                        List<byte> texturelist = mk.decompress_MIO0(moffset, filePath);
-                        byte[] texturebytes = texturelist.ToArray();
-                        string texturepath = Path.Combine(outputdir, coursename[cID] + i.ToString());
-
-
-
-
-                        File.WriteAllBytes(texturepath + ".bin", texturebytes);
-
-                        br.BaseStream.Seek(12, SeekOrigin.Current);
-                    }
-                    else
-                    {
-                        br.BaseStream.Seek(br.BaseStream.Length, SeekOrigin.Begin);
-                    }
-                }
-                MessageBox.Show("Finished");
-                
-
-            }
-            
-
-        }
-
 
         
 
@@ -180,9 +123,9 @@ namespace OverKart64
         {
 
 
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
-                savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
 
 
 
@@ -194,12 +137,16 @@ namespace OverKart64
 
                 cID = coursebox.SelectedIndex;
 
-                int miooffset = new int();
-                miooffset = Convert.ToInt32(seg4_addr[cID]);
+                
+                int targetOffset = Convert.ToInt32(seg4_addr[cID]);
+                byte[] romBytes = File.ReadAllBytes(filePath);
+
+                byte[] compressedFile = new byte[romBytes.Length - targetOffset];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
 
-                List<byte> decompressedverts = mk.decompress_MIO0(miooffset, filePath);
-                byte[] Verts = decompressedverts.ToArray();
+                byte[] vertByte = mk.decompressMIO0(compressedFile);
+                
                 // we do a sloppy copy and don't convert the verts to their 16byte "proper" form.
 
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
@@ -208,7 +155,7 @@ namespace OverKart64
                 MessageBox.Show(seg7_addr.ToString());
 
                 fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                ds = new MemoryStream(Verts);
+                ds = new MemoryStream(vertByte);
                 br = new BinaryReader(fs);
                 dr = new BinaryReader(ds);
 
@@ -272,7 +219,7 @@ namespace OverKart64
                     if (commandbyte == 0x2A)
                     {
                         System.IO.File.AppendAllText(savePath, "ENDSECTION"+ Environment.NewLine);
-                        System.IO.File.AppendAllText(savePath, "Object " + br.BaseStream.Position.ToString() + Environment.NewLine);
+                        System.IO.File.AppendAllText(savePath, "Object " + (br.BaseStream.Position - seg7_addr).ToString() + Environment.NewLine);
                     }
                     if (commandbyte == 0x28)
                     {
@@ -551,12 +498,12 @@ namespace OverKart64
 
         private void Load_Click(object sender, EventArgs e)
         {
-            if (vertopen.ShowDialog() == DialogResult.OK)
+            if (vertOpen.ShowDialog() == DialogResult.OK)
             {
 
 
                 //Get the path of specified file
-                filePath = vertopen.FileName;
+                filePath = vertOpen.FileName;
 
                 //Read the contents of the file into a stream
 
@@ -568,146 +515,156 @@ namespace OverKart64
                 }
                 else
                 {
-
-                    
-
-
-
-                    fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
-                    bw = new BinaryWriter(fs);
-                    br = new BinaryReader(fs);
-                    {
-                        br.BaseStream.Seek(1188752, SeekOrigin.Begin);
-
-                        for (int i = 0; i < 20; i++)
-                        {
-                            seg6_addr[i] = br.ReadUInt32();
-                            seg6_end[i] = br.ReadUInt32();
-                            seg4_addr[i] = br.ReadUInt32();
-                            seg7_end[i] = br.ReadUInt32();
-                            seg9_addr[i] = br.ReadUInt32();
-                            seg9_end[i] = br.ReadUInt32();
-                            seg47_buf[i] = br.ReadUInt32();
-                            numVtxs[i] = br.ReadUInt32();
-                            seg7_ptr[i] = br.ReadUInt32();
-                            seg7_size[i] = br.ReadUInt32();
-                            texture_addr[i] = br.ReadUInt32();
-                            flag[i] = br.ReadUInt16();
-                            unused[i] = br.ReadUInt16();
-
-                            
-
-
-                            byte[] flip = new byte[4];
-
-                            flip = BitConverter.GetBytes(seg6_addr[i]);
-                            Array.Reverse(flip);
-                            seg6_addr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg6_end[i]);
-                            Array.Reverse(flip);
-                            seg6_end[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg4_addr[i]);
-                            Array.Reverse(flip);
-                            seg4_addr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg7_end[i]);
-                            Array.Reverse(flip);
-                            seg7_end[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg9_addr[i]);
-                            Array.Reverse(flip);
-                            seg9_addr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg9_end[i]);
-                            Array.Reverse(flip);
-                            seg9_end[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg47_buf[i]);
-                            Array.Reverse(flip);
-                            seg47_buf[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(numVtxs[i]);
-                            Array.Reverse(flip);
-                            numVtxs[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg7_ptr[i]);
-                            Array.Reverse(flip);
-                            seg7_ptr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(seg7_size[i]);
-                            Array.Reverse(flip);
-                            seg7_size[i] = BitConverter.ToUInt32(flip, 0);
-
-                            flip = BitConverter.GetBytes(texture_addr[i]);
-                            Array.Reverse(flip);
-                            texture_addr[i] = BitConverter.ToUInt32(flip, 0);
-
-                            byte[] flop = new byte[2];
-
-                            flop = BitConverter.GetBytes(flag[i]);
-                            Array.Reverse(flop);
-                            flag[i] = BitConverter.ToUInt16(flop, 0);
-
-                            flop = BitConverter.GetBytes(unused[i]);
-                            Array.Reverse(flop);
-                            unused[i] = BitConverter.ToUInt16(flop, 0);
-
-
-
-                            seg7_romptr[i] = seg7_ptr[i] - seg47_buf[i] + seg4_addr[i];
-
-                        }
-
-
-
-
-                        string[] items = { "Mario Raceway", "Choco Mountain", "Bowser's Castle", "Banshee Boardwalk", "Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway", "Luigi's Turnpike", "Moo Moo Farm", "Toad's Turnpike", "Kalimari Desert", "Sherbet Land", "Rainbow Road", "Wario Stadium", "Block Fort", "Skyscraper", "Double Decker", "DK's Jungle Parkway", "Big Donut" };
-                        coursebox.Items.Clear();
-                        foreach (string item in items)
-                        {
-                            coursebox.Items.Add(item);
-
-                        }
-
-
-                        coursebox.SelectedIndex = 0;
-                        if (debugmode == false)
-                        {
-                            MessageBox.Show("ROM Loaded");
-                        }
-                        else
-                        {
-                            MessageBox.Show("ROM Loaded in Debug Mode");
-                        }
-                        proc4btn.Enabled = true;
-                        proc6btn.Enabled = true;
-                        proc7btn.Enabled = true;
-                        proc9btn.Enabled = true;
-                        surfacemapbtn.Enabled = true;
-
-                        seg4btn.Enabled = true;
-                        seg5btn.Enabled = true;
-                        seg6btn.Enabled = true;
-                        seg7btn.Enabled = true;
-                        asmbtn.Enabled = true;
-
-                        dump4btn.Enabled = true;
-                        dump6btn.Enabled = true;
-                        dump7btn.Enabled = true;
-                        dump9btn.Enabled = true;
-                        dumpasmbtn.Enabled = true;
-
-                        cseg4btn.Enabled = true;
-                        cseg6btn.Enabled = true;
-                        cseg7btn.Enabled = true;
-                    }
+                    loadCourse(filePath);
+                    coursebox.SelectedIndex = 0;
                 }
                 CloseStreams();
             }
         }
+
+
+
+        private void loadCourse(string filePath)
+        {
+            fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+            bw = new BinaryWriter(fs);
+            br = new BinaryReader(fs);
+            {
+                br.BaseStream.Seek(headerOffset[headerBox.SelectedIndex], SeekOrigin.Begin);
+
+                for (int i = 0; i < 20; i++)
+                {
+                    seg6_addr[i] = br.ReadUInt32();
+                    seg6_end[i] = br.ReadUInt32();
+                    seg4_addr[i] = br.ReadUInt32();
+                    seg7_end[i] = br.ReadUInt32();
+                    seg9_addr[i] = br.ReadUInt32();
+                    seg9_end[i] = br.ReadUInt32();
+                    seg47_buf[i] = br.ReadUInt32();
+                    numVtxs[i] = br.ReadUInt32();
+                    seg7_ptr[i] = br.ReadUInt32();
+                    seg7_size[i] = br.ReadUInt32();
+                    texture_addr[i] = br.ReadUInt32();
+                    flag[i] = br.ReadUInt16();
+                    unused[i] = br.ReadUInt16();
+
+
+
+
+                    byte[] flip = new byte[4];
+
+                    flip = BitConverter.GetBytes(seg6_addr[i]);
+                    Array.Reverse(flip);
+                    seg6_addr[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(seg6_end[i]);
+                    Array.Reverse(flip);
+                    seg6_end[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(seg4_addr[i]);
+                    Array.Reverse(flip);
+                    seg4_addr[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(seg7_end[i]);
+                    Array.Reverse(flip);
+                    seg7_end[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(seg9_addr[i]);
+                    Array.Reverse(flip);
+                    seg9_addr[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(seg9_end[i]);
+                    Array.Reverse(flip);
+                    seg9_end[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(seg47_buf[i]);
+                    Array.Reverse(flip);
+                    seg47_buf[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(numVtxs[i]);
+                    Array.Reverse(flip);
+                    numVtxs[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(seg7_ptr[i]);
+                    Array.Reverse(flip);
+                    seg7_ptr[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(seg7_size[i]);
+                    Array.Reverse(flip);
+                    seg7_size[i] = BitConverter.ToUInt32(flip, 0);
+
+                    flip = BitConverter.GetBytes(texture_addr[i]);
+                    Array.Reverse(flip);
+                    texture_addr[i] = BitConverter.ToUInt32(flip, 0);
+
+                    byte[] flop = new byte[2];
+
+                    flop = BitConverter.GetBytes(flag[i]);
+                    Array.Reverse(flop);
+                    flag[i] = BitConverter.ToUInt16(flop, 0);
+
+                    flop = BitConverter.GetBytes(unused[i]);
+                    Array.Reverse(flop);
+                    unused[i] = BitConverter.ToUInt16(flop, 0);
+
+
+
+                    seg7_romptr[i] = seg7_ptr[i] - seg47_buf[i] + seg4_addr[i];
+
+                }
+
+
+
+                if (headerBox.SelectedIndex > 0)
+                {
+                    for (int courseIndex = 0; courseIndex < 20; courseIndex++)
+                    {
+                        coursebox.Items.Add("Custom Course " + headerBox.SelectedIndex.ToString() + "-" + courseIndex.ToString() + " ");
+
+                    }
+
+                }
+                else
+                {
+                    string[] items = { "Mario Raceway", "Choco Mountain", "Bowser's Castle", "Banshee Boardwalk", "Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway", "Luigi's Turnpike", "Moo Moo Farm", "Toad's Turnpike", "Kalimari Desert", "Sherbet Land", "Rainbow Road", "Wario Stadium", "Block Fort", "Skyscraper", "Double Decker", "DK's Jungle Parkway", "Big Donut" };
+                    coursebox.Items.Clear();
+                    foreach (string item in items)
+                    {
+                        coursebox.Items.Add(item);
+
+                    }
+                }
+
+
+                MessageBox.Show("ROM Loaded");
+
+                proc4btn.Enabled = true;
+                proc6btn.Enabled = true;
+                proc7btn.Enabled = true;
+                proc9btn.Enabled = true;
+                surfacemapbtn.Enabled = true;
+
+                seg4btn.Enabled = true;
+                seg5btn.Enabled = true;
+                seg6btn.Enabled = true;
+                seg7btn.Enabled = true;
+                asmbtn.Enabled = true;
+
+                dump4btn.Enabled = true;
+                dump6btn.Enabled = true;
+                dump7btn.Enabled = true;
+                dump9btn.Enabled = true;
+                dumpasmbtn.Enabled = true;
+
+                cseg4btn.Enabled = true;
+                cseg6btn.Enabled = true;
+                cseg7btn.Enabled = true;
+            }
+
+        }
+
+
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -739,13 +696,23 @@ namespace OverKart64
         {
 
             cID = coursebox.SelectedIndex;
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
 
-                savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
 
-                List<byte> decompressedverts = mk.decompress_MIO0(Convert.ToInt32(seg4_addr[cID]), filePath);
-                byte[] Verts = decompressedverts.ToArray();
+
+
+
+                int targetOffset = Convert.ToInt32(seg4_addr[cID]);
+                byte[] romBytes = File.ReadAllBytes(filePath);
+
+                byte[] compressedFile = new byte[0];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+
+                byte[] Verts = mk.decompressMIO0(compressedFile);
+                
 
                 // we do a sloppy copy and don't convert the verts to their 16byte "proper" form.
 
@@ -787,12 +754,23 @@ namespace OverKart64
         private void Segment6_decompress(object sender, EventArgs e)
         {
             cID = coursebox.SelectedIndex;
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
 
-                savePath = vertsave.FileName;
-                List<byte> decompressedverts = mk.decompress_MIO0(Convert.ToInt32(seg6_addr[cID]), filePath);
-                byte[] seg6 = decompressedverts.ToArray();
+                savePath = vertSave.FileName;
+
+
+
+
+
+                int targetOffset = Convert.ToInt32(seg6_addr[cID]);
+                byte[] romBytes = File.ReadAllBytes(filePath);
+
+                byte[] compressedFile = new byte[romBytes.Length - targetOffset];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+                byte[] seg6 = mk.decompressMIO0(compressedFile);
+                
 
 
                 fs = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -809,10 +787,10 @@ namespace OverKart64
         private void segment7_decomp(object sender, EventArgs e)
         {
 
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
                 cID = coursebox.SelectedIndex;
-                savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
                 byte[] ROM = File.ReadAllBytes(filePath);
                 byte[] useg7 = mk.dumpseg7(cID, ROM);
                 byte[] seg7 = mk.decompress_seg7(useg7);
@@ -830,22 +808,32 @@ namespace OverKart64
         private void segment4_decompress(object sender, EventArgs e)
         {
             cID = coursebox.SelectedIndex;
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
 
-                savePath = vertsave.FileName;
-                List<byte> decompressedverts = mk.decompress_MIO0(Convert.ToInt32(seg4_addr[cID]), filePath);
+                savePath = vertSave.FileName;
+
+                int targetOffset = Convert.ToInt32(seg4_addr[cID]);
+                byte[] romBytes = File.ReadAllBytes(filePath);
+
+                byte[] compressedFile = new byte[0];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+                byte[] vertByte = mk.decompressMIO0(compressedFile);
                 List<byte> insert = new List<byte> { 0x00, 0x00 };
-                int vertcount = (decompressedverts.Count / 14);
+                int vertcount = (vertByte.Length / 14);
+
+                List<byte> vertList = vertByte.ToList();
+
 
                 for (int i = 0; i < vertcount; i++)
                 {
-                    decompressedverts.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
+                    vertList.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
                 }
 
 
 
-                byte[] seg4 = decompressedverts.ToArray();
+                byte[] seg4 = vertList.ToArray();
 
 
                 fs = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -862,33 +850,48 @@ namespace OverKart64
         private void dumpdlists(object sender, EventArgs e)
         {
             cID = coursebox.SelectedIndex;
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
                 
-                savePath = vertsave.FileName;
-                List<byte> decompressedverts = mk.decompress_MIO0(Convert.ToInt32(seg6_addr[cID]), filePath);
-                byte[] seg6 = decompressedverts.ToArray();
+                savePath = vertSave.FileName;
+
+
+                int targetOffset = Convert.ToInt32(seg6_addr[cID]);
+                byte[] romBytes = File.ReadAllBytes(filePath);
+
+                byte[] compressedFile = new byte[romBytes.Length - targetOffset];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+                byte[] seg6 = mk.decompressMIO0(compressedFile);
+                
 
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
 
-                decompressedverts = mk.decompress_MIO0(Convert.ToInt32(seg4_addr[cID]), filePath);
+
+                targetOffset = Convert.ToInt32(seg4_addr[cID]);    
+                compressedFile = new byte[romBytes.Length - targetOffset];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+
+                byte[] decompressedVerts = mk.decompressMIO0(compressedFile);
+                List<byte> vertList = decompressedVerts.ToList();
                 List<byte> insert = new List<byte> { 0x00, 0x00 };
-                int vertcount = (decompressedverts.Count / 14);
+                int vertcount = (vertList.Count / 14);
 
                 for (int i = 0; i < vertcount; i++)
                 {
-                    decompressedverts.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
+                    vertList.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
                 }
-                byte[] seg4 = decompressedverts.ToArray();
+                byte[] seg4 = vertList.ToArray();
 
                 byte[] ROM = File.ReadAllBytes(filePath);
-                byte[] useg7 = mk.dumpseg7(cID, ROM);
-                byte[] seg7 = mk.decompress_seg7(useg7);
+                byte[] seg7 = mk.dumpseg7(cID, ROM);
+                byte[] useg7 = mk.decompress_seg7(seg7);
 
 
 
 
-                MemoryStream seg7m = new MemoryStream(seg7);
+                MemoryStream seg7m = new MemoryStream(useg7);
                 MemoryStream seg6m = new MemoryStream(seg6);
                 MemoryStream seg4m = new MemoryStream(seg4);
                 BinaryReader seg7r = new BinaryReader(seg7m);
@@ -905,7 +908,7 @@ namespace OverKart64
                 byte[] voffset = new byte[2];
 
                 //DEBUG
-                int displayOffset = 0x22E0;
+                int displayOffset = 0;
                 //DEBUG
 
 
@@ -919,6 +922,7 @@ namespace OverKart64
                     {
                         String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
                         int segid = Convert.ToByte(Binary.Substring(0, 8), 2);
+                        MessageBox.Show(segid.ToString() + " " + seg6r.BaseStream.Position.ToString());
                         current_offset = Convert.ToInt32(Binary.Substring(8, 24), 2);
 
                         for (bool subBreak = false; subBreak == false & current_offset < seg6r.BaseStream.Length;)
@@ -1038,7 +1042,7 @@ namespace OverKart64
 
                                         if (recursivecommand == 0x04)
                                         {
-                                            output = mk.F3DEX_Model(recursivecommand, seg7, seg4, vaddress, caddress + 1);
+                                            output = mk.F3DEX_Model(recursivecommand, useg7, seg4, vaddress, caddress + 1);
                                             vaddress = Convert.ToInt32(output);
                                             // MessageBox.Show("Vert Update-" + vaddress.ToString());
                                             output = "";
@@ -1049,11 +1053,11 @@ namespace OverKart64
                                         }
                                         if (recursivecommand == 0xB1)
                                         {
-                                            output = mk.F3DEX_Model(recursivecommand, seg7, seg4, vaddress, caddress + 1);
+                                            output = mk.F3DEX_Model(recursivecommand, useg7, seg4, vaddress, caddress + 1);
                                         }
                                         if (recursivecommand == 0xBF)
                                         {
-                                            output = mk.F3DEX_Model(recursivecommand, seg7, seg4, vaddress, caddress + 1);
+                                            output = mk.F3DEX_Model(recursivecommand, useg7, seg4, vaddress, caddress + 1);
                                         }
                                         if (recursivecommand == 0xB8)
                                         {
@@ -1104,6 +1108,129 @@ namespace OverKart64
 
         }
 
+
+
+
+
+        private void dumpface2(object sender, EventArgs e)
+        {
+            cID = coursebox.SelectedIndex;
+            if (vertSave.ShowDialog() == DialogResult.OK)
+            {
+
+                savePath = vertSave.FileName;
+
+
+                int targetOffset = Convert.ToInt32(seg6_addr[cID]);
+                byte[] romBytes = File.ReadAllBytes(filePath);
+
+                byte[] compressedFile = new byte[romBytes.Length - targetOffset];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+                byte[] seg6 = mk.decompressMIO0(compressedFile);
+
+
+                seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
+
+
+                targetOffset = Convert.ToInt32(seg4_addr[cID]);
+                compressedFile = new byte[romBytes.Length - targetOffset];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+
+                byte[] decompressedVerts = mk.decompressMIO0(compressedFile);
+                List<byte> vertList = decompressedVerts.ToList();
+                List<byte> insert = new List<byte> { 0x00, 0x00 };
+                int vertcount = (vertList.Count / 14);
+
+                for (int i = 0; i < vertcount; i++)
+                {
+                    vertList.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
+                }
+                byte[] seg4 = vertList.ToArray();
+
+                byte[] ROM = File.ReadAllBytes(filePath);
+                byte[] useg7 = mk.dumpseg7(cID, ROM);
+                byte[] seg7 = mk.decompress_seg7(useg7);
+
+
+
+
+                MemoryStream seg7m = new MemoryStream(seg7);
+                MemoryStream seg4m = new MemoryStream(seg4);
+                BinaryReader seg7r = new BinaryReader(seg7m);
+                BinaryReader seg4r = new BinaryReader(seg4m);
+
+                int vaddress = new int();
+
+
+                byte commandbyte = new byte();
+                byte[] byte29 = new byte[2];
+
+                string output = "";
+                byte[] voffset = new byte[2];
+
+                //DEBUG
+                int displayOffset = 0x8F38;
+                //DEBUG
+
+
+                while(displayOffset < seg7r.BaseStream.Length)
+                {
+                    
+                    seg7r.BaseStream.Seek(displayOffset, SeekOrigin.Begin);
+                    commandbyte = seg7r.ReadByte();
+
+                    output = "";
+
+                    if (commandbyte == 0xB8)
+                    {
+                        output = "ENDSECTION" + Environment.NewLine + "Object " + seg7r.BaseStream.Position.ToString() + Environment.NewLine;                        
+                    }
+
+
+                    //Special Conditional
+                    if (commandbyte == 0xE4)
+                    {
+                        displayOffset += 4;
+                    }
+                    //Special Conditional
+
+                    if (commandbyte == 0x04)
+                    {
+                        output = mk.F3DEX_Model(commandbyte, seg7, seg4, vaddress, displayOffset + 1);
+                        vaddress = Convert.ToInt32(output);
+                        output = "";
+                    }
+                    if (commandbyte == 0xB1)
+                    {
+                        output = mk.F3DEX_Model(commandbyte, seg7, seg4, vaddress, displayOffset + 1);
+                    }
+                    if (commandbyte == 0xBF)
+                    {
+                        output = mk.F3DEX_Model(commandbyte, seg7, seg4, vaddress, displayOffset + 1);
+                    }
+                            
+
+
+
+                    if (output != "")
+                    {
+                        System.IO.File.AppendAllText(savePath, output);
+                    }
+
+                    //MessageBox.Show("Command-"+commandbyte.ToString("X"));
+
+                    displayOffset += 8;
+                }
+
+                MessageBox.Show("Finished");
+                CloseStreams();
+
+            }
+
+        }
+
         //Old Code Above
 
 
@@ -1122,9 +1249,9 @@ namespace OverKart64
 
 
             cID = coursebox.SelectedIndex;
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
-                savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
                 MessageBox.Show(seg7_addr.ToString());
 
@@ -1148,9 +1275,9 @@ namespace OverKart64
         {
 
             cID = coursebox.SelectedIndex;
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
-                savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
                 MessageBox.Show(seg7_addr.ToString());
 
@@ -1166,20 +1293,15 @@ namespace OverKart64
             }
         }
 
-        private void VertConvert_Load(object sender, EventArgs e)
-        {
-            debug_btn.Visible = false;
-            debug_btn.Enabled = false;
-        }
 
         private void dump4_btn(object sender, EventArgs e)
         {
 
 
             cID = coursebox.SelectedIndex;
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
-                savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
                 MessageBox.Show(seg7_addr.ToString());
 
@@ -1200,9 +1322,9 @@ namespace OverKart64
 
 
             cID = coursebox.SelectedIndex;
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
-                savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
                 MessageBox.Show(seg7_addr.ToString());
 
@@ -1221,9 +1343,9 @@ namespace OverKart64
 
         private void dumpasm_btn(object sender, EventArgs e)
         {
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
-                savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
 
 
 
@@ -1238,19 +1360,17 @@ namespace OverKart64
 
         private void procasmbtn(object sender, EventArgs e)
         {
-            if (vertopen.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
-                if (vertsave.ShowDialog() == DialogResult.OK)
-                {
-                    savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
 
 
-                    mk.translate_ASM(savePath, filePath);
+                mk.translate_ASM(savePath, filePath);
 
-                    MessageBox.Show("Finished");
-                    CloseStreams();
-                }
+                MessageBox.Show("Finished");
+                CloseStreams();
             }
+            
         }
 
         private void textbox_change(object sender, EventArgs e)
@@ -1261,24 +1381,44 @@ namespace OverKart64
         private void sfcbtn_click(object sender, EventArgs e)
         {
             cID = coursebox.SelectedIndex;
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
 
-                savePath = vertsave.FileName;
-                List<byte> decompressedverts = mk.decompress_MIO0(Convert.ToInt32(seg6_addr[cID]), filePath);
+                savePath = vertSave.FileName;
+
+
+
+                int targetOffset = Convert.ToInt32(seg6_addr[cID]);
+                byte[] romBytes = File.ReadAllBytes(filePath);
+
+                byte[] compressedFile = new byte[romBytes.Length - targetOffset];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+
+                byte[] decompressedverts = mk.decompressMIO0(compressedFile);
                 byte[] seg6 = decompressedverts.ToArray();
 
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
 
-                decompressedverts = mk.decompress_MIO0(Convert.ToInt32(seg4_addr[cID]), filePath);
+
+
+
+                targetOffset = Convert.ToInt32(seg4_addr[cID]);
+                romBytes = File.ReadAllBytes(filePath);
+
+                compressedFile = new byte[romBytes.Length - targetOffset];
+                Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+                decompressedverts = mk.decompressMIO0(compressedFile);
+                List<byte> vertList = decompressedverts.ToList();
                 List<byte> insert = new List<byte> { 0x00, 0x00 };
-                int vertcount = (decompressedverts.Count / 14);
+                int vertcount = (vertList.Count / 14);
 
                 for (int i = 0; i < vertcount; i++)
                 {
-                    decompressedverts.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
+                    vertList.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
                 }
-                byte[] seg4 = decompressedverts.ToArray();
+                byte[] seg4 = vertList.ToArray();
 
                 byte[] ROM = File.ReadAllBytes(filePath);
                 byte[] useg7 = mk.dumpseg7(cID, ROM);
@@ -1498,104 +1638,18 @@ namespace OverKart64
 
         private void cseg7btn_click(object sender, EventArgs e)
         {
-            if (vertopen.ShowDialog() == DialogResult.OK)
+            if (vertOpen.ShowDialog() == DialogResult.OK)
             {
-                string compressedfile = vertopen.FileName;
-                if (vertsave.ShowDialog() == DialogResult.OK)
+                string compressedfile = vertOpen.FileName;
+                if (vertSave.ShowDialog() == DialogResult.OK)
                 {
-                    savePath = vertsave.FileName;
+                    savePath = vertSave.FileName;
                     MessageBox.Show(savePath);
                     byte[] seg7 = mk.compress_seg7(compressedfile);
 
                     File.WriteAllBytes(savePath, seg7);
                     MessageBox.Show("Finished");
                     CloseStreams();
-                }
-            }
-        }
-
-        private void Debug_btn_Click(object sender, EventArgs e)
-        {
-            forceboosts();
-        }
-
-        private void forceboosts()
-        {
-            if (vertopen.ShowDialog() == DialogResult.OK)
-            {
-                string seg6Path = vertopen.FileName;
-
-                byte[] seg6 = File.ReadAllBytes(seg6Path);
-                cID = coursebox.SelectedIndex;
-                if (vertsave.ShowDialog() == DialogResult.OK)
-                {
-
-                    savePath = vertsave.FileName;
-                    
-
-                    seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
-
-                    List<byte> decompressedverts = mk.decompress_MIO0(Convert.ToInt32(seg4_addr[cID]), filePath);
-                    List<byte> insert = new List<byte> { 0x00, 0x00 };
-                    int vertcount = (decompressedverts.Count / 14);
-
-                    for (int i = 0; i < vertcount; i++)
-                    {
-                        decompressedverts.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
-                    }
-                    byte[] seg4 = decompressedverts.ToArray();
-
-                    byte[] ROM = File.ReadAllBytes(filePath);
-                    byte[] useg7 = mk.dumpseg7(cID, ROM);
-                    byte[] seg7 = mk.decompress_seg7(useg7);
-
-
-
-                    MemoryStream seg7m = new MemoryStream();
-                    MemoryStream seg6m = new MemoryStream();
-                    MemoryStream seg4m = new MemoryStream();
-                    BinaryReader seg7r = new BinaryReader(seg7m);
-                    BinaryReader seg6r = new BinaryReader(seg6m);
-                    BinaryReader seg4r = new BinaryReader(seg4m);
-                    BinaryWriter seg6w = new BinaryWriter(seg6m);
-                    int vaddress = new int();
-
-                    seg7m.Write(seg7, 0, seg7.Length);
-                    seg6m.Write(seg6, 0, seg6.Length);
-                    seg4m.Write(seg4, 0, seg4.Length);
-
-                    byte commandbyte = new byte();
-                    byte[] byte29 = new byte[2];
-
-                    string output = "";
-                    byte[] voffset = new byte[2];
-                    // offsets to surface maps for each course, in course order. battle maps have no surface map and are listed as 0xFF for simplicicty.
-
-                    int[] surfaceoffset = { 0x9650, 0x72d0, 0x93d8, 0xb458, 0x18240, 0x79a0, 0x18fd8, 0xdc28, 0xff28, 0x144b8, 0x23b68, 0x23070, 0x9c20, 0x16440, 0xcc38, 0xff, 0xff, 0xff, 0x14338, 0xff };
-
-
-
-                    current_offset = surfaceoffset[cID];
-                    for (int i = 0; i < 1;)
-                    {
-
-                        seg6r.BaseStream.Seek(current_offset, SeekOrigin.Begin);
-                        byte[] rsp_add = seg6r.ReadBytes(4);
-                        seg6w.Write(Convert.ToByte(0xFC));
-
-                        if (rsp_add[0]==0x00)
-                        {
-                            i = 2;
-                        }
-                        current_offset += 8;
-                    }
-
-                    seg6 = seg6m.ToArray();
-                    File.WriteAllBytes(savePath, seg6);
-
-                    MessageBox.Show("Finished");
-                    CloseStreams();
-
                 }
             }
         }
@@ -1612,12 +1666,13 @@ namespace OverKart64
 
         private void recompress_mio0()
         {
-            if (vertopen.ShowDialog() == DialogResult.OK)
+            if (vertOpen.ShowDialog() == DialogResult.OK)
             {
-                if (vertsave.ShowDialog() == DialogResult.OK)
+                if (vertSave.ShowDialog() == DialogResult.OK)
                 {
-                    string savePath = vertsave.FileName;
-                    byte[] output = mk.compressInitialization(vertopen.FileName, true);
+                    string savePath = vertSave.FileName;
+                    byte[] inputFile = File.ReadAllBytes(vertOpen.FileName);
+                    byte[] output = mk.compressMIO0(inputFile);
                     File.WriteAllBytes(savePath, output);
                     MessageBox.Show("Finished");
                     CloseStreams();
@@ -1627,15 +1682,22 @@ namespace OverKart64
 
         private void Proc9btn_Click(object sender, EventArgs e)
         {
-            DumpTextures();
+            if (textSave.ShowDialog() == DialogResult.OK)
+            {
+                string outputDir = textSave.SelectedPath;
+                
+                cID = coursebox.SelectedIndex;
+                mk.DumpTextures(cID,outputDir,filePath);
+            }
+            
         }
 
         private void Seg5btn_Click(object sender, EventArgs e)
         {
-            if (vertsave.ShowDialog() == DialogResult.OK)
+            if (vertSave.ShowDialog() == DialogResult.OK)
             {
                 cID = coursebox.SelectedIndex;
-                savePath = vertsave.FileName;
+                savePath = vertSave.FileName;
                 byte[] ROM = File.ReadAllBytes(filePath);
                 byte[] seg5 = mk.dumpseg5(cID, ROM);
 
@@ -1646,16 +1708,9 @@ namespace OverKart64
             }
         }
 
-        private void Seg7rom_TextChanged(object sender, EventArgs e)
+        private void SegmentExporter_Load(object sender, EventArgs e)
         {
-            if (seg7rom.Text == "hamp")
-            {
-                debugmode = true;
-                debug_btn.Visible = true;
-                debug_btn.Enabled = true;
-                MessageBox.Show("The Empire! Where'd you find this?");
-            }
+            headerBox.SelectedIndex = 0;
         }
-
     }
 }

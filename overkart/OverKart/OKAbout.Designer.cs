@@ -35,15 +35,12 @@
             this.vertexEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.itemEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pathEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cupEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.skyColorEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textureListsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sectionViewsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureListsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.courseImporterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debuggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notForRetailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -107,7 +104,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(402, 104);
             this.label4.TabIndex = 30;
-            this.label4.Text = "Micro500  -  RenaKunisaki\r\nshygoo -  mib-f8sm9c\r\nTriclon - Rain\r\nPeter Lemon - dw" +
+            this.label4.Text = "Micro500  -  Triclon \r\nshygoo - RenaKunisaki\r\nmib-f8sm9c - Rain\r\nPeter Lemon - dw" +
     "mkerr\r\nqueueRAM - Daniel McCarthy\r\nzouzzz - red\r\nYumi";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -130,9 +127,7 @@
             this.vertConverterToolStripMenuItem,
             this.vertexEditorToolStripMenuItem,
             this.itemEditorToolStripMenuItem,
-            this.pathEditorToolStripMenuItem,
-            this.cupEditorToolStripMenuItem,
-            this.skyColorEditorToolStripMenuItem});
+            this.pathEditorToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -172,63 +167,34 @@
             this.pathEditorToolStripMenuItem.Text = "Path Tools";
             this.pathEditorToolStripMenuItem.Click += new System.EventHandler(this.PathEditorToolStripMenuItem_Click);
             // 
-            // cupEditorToolStripMenuItem
-            // 
-            this.cupEditorToolStripMenuItem.Name = "cupEditorToolStripMenuItem";
-            this.cupEditorToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.cupEditorToolStripMenuItem.Text = "Cup Tools";
-            this.cupEditorToolStripMenuItem.Click += new System.EventHandler(this.CupEditorToolStripMenuItem_Click);
-            // 
-            // skyColorEditorToolStripMenuItem
-            // 
-            this.skyColorEditorToolStripMenuItem.Name = "skyColorEditorToolStripMenuItem";
-            this.skyColorEditorToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.skyColorEditorToolStripMenuItem.Text = "Sky Color Tools";
-            this.skyColorEditorToolStripMenuItem.Click += new System.EventHandler(this.SkyColorEditorToolStripMenuItem_Click);
-            // 
             // compilerToolStripMenuItem
             // 
             this.compilerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.textureListsToolStripMenuItem,
-            this.sectionViewsToolStripMenuItem,
             this.textureListsToolStripMenuItem1,
             this.courseImporterToolStripMenuItem});
             this.compilerToolStripMenuItem.Name = "compilerToolStripMenuItem";
             this.compilerToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.compilerToolStripMenuItem.Text = "Compilers";
             // 
-            // textureListsToolStripMenuItem
-            // 
-            this.textureListsToolStripMenuItem.Name = "textureListsToolStripMenuItem";
-            this.textureListsToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.textureListsToolStripMenuItem.Text = "Bitmap Converter";
-            this.textureListsToolStripMenuItem.Click += new System.EventHandler(this.TextureListsToolStripMenuItem_Click);
-            // 
-            // sectionViewsToolStripMenuItem
-            // 
-            this.sectionViewsToolStripMenuItem.Name = "sectionViewsToolStripMenuItem";
-            this.sectionViewsToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.sectionViewsToolStripMenuItem.Text = "Section Views";
-            this.sectionViewsToolStripMenuItem.Click += new System.EventHandler(this.SectionViewsToolStripMenuItem_Click);
-            // 
             // textureListsToolStripMenuItem1
             // 
             this.textureListsToolStripMenuItem1.Name = "textureListsToolStripMenuItem1";
-            this.textureListsToolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
+            this.textureListsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.textureListsToolStripMenuItem1.Text = "Geometry Compiler";
             this.textureListsToolStripMenuItem1.Click += new System.EventHandler(this.GeometryToolStripMenuItem1_Click);
             // 
             // courseImporterToolStripMenuItem
             // 
             this.courseImporterToolStripMenuItem.Name = "courseImporterToolStripMenuItem";
-            this.courseImporterToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.courseImporterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.courseImporterToolStripMenuItem.Text = "Segment Compiler";
             this.courseImporterToolStripMenuItem.Click += new System.EventHandler(this.SegmentToolStripMenuItem_Click_1);
             // 
             // debuggingToolStripMenuItem
             // 
             this.debuggingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.notForRetailToolStripMenuItem});
+            this.notForRetailToolStripMenuItem,
+            this.debugTestToolStripMenuItem});
             this.debuggingToolStripMenuItem.Name = "debuggingToolStripMenuItem";
             this.debuggingToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
             this.debuggingToolStripMenuItem.Text = "Debugging";
@@ -236,9 +202,16 @@
             // notForRetailToolStripMenuItem
             // 
             this.notForRetailToolStripMenuItem.Name = "notForRetailToolStripMenuItem";
-            this.notForRetailToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.notForRetailToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.notForRetailToolStripMenuItem.Text = "Not for Retail";
             this.notForRetailToolStripMenuItem.Click += new System.EventHandler(this.NotForRetailToolStripMenuItem_Click);
+            // 
+            // debugTestToolStripMenuItem
+            // 
+            this.debugTestToolStripMenuItem.Name = "debugTestToolStripMenuItem";
+            this.debugTestToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.debugTestToolStripMenuItem.Text = "DebugTest";
+            this.debugTestToolStripMenuItem.Click += new System.EventHandler(this.debugTestToolStripMenuItem_Click);
             // 
             // OKAbout
             // 
@@ -281,15 +254,12 @@
         private System.Windows.Forms.ToolStripMenuItem vertexEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem itemEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pathEditorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem cupEditorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem skyColorEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compilerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem textureListsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem sectionViewsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem textureListsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem courseImporterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem debuggingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem notForRetailToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem racerEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem debugTestToolStripMenuItem;
     }
 }
