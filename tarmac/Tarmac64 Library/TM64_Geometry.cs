@@ -4366,13 +4366,11 @@ namespace Tarmac64_Geometry
 
 
 
-                    indexA = mainsegr.ReadByte();
-                    indexB = mainsegr.ReadByte();
-                    indexC = mainsegr.ReadByte();
 
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
+
+                    indexA = mainsegr.ReadByte() / 2;
+                    indexB = mainsegr.ReadByte() / 2;
+                    indexC = mainsegr.ReadByte() / 2;
 
                     ///outputstring = outputstring + indexA.ToString() + "-" + indexB.ToString() + "-" + indexC.ToString() + "-" + vertoffset.ToString() +"-"+ mainsegr.BaseStream.Position.ToString() + Environment.NewLine;
                     /// outputs the 3 vert indexes as well as the vertoffset and offset into the segment that called this command.
@@ -4380,40 +4378,34 @@ namespace Tarmac64_Geometry
 
                     ///
                     bool breakError = false;
-                    
+
                     xval[0] = vertCache[indexA].position.x;
-
                     zval[0] = vertCache[indexA].position.y;
-                    yval[0] = vertCache[indexA].position.z;
-
-                    
-
-                    ///
+                    yval[0] = vertCache[indexA].position.z * -1;
 
                     xval[1] = vertCache[indexB].position.x;
-
                     zval[1] = vertCache[indexB].position.y;
-                    yval[1] = vertCache[indexB].position.z;
+                    yval[1] = vertCache[indexB].position.z * -1;
 
                     xval[2] = vertCache[indexC].position.x;
-
                     zval[2] = vertCache[indexC].position.y;
-                    yval[2] = vertCache[indexC].position.z;
+                    yval[2] = vertCache[indexC].position.z * -1;
 
                     if ((xval[0] == 0 & yval[0] == 0 & zval[0] == 0) | (xval[1] == 0 & yval[1] == 0 & zval[1] == 0) | (xval[2] == 0 & yval[2] == 0 & zval[2] == 0))
                     {
                         breakError = true;
                     }
 
-                    yval[0] = yval[0] * -1;
-                    yval[1] = yval[1] * -1;
-                    yval[2] = yval[2] * -1;
 
                     if (!breakError)
                     {
                         ///outputstring = outputstring + "vertbox = mesh vertices:#([" + xval[0].ToString() + ",(" + (yval[0]).ToString() + ")," + zval[0].ToString() + "],[" + xval[1].ToString() + ",(" + (yval[1]).ToString() + ")," + zval[1].ToString() + "],[" + xval[2].ToString() + ",(" + (yval[2]).ToString() + ")," + zval[2].ToString() + "]) faces:#([1,2,3]) MaterialIDS:#(1) " + Environment.NewLine;
                         outputstring = outputstring + xval[0].ToString() + "," + yval[0].ToString() + "," + zval[0].ToString() + ";" + xval[1].ToString() + "," + yval[1].ToString() + "," + zval[1].ToString() + ";" + xval[2].ToString() + "," + yval[2].ToString() + "," + zval[2].ToString() + "," + Environment.NewLine;
                         ///
+                        
+                    }
+                    if (i == 0)
+                    {
                         mainsegr.BaseStream.Seek(1, SeekOrigin.Current);
                     }
                 }
@@ -4430,44 +4422,36 @@ namespace Tarmac64_Geometry
                 mainsegr.BaseStream.Seek(4, SeekOrigin.Current);
 
 
-                indexA = mainsegr.ReadByte();
-                indexB = mainsegr.ReadByte();
-                indexC = mainsegr.ReadByte();
 
-                indexA = indexA / 2;
-                indexB = indexB / 2;
-                indexC = indexC / 2;
 
+
+
+
+                indexA = mainsegr.ReadByte() / 2;
+                indexB = mainsegr.ReadByte() / 2;
+                indexC = mainsegr.ReadByte() / 2;
                 ///outputstring = outputstring + indexA.ToString() + "-" + indexB.ToString() + "-" + indexC.ToString() + "-" + vertoffset.ToString() + "-" + mainsegr.BaseStream.Position.ToString() + Environment.NewLine;
                 ////// outputs the 3 vert indexes as well as the vertoffset and offset into the segment that called this command.
 
 
 
                 xval[0] = vertCache[indexA].position.x;
-
                 zval[0] = vertCache[indexA].position.y;
-                yval[0] = vertCache[indexA].position.z;
-
-                ///
+                yval[0] = vertCache[indexA].position.z * -1;
 
                 xval[1] = vertCache[indexB].position.x;
-
                 zval[1] = vertCache[indexB].position.y;
-                yval[1] = vertCache[indexB].position.z;
+                yval[1] = vertCache[indexB].position.z * -1;
 
                 xval[2] = vertCache[indexC].position.x;
-
                 zval[2] = vertCache[indexC].position.y;
-                yval[2] = vertCache[indexC].position.z;
+                yval[2] = vertCache[indexC].position.z * -1;
 
                 if ((xval[0] == 0 & yval[0] == 0 & zval[0] == 0) | (xval[1] == 0 & yval[1] == 0 & zval[1] == 0) | (xval[2] == 0 & yval[2] == 0 & zval[2] == 0))
                 {
                     breakError = true;
                 }
 
-                yval[0] = yval[0] * -1;
-                yval[1] = yval[1] * -1;
-                yval[2] = yval[2] * -1;
 
                 if (!breakError)
                 {
@@ -4475,9 +4459,8 @@ namespace Tarmac64_Geometry
                     ///outputstring = outputstring + "vertbox = mesh vertices:#([" + xval[0].ToString() + ",(" + (yval[0]).ToString() + ")," + zval[0].ToString() + "],[" + xval[1].ToString() + ",(" + (yval[1]).ToString() + ")," + zval[1].ToString() + "],[" + xval[2].ToString() + ",(" + (yval[2]).ToString() + ")," + zval[2].ToString() + "]) faces:#([1,2,3]) MaterialIDS:#(1) " + Environment.NewLine;
                     outputstring = outputstring + xval[0].ToString() + "," + yval[0].ToString() + "," + zval[0].ToString() + ";" + xval[1].ToString() + "," + yval[1].ToString() + "," + zval[1].ToString() + ";" + xval[2].ToString() + "," + yval[2].ToString() + "," + zval[2].ToString() + "," + Environment.NewLine;
                     ///
-                    mainsegr.BaseStream.Seek(1, SeekOrigin.Current);
+                    
                 }
-
 
 
 
@@ -4604,30 +4587,26 @@ namespace Tarmac64_Geometry
                 int vertIndex = Convert.ToInt32(mainsegr.ReadByte());
                 flip2 = mainsegr.ReadBytes(2);
                 Array.Reverse(flip2);
-                int vertTotal = BitConverter.ToInt16(flip2, 0) ;
+                uint vertTotal = BitConverter.ToUInt16(flip2, 0) ;
 
-                int vertCount = vertTotal / 0x410;
+                uint vertCount = (vertTotal / 0x40F);
+
+
+                //MessageBox.Show(segmentoffset.ToString() + "-" + vertIndex.ToString()+"-"+vertCount.ToString());
 
                 byte[] rsp_add = mainsegr.ReadBytes(4);
 
                 Array.Reverse(rsp_add);
-
-                int Value = BitConverter.ToInt32(rsp_add, 0);
-                String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
-
-
-                int segid = Convert.ToByte(Binary.Substring(0, 8), 2);
-                uint location = Convert.ToUInt32(Binary.Substring(8, 24), 2);
-                if (location >= seg4r.BaseStream.Length)
+                vertCount = Convert.ToUInt16(32 - vertIndex);
+                int segid = Convert.ToInt32(rsp_add[3]);
+                rsp_add[3] = 0x00;
+                int location = BitConverter.ToInt32(rsp_add, 0);
+                if (location < seg4r.BaseStream.Length)
                 {
-
-                }
-                else
-                {
-
+                    
 
                     seg4r.BaseStream.Position = location;
-                    for (int currentVert = 0; currentVert < vertCount; currentVert++)
+                    for (int currentVert = 0; seg4r.BaseStream.Position < seg4r.BaseStream.Length & currentVert < vertCount; currentVert++)
                     {
                         flip2 = seg4r.ReadBytes(2);
                         Array.Reverse(flip2);
@@ -4658,9 +4637,13 @@ namespace Tarmac64_Geometry
                     }
 
                 }
+                else
+                {
+                    int danger = 0;
+                }
             }
 
-
+            
             if (commandbyte == 0x06)
             {
                 ///Call a display list

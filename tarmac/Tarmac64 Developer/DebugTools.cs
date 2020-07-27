@@ -34,6 +34,8 @@ namespace Tarmac64
         Int32 value32 = new Int32();
 
 
+        TM64_Geometry.Vertex[] vertCache = new TM64_Geometry.Vertex[32];
+
         OpenFileDialog fileOpen = new OpenFileDialog();
         SaveFileDialog fileSave = new SaveFileDialog();
 
@@ -596,6 +598,14 @@ namespace Tarmac64
                 vertList.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
             }
             byte[] seg4 = vertList.ToArray();
+
+            for (int currentVert = 0; currentVert < 32; currentVert++)
+            {
+                vertCache[currentVert] = new TM64_Geometry.Vertex();
+                vertCache[currentVert].position = new TM64_Geometry.Position();
+                vertCache[currentVert].color = new TM64_Geometry.Color();
+            }
+
             byte[] seg7 = segment7Data;
             TM64_Geometry mk = new TM64_Geometry();
 
@@ -607,14 +617,7 @@ namespace Tarmac64
 
             int vaddress = new int();
 
-            TM64_Geometry.Vertex[] vertCache = new TM64_Geometry.Vertex[32];
-
-            for (int currentVert = 0; currentVert < 32; currentVert++)
-            {
-                vertCache[currentVert] = new TM64_Geometry.Vertex();
-                vertCache[currentVert].position = new TM64_Geometry.Position();
-                vertCache[currentVert].color = new TM64_Geometry.Color();
-            }
+            
             byte commandbyte = new byte();
             byte[] byte29 = new byte[2];
 
@@ -709,6 +712,34 @@ namespace Tarmac64
                 }
             }
 
+        }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileOpen = new OpenFileDialog();
+
+            if (fileOpen.ShowDialog() == DialogResult.OK)
+            {
+                byte[] segment4 = File.ReadAllBytes(fileOpen.FileName);
+
+
+
+                List<byte> insert = new List<byte> { 0x00, 0x00 };
+                int vertcount = segment4.Length / 14;
+
+                List<byte> vertList = segment4.ToList();
+                for (int i = 0; i < vertcount; i++)
+                {
+                    vertList.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
+                }
+                byte[] seg4 = vertList.ToArray();
+
+                SaveFileDialog fileSave = new SaveFileDialog();
+                if (fileSave.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(fileSave.FileName, seg4);
+                }
+            }
         }
     }
 }

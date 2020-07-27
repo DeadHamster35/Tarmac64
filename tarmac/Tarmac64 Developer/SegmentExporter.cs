@@ -1194,7 +1194,7 @@ namespace Tarmac64
 
                     if (commandbyte == 0xB8)
                     {
-                        output = "ENDSECTION" + Environment.NewLine + "Object " + seg7r.BaseStream.Position.ToString() + Environment.NewLine;                        
+                        output = "ENDSECTION" + Environment.NewLine + "Object " + seg7r.BaseStream.Position.ToString("X") + Environment.NewLine;                        
                     }
 
 
