@@ -91,6 +91,7 @@ namespace Tarmac64
         private void GeometryToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             GeometryCompiler f2 = new GeometryCompiler();
+            
             f2.ShowDialog();
         }
 

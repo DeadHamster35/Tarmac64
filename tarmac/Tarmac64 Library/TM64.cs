@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Numerics;
+using Tarmac64_Geometry;
 
 
 //custom libraries
 
-using AssimpSharp;  //for handling model data
+using Assimp;  //for handling model data
 using Texture64;  //for handling texture data
 
 
@@ -22,9 +23,6 @@ using Cereal64.Microcodes.F3DEX.DataElements;
 using Cereal64.Common.DataElements;
 using Cereal64.Common.Rom;
 using Cereal64.Common.Utils.Encoding;
-
-
-
 
 namespace Tarmac64_Library
 {
@@ -80,11 +78,11 @@ namespace Tarmac64_Library
 
         public class Face
         {
-            public VertIndex vertindex { get; set; }
+            public vertIndex vertIndex { get; set; }
             public int material { get; set; }
         }
 
-        public class VertIndex
+        public class vertIndex
         {
             public int v0 { get; set; }
             public int v1 { get; set; }
@@ -94,74 +92,6 @@ namespace Tarmac64_Library
 
 
 
-
-
-        public class OK64SectionList
-        {
-            public OK64ViewList[] viewList { get; set; }
-        }
-
-        public class OK64ViewList
-        {
-            public int[] objectList { get; set; }
-            public int segmentPosition { get; set; }
-        }
-        public class OK64Texture
-        {
-            public string textureName { get; set; }
-            public string texturePath { get; set; }
-            public int textureWidth { get; set; }
-            public int textureHeight { get; set; }
-            public int textureFormat { get; set; }
-            public int textureClass { get; set; }
-            public byte[] compressedTexture { get; set; }
-            public int compressedSize { get; set; }
-            public int fileSize { get; set; }
-            public int segmentPosition { get; set; }
-            public int romPosition { get; set; }
-
-        }
-        public class OK64F3DObject
-        {
-            public string objectName { get; set; }
-            public int vertCount { get; set; }
-            public int faceCount { get; set; }
-            public int materialID { get; set; }
-            public int surfaceID { get; set; }
-            public int surfaceMaterial { get; set; }
-            public int[] meshID { get; set; }
-            public int[] meshPosition { get; set; }
-            public bool flagA { get; set; }
-            public bool flagB { get; set; }
-            public bool flagC { get; set; }
-        }
-
-        public class Vertex
-        {
-            public Position position { get; set; }
-            public Color color { get; set; }
-        }
-
-        public class Color
-        {
-            public Byte r { get; set; }
-            public Byte g { get; set; }
-            public Byte b { get; set; }
-            public Byte a { get; set; }
-        }
-
-        public class Position
-        {
-
-            public Int16 x { get; set; }
-            public Int16 y { get; set; }
-            public Int16 z { get; set; }
-            public Int16 s { get; set; }
-            public Int16 t { get; set; }
-            public float u { get; set; }
-            public float v { get; set; }
-
-        }
 
         ///
 
@@ -197,6 +127,87 @@ namespace Tarmac64_Library
         List<Offset> pathOffsets = new List<Offset>();
 
         int[] pathoffset = { 0x5568, 0x4480, 0x4F90, 0x4578, 0xD780, 0x34A0, 0xADE0, 0xB5B8, 0xA540, 0xEC80, 0x3B80, 0x6AC8, 0x4BF8, 0x1D90, 0x56A0, 0x71F0 };
+
+
+
+        public byte[] decompressSMSR(byte[]inputData)
+        {
+            MemoryStream memoryStream = new MemoryStream(inputData);
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+
+            MemoryStream memoryOutput = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryOutput);
+            BinaryReader outputReader = new BinaryReader(memoryOutput);
+
+
+            int srcOffs = 0x10;
+            binaryReader.BaseStream.Position = 0x08;
+
+            uint outputSize = binaryReader.ReadUInt32();
+            binaryReader.BaseStream.Position = 0x0C;
+            uint dataOffs = Convert.ToUInt32(srcOffs + binaryReader.ReadUInt32());
+
+            var outputByte = new byte[outputSize];
+            
+            var dstOffs = 0;
+
+            var numCtrlBits = 0;
+            UInt16 ctrlBits = 0;
+
+            while (dstOffs < outputSize)
+            {
+                if (numCtrlBits == 0)
+                {
+                    numCtrlBits = 16;
+                    binaryReader.BaseStream.Position = srcOffs;
+                    ctrlBits = binaryReader.ReadUInt16();
+                    srcOffs += 2;
+                }
+
+                if (ctrlBits == 0x8000)
+                {
+                    outputReader.BaseStream.Position = dataOffs;
+                    binaryWriter.BaseStream.Position = dstOffs;
+                    binaryWriter.Write(outputReader.ReadByte());
+                    dataOffs++;
+                    dstOffs++;
+                }
+                else
+                {
+
+                    binaryReader.BaseStream.Position = srcOffs;
+                    UInt16 pair = binaryReader.ReadUInt16();
+                    srcOffs += 2;
+
+                    UInt16 length = Convert.ToUInt16((pair >> 12) + 3);
+                    UInt16 offset = Convert.ToUInt16((pair & 0x0FFF) - 1);
+                    uint windowPtr = Convert.ToUInt32((dstOffs - offset) - 2);
+
+                    while (length > 0)
+                    {
+                        outputReader.BaseStream.Seek(windowPtr, SeekOrigin.Current);
+                        binaryWriter.BaseStream.Position = dstOffs;
+                        binaryWriter.Write(outputReader.ReadByte());
+                        windowPtr++;
+                        dstOffs++;
+                        length--;
+                    }
+                }
+
+                ctrlBits <<= 1;
+                numCtrlBits--;
+            }
+            return memoryOutput.ToArray();
+            
+        }
+
+
+
+
+
+
+
+
 
 
 
@@ -497,10 +508,10 @@ namespace Tarmac64_Library
             vertcount = BitConverter.ToUInt32(flip, 0);
             ///MessageBox.Show(vertbyte.Count.ToString() + "--" + vertcount.ToString());
 
-
+            TM64_Geometry tmGeo = new TM64_Geometry();
             ///seg7 size
 
-            byte[] seg7byte = decompress_seg7(seg7);
+            byte[] seg7byte = tmGeo.decompress_seg7(seg7);
             UInt32 seg7size = Convert.ToUInt32(seg7byte.Length);
 
 
@@ -540,603 +551,12 @@ namespace Tarmac64_Library
 
         }
 
-        public byte[] compileHotswap(byte[] useg4, byte[] useg6, byte[] useg7, byte[] seg9, string courseName, string previewImage, string bannerImage, string mapImage, Int16[] mapCoords, string customASM, string ghostData, byte[] skyColor, byte songID, byte[] gameSpeed, byte[] romBytes, int cID, int setID)
-        {
-
-
-            ///This takes precompiled segments and inserts them into the ROM file. It also updates the course header table to reflect
-            /// the new data sizes. This allows for proper loading of the course so long as the segments are properly setup. All segment
-            /// data should be precompressed where applicable, this assumes that segment 4 and segment 6 are MIO0 compressed and that
-            /// Segment 7 has had it's special compression ran. Segment 9 has no compression. romBytes is the ROM file as a byte array, and CID
-            /// is the ID of the course we're looking to replace based on it's location in the course header table. 
-
-
-            /// This writes all segments to the end of the file for simplicity. If data was larger than original (which it almost always will be for custom courses)
-            /// then it cannot fit in the existing space without overwriting other course data. 
-            /// 
-
-            byte[] seg6 = compressMIO0(useg6);
-            byte[] seg4 = compressMIO0(useg4);
-            byte[] seg7 = compress_seg7(useg7);
-
-
-            byte[] flip = new byte[0];
-
-            TM64 mk = new TM64();
-            bs = new MemoryStream();
-
-            bs.Write(romBytes, 0, romBytes.Length);
-            bw = new BinaryWriter(bs);
-            br = new BinaryReader(bs);
-
-            UInt32 seg6start = 0;
-            UInt32 seg6end = 0;
-            UInt32 seg4start = 0;
-            UInt32 seg7end = 0;
-            UInt32 seg9start = 0;
-            UInt32 seg9end = 0;
-            UInt32 seg7start = 0;
-            UInt32 seg7rsp = 0;
-
-
-
-
-
-
-            int addressAlign = 0;
-
-            int previewOffset = 0;
-            int bannerOffset = 0;
-            int mapOffset = 0;
-            int coordOffset = 0;
-            int nameOffset = 0;
-            int ghostOffset = 0;
-            int skyOffset = 0;
-
-            int previewEnd = 0;
-            int bannerEnd = 0;
-            int mapEnd = 0;
-            int coordEnd = 0;
-            int nameEnd = 0;
-            int ghostEnd = 0;
-            int skyEnd = 0;
-
-            int ssOffset = 0; //song and speed
-
-            int asmOffset = 0;
-            int asmEnd = 0;
-
-            bw.BaseStream.Position = bw.BaseStream.Length;
-
-
-
-            //allignment
-
-            addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                bw.Write(Convert.ToByte(0x00));
-            }
-
-            //
-
-
-
-
-
-
-
-            //Internal Name
-            if (courseName.Length > 0)
-            {
-                nameOffset = Convert.ToInt32(bw.BaseStream.Position);
-
-                bw.Write(courseName);   //using a length-defined as opposed to null terminated setup.
-                                        //easier to program for writing, easier to program for reading. 
-                nameEnd = Convert.ToInt32(bw.BaseStream.Position);
-
-                addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    bw.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-
-
-            //Staff Ghost
-            if (ghostData.Length > 0)
-            {
-                ghostOffset = Convert.ToInt32(bw.BaseStream.Position);
-
-                bw.Write(courseName);   //using a length-defined as opposed to null terminated setup.
-                                        //easier to program for writing, easier to program for reading. 
-                ghostEnd = Convert.ToInt32(bw.BaseStream.Position);
-
-                addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    bw.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-
-
-            //Write Course Map Texture
-            if (mapImage.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(mapImage);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                mapOffset = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(compressedData);
-                mapEnd = Convert.ToInt32(bw.BaseStream.Position);
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    bw.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-            //map coords
-
-            coordOffset = Convert.ToInt32(bw.BaseStream.Position);
-
-            flip = BitConverter.GetBytes(mapCoords[0]);
-            Array.Reverse(flip);
-            bw.Write(flip);
-
-            flip = BitConverter.GetBytes(mapCoords[1]);
-            Array.Reverse(flip);
-            bw.Write(flip);
-
-            coordEnd = Convert.ToInt32(bw.BaseStream.Position);
-
-            addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                bw.Write(Convert.ToByte(0x00));
-            }
-
-            //
-
-
-
-
-            //add sky colors
-            
-
-            skyOffset = Convert.ToInt32(bw.BaseStream.Position);
-
-            bw.Write(Convert.ToByte(0x00));
-            bw.Write(skyColor[0]);
-            bw.Write(Convert.ToByte(0x00));
-            bw.Write(skyColor[1]);
-            bw.Write(Convert.ToByte(0x00));
-            bw.Write(skyColor[2]);
-            bw.Write(Convert.ToByte(0x00));
-            bw.Write(skyColor[3]);
-            bw.Write(Convert.ToByte(0x00));
-            bw.Write(skyColor[4]);
-            bw.Write(Convert.ToByte(0x00));
-            bw.Write(skyColor[5]);
-
-            skyEnd = Convert.ToInt32(bw.BaseStream.Position);
-
-            addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                bw.Write(Convert.ToByte(0x00));
-            }
-            //
-
-
-
-
-
-
-
-
-
-            //custom ASM
-            if (customASM.Length > 0)
-            {
-
-
-                byte[] asmSequence = File.ReadAllBytes(customASM);
-
-                asmOffset = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(asmSequence);
-                asmEnd = Convert.ToInt32(bw.BaseStream.Position);
-
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    bw.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-
-
-
-
-
-
-
-            //Course Preview Texture
-            if (previewImage.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(previewImage);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                previewOffset = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(compressedData);
-                previewEnd = Convert.ToInt32(bw.BaseStream.Position);
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    bw.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-
-
-
-            //Write Course Banner Texture
-            if (bannerImage.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(bannerImage);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                bannerOffset = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(compressedData);
-                bannerEnd = Convert.ToInt32(bw.BaseStream.Position);
-
-
-                addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    bw.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-
-
-
-
-            // Segment 6
-
-            seg6start = Convert.ToUInt32(bw.BaseStream.Position);
-
-
-            bw.Write(seg6, 0, seg6.Length);
-
-            addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                bw.Write(Convert.ToByte(0x00));
-            }
-            seg6end = Convert.ToUInt32(bw.BaseStream.Position);
-            //
-
-
-            // Segment 9
-            seg9start = Convert.ToUInt32(bw.BaseStream.Position);
-
-            bw.Write(seg9, 0, seg9.Length);
-
-            addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                bw.Write(Convert.ToByte(0x00));
-            }
-            seg9end = Convert.ToUInt32(bw.BaseStream.Position);
-            //
-
-
-
-
-            // Segment 4/7
-            seg4start = Convert.ToUInt32(bw.BaseStream.Position);
-
-            bw.Write(seg4, 0, seg4.Length);
-
-            addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-
-            for (int align = 0; align < addressAlign; align++)
-            {
-                bw.Write(Convert.ToByte(0x00));
-            }
-
-            seg7start = Convert.ToUInt32(bw.BaseStream.Position);
-
-            bw.Write(seg7, 0, seg7.Length);
-
-
-            addressAlign = 4 - (Convert.ToInt32(bw.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                bw.Write(Convert.ToByte(0x00));
-            }
-            seg7end = Convert.ToUInt32(bw.BaseStream.Position);
-            seg7rsp = Convert.ToUInt32(0x0F000000 | (seg7start - seg4start));
-            //
-
-
-
-
-
-
-            // Flip Endian on Course Header offsets.
-
-            flip = BitConverter.GetBytes(seg6start);
-            Array.Reverse(flip);
-            seg6start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg6end);
-            Array.Reverse(flip);
-            seg6end = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg4start);
-            Array.Reverse(flip);
-            seg4start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg7end);
-            Array.Reverse(flip);
-            seg7end = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg9start);
-            Array.Reverse(flip);
-            seg9start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg9end);
-            Array.Reverse(flip);
-            seg9end = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg7rsp);
-            Array.Reverse(flip);
-            seg7rsp = BitConverter.ToUInt32(flip, 0);
-            //
-
-
-            //calculate # verts
-
-            UInt32 vertcount = Convert.ToUInt32(useg4.Length / 14);
-            flip = BitConverter.GetBytes(vertcount);
-            Array.Reverse(flip);
-            vertcount = BitConverter.ToUInt32(flip, 0);
-            //
-
-
-
-            //seg7 size
-
-            UInt32 seg7size = Convert.ToUInt32(useg7.Length);
-            flip = BitConverter.GetBytes(seg7size);
-            Array.Reverse(flip);
-            seg7size = BitConverter.ToUInt32(flip, 0);
-            //
-
-
-            /// After Calculating the offsets and values above we now write them to the empty space near the end of the ROM.
-
-
-
-
-
-
-            bw.BaseStream.Seek(0xBFDA80 + (setID * 0x50) + (cID * 0x4), SeekOrigin.Begin);
-
-
-
-
-            //Internal Course Names
-            
-            flip = BitConverter.GetBytes(nameOffset);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            flip = BitConverter.GetBytes(nameEnd);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            //
-
-
-            //Write staff ghost offset
-            flip = BitConverter.GetBytes(previewOffset);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            flip = BitConverter.GetBytes(previewEnd);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            //
-
-            //Speed and Song
-            //WRITTEN DIRECTLY TO HEADER.
-
-            bw.Write(songID);
-            bw.Write(gameSpeed[0]);
-            bw.Write(gameSpeed[1]);
-            bw.Write(gameSpeed[2]);
-            //
-
-
-
-            //Write course minimap offset
-            
-            flip = BitConverter.GetBytes(mapOffset);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            flip = BitConverter.GetBytes(mapEnd);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            //
-
-
-
-            //Write course minimap positions
-
-            flip = BitConverter.GetBytes(coordOffset);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            flip = BitConverter.GetBytes(coordEnd);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            //
-
-
-
-            //Write sky color offset
-
-            flip = BitConverter.GetBytes(skyOffset);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            flip = BitConverter.GetBytes(skyEnd);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            //
-
-
-            //Write ASM offset
-
-            flip = BitConverter.GetBytes(asmOffset);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            flip = BitConverter.GetBytes(asmEnd);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            //
-
-            //OK64 Course Header Table 
-            
-
-            bw.Write(seg6start);
-            bw.Write(seg6end);
-            bw.Write(seg4start);
-            bw.Write(seg7end);
-            bw.Write(seg9start);
-            bw.Write(seg9end);
-
-            flip = BitConverter.GetBytes(0x0F000000);
-            Array.Reverse(flip);
-            bw.Write(flip);
-
-            bw.Write(vertcount);
-
-            bw.Write(seg7rsp);
-
-
-            bw.Write(seg7size);
-
-            flip = BitConverter.GetBytes(0x09000000);
-            Array.Reverse(flip);
-            bw.Write(flip);
-
-            flip = BitConverter.GetBytes(0x00000000);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            //
-
-
-
-
-
-
-
-
-            bw.BaseStream.Seek(0xBFF9C0 + (setID * 0x140) + (cID * 0x50), SeekOrigin.Begin);
-
-
-
-            //Write preview image offset
-
-            flip = BitConverter.GetBytes(previewOffset);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            flip = BitConverter.GetBytes(previewEnd);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            //
-
-
-
-            //Write banner image offset
-
-            flip = BitConverter.GetBytes(bannerOffset);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            flip = BitConverter.GetBytes(bannerEnd);
-            Array.Reverse(flip);
-            bw.Write(flip);
-            //
-
-
-
-
-
-
-            byte[] newROM = bs.ToArray();
-            return newROM;
-
-        }
-
-
-
         public void DumpTextures(int cID, string outputDir, string filePath)
         {
 
 
 
-
+            
             byte[] romBytes = File.ReadAllBytes(filePath);
             byte[] seg9 = new byte[(seg9_end[cID] - seg9_addr[cID])];
 
@@ -3218,7 +2638,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] decompress_seg7(byte[] useg7)
+        public byte[] d_seg7(byte[] useg7)
         {
 
             /// This will decompress Segment 7's compressed display lists to regular F3DEX commands.
@@ -4766,7 +4186,6 @@ namespace Tarmac64_Library
         }
 
 
-
         public string F3DEX_Model(byte commandbyte, byte[] segment, byte[] seg4, int vertoffset, int segmentoffset)
         {
             /// segment is the segment that contained the F3DEX command. for Mario Kart 64 it will most likely be Seg6 or Seg7.
@@ -5184,7 +4603,6 @@ namespace Tarmac64_Library
             return outputstring;
 
         }
-
         public List<Pathgroup> Load_3PL(string file_3PL)
         {
             //load the pathgroups from the external .SVL file provided
@@ -5235,171 +4653,6 @@ namespace Tarmac64_Library
             return pathgroup;
         }
 
-
-
-
-
-        public Pathgroup[] loadPOP(string popFile)
-        {
-            //load the pathgroups from the external .OK64.POP file provided
-
-            //POP files are much easier to read than 3PL files. 
-            //POP files are constrained by specific limits for OverKart64 and cannot hold arbitrary data.
-            //POP files are only for custom courses designed with OverKart64. 3PL files can hold any object/path data. 
-
-            List<Pathgroup> pathgroup = new List<Pathgroup>();
-
-
-            string[] reader = File.ReadAllLines(popFile);
-            string[] positions = new string[3];
-
-            int[] markerCount = new int[4] { 800, 64, 64, 64 };
-            int current_line = 0;
-
-            for (int group = 0; group < 4; group++)
-            {
-                pathgroup.Add(new Pathgroup());
-                pathgroup[group].pathlist = new List<Pathlist>();
-
-                
-                pathgroup[group].pathlist.Add(new Pathlist());
-                pathgroup[group].pathlist[0].pathmarker = new List<Marker>();
-
-                for (int marker = 0; marker < markerCount[group]; marker++)
-                {
-                    pathgroup[group].pathlist[0].pathmarker.Add(new Marker());
-
-
-                    // input format
-
-                    //[xposition,yposition,zposition]
-                    //flag
-
-                    // Flag for Path should correlate with section.
-                    // Flag for objects will almost always be 0. Unsure of effect. 
-
-                    string lineRead = reader[current_line].Substring(1, (reader[current_line].Length - 2));
-                    // This strips the brackets from the first line
-
-                    string[] markerPosition = lineRead.Split(',');
-                    // This creates an array containing the marker positions as strings.
-
-                    current_line++;
-                    // Advance forward in the file.
-
-
-                    pathgroup[group].pathlist[0].pathmarker[marker].xval = Convert.ToInt32(Single.Parse(markerPosition[0]));
-                    pathgroup[group].pathlist[0].pathmarker[marker].yval = Convert.ToInt32(Single.Parse(markerPosition[1]));
-                    pathgroup[group].pathlist[0].pathmarker[marker].zval = Convert.ToInt32(Single.Parse(markerPosition[2]));
-                    
-                    //maintain Z/Y axis, we flip it only when writing to the ROM.
-
-
-                    pathgroup[group].pathlist[0].pathmarker[marker].flag = Convert.ToInt32(reader[current_line]);
-                    //Read the next line, convert to int. This is the accompanying Flag for the marker. 
-
-                    current_line++;
-                    // Advance forward in the file.
-                }
-
-
-            }
-            Pathgroup[] popPath = pathgroup.ToArray();
-            return popPath;
-
-        }
-        //This returns a byte array with the OK64.POP file's paths and objects in their proper format.
-        //This needs to be placed at a specific location and that location needs to be updated in ASM.
-        //Below is an older routine to add markers to an existing course.
-        public byte[] popMarkers(string popFile)
-        {
-
-
-            //InjectMarkers is used by the geometry compiler, not to add objects to existing courses.
-            // AddMarkers, down below this command, is used by the Object and Path editors to modify existing course data.
-
-
-
-            Pathgroup[] pathgroup = loadPOP(popFile);
-
-
-            bs = new MemoryStream();
-            bw = new BinaryWriter(bs);
-            br = new BinaryReader(bs);
-
-            int groupCount = pathgroup.Length;
-            for (int currentGroup = 0; currentGroup < groupCount; currentGroup++)
-            {
-
-                int markerCount = pathgroup[currentGroup].pathlist[0].pathmarker.Count;
-                for (int currentMarker = 0; currentMarker < markerCount; currentMarker++)
-                {
-                    int[] tempint = new int[4];
-
-
-
-                    flip2 = BitConverter.GetBytes(Convert.ToInt16(pathgroup[currentGroup].pathlist[0].pathmarker[currentMarker].xval));
-                    Array.Reverse(flip2);
-                    bw.Write(flip2);  //x
-
-                    flip2 = BitConverter.GetBytes(Convert.ToInt16(pathgroup[currentGroup].pathlist[0].pathmarker[currentMarker].zval));
-                    Array.Reverse(flip2);
-                    bw.Write(flip2);  //z
-
-                    flip2 = BitConverter.GetBytes(Convert.ToInt16(-1 * pathgroup[currentGroup].pathlist[0].pathmarker[currentMarker].yval));
-                    Array.Reverse(flip2);
-                    bw.Write(flip2);  //y 
-
-                    flip2 = BitConverter.GetBytes(Convert.ToUInt16(pathgroup[currentGroup].pathlist[0].pathmarker[currentMarker].flag));
-                    Array.Reverse(flip2);
-                    bw.Write(flip2);  //flag
-
-
-
-
-
-
-                }
-
-
-
-
-                flip2 = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
-                Array.Reverse(flip2);
-                bw.Write(flip2);  //x
-
-                if (currentGroup == 0)  //group 0 is course paths, groups 1-3 are objects
-                {
-                    flip2 = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
-                    Array.Reverse(flip2);
-                    bw.Write(flip2);  //z
-
-                    flip2 = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
-                    Array.Reverse(flip2);
-                    bw.Write(flip2);  //y 
-                }
-                else
-                {
-
-                    flip2 = BitConverter.GetBytes(Convert.ToInt16(0));
-                    Array.Reverse(flip2);
-                    bw.Write(flip2);  //z
-
-                    flip2 = BitConverter.GetBytes(Convert.ToInt16(0));
-                    Array.Reverse(flip2);
-                    bw.Write(flip2);  //y 
-                }
-
-
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(0));
-                Array.Reverse(flip2);
-                bw.Write(flip2);  //flag
-            }
-
-            byte[] popBytes = bs.ToArray();
-            return popBytes;
-
-        }
 
 
 
@@ -5521,7 +4774,7 @@ namespace Tarmac64_Library
             return seg6;
         }
 
-        public OK64Texture textureClass(OK64Texture textureObject)
+        public TM64_Geometry.OK64Texture textureClass(TM64_Geometry.OK64Texture textureObject)
         {
 
             // series of If/Then statements checking first the Format, then the Height and Width of the texture data to determine it's format.
@@ -5580,7 +4833,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] writeTextures(byte[] rom, OK64Texture[] textureObject)
+        public byte[] writeTextures(byte[] rom, TM64_Geometry.OK64Texture[] textureObject)
         {
             bs = new MemoryStream();
             br = new BinaryReader(bs);
@@ -5648,7 +4901,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] compiletextureTable(OK64Texture[] textureObject)
+        public byte[] compiletextureTable(TM64_Geometry.OK64Texture[] textureObject)
         {
             bs = new MemoryStream();
             br = new BinaryReader(bs);
@@ -5702,7 +4955,7 @@ namespace Tarmac64_Library
             byte[] seg9Out = seg9m.ToArray();
             return seg9Out;
         }
-        public void compileF3DObject(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, AssimpSharp.Scene fbx, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic)
+        public void compileF3DObject(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, Assimp.Scene fbx, byte[] segment4, byte[] segment7, TM64_Geometry.OK64F3DObject[] courseObject, TM64_Geometry.OK64Texture[] textureObject, int vertMagic)
         {
 
 
@@ -5770,9 +5023,9 @@ namespace Tarmac64_Library
 
                     
 
-                    int vertcount = current_subobject.Vertices.Length;
+                    int vertcount = current_subobject.Vertices.Count;
                     ///MessageBox.Show(currentnode.Name+"-"+child.Name + "-Vert Count-"+vertcount.ToString());
-                    int facecount = current_subobject.Faces.Length;
+                    int facecount = current_subobject.Faces.Count;
                     ///MessageBox.Show(currentnode.Name + "-" + child.Name + "-Face Count-" + facecount.ToString());
 
 
@@ -5783,8 +5036,8 @@ namespace Tarmac64_Library
 
                     int materialID = new int();
 
-                    Face[] face = new Face[facecount];
-                    Vertex[] vert = new Vertex[current_subobject.Vertices.Length];
+                    TM64_Geometry.Face[] face = new TM64_Geometry.Face[facecount];
+                    TM64_Geometry.Vertex[] vert = new TM64_Geometry.Vertex[current_subobject.Vertices.Count];
 
                     materialID = cObj.materialID;
 
@@ -5797,27 +5050,26 @@ namespace Tarmac64_Library
                         
 
 
-                        face[f] = new Face { };
-                        face[f].vertindex = new VertIndex { };
+                        face[f] = new TM64_Geometry.Face();
 
-                        face[f].vertindex.v0 = current_subobject.Faces[f].Indices[0];
+                        face[f].vertIndex.indexA = current_subobject.Faces[f].Indices[0];
 
-                        face[f].vertindex.v2 = current_subobject.Faces[f].Indices[1];
+                        face[f].vertIndex.indexC = current_subobject.Faces[f].Indices[1];
 
-                        face[f].vertindex.v1 = current_subobject.Faces[f].Indices[2]; ;
+                        face[f].vertIndex.indexB = current_subobject.Faces[f].Indices[2]; ;
 
                         face[f].material = materialID;
 
-                        vert[face[f].vertindex.v0] = new Vertex { };
-                        vert[face[f].vertindex.v0].position = new Position { };
+                        vert[face[f].vertIndex.indexA] = new TM64_Geometry.Vertex { };
+                        vert[face[f].vertIndex.indexA].position = new TM64_Geometry.Position { };
 
 
-                        vert[face[f].vertindex.v0].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].vertindex.v0].X);
+                        vert[face[f].vertIndex.indexA].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexA].X);
 
-                        vert[face[f].vertindex.v0].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].vertindex.v0].Y);
+                        vert[face[f].vertIndex.indexA].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexA].Y);
                         /// Flip YZ Axis 
-                        vert[face[f].vertindex.v0].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].vertindex.v0].Z);    /// Flip YZ Axis 
-                        vert[face[f].vertindex.v0].position.z = Convert.ToInt16(vert[face[f].vertindex.v0].position.z); /// Flip Y Axis
+                        vert[face[f].vertIndex.indexA].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexA].Z);    /// Flip YZ Axis 
+                        vert[face[f].vertIndex.indexA].position.z = Convert.ToInt16(vert[face[f].vertIndex.indexA].position.z); /// Flip Y Axis
 
 
                        
@@ -5825,30 +5077,30 @@ namespace Tarmac64_Library
                         
 
 
-                        vert[face[f].vertindex.v2] = new Vertex { };
-                        vert[face[f].vertindex.v2].position = new Position { };
+                        vert[face[f].vertIndex.indexC] = new TM64_Geometry.Vertex { };
+                        vert[face[f].vertIndex.indexC].position = new TM64_Geometry.Position { };
 
-                        vert[face[f].vertindex.v2].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].vertindex.v2].X);
+                        vert[face[f].vertIndex.indexC].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexC].X);
 
-                        vert[face[f].vertindex.v2].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].vertindex.v2].Y);
+                        vert[face[f].vertIndex.indexC].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexC].Y);
 
-                        vert[face[f].vertindex.v2].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].vertindex.v2].Z);    /// Flip YZ Axis 
-                        vert[face[f].vertindex.v2].position.z = Convert.ToInt16(vert[face[f].vertindex.v2].position.z); /// Flip Y Axis
+                        vert[face[f].vertIndex.indexC].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexC].Z);    /// Flip YZ Axis 
+                        vert[face[f].vertIndex.indexC].position.z = Convert.ToInt16(vert[face[f].vertIndex.indexC].position.z); /// Flip Y Axis
 
 
 
                         //
 
-                        vert[face[f].vertindex.v1] = new Vertex { };
-                        vert[face[f].vertindex.v1].position = new Position { };
+                        vert[face[f].vertIndex.indexB] = new TM64_Geometry.Vertex { };
+                        vert[face[f].vertIndex.indexB].position = new TM64_Geometry.Position { };
 
 
-                        vert[face[f].vertindex.v1].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].vertindex.v1].X);
+                        vert[face[f].vertIndex.indexB].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexB].X);
 
-                        vert[face[f].vertindex.v1].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].vertindex.v1].Y);
+                        vert[face[f].vertIndex.indexB].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexB].Y);
 
-                        vert[face[f].vertindex.v1].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].vertindex.v1].Z);    /// Flip YZ Axis 
-                        vert[face[f].vertindex.v1].position.z = Convert.ToInt16(vert[face[f].vertindex.v1].position.z); /// Flip Y Axis
+                        vert[face[f].vertIndex.indexB].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexB].Z);    /// Flip YZ Axis 
+                        vert[face[f].vertIndex.indexB].position.z = Convert.ToInt16(vert[face[f].vertIndex.indexB].position.z); /// Flip Y Axis
 
 
 
@@ -5868,16 +5120,16 @@ namespace Tarmac64_Library
                         Int16 local_s = 0;
                         Int16 local_t = 0;
 
+                        
 
+                        u_offset[0] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexA][0]);
+                        v_offset[0] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexA][1]);
 
-                        u_offset[0] = Convert.ToSingle(current_subobject.TextureCoords[0][face[f].vertindex.v0][0]);
-                        v_offset[0] = Convert.ToSingle(current_subobject.TextureCoords[0][face[f].vertindex.v0][1]);
+                        u_offset[1] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexB][0]);
+                        v_offset[1] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexB][1]);
 
-                        u_offset[1] = Convert.ToSingle(current_subobject.TextureCoords[0][face[f].vertindex.v1][0]);
-                        v_offset[1] = Convert.ToSingle(current_subobject.TextureCoords[0][face[f].vertindex.v1][1]);
-
-                        u_offset[2] = Convert.ToSingle(current_subobject.TextureCoords[0][face[f].vertindex.v2][0]);
-                        v_offset[2] = Convert.ToSingle(current_subobject.TextureCoords[0][face[f].vertindex.v2][1]);
+                        u_offset[2] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexC][0]);
+                        v_offset[2] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexC][1]);
 
                         // So we check the absolute values to find which is the least distance from the origin.
                         // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
@@ -5955,8 +5207,8 @@ namespace Tarmac64_Library
                         {
                             MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + cObj.objectName);
                         }
-                        vert[face[f].vertindex.v0].position.s = Convert.ToInt16(s_coord);
-                        vert[face[f].vertindex.v0].position.t = Convert.ToInt16(t_coord);
+                        vert[face[f].vertIndex.indexA].position.s = Convert.ToInt16(s_coord);
+                        vert[face[f].vertIndex.indexA].position.t = Convert.ToInt16(t_coord);
 
 
                         //
@@ -5971,8 +5223,8 @@ namespace Tarmac64_Library
                             MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + cObj.objectName);
                         }
 
-                        vert[face[f].vertindex.v1].position.s = Convert.ToInt16(s_coord);
-                        vert[face[f].vertindex.v1].position.t = Convert.ToInt16(t_coord);
+                        vert[face[f].vertIndex.indexB].position.s = Convert.ToInt16(s_coord);
+                        vert[face[f].vertIndex.indexB].position.t = Convert.ToInt16(t_coord);
 
 
                         //
@@ -5990,8 +5242,8 @@ namespace Tarmac64_Library
                         }
 
 
-                        vert[face[f].vertindex.v2].position.s = Convert.ToInt16(s_coord);
-                        vert[face[f].vertindex.v2].position.t = Convert.ToInt16(t_coord);
+                        vert[face[f].vertIndex.indexC].position.s = Convert.ToInt16(s_coord);
+                        vert[face[f].vertIndex.indexC].position.t = Convert.ToInt16(t_coord);
 
 
                         //
@@ -6161,16 +5413,16 @@ namespace Tarmac64_Library
                         if (x + 2 <= facecount)
                         {
                             /// draw 2 triangles, check for additional verts in both.
-                            if (face[x].vertindex.v0 > (relativeIndex + 31) | face[x].vertindex.v1 > (relativeIndex + 31) | face[x].vertindex.v2 > (relativeIndex + 31) | /// OR with next line
-                                                face[x + 1].vertindex.v0 > (relativeIndex + 31) | face[x + 1].vertindex.v1 > (relativeIndex + 31) | face[x + 1].vertindex.v2 > (relativeIndex + 31))
+                            if (face[x].vertIndex.indexA > (relativeIndex + 31) | face[x].vertIndex.indexB > (relativeIndex + 31) | face[x].vertIndex.indexC > (relativeIndex + 31) | /// OR with next line
+                                                face[x + 1].vertIndex.indexA > (relativeIndex + 31) | face[x + 1].vertIndex.indexB > (relativeIndex + 31) | face[x + 1].vertIndex.indexC > (relativeIndex + 31))
                             {
 
                                 /// OVER VERT LIMIT, LOAD NEW VERTS
-                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertindex.v0, face[x].vertindex.v1));
-                                minvalue = Convert.ToUInt16(GetMin(face[x].vertindex.v2, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertindex.v0, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertindex.v1, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertindex.v2, minvalue));
+                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexA, face[x].vertIndex.indexB));
+                                minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexC, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexA, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexB, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexC, minvalue));
 
 
                                 if (minvalue - 4 < 0)
@@ -6193,16 +5445,16 @@ namespace Tarmac64_Library
                                 relativeIndex = minvalue;
                             }
 
-                            if ((face[x].vertindex.v0 < relativeIndex) | (face[x].vertindex.v1 < relativeIndex) | (face[x].vertindex.v2 < relativeIndex) |
-                                (face[x + 1].vertindex.v0 < relativeIndex) | (face[x + 1].vertindex.v1 < relativeIndex) | (face[x + 1].vertindex.v2 < relativeIndex))
+                            if ((face[x].vertIndex.indexA < relativeIndex) | (face[x].vertIndex.indexB < relativeIndex) | (face[x].vertIndex.indexC < relativeIndex) |
+                                (face[x + 1].vertIndex.indexA < relativeIndex) | (face[x + 1].vertIndex.indexB < relativeIndex) | (face[x + 1].vertIndex.indexC < relativeIndex))
                             {
 
                                 /// UNDER VERT LIMIT, LOAD NEW VERTS
-                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertindex.v0, face[x].vertindex.v1));
-                                minvalue = Convert.ToUInt16(GetMin(face[x].vertindex.v2, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertindex.v0, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertindex.v1, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertindex.v2, minvalue));
+                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexA, face[x].vertIndex.indexB));
+                                minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexC, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexA, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexB, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexC, minvalue));
 
                                 if (minvalue - 4 < 0)
                                 {
@@ -6230,18 +5482,18 @@ namespace Tarmac64_Library
 
 
 
-                            v0 = face[x].vertindex.v0 - relativeIndex;
-                            v1 = face[x].vertindex.v1 - relativeIndex;
-                            v2 = face[x].vertindex.v2 - relativeIndex;
+                            v0 = face[x].vertIndex.indexA - relativeIndex;
+                            v1 = face[x].vertIndex.indexB - relativeIndex;
+                            v2 = face[x].vertIndex.indexC - relativeIndex;
 
 
                             byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xB1000000 | (v2 << 17) | (v1 << 9) | v0 << 1));
                             Array.Reverse(byteArray);
                             seg7w.Write(byteArray);
 
-                            v0 = face[x + 1].vertindex.v0 - relativeIndex;
-                            v1 = face[x + 1].vertindex.v1 - relativeIndex;
-                            v2 = face[x + 1].vertindex.v2 - relativeIndex;
+                            v0 = face[x + 1].vertIndex.indexA - relativeIndex;
+                            v1 = face[x + 1].vertIndex.indexB - relativeIndex;
+                            v2 = face[x + 1].vertIndex.indexC - relativeIndex;
 
                             byteArray = BitConverter.GetBytes(Convert.ToUInt32((v2 << 17) | (v1 << 9) | v0 << 1));
                             Array.Reverse(byteArray);
@@ -6253,12 +5505,12 @@ namespace Tarmac64_Library
                         {
                             /// draw 1 triangle, only 1 vert check
 
-                            if (face[x].vertindex.v0 > (relativeIndex + 31) | face[x].vertindex.v1 > (relativeIndex + 31) | face[x].vertindex.v2 > (relativeIndex + 31))
+                            if (face[x].vertIndex.indexA > (relativeIndex + 31) | face[x].vertIndex.indexB > (relativeIndex + 31) | face[x].vertIndex.indexC > (relativeIndex + 31))
                             {
 
                                 /// OVER VERT LIMIT, LOAD NEW VERTS
-                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertindex.v0, face[x].vertindex.v1));
-                                minvalue = Convert.ToUInt16(GetMin(face[x].vertindex.v2, minvalue));
+                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexA, face[x].vertIndex.indexB));
+                                minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexC, minvalue));
 
 
                                 if (minvalue - 4 < 0)
@@ -6281,12 +5533,12 @@ namespace Tarmac64_Library
                                 relativeIndex = minvalue;
                             }
 
-                            if ((face[x].vertindex.v0 < relativeIndex) | (face[x].vertindex.v1 < relativeIndex) | (face[x].vertindex.v2 < relativeIndex))
+                            if ((face[x].vertIndex.indexA < relativeIndex) | (face[x].vertIndex.indexB < relativeIndex) | (face[x].vertIndex.indexC < relativeIndex))
                             {
 
                                 /// UNDER VERT LIMIT, LOAD NEW VERTS
-                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertindex.v0, face[x].vertindex.v1));
-                                minvalue = Convert.ToUInt16(GetMin(face[x].vertindex.v2, minvalue));
+                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexA, face[x].vertIndex.indexB));
+                                minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexC, minvalue));
 
                                 if (minvalue - 4 < 0)
                                 {
@@ -6318,9 +5570,9 @@ namespace Tarmac64_Library
                             Array.Reverse(byteArray);
                             seg7w.Write(byteArray);
 
-                            v0 = face[x].vertindex.v0 - relativeIndex;
-                            v1 = face[x].vertindex.v1 - relativeIndex;
-                            v2 = face[x].vertindex.v2 - relativeIndex;
+                            v0 = face[x].vertIndex.indexA - relativeIndex;
+                            v1 = face[x].vertIndex.indexB - relativeIndex;
+                            v2 = face[x].vertIndex.indexC - relativeIndex;
 
 
                             byteArray = BitConverter.GetBytes(Convert.ToUInt32((v2 << 17) | (v1 << 9) | v0 << 1));
@@ -6387,7 +5639,7 @@ namespace Tarmac64_Library
             outMagic = relativeZero;
         }
 
-        public byte[] compileF3DList(ref OK64SectionList[] sectionOut, AssimpSharp.Scene fbx, OK64F3DObject[] courseObject, OK64SectionList[] sectionList)
+        public byte[] compileF3DList(ref TM64_Geometry.OK64SectionList[] sectionOut, Assimp.Scene fbx, TM64_Geometry.OK64F3DObject[] courseObject, TM64_Geometry.OK64SectionList[] sectionList)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -6442,7 +5694,7 @@ namespace Tarmac64_Library
             return seg6m.ToArray();
         }
 
-        public byte[] compilesurfaceTable(OK64F3DObject[] surfaceObject)
+        public byte[] compilesurfaceTable(TM64_Geometry.OK64F3DObject[] surfaceObject)
         {
             MemoryStream seg6m = new MemoryStream();
             BinaryReader seg6r = new BinaryReader(seg6m);
@@ -6489,7 +5741,7 @@ namespace Tarmac64_Library
             return seg6;
         }
 
-        public byte[] compilesectionviewTable(OK64SectionList[] sectionList, int magic)
+        public byte[] compilesectionviewTable(TM64_Geometry.OK64SectionList[] sectionList, int magic)
         {
             MemoryStream seg6m = new MemoryStream();
             BinaryReader seg6r = new BinaryReader(seg6m);

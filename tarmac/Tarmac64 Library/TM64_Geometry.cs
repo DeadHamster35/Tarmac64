@@ -14,10 +14,11 @@ using System.Numerics;
 
 //custom libraries
 
-using AssimpSharp;  //for handling model data
+using Assimp;  //for handling model data
 using Texture64;  //for handling texture data
 
 
+using Cereal64.Microcodes.F3DEX.DataElements;
 using Cereal64.Microcodes.F3DEX.DataElements;
 using Cereal64.Common.DataElements;
 using Cereal64.Common.Rom;
@@ -25,6 +26,9 @@ using Cereal64.Common.Utils.Encoding;
 using System.Text.RegularExpressions;
 using System.Security.Permissions;
 using SharpDX;
+using System.Windows;
+using Tarmac64;
+using System.Windows.Media;
 
 namespace Tarmac64_Geometry
 {
@@ -33,7 +37,7 @@ namespace Tarmac64_Geometry
 
         /// These are various functions for decompressing and handling the segment data for Mario Kart 64.
 
-
+        string[] viewString = new string[4] { "North", "East", "South", "West" };
 
         public static int newint = 4;
         Random rValue = new Random();
@@ -85,6 +89,11 @@ namespace Tarmac64_Geometry
             public VertIndex vertIndex { get; set; }
             public int material { get; set; }
             public Vertex[] vertData { get; set; }
+            public Vector3D centerPosition { get; set; }
+            public float highX { get; set; }
+            public float highY { get; set; }
+            public float lowX { get; set; }
+            public float lowY { get; set; }
         }
 
         public class VertIndex
@@ -95,6 +104,15 @@ namespace Tarmac64_Geometry
 
         }
 
+
+        public class TMCamera
+        {
+            public Vector3D position { get; set; }
+            public Vector3D target { get; set; }
+            public Face[] targetPylon { get; set; }
+            public double rotation { get; set; }
+            
+        }
 
 
 
@@ -141,12 +159,24 @@ namespace Tarmac64_Geometry
             public bool flagC { get; set; }
             public Face[] modelGeometry { get; set; }
             public float[] objectColor { get; set; }
+            public PathfindingObject pathfindingObject { get; set; }
+        }
+        public class PathfindingObject
+        {
+            public float highX { get; set; }
+            public float highY { get; set; }
+            public float lowX { get; set; }
+            public float lowY { get; set; }
+
+            public bool surfaceBoolean { get; set; }
+
         }
 
         public class Vertex
         {
             public Position position { get; set; }
             public Color color { get; set; }
+            
         }
 
         public class Color
@@ -260,9 +290,11 @@ namespace Tarmac64_Geometry
             /// then it cannot fit in the existing space without overwriting other course data. 
 
             TM64_Geometry mk = new TM64_Geometry();
-            memoryStream = new MemoryStream(fileData);
+            memoryStream = new MemoryStream();
             binaryWriter = new BinaryWriter(memoryStream);
             binaryReader = new BinaryReader(memoryStream);
+            binaryWriter.Write(fileData, 0, fileData.Length);
+            binaryWriter.BaseStream.Position = 0;
 
             UInt32 seg6start = 0;
             UInt32 seg6end = 0;
@@ -289,9 +321,9 @@ namespace Tarmac64_Geometry
                 binaryWriter.Write(Convert.ToByte(0x00));
             }
 
-
+            byte[] compseg6 = compressMIO0(seg6);
             seg6start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(seg6, 0, seg6.Length);
+            binaryWriter.Write(compseg6, 0, compseg6.Length);
             seg6end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
             ///
 
@@ -317,9 +349,9 @@ namespace Tarmac64_Geometry
             {
                 binaryWriter.Write(Convert.ToByte(0x00));
             }
-
+            byte[] compseg4 = compressMIO0(seg4);
             seg4start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(seg4, 0, seg4.Length);
+            binaryWriter.Write(compseg4, 0, compseg4.Length);
             ///
 
 
@@ -332,12 +364,11 @@ namespace Tarmac64_Geometry
                 binaryWriter.Write(Convert.ToByte(0x00));
             }
 
+            byte[] compseg7 = compress_seg7(seg7);
             seg7start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(seg7, 0, seg7.Length);
-            seg7end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            ///
-            seg7rsp = Convert.ToUInt32(seg7start + 0x0F000000 - seg4start);
-
+            binaryWriter.Write(compseg7, 0, compseg7.Length);
+            seg7end = Convert.ToUInt32(binaryWriter.BaseStream.Position);           
+            seg7rsp = Convert.ToUInt32(0x0F000000 | (seg7start - seg4start));
 
 
             ///
@@ -378,8 +409,7 @@ namespace Tarmac64_Geometry
 
             ///calculate # verts
 
-            byte[] vertbyte = decompressMIO0(seg4);
-            UInt32 vertcount = Convert.ToUInt32(vertbyte.Length / 14);
+            UInt32 vertcount = Convert.ToUInt32(seg4.Length / 14);
 
             flip = BitConverter.GetBytes(vertcount);
             Array.Reverse(flip);
@@ -389,8 +419,7 @@ namespace Tarmac64_Geometry
 
             ///seg7 size
 
-            byte[] seg7byte = decompress_seg7(seg7);
-            UInt32 seg7size = Convert.ToUInt32(seg7byte.Length);
+            UInt32 seg7size = Convert.ToUInt32(seg7.Length);
 
 
             ///MessageBox.Show(seg7size.ToString());
@@ -489,7 +518,7 @@ namespace Tarmac64_Geometry
             int ghostEnd = 0;
             int skyEnd = 0;
 
-            int ssOffset = 0; //song and speed
+
 
             int asmOffset = 0;
             int asmEnd = 0;
@@ -1025,6 +1054,682 @@ namespace Tarmac64_Geometry
 
         }
 
+        public byte[] compileBattle(byte[] useg4, byte[] useg6, byte[] useg7, byte[] seg9, string courseName, string previewImage, string bannerImage, string mapImage, Int16[] mapCoords, string customASM, byte[] skyColor, byte songID, byte[] gameSpeed, byte[] fileData, int cID, int setID)
+        {
+
+            /*
+            And then the shrill, whining voice began, "Oh, bless his heart, his
+            dear little Majesty needn't mind about the White Lady — that's what
+            we call her — being dead. The Worshipful Master Doctor is only
+            making game of a poor old woman like me when he says that. Sweet
+            Mastery Doctor, learned Master Doctor, who ever heard of a witch that
+            really died? You can always get them back."
+            "Call her up," said the grey voice. "We are all ready. Draw the circle.
+            Prepare the blue fire..."
+            */
+
+            bool blueFire = true; //needed for any black magic sorcery.
+
+            byte[] seg6 = compressMIO0(useg6);
+            byte[] seg4 = compressMIO0(useg4);
+            byte[] seg7 = compress_seg7(useg7);
+
+
+            byte[] flip = new byte[0];
+
+            TM64_Geometry mk = new TM64_Geometry();
+            memoryStream = new MemoryStream();
+            memoryStream.Write(fileData, 0, fileData.Length);
+            binaryWriter = new BinaryWriter(memoryStream);
+            binaryReader = new BinaryReader(memoryStream);
+
+            UInt32 seg6start = 0;
+            UInt32 seg6end = 0;
+            UInt32 seg4start = 0;
+            UInt32 seg7end = 0;
+            UInt32 seg9start = 0;
+            UInt32 seg9end = 0;
+            UInt32 seg7start = 0;
+            UInt32 seg7rsp = 0;
+
+
+
+
+
+
+            int addressAlign = 0;
+
+            int previewOffset = 0;
+            int bannerOffset = 0;
+            int mapOffset = 0;
+            int coordOffset = 0;
+            int nameOffset = 0;
+            int spawnOffset = 0;
+            int skyOffset = 0;
+
+            int previewEnd = 0;
+            int bannerEnd = 0;
+            int mapEnd = 0;
+            int coordEnd = 0;
+            int nameEnd = 0;
+            int spawnEnd = 0;
+            int skyEnd = 0;
+
+
+
+            int asmOffset = 0;
+            int asmEnd = 0;
+
+            binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
+
+
+
+            //allignment
+
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            //
+
+
+
+
+
+
+
+            //Internal Name
+            if (courseName.Length > 0)
+            {
+                nameOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+                binaryWriter.Write(courseName);   //using a length-defined as opposed to null terminated setup.
+                                                  //easier to program for writing, easier to program for reading. 
+
+
+                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+                if (addressAlign == 4)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+                nameEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            }
+            //
+
+
+
+
+            //Write Course Map Texture
+            if (mapImage.Length > 0)
+            {
+                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
+                byte[] imageData = null;
+                byte[] paletteData = null;
+                Bitmap bitmapData = new Bitmap(mapImage);
+                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
+                byte[] compressedData = compressMIO0(imageData);
+
+
+                mapOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(compressedData);
+
+
+
+
+                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+                if (addressAlign == 4)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+                mapEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            }
+            //
+            //map coords
+
+            coordOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+            flip = BitConverter.GetBytes(mapCoords[0]);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            flip = BitConverter.GetBytes(mapCoords[1]);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+
+
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            coordEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+            //
+
+
+
+
+            //add sky colors
+
+
+            skyOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(skyColor[0]);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(skyColor[1]);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(skyColor[2]);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(skyColor[3]);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(skyColor[4]);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(skyColor[5]);
+
+
+
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            skyEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            //
+
+
+            //add spawnpoints
+
+            /*
+            spawnOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            for (int currentPoint = 0; currentPoint < 4; currentPoint++)
+            {
+                binaryWriter.Write(Convert.ToInt16(spawnPoints[currentPoint].x));
+                binaryWriter.Write(Convert.ToInt16(spawnPoints[currentPoint].y));
+                binaryWriter.Write(Convert.ToInt16(spawnPoints[currentPoint].z));
+            }
+            */
+            spawnOffset = 0;
+
+
+
+
+
+
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            spawnEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            //
+
+
+
+
+
+
+            //custom ASM
+            if (customASM.Length > 0)
+            {
+
+
+                byte[] asmSequence = File.ReadAllBytes(customASM);
+
+                asmOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(asmSequence);
+
+
+
+
+
+                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+                if (addressAlign == 4)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+                asmEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            }
+            //
+
+
+
+
+
+
+
+            //Course Preview Texture
+            if (previewImage.Length > 0)
+            {
+                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
+                byte[] imageData = null;
+                byte[] paletteData = null;
+                Bitmap bitmapData = new Bitmap(previewImage);
+                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
+                byte[] compressedData = compressMIO0(imageData);
+
+
+                previewOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(compressedData);
+
+
+
+
+                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+                if (addressAlign == 4)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+                previewEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            }
+            //
+
+
+
+            //Write Course Banner Texture
+            if (bannerImage.Length > 0)
+            {
+                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
+                byte[] imageData = null;
+                byte[] paletteData = null;
+                Bitmap bitmapData = new Bitmap(bannerImage);
+                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
+                byte[] compressedData = compressMIO0(imageData);
+
+
+                bannerOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(compressedData);
+
+
+
+                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+                if (addressAlign == 4)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+                bannerEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            }
+            //
+
+
+
+
+            // Segment 6
+
+            seg6start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+
+
+            binaryWriter.Write(seg6, 0, seg6.Length);
+
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            seg6end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            //
+
+
+            // Segment 9
+            seg9start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+
+            binaryWriter.Write(seg9, 0, seg9.Length);
+
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            seg9end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            //
+
+
+
+
+            // Segment 4/7
+            seg4start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+
+            binaryWriter.Write(seg4, 0, seg4.Length);
+
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            seg7start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+
+            binaryWriter.Write(seg7, 0, seg7.Length);
+
+
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            seg7end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            seg7rsp = Convert.ToUInt32(0x0F000000 | (seg7start - seg4start));
+            //
+
+
+
+
+
+
+            // Flip Endian on Course Header offsets.
+
+            flip = BitConverter.GetBytes(seg6start);
+            Array.Reverse(flip);
+            seg6start = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(seg6end);
+            Array.Reverse(flip);
+            seg6end = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(seg4start);
+            Array.Reverse(flip);
+            seg4start = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(seg7end);
+            Array.Reverse(flip);
+            seg7end = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(seg9start);
+            Array.Reverse(flip);
+            seg9start = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(seg9end);
+            Array.Reverse(flip);
+            seg9end = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(seg7rsp);
+            Array.Reverse(flip);
+            seg7rsp = BitConverter.ToUInt32(flip, 0);
+            //
+
+
+            //calculate # verts
+
+            UInt32 vertcount = Convert.ToUInt32(useg4.Length / 14);
+            flip = BitConverter.GetBytes(vertcount);
+            Array.Reverse(flip);
+            vertcount = BitConverter.ToUInt32(flip, 0);
+            //
+
+
+
+            //seg7 size
+
+            UInt32 seg7size = Convert.ToUInt32(useg7.Length);
+            flip = BitConverter.GetBytes(seg7size);
+            Array.Reverse(flip);
+            seg7size = BitConverter.ToUInt32(flip, 0);
+            //
+
+
+            /// After Calculating the offsets and values above we now write them to the empty space near the end of the ROM.
+
+
+
+
+
+
+            binaryWriter.BaseStream.Seek(0xBFDA80 + (setID * 0x7D0) + (cID * 0x64), SeekOrigin.Begin);
+
+
+
+
+            //Internal Course Names
+
+            flip = BitConverter.GetBytes(nameOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(nameEnd);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+            /*
+            //Write staff ghost offset
+            flip = BitConverter.GetBytes(ghostOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(ghostEnd);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+            */
+
+            //Write spawn point offset
+            flip = BitConverter.GetBytes(spawnOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(spawnEnd);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+
+            //Speed and Song
+            //WRITTEN DIRECTLY TO HEADER.
+
+            binaryWriter.Write(songID);
+            binaryWriter.Write(gameSpeed[0]);
+            binaryWriter.Write(gameSpeed[1]);
+            binaryWriter.Write(gameSpeed[2]);
+            //
+
+
+
+            //Write course minimap offset
+
+            flip = BitConverter.GetBytes(mapOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(mapEnd);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+
+
+            //Write course minimap positions
+
+            flip = BitConverter.GetBytes(coordOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(coordEnd);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+
+
+            //Write sky color offset
+
+            flip = BitConverter.GetBytes(skyOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(skyEnd);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+
+            //Write ASM offset
+
+            flip = BitConverter.GetBytes(asmOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(asmEnd);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+            //OK64 Course Header Table 
+
+
+            binaryWriter.Write(seg6start);
+            binaryWriter.Write(seg6end);
+            binaryWriter.Write(seg4start);
+            binaryWriter.Write(seg7end);
+            binaryWriter.Write(seg9start);
+            binaryWriter.Write(seg9end);
+
+            flip = BitConverter.GetBytes(0x0F000000);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            binaryWriter.Write(vertcount);
+
+            binaryWriter.Write(seg7rsp);
+
+
+            binaryWriter.Write(seg7size);
+
+            flip = BitConverter.GetBytes(0x09000000);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            flip = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+
+
+
+
+
+
+
+            binaryWriter.BaseStream.Seek(0xBFF9C0 + (setID * 0x140) + (cID * 0x10), SeekOrigin.Begin);
+
+
+
+            //Write preview image offset
+
+            flip = BitConverter.GetBytes(previewOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(previewEnd);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+
+
+            //Write banner image offset
+
+            flip = BitConverter.GetBytes(bannerOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(bannerEnd);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+
+
+
+
+
+            byte[] newROM = memoryStream.ToArray();
+            return newROM;
+
+        }
+
+
+        public string[] DumpVerts(byte[] vertBytes)
+        {
+
+
+            bool vertEnd = true;
+
+            int vertcount = vertBytes.Length / 14;
+
+            string[] output = new string[vertcount];
+
+            int xcor = new int();
+            int ycor = new int();
+            int zcor = new int();
+            int scor = new int();
+            int tcor = new int();
+
+
+            MemoryStream ds = new MemoryStream(vertBytes);
+            BinaryReader dr = new BinaryReader(ds);
+            {
+                dr.BaseStream.Position = 0;
+                for (int i = 0; vertEnd; i++)
+                {
+                    byte[] flip2 = dr.ReadBytes(2);
+                    Array.Reverse(flip2);
+                    xcor = BitConverter.ToInt16(flip2, 0); //x   <-- this really is the X axis. No tricks.
+
+                    flip2 = dr.ReadBytes(2);
+                    Array.Reverse(flip2);
+                    zcor = BitConverter.ToInt16(flip2, 0); //z    <-- this is actually the Y axis, but the game (like early 3D) treats the Y axis as height
+
+                    flip2 = dr.ReadBytes(2);
+                    Array.Reverse(flip2);
+                    ycor = BitConverter.ToInt16(flip2, 0); //y    <-- this is actually the Z axis, but the game (like early 3D) treats the Z axis as depth
+
+                    flip2 = dr.ReadBytes(2);
+                    Array.Reverse(flip2);
+                    scor = BitConverter.ToInt16(flip2, 0); //S
+
+                    flip2 = dr.ReadBytes(2);
+                    Array.Reverse(flip2);
+                    tcor = BitConverter.ToInt16(flip2, 0); //T
+
+                    byte rcol = dr.ReadByte();
+                    byte gcol = dr.ReadByte();
+                    byte bcol = dr.ReadByte();
+                    byte acol = dr.ReadByte();
+
+                    output[i] = "[" + xcor.ToString() + "," + zcor.ToString() + "," + ycor.ToString() + "]";
+
+                    if (dr.BaseStream.Position >= dr.BaseStream.Length)
+                    {
+                        vertEnd = false;
+                    }
+                }
+
+                return output;
+            }
+
+        }
+
 
 
         public void DumpTextures(int cID, string outputDir, string filePath)
@@ -1087,7 +1792,7 @@ namespace Tarmac64_Geometry
                         width = 32;
                         height = 32;
 
-                        Bitmap exportBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                        Bitmap exportBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                         Graphics graphicsBitmap = Graphics.FromImage(exportBitmap);
                         N64Graphics.RenderTexture(graphicsBitmap, decompressedTexture, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
 
@@ -1102,7 +1807,7 @@ namespace Tarmac64_Geometry
                         width = 32;
                         height = 64;
 
-                        Bitmap exportBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                        Bitmap exportBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                         Graphics graphicsBitmap = Graphics.FromImage(exportBitmap);
                         N64Graphics.RenderTexture(graphicsBitmap, decompressedTexture, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
 
@@ -1113,7 +1818,7 @@ namespace Tarmac64_Geometry
                         width = 64;
                         height = 32;
 
-                        exportBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                        exportBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                         graphicsBitmap = Graphics.FromImage(exportBitmap);
                         N64Graphics.RenderTexture(graphicsBitmap, decompressedTexture, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
 
@@ -1137,6 +1842,10 @@ namespace Tarmac64_Geometry
 
 
         }
+
+
+
+
 
 
 
@@ -1345,24 +2054,18 @@ namespace Tarmac64_Geometry
             asmr.BaseStream.Seek(0, SeekOrigin.Begin);
 
             bool debug_bool = false;
-            bool combo = true;
 
             Int16 rt = new Int16();
             Int16 rs = new Int16();
             Int16 rd = new Int16();
             Int16 sa = new Int16();
 
-            Int32 target = new Int32();
-            Int32 asmbase = new Int32();
 
-            float fs = new float();
-            float ft = new float();
-            float fd = new float();
+
 
             byte[] immbyte = new byte[2];
 
-            Int16 imm = new Int16();
-            Int16 offset = new Int16();
+
 
 
             int[] current_offset = new int[] { 0x1000, 0xF7510, 0x123640 };
@@ -2641,7 +3344,7 @@ namespace Tarmac64_Geometry
                     }
                     else
                     {
-                        combo = false;
+                        
                     }
                 }
             }
@@ -2777,7 +3480,6 @@ namespace Tarmac64_Geometry
 
             seg7w.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            int compare = new int();
             byte commandbyte = new byte();
             byte[] byte29 = new byte[2];
 
@@ -2785,7 +3487,7 @@ namespace Tarmac64_Geometry
 
             mainseg.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            int vertoffset = 0;
+
             byte[] voffset = new byte[2];
 
             bool DispEnd = true;
@@ -2800,6 +3502,9 @@ namespace Tarmac64_Geometry
                 else
                 {
                     commandbyte = mainseg.ReadByte();
+
+
+
 
                     if (i > 2415)
                     {
@@ -3006,12 +3711,20 @@ namespace Tarmac64_Geometry
                     }
                     if (commandbyte == 0x28)
                     {
-                        value16 = mainseg.ReadUInt16();
-                        value16 = mainseg.ReadUInt16();
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x040681FF));
+                        //flip4 = mainseg.ReadBytes(2);
+                        //Array.Reverse(flip4);
+                        uint address = mainseg.ReadUInt16();
+
+
+                        int lvertCount = mainseg.ReadByte() & 0x3F;
+                        int lvertIndex = mainseg.ReadByte() & 0x3F;
+
+
+
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | (lvertIndex * 2) << 16 | (lvertCount << 10) + (16 * (lvertCount) - 1)));
                         Array.Reverse(flip4);
                         seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04050500));
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | address * 16));
                         Array.Reverse(flip4);
                         seg7w.Write(flip4);
                     }
@@ -3088,8 +3801,9 @@ namespace Tarmac64_Geometry
                     }
                     if (commandbyte >= 0x33 && commandbyte <= 0x52)
                     {
+                        
                         value16 = mainseg.ReadUInt16();
-
+                        
                         flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | (((commandbyte - 0x32) * 0x410) - 1)));
                         Array.Reverse(flip4);
                         seg7w.Write(flip4);
@@ -3097,7 +3811,6 @@ namespace Tarmac64_Geometry
                         Array.Reverse(flip4);
                         seg7w.Write(flip4);
                     }
-
                     if (commandbyte == 0x53)
                     {
                         flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFCFFFFFF));
@@ -3226,7 +3939,7 @@ namespace Tarmac64_Geometry
 
             seg7w.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            int compare = new int();
+
 
             string commandbyte = "";  ///keeping the same name from above decompress process
             byte[] byte29 = new byte[2];
@@ -3238,12 +3951,11 @@ namespace Tarmac64_Geometry
 
 
 
-            int vertoffset = 0;
+
             byte[] voffset = new byte[2];
 
             byte compressbyte = new byte();
 
-            bool DispEnd = true;
             mainseg.BaseStream.Position = 0;
 
             for (int i = 0; (mainseg.BaseStream.Position < mainseg.BaseStream.Length); i++)
@@ -3791,7 +4503,6 @@ namespace Tarmac64_Geometry
 
             seg7w.BaseStream.Seek(0, SeekOrigin.Begin);
 
-            int compare = new int();
 
             string commandbyte = "";  ///keeping the same name from above decompress process
             byte[] byte29 = new byte[2];
@@ -3803,12 +4514,11 @@ namespace Tarmac64_Geometry
 
 
 
-            int vertoffset = 0;
+
             byte[] voffset = new byte[2];
 
             byte compressbyte = new byte();
 
-            bool DispEnd = true;
             mainseg.BaseStream.Position = 0;
 
             for (int i = 0; (mainseg.BaseStream.Position < mainseg.BaseStream.Length); i++)
@@ -4298,9 +5008,89 @@ namespace Tarmac64_Geometry
         }
 
 
+        private const double Epsilon = 0.000001d;
+
+        public Vector3D testIntersect(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC)
+        {
+            Vector3D vert0, vert1, vert2;
+
+            vert0.X = vertA.position.x;
+            vert0.Y = vertA.position.y;
+            vert0.Z = vertA.position.z;
+
+            vert1.X = vertB.position.x;
+            vert1.Y = vertB.position.y;
+            vert1.Z = vertB.position.z;
+
+            vert2.X = vertC.position.x;
+            vert2.Y = vertC.position.y;
+            vert2.Z = vertC.position.z;
+
+            var edge1 = vert1 - vert0;
+            var edge2 = vert2 - vert0;
+
+            var pvec = Cross(rayDirection, edge2);
+
+            var det = Dot(edge1, pvec);
+
+            if (det > -Epsilon && det < Epsilon)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var invDet = 1d / det;
+
+            var tvec = rayOrigin - vert0;
+
+            var u = Dot(tvec, pvec) * invDet;
+
+            if (u < 0 || u > 1)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var qvec = Cross(tvec, edge1);
+
+            var v = Dot(rayDirection, qvec) * invDet;
+
+            if (v < 0 || u + v > 1)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var t = Dot(edge2, qvec) * invDet;
+
+            return new Vector3D((float)t, (float)u, (float)v);
+        }
+
+        private static double Dot(Vector3D v1, Vector3D v2)
+        {
+            return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
+        }
+
+        private static Vector3D Cross(Vector3D v1, Vector3D v2)
+        {
+            Vector3D dest;
+
+            dest.X = v1.Y * v2.Z - v1.Z * v2.Y;
+            dest.Y = v1.Z * v2.X - v1.X * v2.Z;
+            dest.Z = v1.X * v2.Y - v1.Y * v2.X;
+
+            return dest;
+        }
+
+        public static Vector3D GetTrilinearCoordinateOfTheHit(float t, Vector3D rayOrigin, Vector3D rayDirection)
+        {
+            return rayDirection * t + rayOrigin;
+        }
+
 
         public string F3DEX_Model(out Vertex[] vertOutput, byte commandbyte, byte[] segment, byte[] seg4, int vertoffset, int segmentoffset, Vertex[] vertCache)
         {
+            //  new code
             /// segment is the segment that contained the F3DEX command. for Mario Kart 64 it will most likely be Seg6 or Seg7.
             /// seg4 is an uncompressed 14-byte vert Array, based on Mario Kart 64's layout. This contains all the vertices for a Mario Kart 64 course.
             /// segmentoffset is the position right after the F3DEX commandbyte. If any parameters are read it needs the right offset to start reading from.
@@ -4349,7 +5139,6 @@ namespace Tarmac64_Geometry
 
             ///mainsegr Either Seg6 or Seg7 Uncompressed
             ///seg4r Seg4 Uncompressed
-            bool breakoff = true;
 
             if (commandbyte == 0xE4)
             {
@@ -4584,20 +5373,24 @@ namespace Tarmac64_Geometry
             {
                 /// Load vertices
                 /// Returns the vert offset into segment 4
-                int vertIndex = Convert.ToInt32(mainsegr.ReadByte());
+                int vertIndex = Convert.ToInt32(mainsegr.ReadByte() / 2);
+                
                 flip2 = mainsegr.ReadBytes(2);
                 Array.Reverse(flip2);
                 uint vertTotal = BitConverter.ToUInt16(flip2, 0) ;
+                vertTotal = vertTotal / 0x40F;
 
-                uint vertCount = (vertTotal / 0x40F);
 
+
+                
+                uint vertCount = Convert.ToUInt32(32 - vertIndex);
+                
 
                 //MessageBox.Show(segmentoffset.ToString() + "-" + vertIndex.ToString()+"-"+vertCount.ToString());
 
                 byte[] rsp_add = mainsegr.ReadBytes(4);
 
                 Array.Reverse(rsp_add);
-                vertCount = Convert.ToUInt16(32 - vertIndex);
                 int segid = Convert.ToInt32(rsp_add[3]);
                 rsp_add[3] = 0x00;
                 int location = BitConverter.ToInt32(rsp_add, 0);
@@ -4639,7 +5432,7 @@ namespace Tarmac64_Geometry
                 }
                 else
                 {
-                    int danger = 0;
+
                 }
             }
 
@@ -4685,26 +5478,83 @@ namespace Tarmac64_Geometry
 
         }
 
-        public OK64Texture[] loadTextures(AssimpSharp.Scene fbx)
+        string CheckFilePath(string inputPath, string basePath)
+        {
+            string outputString = "";
+            string[] pathStrings = inputPath.Split('\\');
+            if (pathStrings[0] == "..")
+            {
+                string[] baseStrings = basePath.Split('\\');
+
+                for (int currentString = 0; currentString < pathStrings.Length; currentString++)
+                {
+                    if (pathStrings[currentString] == "..")
+                    {
+                        pathStrings[currentString] = baseStrings[currentString + 1];
+                    }
+                }
+
+                outputString = Path.Combine(pathStrings);
+                outputString = baseStrings[0] + Path.DirectorySeparatorChar + outputString;
+                
+            }
+            else
+            {
+                outputString = inputPath;
+            }
+
+
+            return outputString;
+        }
+
+        public OK64Texture[] loadTextures(Assimp.Scene fbx, string filePath)
         {
 
             int materialCount = fbx.Materials.Count;
             OK64Texture[] textureArray = new OK64Texture[materialCount];
-
+            
             for (int materialIndex = 0; materialIndex < materialCount; materialIndex++)
             {
                 textureArray[materialIndex] = new TM64_Geometry.OK64Texture();
-                if (fbx.Materials[materialIndex].TextureDiffuse != null)
+                if (fbx.Materials[materialIndex].TextureDiffuse.FilePath != null) 
                 {   
-                    textureArray[materialIndex].texturePath = fbx.Materials[materialIndex].TextureDiffuse.TextureBase;
+                    textureArray[materialIndex].texturePath = fbx.Materials[materialIndex].TextureDiffuse.FilePath;
                     textureArray[materialIndex].textureName = Path.GetFileName(textureArray[materialIndex].texturePath);
                     textureArray[materialIndex].textureFormat = 0;
 
-                    textureArray[materialIndex].textureBitmap= Image.FromFile(textureArray[materialIndex].texturePath);
+                    textureArray[materialIndex].texturePath = CheckFilePath(textureArray[materialIndex].texturePath, filePath);
+                    
+                    if (File.Exists(textureArray[materialIndex].texturePath))
+                    {
+                        textureArray[materialIndex].textureBitmap = Image.FromFile(textureArray[materialIndex].texturePath);
+                        textureArray[materialIndex].textureHeight = textureArray[materialIndex].textureBitmap.Height;
+                        textureArray[materialIndex].textureWidth = textureArray[materialIndex].textureBitmap.Width;
 
-                    textureArray[materialIndex].textureHeight = textureArray[materialIndex].textureBitmap.Height;
-                    textureArray[materialIndex].textureWidth = textureArray[materialIndex].textureBitmap.Width;
+                    }
+                    else
+                    {
+                        while (!(File.Exists(textureArray[materialIndex].texturePath)))
+                        {
+                            MessageBox.Show(textureArray[materialIndex].texturePath + " not found, browse to file!");
+                            OpenFileDialog fileOpen = new OpenFileDialog();
+                            if (fileOpen.ShowDialog() == DialogResult.OK)
+                            {
+                                textureArray[materialIndex].texturePath = fileOpen.FileName;
+                                textureArray[materialIndex].textureBitmap = Image.FromFile(textureArray[materialIndex].texturePath);
+                                textureArray[materialIndex].textureHeight = textureArray[materialIndex].textureBitmap.Height;
+                                textureArray[materialIndex].textureWidth = textureArray[materialIndex].textureBitmap.Width;
+                            }
+                            else
+                            {
+                                MessageBox.Show("ERROR FILE NOT SELECTED");
+                                textureArray[materialIndex].textureHeight = 32;
+                                textureArray[materialIndex].textureWidth = 32;
+                                break;
+                            }
+                        }
 
+                    }
+                    
 
 
                     textureClass(textureArray[materialIndex]);
@@ -4734,7 +5584,7 @@ namespace Tarmac64_Geometry
                     .Select(x => x.OrgStr);
         }
          
-        public OK64F3DObject[] loadMaster(AssimpSharp.Scene fbx, OK64Texture[] textureArray)
+        public OK64F3DObject[] loadMaster(Assimp.Scene fbx, OK64Texture[] textureArray)
         {
             
             var masterNode = fbx.RootNode.FindNode("Course Master Objects");
@@ -4748,14 +5598,14 @@ namespace Tarmac64_Geometry
 
 
                 masterObjects[currentChild].objectColor = new float[3];
-                masterObjects[currentChild].objectColor[0] = rValue.NextFloat(0, 1);
-                masterObjects[currentChild].objectColor[1] = rValue.NextFloat(0, 1);
-                masterObjects[currentChild].objectColor[2] = rValue.NextFloat(0, 1);
+                masterObjects[currentChild].objectColor[0] = rValue.NextFloat(0.3f, 1);
+                masterObjects[currentChild].objectColor[1] = rValue.NextFloat(0.3f, 1);
+                masterObjects[currentChild].objectColor[2] = rValue.NextFloat(0.3f, 1);
 
 
 
                 masterObjects[currentChild].objectName = masterNode.Children[currentChild].Name;
-                masterObjects[currentChild].meshID = masterNode.Children[currentChild].Meshes.ToArray();
+                masterObjects[currentChild].meshID = masterNode.Children[currentChild].MeshIndices.ToArray();
                 masterObjects[currentChild].materialID = fbx.Meshes[masterObjects[currentChild].meshID[0]].MaterialIndex;
                 
                 int vertCount = 0;
@@ -4767,12 +5617,15 @@ namespace Tarmac64_Geometry
                 }
 
 
-                
-                foreach (var childMesh in masterNode.Children[currentChild].Meshes)
+
+                List<int> xValues = new List<int>();
+                List<int> yValues = new List<int>();
+
+                foreach (var childMesh in masterNode.Children[currentChild].MeshIndices)
                 {
 
-                    vertCount = vertCount + fbx.Meshes[childMesh].NumVertices;
-                    faceCount = faceCount + fbx.Meshes[childMesh].NumFaces;
+                    vertCount = vertCount + fbx.Meshes[childMesh].VertexCount;
+                    faceCount = faceCount + fbx.Meshes[childMesh].FaceCount;
 
                 }
                 masterObjects[currentChild].vertCount = vertCount;
@@ -4780,11 +5633,18 @@ namespace Tarmac64_Geometry
                 masterObjects[currentChild].modelGeometry = new Face[faceCount];
                 int currentFace = 0;
                 //masterObjects[currentChild].modelGeometry[currentFace];
-                foreach (var childMesh in masterNode.Children[currentChild].Meshes)
+               
+                foreach (var childMesh in masterNode.Children[currentChild].MeshIndices)
                 {
+                    
                     foreach (var childPoly in fbx.Meshes[childMesh].Faces)
                     {
-                        
+
+
+                        List<int> l_xValues = new List<int>();
+                        List<int> l_yValues = new List<int>();
+                        List<int> l_zValues = new List<int>();
+
                         masterObjects[currentChild].modelGeometry[currentFace] = new Face();
                         masterObjects[currentChild].modelGeometry[currentFace].vertData = new Vertex[3];
 
@@ -4801,12 +5661,62 @@ namespace Tarmac64_Geometry
                             masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
                             masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
 
+
+
+                            xValues.Add(masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.x);
+                            yValues.Add(masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.y);
+
+                            l_xValues.Add(masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.x);
+                            l_yValues.Add(masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.y);
+                            l_zValues.Add(masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.z);
+
+
+
+                            if (masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.x > masterObjects[currentChild].modelGeometry[currentFace].highX)
+                            {
+                                masterObjects[currentChild].modelGeometry[currentFace].highX = masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.x;
+                            }
+                            if (masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.x < masterObjects[currentChild].modelGeometry[currentFace].lowX)
+                            {
+                                masterObjects[currentChild].modelGeometry[currentFace].lowX = masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.x;
+                            }
+                            if (masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.y > masterObjects[currentChild].modelGeometry[currentFace].highY)
+                            {
+                                masterObjects[currentChild].modelGeometry[currentFace].highY = masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.y;
+                            }
+                            if (masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.y < masterObjects[currentChild].modelGeometry[currentFace].lowY)
+                            {
+                                masterObjects[currentChild].modelGeometry[currentFace].lowY = masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].position.y;
+                            }
+
+
                             masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color = new Color();
-                            masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.r = (Convert.ToByte(fbx.Meshes[childMesh].Colors[0][childPoly.Indices[currentVert]].Red * 255));
-                            masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.g = (Convert.ToByte(fbx.Meshes[childMesh].Colors[0][childPoly.Indices[currentVert]].Green * 255));
-                            masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.b = (Convert.ToByte(fbx.Meshes[childMesh].Colors[0][childPoly.Indices[currentVert]].Blue * 255));
+                            masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color = new Color();
+                            if (fbx.Meshes[childMesh].VertexColorChannels[0].Count > 0)
+                            {
+                                masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.r = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
+                                masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.g = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
+                                masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.b = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
+                            }
+                            else
+                            {
+                                masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.r = 252;
+                                masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.g = 252;
+                                masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.b = 252;
+                            }
                             masterObjects[currentChild].modelGeometry[currentFace].vertData[currentVert].color.a = 0;
                         }
+
+
+
+
+                        float centerX = (l_xValues[0] + l_xValues[1] + l_xValues[2]) / 3;
+                        float centerY = (l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3;
+                        float centerZ = (l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3;
+
+                        masterObjects[currentChild].modelGeometry[currentFace].centerPosition = new Vector3D(centerX, centerY, centerZ);
+
+
 
 
                         //UV coords
@@ -4825,20 +5735,18 @@ namespace Tarmac64_Geometry
                         float[] v_shift = { 0, 0, 0 };
                         float[] u_offset = { 0, 0, 0 };
                         float[] v_offset = { 0, 0, 0 };
-                        float UVdecs = 0;
-                        float UVdect = 0;
-                        Int16 local_s = 0;
-                        Int16 local_t = 0;
 
 
-                        u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[0]][0]);
-                        v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[0]][1]);
 
-                        u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[1]][0]);
-                        v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[1]][1]);
 
-                        u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[2]][0]);
-                        v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[2]][1]);
+                        u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][0]);
+                        v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][1]);
+
+                        u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][0]);
+                        v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][1]);
+
+                        u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][0]);
+                        v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][1]);
 
                         // So we check the absolute values to find which is the least distance from the origin.
                         // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
@@ -4958,6 +5866,38 @@ namespace Tarmac64_Geometry
 
                     }
 
+                    int[] localMax = new int[4];
+                    localMax[0] = -9999999;
+                    localMax[1] = 9999999;
+                    localMax[2] = -9999999;
+                    localMax[3] = 9999999;
+
+                    for (int currentValue = 0; currentValue < xValues.Count; currentValue++)
+                    {
+                        if (xValues[currentValue] > localMax[0])
+                        {
+                            localMax[0] = xValues[currentValue];
+                        }
+                        if (xValues[currentValue] < localMax[1])
+                        {
+                            localMax[1] = xValues[currentValue];
+                        }
+                        if (yValues[currentValue] > localMax[2])
+                        {
+                            localMax[2] = yValues[currentValue];
+                        }
+                        if (yValues[currentValue] < localMax[3])
+                        {
+                            localMax[3] = yValues[currentValue];
+                        }
+                    }
+
+                    masterObjects[currentChild].pathfindingObject = new PathfindingObject();
+                    masterObjects[currentChild].pathfindingObject.highX = localMax[0];
+                    masterObjects[currentChild].pathfindingObject.lowX = localMax[1];
+                    masterObjects[currentChild].pathfindingObject.highY = localMax[2];
+                    masterObjects[currentChild].pathfindingObject.lowY = localMax[3];
+
 
 
                 }
@@ -4971,27 +5911,27 @@ namespace Tarmac64_Geometry
         }
 
 
-        public OK64F3DObject[] createMaster(AssimpSharp.Scene fbx, int sectionCount, OK64Texture[] textureArray)
+        public OK64F3DObject[] createMaster(Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0;
             for (int currentSection = 0; currentSection < sectionCount; currentSection++)
             {
-                var sectionNode = fbx.RootNode.FindNode("Section " +(currentSection + 1).ToString());
+                var surfaceNode = fbx.RootNode.FindNode("Section " +(currentSection + 1).ToString());
                 
-                for (int childObject = 0; childObject < sectionNode.Children.Count; childObject++)
+                for (int childObject = 0; childObject < surfaceNode.Children.Count; childObject++)
                 {
                     masterObjects.Add(new OK64F3DObject());
 
                     masterObjects[currentObject].objectColor = new float[3];
-                    masterObjects[currentObject].objectColor[0] = rValue.NextFloat(0, 1);
-                    masterObjects[currentObject].objectColor[1] = rValue.NextFloat(0, 1);
-                    masterObjects[currentObject].objectColor[2] = rValue.NextFloat(0, 1);
+                    masterObjects[currentObject].objectColor[0] = rValue.NextFloat(0.3f, 1);
+                    masterObjects[currentObject].objectColor[1] = rValue.NextFloat(0.3f, 1);
+                    masterObjects[currentObject].objectColor[2] = rValue.NextFloat(0.3f, 1);
 
+                    
 
-
-                    masterObjects[currentObject].objectName = sectionNode.Children[childObject].Name;
-                    masterObjects[currentObject].meshID = sectionNode.Children[childObject].Meshes.ToArray();
+                    masterObjects[currentObject].objectName = surfaceNode.Children[childObject].Name;
+                    masterObjects[currentObject].meshID = surfaceNode.Children[childObject].MeshIndices.ToArray();
                     masterObjects[currentObject].materialID = fbx.Meshes[masterObjects[currentObject].meshID[0]].MaterialIndex;
                     int vertCount = 0;
                     int faceCount = 0;
@@ -5001,11 +5941,11 @@ namespace Tarmac64_Geometry
                         MessageBox.Show("Empty Course Object! -" + masterObjects[currentObject].objectName);
                     }
 
-                    foreach (var childMesh in sectionNode.Children[childObject].Meshes)
+                    foreach (var childMesh in surfaceNode.Children[childObject].MeshIndices)
                     {
 
-                        vertCount = vertCount + fbx.Meshes[childMesh].NumVertices;
-                        faceCount = faceCount + fbx.Meshes[childMesh].NumFaces;
+                        vertCount = vertCount + fbx.Meshes[childMesh].VertexCount;
+                        faceCount = faceCount + fbx.Meshes[childMesh].FaceCount;
 
                     }
                     masterObjects[currentObject].vertCount = vertCount;
@@ -5014,180 +5954,243 @@ namespace Tarmac64_Geometry
                     
                     int currentFace = 0;
 
-                    foreach (var childMesh in sectionNode.Children[childObject].Meshes)
+
+                    List<int> xValues = new List<int>();
+                    List<int> yValues = new List<int>();
+
+                    foreach (var childMesh in surfaceNode.Children[childObject].MeshIndices)
                     {
                         foreach (var childPoly in fbx.Meshes[childMesh].Faces)
                         {
 
+
                             masterObjects[currentObject].modelGeometry[currentFace] = new Face();
                             masterObjects[currentObject].modelGeometry[currentFace].vertData = new Vertex[3];
 
-                            for (int currentVert = 0; currentVert < 3; currentVert++)
+                            masterObjects[currentObject].modelGeometry[currentFace].highX = -99999999;
+                            masterObjects[currentObject].modelGeometry[currentFace].highY = -99999999;
+                            masterObjects[currentObject].modelGeometry[currentFace].lowX = 99999999;
+                            masterObjects[currentObject].modelGeometry[currentFace].lowX = 99999999;
+
+                            if (childPoly.IndexCount != 3)
                             {
-                                masterObjects[currentObject].modelGeometry[currentFace].vertIndex = new VertIndex();
-                                masterObjects[currentObject].modelGeometry[currentFace].vertIndex.indexA = Convert.ToInt16(childPoly.Indices[0]);
-                                masterObjects[currentObject].modelGeometry[currentFace].vertIndex.indexB = Convert.ToInt16(childPoly.Indices[1]);
-                                masterObjects[currentObject].modelGeometry[currentFace].vertIndex.indexC = Convert.ToInt16(childPoly.Indices[2]);
-
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert] = new Vertex();
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position = new Position();
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
-
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color = new Color();
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.r = (Convert.ToByte(fbx.Meshes[childMesh].Colors[0][childPoly.Indices[currentVert]].Red * 255));
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.g = (Convert.ToByte(fbx.Meshes[childMesh].Colors[0][childPoly.Indices[currentVert]].Green * 255));
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.b = (Convert.ToByte(fbx.Meshes[childMesh].Colors[0][childPoly.Indices[currentVert]].Blue * 255));
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.a = 0;
-                            }
-
-
-                            //UV coords
-
-
-                            UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
-                            UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
-
-
-                            //
-                            //
-                            float u_base = 0;
-                            float v_base = 0;
-
-                            float[] u_shift = { 0, 0, 0 };
-                            float[] v_shift = { 0, 0, 0 };
-                            float[] u_offset = { 0, 0, 0 };
-                            float[] v_offset = { 0, 0, 0 };
-                            float UVdecs = 0;
-                            float UVdect = 0;
-                            Int16 local_s = 0;
-                            Int16 local_t = 0;
-
-
-                            u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[0]][0]);
-                            v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[0]][1]);
-
-                            u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[1]][0]);
-                            v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[1]][1]);
-
-                            u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[2]][0]);
-                            v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[2]][1]);
-
-                            // So we check the absolute values to find which is the least distance from the origin.
-                            // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
-                            // When we actually store the value we do not use an absolute and maintain the positive/negative sign of the value.
-
-                            if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[1]))
-                            {
-                                if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[2]))
-                                {
-                                    u_base = u_offset[0];
-                                    v_base = v_offset[0];
-                                }
-                                else
-                                {
-                                    u_base = u_offset[2];
-                                    v_base = v_offset[2];
-                                }
+                                MessageBox.Show("FATAL ERROR- OBJECT -" + surfaceNode.Children[childObject].Name + " - has invalid geometry");
                             }
                             else
                             {
-                                if (Math.Abs(u_offset[1]) < Math.Abs(u_offset[2]))
+                                List<int> l_xValues = new List<int>();
+                                List<int> l_yValues = new List<int>();
+                                List<int> l_zValues = new List<int>();
+
+                                
+                                for (int currentVert = 0; currentVert < 3; currentVert++)
                                 {
-                                    u_base = u_offset[1];
-                                    v_base = v_offset[1];
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertIndex = new VertIndex();
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertIndex.indexA = Convert.ToInt16(childPoly.Indices[0]);
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertIndex.indexB = Convert.ToInt16(childPoly.Indices[1]);
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertIndex.indexC = Convert.ToInt16(childPoly.Indices[2]);
+
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert] = new Vertex();
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position = new Position();
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
+
+
+
+
+                                    xValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x);
+                                    yValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y);
+
+                                    l_xValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x);
+                                    l_yValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y);
+                                    l_zValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.z);
+
+
+
+                                    if (masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x > masterObjects[currentObject].modelGeometry[currentFace].highX)
+                                    {
+                                        masterObjects[currentObject].modelGeometry[currentFace].highX = masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x;
+                                    }
+                                    if (masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x < masterObjects[currentObject].modelGeometry[currentFace].lowX)
+                                    {
+                                        masterObjects[currentObject].modelGeometry[currentFace].lowX = masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x;
+                                    }
+                                    if (masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y > masterObjects[currentObject].modelGeometry[currentFace].highY)
+                                    {
+                                        masterObjects[currentObject].modelGeometry[currentFace].highY = masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y;
+                                    }
+                                    if (masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y < masterObjects[currentObject].modelGeometry[currentFace].lowY)
+                                    {
+                                        masterObjects[currentObject].modelGeometry[currentFace].lowY = masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y;
+                                    }
+
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color = new Color();
+                                    if (fbx.Meshes[childMesh].VertexColorChannels[0].Count > 0)
+                                    {
+                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.r = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
+                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.g = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
+                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.b = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
+                                    }
+                                    else
+                                    {
+                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.r = 252;
+                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.g = 252;
+                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.b = 252;
+                                    }
+                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.a = 0;
+                                }
+
+
+                                float centerX = (l_xValues[0] + l_xValues[1] + l_xValues[2]) / 3;
+                                float centerY = (l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3;
+                                float centerZ = (l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3;
+                                
+                                masterObjects[currentObject].modelGeometry[currentFace].centerPosition = new Vector3D(centerX, centerY, centerZ);
+
+
+
+                                //UV coords
+
+
+                                UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
+                                UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
+
+
+                                //
+                                //
+                                float u_base = 0;
+                                float v_base = 0;
+
+                                float[] u_shift = { 0, 0, 0 };
+                                float[] v_shift = { 0, 0, 0 };
+                                float[] u_offset = { 0, 0, 0 };
+                                float[] v_offset = { 0, 0, 0 };
+
+
+                                u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][0]);
+                                v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][1]);
+
+                                u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][0]);
+                                v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][1]);
+
+                                u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][0]);
+                                v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][1]);
+
+                                // So we check the absolute values to find which is the least distance from the origin.
+                                // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
+                                // When we actually store the value we do not use an absolute and maintain the positive/negative sign of the value.
+
+                                if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[1]))
+                                {
+                                    if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[2]))
+                                    {
+                                        u_base = u_offset[0];
+                                        v_base = v_offset[0];
+                                    }
+                                    else
+                                    {
+                                        u_base = u_offset[2];
+                                        v_base = v_offset[2];
+                                    }
                                 }
                                 else
                                 {
-                                    u_base = u_offset[2];
-                                    v_base = v_offset[2];
+                                    if (Math.Abs(u_offset[1]) < Math.Abs(u_offset[2]))
+                                    {
+                                        u_base = u_offset[1];
+                                        v_base = v_offset[1];
+                                    }
+                                    else
+                                    {
+                                        u_base = u_offset[2];
+                                        v_base = v_offset[2];
+                                    }
                                 }
+
+
+
+                                // Set the shift values for each u/v offset
+                                u_shift[0] = u_offset[0] - u_base;
+                                u_shift[1] = u_offset[1] - u_base;
+                                u_shift[2] = u_offset[2] - u_base;
+
+                                v_shift[0] = v_offset[0] - v_base;
+                                v_shift[1] = v_offset[1] - v_base;
+                                v_shift[2] = v_offset[2] - v_base;
+
+
+                                //Now apply a modulus operation to get the u/v_base as a decimal only, removing the whole value and any inherited tiling.
+
+                                u_base = u_base % 1.0f;
+                                v_base = v_base % 1.0f;
+
+                                // And now add the offsets to the base to get each vert's actual U/V coordinate, before converting to ST.
+
+
+
+                                u_offset[0] = u_base + u_shift[0];
+                                u_offset[1] = u_base + u_shift[1];
+                                u_offset[2] = u_base + u_shift[2];
+
+                                v_offset[0] = v_base + v_shift[0];
+                                v_offset[1] = v_base + v_shift[1];
+                                v_offset[2] = v_base + v_shift[2];
+
+                                // and now apply the calculation to make them into ST coords for Mario Kart.
+
+
+                                //
+
+                                int s_coord = 0;
+                                int t_coord = 0;
+                                int materialID = fbx.Meshes[childMesh].MaterialIndex;
+
+                                s_coord = Convert.ToInt32(u_offset[0] * STwidth[textureArray[materialID].textureClass] * 32);
+                                t_coord = Convert.ToInt32(v_offset[0] * STheight[textureArray[materialID].textureClass] * -32);
+
+
+                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
+                                {
+                                    MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + masterObjects[currentObject].objectName);
+                                }
+                                masterObjects[currentObject].modelGeometry[currentFace].vertData[0].position.s = Convert.ToInt16(s_coord);
+                                masterObjects[currentObject].modelGeometry[currentFace].vertData[0].position.t = Convert.ToInt16(t_coord);
+
+
+
+                                s_coord = Convert.ToInt32(u_offset[1] * STwidth[textureArray[materialID].textureClass] * 32);
+                                t_coord = Convert.ToInt32(v_offset[1] * STheight[textureArray[materialID].textureClass] * -32);
+
+
+                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
+                                {
+                                    MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + masterObjects[currentObject].objectName);
+                                }
+
+                                masterObjects[currentObject].modelGeometry[currentFace].vertData[1].position.s = Convert.ToInt16(s_coord);
+                                masterObjects[currentObject].modelGeometry[currentFace].vertData[1].position.t = Convert.ToInt16(t_coord);
+
+
+                                //
+
+
+                                s_coord = Convert.ToInt32(u_offset[2] * STwidth[textureArray[materialID].textureClass] * 32);
+                                t_coord = Convert.ToInt32(v_offset[2] * STheight[textureArray[materialID].textureClass] * -32);
+
+
+
+                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
+                                {
+                                    MessageBox.Show("FATAL ERROR! " + u_offset[2].ToString() + "-" + v_offset[2].ToString() + " UV 2 Out of Range for Object - " + masterObjects[currentObject].objectName);
+
+                                }
+
+
+                                masterObjects[currentObject].modelGeometry[currentFace].vertData[2].position.s = Convert.ToInt16(s_coord);
+                                masterObjects[currentObject].modelGeometry[currentFace].vertData[2].position.t = Convert.ToInt16(t_coord);
+
                             }
-
-
-
-                            // Set the shift values for each u/v offset
-                            u_shift[0] = u_offset[0] - u_base;
-                            u_shift[1] = u_offset[1] - u_base;
-                            u_shift[2] = u_offset[2] - u_base;
-
-                            v_shift[0] = v_offset[0] - v_base;
-                            v_shift[1] = v_offset[1] - v_base;
-                            v_shift[2] = v_offset[2] - v_base;
-
-
-                            //Now apply a modulus operation to get the u/v_base as a decimal only, removing the whole value and any inherited tiling.
-
-                            u_base = u_base % 1.0f;
-                            v_base = v_base % 1.0f;
-
-                            // And now add the offsets to the base to get each vert's actual U/V coordinate, before converting to ST.
-
-
-
-                            u_offset[0] = u_base + u_shift[0];
-                            u_offset[1] = u_base + u_shift[1];
-                            u_offset[2] = u_base + u_shift[2];
-
-                            v_offset[0] = v_base + v_shift[0];
-                            v_offset[1] = v_base + v_shift[1];
-                            v_offset[2] = v_base + v_shift[2];
-
-                            // and now apply the calculation to make them into ST coords for Mario Kart.
-
-
-                            //
-
-                            int s_coord = 0;
-                            int t_coord = 0;
-                            int materialID = fbx.Meshes[childMesh].MaterialIndex;
-
-                            s_coord = Convert.ToInt32(u_offset[0] * STwidth[textureArray[materialID].textureClass] * 32);
-                            t_coord = Convert.ToInt32(v_offset[0] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                            if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                            {
-                                MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + masterObjects[currentObject].objectName);
-                            }
-                            masterObjects[currentObject].modelGeometry[currentFace].vertData[0].position.s = Convert.ToInt16(s_coord);
-                            masterObjects[currentObject].modelGeometry[currentFace].vertData[0].position.t = Convert.ToInt16(t_coord);
-
-
-
-                            s_coord = Convert.ToInt32(u_offset[1] * STwidth[textureArray[materialID].textureClass] * 32);
-                            t_coord = Convert.ToInt32(v_offset[1] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                            if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                            {
-                                MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + masterObjects[currentObject].objectName);
-                            }
-
-                            masterObjects[currentObject].modelGeometry[currentFace].vertData[1].position.s = Convert.ToInt16(s_coord);
-                            masterObjects[currentObject].modelGeometry[currentFace].vertData[1].position.t = Convert.ToInt16(t_coord);
-
-
-                            //
-
-
-                            s_coord = Convert.ToInt32(u_offset[2] * STwidth[textureArray[materialID].textureClass] * 32);
-                            t_coord = Convert.ToInt32(v_offset[2] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-
-                            if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                            {
-                                MessageBox.Show("FATAL ERROR! " + u_offset[2].ToString() + "-" + v_offset[2].ToString() + " UV 2 Out of Range for Object - " + masterObjects[currentObject].objectName);
-
-                            }
-
-
-                            masterObjects[currentObject].modelGeometry[currentFace].vertData[2].position.s = Convert.ToInt16(s_coord);
-                            masterObjects[currentObject].modelGeometry[currentFace].vertData[2].position.t = Convert.ToInt16(t_coord);
-
-
                             currentFace++;
 
                         }
@@ -5195,6 +6198,47 @@ namespace Tarmac64_Geometry
 
 
                     }
+
+
+
+
+
+                    int[] localMax = new int[4];
+                    localMax[0] = -9999999;
+                    localMax[1] = 9999999;
+                    localMax[2] = -9999999;
+                    localMax[3] = 9999999;
+
+                    for (int currentValue = 0; currentValue < xValues.Count; currentValue++)
+                    {
+                        if (xValues[currentValue] > localMax[0])
+                        {
+                            localMax[0] = xValues[currentValue];
+                        }
+                        if (xValues[currentValue] < localMax[1])
+                        {
+                            localMax[1] = xValues[currentValue];
+                        }
+                        if (yValues[currentValue] > localMax[2])
+                        {
+                            localMax[2] = yValues[currentValue];
+                        }
+                        if (yValues[currentValue] < localMax[3])
+                        {
+                            localMax[3] = yValues[currentValue];
+                        }
+                    }
+
+                    masterObjects[currentObject].pathfindingObject = new PathfindingObject();
+                    masterObjects[currentObject].pathfindingObject.highX = localMax[0];
+                    masterObjects[currentObject].pathfindingObject.lowX = localMax[1];
+                    masterObjects[currentObject].pathfindingObject.highY = localMax[2];
+                    masterObjects[currentObject].pathfindingObject.lowY = localMax[3];
+                    
+
+
+
+
 
                     currentObject++;
 
@@ -5211,7 +6255,7 @@ namespace Tarmac64_Geometry
 
 
 
-        public OK64F3DObject[] loadCollision (AssimpSharp.Scene fbx, int sectionCount, OK64Texture[] textureArray, bool simpleFormat)
+        public OK64F3DObject[] loadCollision (Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray, int simpleFormat)
         {   
             int totalIndexCount = 0;
             int totalIndex = 0;
@@ -5220,7 +6264,7 @@ namespace Tarmac64_Geometry
             float[] colorValues = new float[3];
             for (int currentSection = 0; currentSection < sectionCount; currentSection++)
             {
-                if (simpleFormat == false)
+                if (simpleFormat == 2)
                 {
                     surfaceNode = fbx.RootNode.FindNode("Section " + (currentSection + 1).ToString() + " Surface");
                 }
@@ -5248,17 +6292,17 @@ namespace Tarmac64_Geometry
                     surfaceObjects[totalIndex].objectName = surfaceNode.Children[currentsubObject].Name;
                     int vertCount = 0;
                     int faceCount = 0;
-                    foreach (var childMesh in surfaceNode.Children[currentsubObject].Meshes)
+                    foreach (var childMesh in surfaceNode.Children[currentsubObject].MeshIndices)
                     {
 
-                        vertCount = vertCount + fbx.Meshes[childMesh].NumVertices;
-                        faceCount = faceCount + fbx.Meshes[childMesh].NumFaces;
+                        vertCount = vertCount + fbx.Meshes[childMesh].VertexCount;
+                        faceCount = faceCount + fbx.Meshes[childMesh].FaceCount;
 
                     }
 
                     surfaceObjects[totalIndex].faceCount = faceCount;
                     surfaceObjects[totalIndex].vertCount = vertCount;
-                    surfaceObjects[totalIndex].meshID = surfaceNode.Children[currentsubObject].Meshes.ToArray();
+                    surfaceObjects[totalIndex].meshID = surfaceNode.Children[currentsubObject].MeshIndices.ToArray();
 
                     if (surfaceObjects[totalIndex].meshID.Length == 0)
                     {
@@ -5270,6 +6314,29 @@ namespace Tarmac64_Geometry
                     string[] nameSplit = surfaceObjects[totalIndex].objectName.Split('_');
 
                     surfaceObjects[totalIndex].surfaceMaterial = Convert.ToInt32(nameSplit[0]);
+                    surfaceObjects[totalIndex].pathfindingObject = new PathfindingObject();
+                    if (surfaceObjects[totalIndex].surfaceMaterial > 100 & surfaceObjects[totalIndex].surfaceMaterial < 200)
+                    {
+
+                        
+                        surfaceObjects[totalIndex].pathfindingObject.surfaceBoolean = false;
+                        if (surfaceObjects[totalIndex].surfaceMaterial > 117)
+                        {
+                            surfaceObjects[totalIndex].surfaceMaterial = surfaceObjects[totalIndex].surfaceMaterial + 100;
+                        }
+                        else
+                        {
+                            surfaceObjects[totalIndex].surfaceMaterial = surfaceObjects[totalIndex].surfaceMaterial - 100;
+                        }
+                    }
+                    else
+                    {
+                        surfaceObjects[totalIndex].pathfindingObject.surfaceBoolean = true;
+                    }
+
+
+
+
                     surfaceObjects[totalIndex].materialID = fbx.Meshes[surfaceObjects[totalIndex].meshID[0]].MaterialIndex;
                     surfaceObjects[totalIndex].flagA = false;
                     surfaceObjects[totalIndex].flagB = false;
@@ -5280,178 +6347,212 @@ namespace Tarmac64_Geometry
                     surfaceObjects[totalIndex].modelGeometry = new Face[faceCount];
 
 
-                    foreach (var childMesh in surfaceNode.Children[currentsubObject].Meshes)
+                    foreach (var childMesh in surfaceNode.Children[currentsubObject].MeshIndices)
                     {
                         foreach (var childPoly in fbx.Meshes[childMesh].Faces)
                         {
+                            List<int> l_xValues = new List<int>();
+                            List<int> l_yValues = new List<int>();
+                            List<int> l_zValues = new List<int>();
+
 
                             surfaceObjects[totalIndex].modelGeometry[currentFace] = new Face();
                             surfaceObjects[totalIndex].modelGeometry[currentFace].vertData = new Vertex[3];
-
-                            for (int currentVert = 0; currentVert < 3; currentVert++)
+                            if (childPoly.IndexCount != 3)
                             {
-
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex = new VertIndex();
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex.indexA = Convert.ToInt16(childPoly.Indices[0]);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex.indexB = Convert.ToInt16(childPoly.Indices[1]);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex.indexC = Convert.ToInt16(childPoly.Indices[2]);
-
-
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert] = new Vertex();
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position = new Position();
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
-
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color = new Color();
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.r = (Convert.ToByte(fbx.Meshes[childMesh].Colors[0][childPoly.Indices[currentVert]].Red * 255));
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.g = (Convert.ToByte(fbx.Meshes[childMesh].Colors[0][childPoly.Indices[currentVert]].Green * 255));
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.b = (Convert.ToByte(fbx.Meshes[childMesh].Colors[0][childPoly.Indices[currentVert]].Blue * 255));
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.a = 0;
-                            }
-                            
-
-                            //UV coords
-
-
-                            UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
-                            UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
-
-
-                            //
-                            //
-                            float u_base = 0;
-                            float v_base = 0;
-
-                            float[] u_shift = { 0, 0, 0 };
-                            float[] v_shift = { 0, 0, 0 };
-                            float[] u_offset = { 0, 0, 0 };
-                            float[] v_offset = { 0, 0, 0 };
-
-
-                            u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[0]][0]);
-                            v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[0]][1]);
-
-                            u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[1]][0]);
-                            v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[1]][1]);
-
-                            u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[2]][0]);
-                            v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoords[0][childPoly.Indices[2]][1]);
-
-                            // So we check the absolute values to find which is the least distance from the origin.
-                            // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
-                            // When we actually store the value we do not use an absolute and maintain the positive/negative sign of the value.
-
-                            if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[1]))
-                            {
-                                if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[2]))
-                                {
-                                    u_base = u_offset[0];
-                                    v_base = v_offset[0];
-                                }
-                                else
-                                {
-                                    u_base = u_offset[2];
-                                    v_base = v_offset[2];
-                                }
+                                MessageBox.Show("FATAL ERROR- OBJECT -" + surfaceNode.Children[currentsubObject].Name + " - has invalid geometry");
                             }
                             else
                             {
-                                if (Math.Abs(u_offset[1]) < Math.Abs(u_offset[2]))
+                                for (int currentVert = 0; currentVert < 3; currentVert++)
                                 {
-                                    u_base = u_offset[1];
-                                    v_base = v_offset[1];
+
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex = new VertIndex();
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex.indexA = Convert.ToInt16(childPoly.Indices[0]);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex.indexB = Convert.ToInt16(childPoly.Indices[1]);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex.indexC = Convert.ToInt16(childPoly.Indices[2]);
+
+
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert] = new Vertex();
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position = new Position();
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
+
+
+
+                                    l_xValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.x);
+                                    l_yValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.y);
+                                    l_zValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.z);
+
+
+
+
+
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color = new Color();
+                                    if (fbx.Meshes[childMesh].VertexColorChannels[0].Count > 0)
+                                    {
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.r = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.g = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.b = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
+                                    }
+                                    else
+                                    {
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.r = 252;
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.g = 252;
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.b = 252;
+                                    }
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.a = 0;
+                                }
+
+
+                                float centerX = (l_xValues[0] + l_xValues[1] + l_xValues[2]) / 3;
+                                float centerY = (l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3;
+                                float centerZ = (l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3;
+
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].centerPosition = new Vector3D(centerX, centerY, centerZ);
+
+                                //UV coords
+
+
+                                UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
+                                UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
+
+
+                                //
+                                //
+                                float u_base = 0;
+                                float v_base = 0;
+
+                                float[] u_shift = { 0, 0, 0 };
+                                float[] v_shift = { 0, 0, 0 };
+                                float[] u_offset = { 0, 0, 0 };
+                                float[] v_offset = { 0, 0, 0 };
+
+
+                                u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][0]);
+                                v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][1]);
+
+                                u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][0]);
+                                v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][1]);
+
+                                u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][0]);
+                                v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][1]);
+
+                                // So we check the absolute values to find which is the least distance from the origin.
+                                // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
+                                // When we actually store the value we do not use an absolute and maintain the positive/negative sign of the value.
+
+                                if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[1]))
+                                {
+                                    if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[2]))
+                                    {
+                                        u_base = u_offset[0];
+                                        v_base = v_offset[0];
+                                    }
+                                    else
+                                    {
+                                        u_base = u_offset[2];
+                                        v_base = v_offset[2];
+                                    }
                                 }
                                 else
                                 {
-                                    u_base = u_offset[2];
-                                    v_base = v_offset[2];
+                                    if (Math.Abs(u_offset[1]) < Math.Abs(u_offset[2]))
+                                    {
+                                        u_base = u_offset[1];
+                                        v_base = v_offset[1];
+                                    }
+                                    else
+                                    {
+                                        u_base = u_offset[2];
+                                        v_base = v_offset[2];
+                                    }
                                 }
+
+
+
+                                // Set the shift values for each u/v offset
+                                u_shift[0] = u_offset[0] - u_base;
+                                u_shift[1] = u_offset[1] - u_base;
+                                u_shift[2] = u_offset[2] - u_base;
+
+                                v_shift[0] = v_offset[0] - v_base;
+                                v_shift[1] = v_offset[1] - v_base;
+                                v_shift[2] = v_offset[2] - v_base;
+
+
+                                //Now apply a modulus operation to get the u/v_base as a decimal only, removing the whole value and any inherited tiling.
+
+                                u_base = u_base % 1.0f;
+                                v_base = v_base % 1.0f;
+
+                                // And now add the offsets to the base to get each vert's actual U/V coordinate, before converting to ST.
+
+
+
+                                u_offset[0] = u_base + u_shift[0];
+                                u_offset[1] = u_base + u_shift[1];
+                                u_offset[2] = u_base + u_shift[2];
+
+                                v_offset[0] = v_base + v_shift[0];
+                                v_offset[1] = v_base + v_shift[1];
+                                v_offset[2] = v_base + v_shift[2];
+
+                                // and now apply the calculation to make them into ST coords for Mario Kart.
+
+
+                                //
+
+                                int s_coord = 0;
+                                int t_coord = 0;
+                                int materialID = fbx.Meshes[childMesh].MaterialIndex;
+
+                                s_coord = Convert.ToInt32(u_offset[0] * STwidth[textureArray[materialID].textureClass] * 32);
+                                t_coord = Convert.ToInt32(v_offset[0] * STheight[textureArray[materialID].textureClass] * -32);
+
+
+                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
+                                {
+                                    MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
+                                }
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[0].position.s = Convert.ToInt16(s_coord);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[0].position.t = Convert.ToInt16(t_coord);
+
+
+
+                                s_coord = Convert.ToInt32(u_offset[1] * STwidth[textureArray[materialID].textureClass] * 32);
+                                t_coord = Convert.ToInt32(v_offset[1] * STheight[textureArray[materialID].textureClass] * -32);
+
+
+                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
+                                {
+                                    MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
+                                }
+
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[1].position.s = Convert.ToInt16(s_coord);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[1].position.t = Convert.ToInt16(t_coord);
+
+
+                                //
+
+
+                                s_coord = Convert.ToInt32(u_offset[2] * STwidth[textureArray[materialID].textureClass] * 32);
+                                t_coord = Convert.ToInt32(v_offset[2] * STheight[textureArray[materialID].textureClass] * -32);
+
+
+
+                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
+                                {
+                                    MessageBox.Show("FATAL ERROR! " + u_offset[2].ToString() + "-" + v_offset[2].ToString() + " UV 2 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
+
+                                }
+
+
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[2].position.s = Convert.ToInt16(s_coord);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[2].position.t = Convert.ToInt16(t_coord);
+
                             }
-
-
-
-                            // Set the shift values for each u/v offset
-                            u_shift[0] = u_offset[0] - u_base;
-                            u_shift[1] = u_offset[1] - u_base;
-                            u_shift[2] = u_offset[2] - u_base;
-
-                            v_shift[0] = v_offset[0] - v_base;
-                            v_shift[1] = v_offset[1] - v_base;
-                            v_shift[2] = v_offset[2] - v_base;
-
-
-                            //Now apply a modulus operation to get the u/v_base as a decimal only, removing the whole value and any inherited tiling.
-
-                            u_base = u_base % 1.0f;
-                            v_base = v_base % 1.0f;
-
-                            // And now add the offsets to the base to get each vert's actual U/V coordinate, before converting to ST.
-
-
-
-                            u_offset[0] = u_base + u_shift[0];
-                            u_offset[1] = u_base + u_shift[1];
-                            u_offset[2] = u_base + u_shift[2];
-
-                            v_offset[0] = v_base + v_shift[0];
-                            v_offset[1] = v_base + v_shift[1];
-                            v_offset[2] = v_base + v_shift[2];
-
-                            // and now apply the calculation to make them into ST coords for Mario Kart.
-
-
-                            //
-
-                            int s_coord = 0;
-                            int t_coord = 0;
-                            int materialID = fbx.Meshes[childMesh].MaterialIndex;
-
-                            s_coord = Convert.ToInt32(u_offset[0] * STwidth[textureArray[materialID].textureClass] * 32);
-                            t_coord = Convert.ToInt32(v_offset[0] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                            if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                            {
-                                MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
-                            }
-                            surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[0].position.s = Convert.ToInt16(s_coord);
-                            surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[0].position.t = Convert.ToInt16(t_coord);
-
-
-
-                            s_coord = Convert.ToInt32(u_offset[1] * STwidth[textureArray[materialID].textureClass] * 32);
-                            t_coord = Convert.ToInt32(v_offset[1] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                            if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                            {
-                                MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
-                            }
-
-                            surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[1].position.s = Convert.ToInt16(s_coord);
-                            surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[1].position.t = Convert.ToInt16(t_coord);
-
-
-                            //
-
-
-                            s_coord = Convert.ToInt32(u_offset[2] * STwidth[textureArray[materialID].textureClass] * 32);
-                            t_coord = Convert.ToInt32(v_offset[2] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-
-                            if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                            {
-                                MessageBox.Show("FATAL ERROR! " + u_offset[2].ToString() + "-" + v_offset[2].ToString() + " UV 2 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
-
-                            }
-
-
-                            surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[2].position.s = Convert.ToInt16(s_coord);
-                            surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[2].position.t = Convert.ToInt16(t_coord);
-
-
                             currentFace++;
 
                         }
@@ -5527,11 +6628,11 @@ namespace Tarmac64_Geometry
             return textureObject;
         }
 
-        public OK64SectionList[] loadSection(AssimpSharp.Scene fbx, int sectionCount, OK64F3DObject[] masterObjects)
+        public OK64SectionList[] loadSection(Assimp.Scene fbx, int sectionCount, OK64F3DObject[] masterObjects)
         {
             OK64SectionList[] sectionList = new OK64SectionList[sectionCount];
             List<OK64F3DObject> masterList = new List<OK64F3DObject>(masterObjects);
-            string[] viewString = new string[4] { "North", "East", "South","West" };
+            
             for (int currentSection = 0; currentSection < sectionCount; currentSection++)
             {
                 
@@ -5566,10 +6667,100 @@ namespace Tarmac64_Geometry
             return sectionList;
         }
 
+        public void ExportSVL(string filePath, int masterLength, OK64SectionList[] sectionList, OK64F3DObject[] masterObjects)
+        {
 
-        public OK64SectionList[] automateSection(int sectionCount, OK64F3DObject[] surfaceObjects, OK64F3DObject[] masterObjects, AssimpSharp.Scene fbx)
+            File.AppendAllText(filePath, "SVL2" + Environment.NewLine);
+            File.AppendAllText(filePath, masterLength.ToString() + Environment.NewLine);
+            File.AppendAllText(filePath, sectionList.Length.ToString() + Environment.NewLine);
+            foreach (var section in sectionList)
+            {
+                foreach (var view in section.viewList)
+                {
+                    File.AppendAllText(filePath, view.objectList.Length.ToString() + Environment.NewLine);
+                    foreach (var obj in view.objectList)
+                    {
+                        File.AppendAllText(filePath, masterObjects[obj].objectName + Environment.NewLine);
+                    }
+                }
+
+
+            }
+        }
+
+        public OK64SectionList[] ImportSVL(string filePath, int masterCount, OK64F3DObject[] masterObjects)
+        {
+            string[] fileText = File.ReadAllLines(filePath);
+            OK64SectionList[] sectionList = new OK64SectionList[0];
+            if (fileText[0] == "SVL2")
+            {
+                int sectionCount = Convert.ToInt32(fileText[2]); 
+                sectionList = new OK64SectionList[sectionCount];
+                int currentLine = 3;
+                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                {
+                    sectionList[currentSection] = new OK64SectionList();
+                    sectionList[currentSection].viewList = new OK64ViewList[4];
+                    for (int currentView = 0; currentView < 4; currentView++)
+                    {
+                        sectionList[currentSection].viewList[currentView] = new OK64ViewList();
+                        int objectCount = Convert.ToInt32(fileText[currentLine]);
+                        currentLine++;
+                        sectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
+
+                        for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                        {
+                            sectionList[currentSection].viewList[currentView].objectList[currentObject] = Array.IndexOf(masterObjects,fileText[currentLine]);
+                            currentLine++;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (fileText[0] != masterCount.ToString())
+                {
+
+                }
+                else
+                {
+
+                    int sectionCount = Convert.ToInt32(fileText[1]);
+                    sectionList = new OK64SectionList[sectionCount];
+                    int currentLine = 2;
+                    for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                    {
+                        sectionList[currentSection] = new OK64SectionList();
+                        sectionList[currentSection].viewList = new OK64ViewList[4];
+                        for (int currentView = 0; currentView < 4; currentView++)
+                        {
+                            sectionList[currentSection].viewList[currentView] = new OK64ViewList();
+                            int objectCount = Convert.ToInt32(fileText[currentLine]);
+                            currentLine++;
+                            sectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
+
+                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                            {
+                                sectionList[currentSection].viewList[currentView].objectList[currentObject] = Convert.ToInt32(fileText[currentLine]);
+                                currentLine++;
+                            }
+                        }
+                    }
+
+
+                }
+            }
+            return sectionList;
+        }
+
+
+        public OK64SectionList[] automateSection(int sectionCount, OK64F3DObject[] surfaceObjects, OK64F3DObject[] masterObjects, Assimp.Scene fbx, bool raycastBoolean)
         {
             OK64SectionList[] sectionList = new OK64SectionList[sectionCount];
+
+
+            List<int> searchList = new List<int>();
+
 
             for (int currentSection = 0; currentSection < sectionCount; currentSection++)
             {
@@ -5580,91 +6771,309 @@ namespace Tarmac64_Geometry
                 {
                     sectionList[currentSection].viewList[currentView] = new OK64ViewList();
                     List<int> tempList = new List<int>();
+
+                    GeometryCompiler geometryCompiler;
+                    if (System.Windows.Forms.Application.OpenForms["GeometryCompiler"] != null)
+                    {
+                        geometryCompiler = System.Windows.Forms.Application.OpenForms["GeometryCompiler"] as GeometryCompiler;
+                        
+                        geometryCompiler.updateOutput("Section " + (currentSection + 1).ToString() + "/" + sectionCount.ToString() + "  " + viewString[currentView]);
+                    }
+
+
+
+
                     for (int currentObject = 0; currentObject < surfaceObjects.Length; currentObject++)
                     {
-                        if (surfaceObjects[currentObject].surfaceID == (currentSection + 1))
+                        if (surfaceObjects[currentObject].surfaceID == (currentSection + 1) & surfaceObjects[currentObject].pathfindingObject.surfaceBoolean)
                         {
-                            for (int currentMesh = 0; currentMesh < surfaceObjects[currentObject].meshID.Length; currentMesh++)
+                            for (int currentFace = 0; currentFace < surfaceObjects[currentObject].modelGeometry.Length; currentFace++)
                             {
-                                var currentSubobject = fbx.Meshes[surfaceObjects[currentObject].meshID[currentMesh]];
+                                Vector3D raycastOrigin = surfaceObjects[currentObject].modelGeometry[currentFace].centerPosition;
 
-                                for (int currentVert = 0; currentVert < currentSubobject.NumVertices; currentVert++)
+                                switch (currentView)
                                 {
-                                    var subVert = currentSubobject.Vertices[currentVert];
-
-                                    for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
-                                    {
-                                        for (int currentSubmaster = 0; currentSubmaster < masterObjects[currentMaster].meshID.Length; currentSubmaster++)
+                                    case 0:
                                         {
-                                            var compareObject = fbx.Meshes[masterObjects[currentMaster].meshID[currentSubmaster]];
+                                            raycastOrigin.Y -= 10;
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            raycastOrigin.X -= 10;
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            raycastOrigin.Y += 10;
+                                            break;
+                                        }
+                                    case 3:
+                                        {
+                                            raycastOrigin.X += 10;
+                                            break;
+                                        }
+                                }
 
-                                            bool breakBool = false;
 
-                                            for (int masterVert = 0; masterVert < compareObject.NumVertices && breakBool == false; masterVert++)
+
+
+                                raycastOrigin.Z += 8;
+                                int screenWidth = 180;
+                                int screenHeight = 160;
+                                int resolution = 3;
+                                int rayDepth = 30000;
+                                
+
+                                searchList = new List<int>();
+
+                                for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
+                                {
+                                    switch (currentView)
+                                    {
+                                        case 0:
                                             {
-                                                   
-                                                var compareVert = compareObject.Vertices[masterVert];
-                                                switch (currentView)
+                                                if (masterObjects[currentMaster].pathfindingObject.highY >= raycastOrigin.Y)
                                                 {
-                                                    case 00:
-                                                        if (subVert.Y - 10 < compareVert.Y)
-                                                        {
-                                                            int masterIndex = Array.IndexOf(tempList.ToArray(), currentMaster);
-                                                            if (masterIndex == -1)
-                                                            {
-                                                                tempList.Add(currentMaster);
-                                                            }
-                                                            breakBool = true;
-                                                        }
-                                                        break;
-                                                    case 01:
-                                                        if (subVert.X - 10 < compareVert.X)
-                                                        {
-                                                            int masterIndex = Array.IndexOf(tempList.ToArray(), currentMaster);
-                                                            if (masterIndex == -1)
-                                                            {
-                                                                tempList.Add(currentMaster);
-                                                            }
-                                                            breakBool = true;
-                                                        }
-                                                        break;
-                                                    case 02:
-                                                        if (subVert.Y + 10 > compareVert.Y)
-                                                        {
-                                                            int masterIndex = Array.IndexOf(tempList.ToArray(), currentMaster);
-                                                            if (masterIndex == -1)
-                                                            {
-                                                                tempList.Add(currentMaster);
-                                                            }
-                                                            breakBool = true;
-                                                        }
-                                                        break;
-                                                    case 03:
-                                                        if (subVert.X + 10 > compareVert.X)
-                                                        {
-                                                            int masterIndex = Array.IndexOf(tempList.ToArray(), currentMaster);
-                                                            if (masterIndex == -1)
-                                                            {
-                                                                tempList.Add(currentMaster);
-                                                            }
-                                                            breakBool = true;
-                                                        }
-                                                        break;
-
+                                                    searchList.Add(currentMaster);
+                                                    string tempString = masterObjects[currentMaster].objectName;
                                                 }
+                                                else
+                                                {
+                                                    string tempString = masterObjects[currentMaster].objectName;
+                                                }
+                                                break;
+                                            }
+                                        case 1:
+                                            {
+                                                if (masterObjects[currentMaster].pathfindingObject.highX >= raycastOrigin.X)
+                                                {
+                                                    searchList.Add(currentMaster);
+                                                    string tempString = masterObjects[currentMaster].objectName;
+                                                    if (tempString == "11_part56")
+                                                        tempString = masterObjects[currentMaster].objectName; ;
+                                                }
+                                                else
+                                                {
+                                                    string tempString = masterObjects[currentMaster].objectName;
+                                                    if (tempString == "11_part56")
+                                                        tempString = masterObjects[currentMaster].objectName; ;
+                                                }
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                if (masterObjects[currentMaster].pathfindingObject.lowY <= raycastOrigin.Y)
+                                                {
+                                                    searchList.Add(currentMaster);
+                                                }
+                                                break;
+                                            }
+                                        case 3:
+                                            {
+                                                if (masterObjects[currentMaster].pathfindingObject.lowX <= raycastOrigin.X)
+                                                {
+                                                    searchList.Add(currentMaster);
+                                                    string tempString = masterObjects[currentMaster].objectName;
+                                                    if (tempString == "11_part56")
+                                                        tempString = surfaceObjects[currentObject].objectName; ;
+                                                }
+                                                else
+                                                {
+                                                    string tempString = masterObjects[currentMaster].objectName;
+                                                    if (tempString == "11_part56")
+                                                        tempString = surfaceObjects[currentObject].objectName; ;
+                                                }
+                                                break;
+                                            }
+                                    }
+                                }
+
+
+                                int[] searchObjects = searchList.ToArray();
+
+
+                                if (raycastBoolean)
+                                {
+                                    for (int vPixel = 0; vPixel < screenHeight;)
+                                    {
+                                        int arcWidth = vPixel * 5 + 1;
+                                        int horizontalPass = 0;
+                                        if ((screenWidth / arcWidth) < resolution)
+                                        {
+                                            horizontalPass = resolution;
+                                        }
+                                        else
+                                        {
+                                            horizontalPass = (screenWidth / arcWidth);
+                                        }
+
+
+
+                                        for (int hPixel = 0; hPixel < screenWidth;)
+                                        {
+
+                                            Vector3D raycastVector = new Vector3D();
+                                            switch (currentView)
+                                            {
+                                                case 0:
+                                                    {
+                                                        float hAngle = Convert.ToSingle(hPixel * (Math.PI / 180));
+                                                        float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
+
+                                                        raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
+                                                        raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
+                                                        raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
+
+                                                        break;
+                                                    }
+                                                case 1:
+                                                    {
+                                                        float hAngle = Convert.ToSingle((hPixel + 90) * (Math.PI / 180));
+                                                        float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
+                                                        raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
+                                                        raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
+                                                        raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
+                                                        break;
+                                                    }
+                                                case 2:
+                                                    {
+                                                        float hAngle = Convert.ToSingle((hPixel + 180) * (Math.PI / 180));
+                                                        float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
+                                                        raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
+                                                        raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
+                                                        raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
+                                                        break;
+                                                    }
+                                                case 3:
+                                                    {
+                                                        int tempH = hPixel + 270;
+                                                        if (tempH > 360)
+                                                            tempH -= 360;
+
+                                                        float hAngle = Convert.ToSingle((tempH) * (Math.PI / 180));
+                                                        float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
+                                                        raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
+                                                        raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
+                                                        raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
+                                                        break;
+                                                    }
+
 
                                             }
 
+
+                                            int closestMaster = 0;
+                                            int closestDistance = 0;
+                                            int masterIndex = 0;
+
+
+
+
+
+
+
+                                            for (int currentSearch = 0; currentSearch < searchObjects.Length; currentSearch++)
+                                            {
+                                                foreach (var searchFace in masterObjects[searchObjects[currentSearch]].modelGeometry)
+                                                {
+
+
+
+                                                    switch (currentView)
+                                                    {
+                                                        case 0:
+                                                            {
+                                                                if (searchFace.highY > raycastOrigin.Y)
+                                                                {
+                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.vertData[0], searchFace.vertData[1], searchFace.vertData[2]);
+
+                                                                    if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
+                                                                    {
+                                                                        closestMaster = searchObjects[currentSearch];
+                                                                    }
+                                                                }
+                                                                break;
+                                                            }
+                                                        case 1:
+                                                            {
+                                                                if (searchFace.highX > raycastOrigin.X)
+                                                                {
+                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.vertData[0], searchFace.vertData[1], searchFace.vertData[2]);
+
+                                                                    if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
+                                                                    {
+                                                                        closestMaster = searchObjects[currentSearch];
+                                                                    }
+                                                                }
+                                                                break;
+                                                            }
+                                                        case 2:
+                                                            {
+                                                                if (searchFace.lowY < raycastOrigin.Y)
+                                                                {
+                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.vertData[0], searchFace.vertData[1], searchFace.vertData[2]);
+
+                                                                    if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
+                                                                    {
+                                                                        closestMaster = searchObjects[currentSearch];
+                                                                    }
+                                                                }
+                                                                break;
+                                                            }
+                                                        case 3:
+                                                            {
+                                                                if (searchFace.lowX < raycastOrigin.X)
+                                                                {
+                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.vertData[0], searchFace.vertData[1], searchFace.vertData[2]);
+
+                                                                    if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
+                                                                    {
+                                                                        closestMaster = searchObjects[currentSearch];
+                                                                    }
+                                                                }
+                                                                break;
+                                                            }
+                                                    }
+                                                }
+                                            }
+
+                                            masterIndex = Array.IndexOf(tempList.ToArray(), closestMaster);
+                                            if (masterIndex == -1)
+                                            {
+                                                tempList.Add(closestMaster);
+                                            }
+
+
+
+                                            hPixel = hPixel + horizontalPass;
                                         }
+                                        vPixel = vPixel + resolution;
                                     }
 
+                                }
+                                else
+                                {
+
+                                    foreach (var currentIndex in searchList)
+                                    {
+                                        int masterIndex = Array.IndexOf(tempList.ToArray(), currentIndex);
+                                        if (masterIndex == -1)
+                                        {
+                                            tempList.Add(currentIndex);
+                                        }
+
+
+                                    }
                                 }
                             }
 
                         }
 
                     }
+
                     sectionList[currentSection].viewList[currentView].objectList = tempList.ToArray();
+                    
                 }
 
             }
@@ -5749,7 +7158,7 @@ namespace Tarmac64_Geometry
 
             byte[] byteArray = new byte[0];
 
-            int segment5Position = 0;
+
 
             MemoryStream seg9m = new MemoryStream();
             BinaryReader seg9r = new BinaryReader(seg9m);
@@ -6242,8 +7651,488 @@ namespace Tarmac64_Geometry
         }
 
 
+        public void compileBattleObject(ref int outDLOffset, ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic)
+        {
 
-        public byte[] compileF3DList(ref OK64SectionList[] sectionOut, AssimpSharp.Scene fbx, OK64F3DObject[] courseObject, OK64SectionList[] sectionList)
+
+
+
+            List<string> object_name = new List<string>();
+
+
+
+
+            byte[] byteArray = new byte[0];
+
+
+            UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
+            UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
+            UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
+            UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 }; ///texture sizes...
+            byte[] heightex = { 5, 5, 6, 5, 5, 6, 5 };
+            byte[] widthex = { 5, 6, 5, 5, 6, 5, 5 };
+
+
+
+            int relativeZero = vertMagic;
+            int relativeIndex = 0;
+
+
+            MemoryStream seg7m = new MemoryStream();
+            BinaryReader seg7r = new BinaryReader(seg7m);
+            BinaryWriter seg7w = new BinaryWriter(seg7m);
+
+
+            MemoryStream seg4m = new MemoryStream();
+            BinaryReader seg4r = new BinaryReader(seg4m);
+            BinaryWriter seg4w = new BinaryWriter(seg4m);
+
+            //prewrite existing Segment 4 data. 
+            seg4w.Write(segment4);
+
+            //prewrite existing Segment 7 data, OR, prefix Segment 7 with a 0xB8 Command. 
+            if (segment7.Length > 0)
+            {
+                seg7w.Write(segment7);
+            }
+            else
+            {
+                //Prep Segment 7 for any hardcoded display lists
+
+                byteArray = BitConverter.GetBytes(0xB8000000);
+                Array.Reverse(byteArray);
+                seg7w.Write(byteArray);
+
+                byteArray = BitConverter.GetBytes(0x00000000);
+                Array.Reverse(byteArray);
+                seg7w.Write(byteArray);
+            }
+
+            foreach (var cObj in courseObject)
+            {
+                cObj.meshPosition = new int[cObj.meshID.Length];
+                for (int subIndex = 0; subIndex < cObj.meshID.Length; subIndex++)
+                {
+
+
+
+
+
+                    int facecount = cObj.modelGeometry.Length;
+
+
+                    int materialID = new int();
+
+                    materialID = cObj.materialID;
+
+                    ///Ok so now that we've loaded the raw model data, let's start writing some F3DEX. God have mercy.
+
+                    cObj.meshPosition[subIndex] = Convert.ToInt32(seg7m.Position);
+
+
+                    byteArray = BitConverter.GetBytes(0xBB000001);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xFFFFFFFF);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    // FC121824 FF33FFFF B900031D 00552078
+
+                    byteArray = BitConverter.GetBytes(0xFC121824);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xB900031D);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00552078);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    if (textureObject[cObj.materialID].textureTransparent == true)
+                    {
+                        //B900031D00553078
+
+                        byteArray = BitConverter.GetBytes(0xB900031D);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(0x00553078);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+
+                    }
+
+
+                    ImgType = ImgTypes[textureObject[cObj.materialID].textureClass];
+                    ImgFlag1 = STheight[textureObject[cObj.materialID].textureClass];
+                    ImgFlag2 = STwidth[textureObject[cObj.materialID].textureClass];
+                    if (textureObject[cObj.materialID].textureClass == 6)
+                    {
+                        ImgFlag3 = 0x100;
+                    }
+                    else
+                    {
+                        ImgFlag3 = 0x00;
+                    }
+
+
+
+                    byteArray = BitConverter.GetBytes(0xE8000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+
+
+                    byteArray = BitConverter.GetBytes((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(Convert.ToInt32(((heightex[textureObject[materialID].textureClass] & 0xF) << 0x12) | (((heightex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 0xE) | ((widthex[textureObject[materialID].textureClass] & 0xF) << 8) | (((widthex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 4)));
+
+                    //IDK why but this makes it into what it's supposed to be. 
+                    byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
+                    //IDK why but this makes it into what it's supposed to be. 
+
+
+
+                    Array.Reverse(byteArray);
+
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xF2000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes((((ImgFlag2 - 1) << 0xE) | ((ImgFlag1 - 1) << 2)));
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xFD100000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x05000000 | textureObject[materialID].segmentPosition);  //told you we would need this later. you didn't believe me </3 :'(
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xE8000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    ///F5100000 07000000 E6000000 00000000 F3000000 073FF100
+
+                    byteArray = BitConverter.GetBytes(0xF5100000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x07000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xE6000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xF3000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    if (textureObject[materialID].textureClass == 0)
+                    {
+                        byteArray = BitConverter.GetBytes(0x073FF100);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+                    }
+                    else if (textureObject[materialID].textureClass == 1)
+                    {
+                        byteArray = BitConverter.GetBytes(0x077FF080);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+
+                    }
+                    else if (textureObject[materialID].textureClass == 2)
+                    {
+                        byteArray = BitConverter.GetBytes(0x077FF100);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+                    }
+
+
+
+                    ///load the first set of verts from the relativeZero position;
+
+                    byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+
+                    byteArray = BitConverter.GetBytes(0x04000000 | (relativeZero) * 16);  ///from segment 4 at offset relativeZero
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+
+                    int indexA;
+                    int indexB;
+                    int indexC;
+
+
+                    for (int faceIndex = 0; faceIndex < facecount;)
+                    {
+
+
+
+                        if (faceIndex + 2 <= facecount)
+                        {
+
+
+                            /// draw 2 triangles, check for additional verts in both.
+                            if (relativeIndex >= 26)
+                            {
+                                relativeZero += relativeIndex;
+                                relativeIndex = 0;
+
+                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                                byteArray = BitConverter.GetBytes(0x04000000 | ((relativeZero) * 16));  ///from segment 4 at offset relativeZero
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                            }
+
+
+
+                            ///end vert check
+
+
+
+
+                            indexA = relativeIndex;
+                            indexB = relativeIndex + 2;
+                            indexC = relativeIndex + 1;
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xB1000000 | (indexC << 17) | (indexB << 9) | indexA << 1));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+                            indexA = relativeIndex + 3;
+                            indexB = relativeIndex + 5;
+                            indexC = relativeIndex + 4;
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+
+                            for (int f = 0; f < 2; f++)
+                            {
+                                for (int v = 0; v < 3; v++)
+                                {
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.x));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.z));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[f + faceIndex].vertData[v].position.y));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.s));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.t));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].vertData[v].color.r);
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].vertData[v].color.g);
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].vertData[v].color.b);
+                                    seg4w.Write(Convert.ToByte(0));
+                                }
+                            }
+
+
+                            faceIndex += 2;
+                            relativeIndex += 6;
+
+                        }
+                        else
+                        {
+
+                            if (relativeIndex >= 26)
+                            {
+                                relativeZero += relativeIndex;
+                                relativeIndex = 0;
+
+                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                                byteArray = BitConverter.GetBytes(0x04000000 | ((relativeZero) * 16));  ///from segment 4 at offset relativeZero
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                            }
+
+
+
+
+
+
+                            ///end vert check
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xBF000000));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+                            indexA = relativeIndex;
+                            indexB = relativeIndex + 2;
+                            indexC = relativeIndex + 1;
+
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+
+                            //create the vert array for the current face, write it to Segment 4. 
+
+
+
+
+                            for (int v = 0; v < 3; v++)
+                            {
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.x));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.z));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[faceIndex].vertData[v].position.y));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.s));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.t));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+
+                                seg4w.Write(cObj.modelGeometry[faceIndex].vertData[v].color.r);
+                                seg4w.Write(cObj.modelGeometry[faceIndex].vertData[v].color.g);
+                                seg4w.Write(cObj.modelGeometry[faceIndex].vertData[v].color.b);
+                                seg4w.Write(Convert.ToByte(0));
+                            }
+
+                            faceIndex++;
+                            relativeIndex += 3;
+
+                        }
+
+
+
+                    }
+
+
+
+
+
+                    if (textureObject[cObj.materialID].textureTransparent == true)
+                    {
+                        //B900031D00552078
+                        //disable transparency.
+                        byteArray = BitConverter.GetBytes(0xB900031D);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(0x00552078);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+
+                    }
+
+
+                    byteArray = BitConverter.GetBytes(0xB8000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    relativeZero += relativeIndex;
+                    relativeIndex = 0;
+                }
+
+
+
+
+
+            }
+
+            outDLOffset = Convert.ToInt32(seg7w.BaseStream.Position);
+
+            foreach (var cObj in courseObject)
+            {
+                foreach (var objposition in cObj.meshPosition)
+                {
+                    
+                    byteArray = BitConverter.GetBytes(0x06000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(objposition | 0x07000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+                    
+                }
+            }
+
+            outseg4 = seg4m.ToArray();
+            outseg7 = seg7m.ToArray();
+
+            outMagic = relativeZero;
+        }
+
+
+
+        public byte[] compileF3DList(ref OK64SectionList[] sectionOut, Assimp.Scene fbx, OK64F3DObject[] courseObject, OK64SectionList[] sectionList)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -6352,7 +8241,7 @@ namespace Tarmac64_Geometry
             BinaryWriter seg6w = new BinaryWriter(seg6m);
 
             byte[] byteArray = new byte[0];
-            byte singleByte = new byte();
+
 
 
             for (int currentSection = 0; currentSection < sectionList.Length; currentSection++)

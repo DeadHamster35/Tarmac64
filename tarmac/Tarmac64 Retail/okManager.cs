@@ -13,6 +13,7 @@ using System.Text;
 using System.Collections;
 using PeepsCompress;
 using Tarmac64_Library;
+using Tarmac64_Geometry;
 
 
 
@@ -43,6 +44,8 @@ namespace Tarmac64
         bool romLoaded = false;
 
         TM64 mk = new TM64();
+        TM64_Geometry mk_geometry = new TM64_Geometry();
+           
 
 
         byte[] flip4 = new byte[4];
@@ -856,7 +859,7 @@ namespace Tarmac64
                 savePath = vertSave.FileName;
                 byte[] ROM = File.ReadAllBytes(filePath);
                 byte[] useg7 = mk.dumpseg7(cID, ROM);
-                byte[] seg7 = mk.decompress_seg7(useg7);
+                byte[] seg7 = mk_geometry.decompress_seg7(useg7);
 
                 File.WriteAllBytes(savePath, seg7);
                 MessageBox.Show("Finished");
@@ -949,7 +952,7 @@ namespace Tarmac64
 
                 byte[] ROM = File.ReadAllBytes(filePath);
                 byte[] useg7 = mk.dumpseg7(cID, ROM);
-                byte[] seg7 = mk.decompress_seg7(useg7);
+                byte[] seg7 = mk_geometry.decompress_seg7(useg7);
 
 
 
@@ -1370,7 +1373,7 @@ namespace Tarmac64
 
                 byte[] ROM = File.ReadAllBytes(filePath);
                 byte[] useg7 = mk.dumpseg7(cID, ROM);
-                byte[] seg7 = mk.decompress_seg7(useg7);
+                byte[] seg7 = mk_geometry.decompress_seg7(useg7);
 
 
 
@@ -1593,7 +1596,7 @@ namespace Tarmac64
                 savePath = vertSave.FileName;
                 byte[] ROM = File.ReadAllBytes(filePath);
                 byte[] useg7 = mk.dumpseg7(cID, ROM);
-                byte[] seg7 = mk.decompress_seg7(useg7);
+                byte[] seg7 = mk_geometry.decompress_seg7(useg7);
 
                 File.WriteAllBytes(savePath, seg7);
                 MessageBox.Show("Finished");

@@ -1,18 +1,35 @@
-﻿using System;
+﻿using PeepsCompress;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
+using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using AssimpSharp.FBX;
-using System.Text;
-using System.Windows.Media.Effects;
-using System.Globalization;
+using System.Drawing.Imaging;
+using System.Numerics;
+using Tarmac64;
 using Tarmac64_Geometry;
 using Tarmac64_Library;
 using Collada141;
+
+
+//custom libraries
+
+using AssimpSharp;  //for handling model data
+using Texture64;  //for handling texture data
+
+
 using Cereal64.Microcodes.F3DEX.DataElements;
+using Cereal64.Common.DataElements;
+using Cereal64.Common.Rom;
+using Cereal64.Common.Utils.Encoding;
+using System.Text.RegularExpressions;
+using System.Security.Permissions;
+using SharpDX;
+using System.Globalization;
 
 namespace Tarmac64
 {
@@ -33,7 +50,7 @@ namespace Tarmac64
         
         Int32 value32 = new Int32();
 
-
+        TM64 tarmac64 = new TM64();
         TM64_Geometry.Vertex[] vertCache = new TM64_Geometry.Vertex[32];
 
         OpenFileDialog fileOpen = new OpenFileDialog();
@@ -174,7 +191,6 @@ namespace Tarmac64
         {
 
         }
-
 
 
 
@@ -476,89 +492,8 @@ namespace Tarmac64
             targetOffset = int.Parse(f3dBox.Text, NumberStyles.HexNumber);
         }
 
-        private void button11_Click(object sender, EventArgs e)
-        {
-            TM64_Geometry mk = new TM64_Geometry();
-
-            OpenFileDialog openFile = new OpenFileDialog();
-            if (openFile.ShowDialog() == DialogResult.OK)
-            {
-                byte[] vertData = File.ReadAllBytes(openFile.FileName);
-
-                string[] outData = DumpVerts(vertData);
-
-                SaveFileDialog saveFile = new SaveFileDialog();
-                if (saveFile.ShowDialog() == DialogResult.OK)
-                {
-                    File.WriteAllLines(saveFile.FileName,outData);
-                }
-
-            }
-        }
 
 
-
-
-        public string[] DumpVerts(byte[] vertBytes)
-        {
-
-
-            bool vertEnd = true;
-
-            int vertcount = vertBytes.Length / 14;
-
-            string[] output = new string[vertcount];
-
-            int xcor = new int();
-            int ycor = new int();
-            int zcor = new int();
-            int scor = new int();
-            int tcor = new int();
-
-
-            MemoryStream ds = new MemoryStream(vertBytes);
-            BinaryReader dr = new BinaryReader(ds);
-            {
-                dr.BaseStream.Position = 0;
-                for (int i = 0; vertEnd; i++)
-                {
-                    byte[] flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    xcor = BitConverter.ToInt16(flip2, 0); //x   <-- this really is the X axis. No tricks.
-
-                    flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    zcor = BitConverter.ToInt16(flip2, 0); //z    <-- this is actually the Y axis, but the game (like early 3D) treats the Y axis as height
-
-                    flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    ycor = BitConverter.ToInt16(flip2, 0); //y    <-- this is actually the Z axis, but the game (like early 3D) treats the Z axis as depth
-
-                    flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    scor = BitConverter.ToInt16(flip2, 0); //S
-
-                    flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    tcor = BitConverter.ToInt16(flip2, 0); //T
-
-                    byte rcol = dr.ReadByte();
-                    byte gcol = dr.ReadByte();
-                    byte bcol = dr.ReadByte();
-                    byte acol = dr.ReadByte();
-
-                    output[i] = "[" + xcor.ToString() + "," + zcor.ToString() + "," + ycor.ToString() + "]";
-
-                    if (dr.BaseStream.Position >= dr.BaseStream.Length)
-                    {
-                        vertEnd = false;
-                    }
-                }
-
-                return output;
-            }
-
-        }
 
         private void button12_Click(object sender, EventArgs e)
         {
@@ -585,134 +520,8 @@ namespace Tarmac64
 
 
 
-        public void dumpface2 (byte[] segment4Data, byte[] segment7Data, string savePath)
-        {
-         
-            
-            List<byte> vertList = segment4Data.ToList();
-            List<byte> insert = new List<byte> { 0x00, 0x00 };
-            int vertcount = (vertList.Count / 14);
-
-            for (int i = 0; i < vertcount; i++)
-            {
-                vertList.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
-            }
-            byte[] seg4 = vertList.ToArray();
-
-            for (int currentVert = 0; currentVert < 32; currentVert++)
-            {
-                vertCache[currentVert] = new TM64_Geometry.Vertex();
-                vertCache[currentVert].position = new TM64_Geometry.Position();
-                vertCache[currentVert].color = new TM64_Geometry.Color();
-            }
-
-            byte[] seg7 = segment7Data;
-            TM64_Geometry mk = new TM64_Geometry();
-
-
-            MemoryStream seg7m = new MemoryStream(segment7Data);
-            MemoryStream seg4m = new MemoryStream(seg4);
-            BinaryReader seg7r = new BinaryReader(seg7m);
-            BinaryReader seg4r = new BinaryReader(seg4m);
-
-            int vaddress = new int();
-
-            
-            byte commandbyte = new byte();
-            byte[] byte29 = new byte[2];
-
-            string output = "";
-            byte[] voffset = new byte[2];
-
-            //DEBUG
-            int displayOffset = 0;
-            //DEBUG
-
-
-            while (displayOffset < seg7r.BaseStream.Length)
-            {
-
-                seg7r.BaseStream.Seek(displayOffset, SeekOrigin.Begin);
-                commandbyte = seg7r.ReadByte();
-
-                output = "";
-
-                if (commandbyte == 0xB8)
-                {
-                    output = "ENDSECTION" + Environment.NewLine + "Object " + seg7r.BaseStream.Position.ToString("X") + Environment.NewLine;
-                }
-
-
-                //Special Conditional
-                if (commandbyte == 0xE4)
-                {
-                    displayOffset += 4;
-                }
-                //Special Conditional
-
-                if (commandbyte == 0x04)
-                {
-                    output = mk.F3DEX_Model(out vertCache, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache);
-                    if (output != "")
-                    {
-                        vaddress = Convert.ToInt32(output);
-                        output = "";
-                    }
-                }
-                if (commandbyte == 0xB1)
-                {
-                    output = mk.F3DEX_Model(out vertCache, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache);
-                }
-                if (commandbyte == 0xBF)
-                {
-                    output = mk.F3DEX_Model(out vertCache, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache);
-                }
-
-
-
-
-                if (output != "")
-                {
-                    System.IO.File.AppendAllText(savePath, output);
-                }
-
-                //MessageBox.Show("Command-"+commandbyte.ToString("X"));
-
-                displayOffset += 8;
-            }
-
-            MessageBox.Show("Finished");
-
-            
-
-        }
-
-        private void button13_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Segment 4 Uncompressed");
-            OpenFileDialog fileOpen = new OpenFileDialog();
-
-            if (fileOpen.ShowDialog() == DialogResult.OK)
-            {
-                byte[] segment4 = File.ReadAllBytes(fileOpen.FileName);
-
-                MessageBox.Show("Segment 7 Uncompressed");
-
-                if (fileOpen.ShowDialog() == DialogResult.OK)
-                {
-                    byte[] segment7 = File.ReadAllBytes(fileOpen.FileName);
-
-                    MessageBox.Show("File Save");
-                    SaveFileDialog fileSave = new SaveFileDialog();
-
-                    if (fileSave.ShowDialog() == DialogResult.OK)
-                    {
-                        dumpface2(segment4, segment7, fileSave.FileName);
-                    }
-                }
-            }
-
-        }
+        
+       
 
         private void button14_Click(object sender, EventArgs e)
         {
@@ -738,6 +547,288 @@ namespace Tarmac64
                 if (fileSave.ShowDialog() == DialogResult.OK)
                 {
                     File.WriteAllBytes(fileSave.FileName, seg4);
+                }
+            }
+        }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderOpen = new FolderBrowserDialog();
+            if (folderOpen.ShowDialog() == DialogResult.OK)
+            {
+
+                foreach (string file in Directory.GetFiles(folderOpen.SelectedPath, "*.c"))
+                {
+                    string[] fileData = File.ReadAllLines(file);
+                    
+                    List<byte> byteList = new List<byte>();
+
+                    MemoryStream memoryStream = new MemoryStream();
+                    BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+                    string outPath = Path.Combine(Path.GetDirectoryName(file), "Output");
+
+                    Directory.CreateDirectory(outPath);
+                    outPath = Path.Combine(outPath, Path.GetFileName(file));
+
+                    //past the intro start at 1
+
+                    int currentLine = 0;
+                    int dataType = 0;
+
+
+                    for (; currentLine < fileData.Count();)
+                    {
+                        bool newObject = false;
+                        bool dataStart = false;
+
+                        do
+                        {
+                            string firstLine = fileData[currentLine];
+                            currentLine++;
+                            string[] splitFirst = firstLine.Split(' ');
+                            if (splitFirst[1] == "short")
+                            {
+                                dataType = 1;
+                            }
+                        } while (dataStart == false);
+                        
+
+                        do
+                        {
+                            string thisLine = fileData[currentLine];
+                            currentLine++;
+                            if (thisLine != "};")
+                            {
+                                if (thisLine != "")
+                                {
+                                    string[] itemArray = thisLine.Split(',');
+
+                                    foreach (var currentItem in itemArray)
+                                    {
+                                        if (currentItem.Length > 0)
+                                        {
+                                            char tab = '\u0009';
+                                            string editedItem = currentItem.Replace("0x", "");
+                                            editedItem = editedItem.Replace(tab.ToString(), "");
+                                            editedItem = editedItem.Replace("\"", "");
+                                            if (dataType == 1)
+                                            {
+                                                binaryWriter.Write(Convert.ToInt16(editedItem, 16));
+                                            }
+                                            else
+                                            {
+                                                byteList.Add(Convert.ToByte(editedItem, 16));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                newObject = true;
+                            }
+                        } while (newObject == false);
+                    }
+
+
+
+                    
+
+
+                    
+
+
+                    int addressAlign = 4 - (byteList.Count % 4);
+                    if (addressAlign == 4)
+                        addressAlign = 0;
+                    for (int align = 0; align < addressAlign; align++)
+                    {
+                        byteList.Add(0xFF);
+                    }
+                    byte[] byteArray = new byte[0];
+                    if (dataType == 0)
+                    {
+                        byteArray = byteList.ToArray();
+                    }
+                    else
+                    {
+                        byteArray = memoryStream.ToArray();
+                    }
+
+                    TM64_Geometry mk = new TM64_Geometry();
+                    File.WriteAllBytes(outPath + ".data.bin", byteArray);
+
+                    try
+                    {
+                        byte[] textureData = mk.decompressMIO0(byteArray);
+
+
+                        int width, height = 0;
+                        byte[] voidBytes = new byte[0];
+
+                        if (textureData.Length == 0x800)
+                        {
+                            width = 32;
+                            height = 32;
+
+                            Bitmap exportBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                            Graphics graphicsBitmap = Graphics.FromImage(exportBitmap);
+                            N64Graphics.RenderTexture(graphicsBitmap, textureData, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
+
+                            string texturePath = (outPath + ".png");
+
+                            exportBitmap.Save(texturePath, ImageFormat.Png);
+
+
+                        }
+                        else
+                        {
+                            width = 32;
+                            height = 64;
+
+                            Bitmap exportBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                            Graphics graphicsBitmap = Graphics.FromImage(exportBitmap);
+                            N64Graphics.RenderTexture(graphicsBitmap, textureData, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
+
+                            string texturePath = (outPath + ".32x64.png");
+
+                            exportBitmap.Save(texturePath, ImageFormat.Png);
+
+                            width = 64;
+                            height = 32;
+
+                            exportBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                            graphicsBitmap = Graphics.FromImage(exportBitmap);
+                            N64Graphics.RenderTexture(graphicsBitmap, textureData, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
+
+                            texturePath = (outPath + ".64x32.png");
+
+                            exportBitmap.Save(texturePath, ImageFormat.Png);
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                        continue;
+                    }
+                    
+
+
+                }
+                
+
+            }    
+        }
+
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+
+            int currentIndex = 0;
+
+            if (fileOpen.ShowDialog() == DialogResult.OK)
+            {
+                string[] vertText = File.ReadAllLines(fileOpen.FileName);
+                if (fileOpen.ShowDialog() == DialogResult.OK)
+                {
+                    if (fileSave.ShowDialog() == DialogResult.OK)
+                    {
+
+                        string savePath = fileSave.FileName;
+                        string[] faceText = File.ReadAllLines(fileOpen.FileName);
+
+
+
+                        TM64_Geometry.Vertex[] vertData = new TM64_Geometry.Vertex[vertText.Length];
+
+                        for (int currentVert = 0; currentVert < vertData.Length; currentVert++)
+                        {
+                            string currentLine = vertText[currentVert];
+                            string[] splitString = currentLine.Split(',');
+                            vertData[currentVert] = new TM64_Geometry.Vertex();
+                            vertData[currentVert].position = new TM64_Geometry.Position();
+                            vertData[currentVert].position.x = Convert.ToInt16(splitString[0]);
+                            vertData[currentVert].position.y = Convert.ToInt16(splitString[1]);
+                            vertData[currentVert].position.z = Convert.ToInt16(splitString[2]);
+
+                            vertData[currentVert].position.s = Convert.ToInt16(splitString[4]);
+                            vertData[currentVert].position.t = Convert.ToInt16(splitString[5]);
+                            /*
+                            vertData[currentVert].color = new TM64_Geometry.Color();
+                            vertData[currentVert].color.r = Convert.ToByte(splitString[6]);
+                            vertData[currentVert].color.g = Convert.ToByte(splitString[7]);
+                            vertData[currentVert].color.b = Convert.ToByte(splitString[8]);
+                            vertData[currentVert].color.a = Convert.ToByte(splitString[9]);
+                            */
+
+                        }
+                        
+                        for (int currentLine = 0; currentLine < faceText.Length;)
+                        {
+                            string thisLine = faceText[currentLine];
+                            currentLine++;
+                            string[] splitString = thisLine.Split(' ');
+                            if (splitString[0] == "static")
+                            {
+                                System.IO.File.AppendAllText(savePath, "NEWOBJECT" + Environment.NewLine);
+                                System.IO.File.AppendAllText(savePath, "NEWOBJECT" + Environment.NewLine);
+                                System.IO.File.AppendAllText(savePath, splitString[1] + Environment.NewLine);
+
+                                bool breakBool = false;
+                                do
+                                {
+                                    string childLine = faceText[currentLine];
+                                    currentLine++;
+                                    string[] childSplit = childLine.Split('(');
+                                    if (childSplit[0] == "gsSPVertex")
+                                    {
+                                        string[] functionSplit = childSplit[1].Split('[');
+                                        functionSplit = functionSplit[1].Split(']');
+                                        currentIndex = Convert.ToInt32(functionSplit[0]);
+                                    }
+                                    else if (childSplit[0] == "gsSP1Triangle")
+                                    {
+                                        string[] functionSplit = childSplit[1].Split(',');
+                                        int indexA = Convert.ToInt32(functionSplit[0]);
+                                        int indexB = Convert.ToInt32(functionSplit[1]);
+                                        int indexC = Convert.ToInt32(functionSplit[2]);
+                                        System.IO.File.AppendAllText(savePath, vertData[indexA+currentIndex].position.x.ToString() + ",");
+                                        System.IO.File.AppendAllText(savePath, vertData[indexA + currentIndex].position.z.ToString() + ",");
+                                        System.IO.File.AppendAllText(savePath, vertData[indexA + currentIndex].position.y.ToString() + ";");
+                                        System.IO.File.AppendAllText(savePath, vertData[indexB + currentIndex].position.x.ToString() + ",");
+                                        System.IO.File.AppendAllText(savePath, vertData[indexB + currentIndex].position.z.ToString() + ",");
+                                        System.IO.File.AppendAllText(savePath, vertData[indexB + currentIndex].position.y.ToString() + ";");
+                                        System.IO.File.AppendAllText(savePath, vertData[indexC + currentIndex].position.x.ToString() + ",");
+                                        System.IO.File.AppendAllText(savePath, vertData[indexC + currentIndex].position.z.ToString() + ",");
+                                        System.IO.File.AppendAllText(savePath, vertData[indexC + currentIndex].position.y.ToString() + ";");
+                                        System.IO.File.AppendAllText(savePath, Environment.NewLine);
+
+                                    }
+                                    else if (childSplit[0] == "gsSPEndDisplayList")
+                                    {
+                                        breakBool = true;
+                                        System.IO.File.AppendAllText(savePath, "ENDOBJECT" + Environment.NewLine);
+                                        System.IO.File.AppendAllText(savePath, splitString[1] + Environment.NewLine);
+                                        System.IO.File.AppendAllText(savePath, Environment.NewLine);
+                                    }
+
+
+                                } while (breakBool == false);
+
+                            }
+
+
+                        }
+                        
+
+
+                    }
                 }
             }
         }

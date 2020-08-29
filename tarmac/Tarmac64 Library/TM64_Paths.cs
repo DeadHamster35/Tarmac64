@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Numerics;
+using Tarmac64_Library;
+using Tarmac64_Geometry;
+using Assimp;
 
 namespace Tarmac64_Paths
 {
@@ -175,6 +178,123 @@ namespace Tarmac64_Paths
 
 
 
+        public Pathgroup[] loadPOP(string popFile, TM64_Geometry.OK64F3DObject[] surfaceObjects)
+        {
+            //load the pathgroups from the external .OK64.POP file provided
+
+            TM64_Geometry tm64Geo = new TM64_Geometry();
+
+            List<Pathgroup> pathgroup = new List<Pathgroup>();
+            string[] reader = File.ReadAllLines(popFile);
+            string[] positions = new string[3];
+
+            int[] markerCount = new int[4];
+
+
+
+
+            int currentLine = 0;
+
+            for (int group = 0; group < 4; group++)
+            {
+                pathgroup.Add(new Pathgroup());
+                List<Pathlist> tempList = new List<Pathlist>();
+
+
+
+                tempList.Add(new Pathlist());
+                tempList[0].pathmarker = new List<Marker>();
+
+                string pathType = reader[currentLine];
+                currentLine++;
+
+                markerCount[group] = Int32.Parse(reader[currentLine]);
+                currentLine++;
+
+
+                for (int marker = 0; marker < markerCount[group]; marker++)
+                {
+                    tempList[0].pathmarker.Add(new Marker());
+
+
+                    // input format
+
+                    //[xposition,yposition,zposition]
+                    //flag
+
+                    // Flag for Path should correlate with section.
+                    // Flag for objects will almost always be 0. Unsure of effect. 
+
+                    string lineRead = reader[currentLine].Substring(1, (reader[currentLine].Length - 2));
+                    // This strips the brackets from the first line
+
+                    string[] markerPosition = lineRead.Split(',');
+                    // This creates an array containing the marker positions as strings.
+
+                    currentLine++;
+                    // Advance forward in the file.
+
+                    tempList[0].pathmarker[marker].xval = Convert.ToInt32(Single.Parse(markerPosition[0]));
+                    tempList[0].pathmarker[marker].yval = Convert.ToInt32(Single.Parse(markerPosition[1]));
+                    tempList[0].pathmarker[marker].zval = Convert.ToInt32(Single.Parse(markerPosition[2]));
+
+                    //maintain Z/Y axis, we flip it only when writing to the ROM.
+                    tempList[0].pathmarker[marker].flag = Convert.ToInt32(reader[currentLine]);
+                    //Read the next line, convert to int. This is the accompanying Flag for the marker. 
+
+
+                    currentLine++;
+                    // Advance forward in the file.
+
+                    float[] pointA = new float[3];
+                    pointA[0] = Convert.ToSingle(tempList[0].pathmarker[marker].xval);
+                    pointA[1] = Convert.ToSingle(tempList[0].pathmarker[marker].yval);
+                    pointA[2] = Convert.ToSingle(tempList[0].pathmarker[marker].zval + 15);
+
+                    float[] pointB = new float[3];
+                    pointB[0] = Convert.ToSingle(tempList[0].pathmarker[marker].xval);
+                    pointB[1] = Convert.ToSingle(tempList[0].pathmarker[marker].yval);
+                    pointB[2] = Convert.ToSingle(tempList[0].pathmarker[marker].zval - 5);
+
+
+                    //custom Path Flag routine
+                    //uses surfaceObjects and raycasts to determine appropriate surface section.
+                    Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
+                    Vector3D rayTarget = new Vector3D(Convert.ToSingle(pointB[0]), Convert.ToSingle(pointB[1]), Convert.ToSingle(pointB[2] * -1));
+
+                    /*
+                    float objectDistance = -1;
+                    TM64_Geometry tmGeo = new TM64_Geometry();
+                    int objectID = -1;
+                    for (int currentObject = 0; (currentObject < surfaceObjects.Length); currentObject++)
+                    {
+
+                        foreach (var face in surfaceObjects[currentObject].modelGeometry)
+                        {
+
+                            Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin,  rayTarget, face.vertData[0], face.vertData[1], face.vertData[2]);
+                            if (intersectPoint.X > 0)
+                            {
+                                if (objectDistance > intersectPoint.X | objectDistance == -1)
+                                {
+                                    objectDistance = intersectPoint.X;
+                                    objectID = currentObject;
+                                }
+                            }
+                        }                    
+                    }
+                    */
+                    //tempList[0].pathmarker[marker].flag = Convert.ToInt32(surfaceObjects[objectID].surfaceID);
+
+                }
+
+                pathgroup[group].pathList = tempList.ToArray();
+            }
+            Pathgroup[] popPath = pathgroup.ToArray();
+            return popPath;
+
+        }
+
         public Pathgroup[] loadPOP(string popFile)
         {
             //load the pathgroups from the external .OK64.POP file provided
@@ -192,6 +312,80 @@ namespace Tarmac64_Paths
             int currentLine = 0;
 
             for (int group = 0; group < 4; group++)
+            {
+                pathgroup.Add(new Pathgroup());
+                List<Pathlist> tempList = new List<Pathlist>();
+
+
+
+                tempList.Add(new Pathlist());
+                tempList[0].pathmarker = new List<Marker>();
+
+                string pathType = reader[currentLine];
+                currentLine++;
+
+                markerCount[group] = Int32.Parse(reader[currentLine]);
+                currentLine++;
+
+
+                for (int marker = 0; marker < markerCount[group]; marker++)
+                {
+                    tempList[0].pathmarker.Add(new Marker());
+
+
+                    // input format
+
+                    //[xposition,yposition,zposition]
+                    //flag
+
+                    // Flag for Path should correlate with section.
+                    // Flag for objects will almost always be 0. Unsure of effect. 
+
+                    string lineRead = reader[currentLine].Substring(1, (reader[currentLine].Length - 2));
+                    // This strips the brackets from the first line
+
+                    string[] markerPosition = lineRead.Split(',');
+                    // This creates an array containing the marker positions as strings.
+
+                    currentLine++;
+                    // Advance forward in the file.
+
+                    tempList[0].pathmarker[marker].xval = Convert.ToInt32(Single.Parse(markerPosition[0]));
+                    tempList[0].pathmarker[marker].yval = Convert.ToInt32(Single.Parse(markerPosition[1]));
+                    tempList[0].pathmarker[marker].zval = Convert.ToInt32(Single.Parse(markerPosition[2]));
+
+                    //maintain Z/Y axis, we flip it only when writing to the ROM.
+                    tempList[0].pathmarker[marker].flag = Convert.ToInt32(reader[currentLine]);
+                    //Read the next line, convert to int. This is the accompanying Flag for the marker. 
+
+                    currentLine++;
+                    // Advance forward in the file.
+                }
+
+                pathgroup[group].pathList = tempList.ToArray();
+            }
+            Pathgroup[] popPath = pathgroup.ToArray();
+            return popPath;
+
+        }
+
+        public Pathgroup[] loadBattlePOP(string popFile)
+        {
+            //load the pathgroups from the external .OK64.POP file provided
+
+
+            List<Pathgroup> pathgroup = new List<Pathgroup>();
+            string[] reader = File.ReadAllLines(popFile);
+            string[] positions = new string[3];
+
+            int[] markerCount = new int[2];
+
+
+
+
+            int currentLine = 0;
+
+            for (int group = 0; group < 2; group++)
             {
                 pathgroup.Add(new Pathgroup());
                 List<Pathlist> tempList = new List<Pathlist>();
@@ -401,6 +595,94 @@ namespace Tarmac64_Paths
                         Array.Reverse(dataBytes);
                         binaryWriter.Write(dataBytes);  //pad
                     }
+                }
+            }
+            else
+            {
+                MessageBox.Show("ERROR - MORE THAN 4 POP GROUPS");
+            }
+            byte[] popBytes = memoryStream.ToArray();
+            return popBytes;
+
+        }
+
+
+        public byte[] popBattle(string popFile)
+        {
+
+
+            //popMarkers is used by the geometry compiler, not to add objects to existing courses.
+            Pathgroup[] pathgroup = loadBattlePOP(popFile);
+
+
+            memoryStream = new MemoryStream();
+            binaryWriter = new BinaryWriter(memoryStream);
+            binaryReader = new BinaryReader(memoryStream);
+
+            int groupCount = pathgroup.Length;
+            if (groupCount == 2)
+            {
+                
+                // skip group 1 which is spawn points for future update.
+                for (int currentGroup = 1; currentGroup < groupCount; currentGroup++)
+                {
+
+                    int markerCount = pathgroup[currentGroup].pathList[0].pathmarker.Count;
+
+
+                    for (int currentMarker = 0; currentMarker < markerCount; currentMarker++)
+                    {
+
+                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(pathgroup[currentGroup].pathList[0].pathmarker[currentMarker].xval));
+                        Array.Reverse(dataBytes);
+                        binaryWriter.Write(dataBytes);  //x
+
+                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(pathgroup[currentGroup].pathList[0].pathmarker[currentMarker].zval));
+                        Array.Reverse(dataBytes);
+                        binaryWriter.Write(dataBytes);  //z
+
+                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(-1 * pathgroup[currentGroup].pathList[0].pathmarker[currentMarker].yval));
+                        Array.Reverse(dataBytes);
+                        binaryWriter.Write(dataBytes);  //y 
+
+                        dataBytes = BitConverter.GetBytes(Convert.ToUInt16(pathgroup[currentGroup].pathList[0].pathmarker[currentMarker].flag));
+                        Array.Reverse(dataBytes);
+                        binaryWriter.Write(dataBytes);  //flag
+
+                    }
+
+                    dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
+                    Array.Reverse(dataBytes);
+                    binaryWriter.Write(dataBytes);  //end list
+
+                    if (currentGroup == 0)  //group 0 is course paths, groups 1-3 are objects
+                    {
+                        dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
+                        Array.Reverse(dataBytes);
+                        binaryWriter.Write(dataBytes);  //end path
+
+                        dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
+                        Array.Reverse(dataBytes);
+                        binaryWriter.Write(dataBytes);  //end path
+                    }
+                    else
+                    {
+
+                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
+                        Array.Reverse(dataBytes);
+                        binaryWriter.Write(dataBytes);  //end object
+
+                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
+                        Array.Reverse(dataBytes);
+                        binaryWriter.Write(dataBytes);  //end object
+                    }
+
+
+                    dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
+                    Array.Reverse(dataBytes);
+                    binaryWriter.Write(dataBytes);  //end flag
+
+
                 }
             }
             else

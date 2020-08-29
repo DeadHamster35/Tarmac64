@@ -818,25 +818,11 @@ namespace Tarmac64
                 int targetOffset = Convert.ToInt32(seg4_addr[cID]);
                 byte[] romBytes = File.ReadAllBytes(filePath);
 
-                byte[] compressedFile = new byte[0];
+                byte[] compressedFile = new byte[romBytes.Length - targetOffset];
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
-                byte[] vertByte = mk.decompressMIO0(compressedFile);
-                List<byte> insert = new List<byte> { 0x00, 0x00 };
-                int vertcount = (vertByte.Length / 14);
-
-                List<byte> vertList = vertByte.ToList();
-
-
-                for (int i = 0; i < vertcount; i++)
-                {
-                    vertList.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
-                }
-
-
-
-                byte[] seg4 = vertList.ToArray();
-
+                byte[] seg4 = mk.decompressMIO0(compressedFile);
+                
 
                 fs = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 ds = new MemoryStream(seg4);

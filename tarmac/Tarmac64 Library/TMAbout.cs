@@ -52,9 +52,7 @@ namespace Tarmac64
 
         private void ROMManagerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            okManager f2 = new okManager();
-            f2.Size = new System.Drawing.Size(470, 270);
-            f2.ShowDialog();
+            
         }
 
         private void TextureListsToolStripMenuItem1_Click(object sender, EventArgs e)

@@ -17,10 +17,7 @@ namespace Tarmac64
 
     public partial class RacerEditor : Form
     {
-        string settings_path = Path.Combine(Environment.GetFolderPath(
-            Environment.SpecialFolder.ApplicationData), "PorkChop.txt");
-
-        int debugmode = 0;
+        
         float[] cc50 = new float[8];
         float[] cc100 = new float[8];
         float[] cc150 = new float[8];

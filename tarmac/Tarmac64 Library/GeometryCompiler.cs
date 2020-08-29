@@ -13,39 +13,67 @@ using System.Drawing;
 using System.Text;
 using System.Collections;
 using PeepsCompress;
-
+using Assimp;
 using Tarmac64_Library;
 using Tarmac64_Geometry;
 using Tarmac64_Paths;
 using System.Text.RegularExpressions;
 using Tarmac64_Library.Properties;
 using SharpGL;
+using SharpGL.SceneGraph.Core;
 using System.Drawing.Design;
 using System.Windows.Input;
+using System.Drawing.Imaging;
+using Cereal64.Microcodes.F3DEX.DataElements;
 
 namespace Tarmac64
 {
+
+
     public partial class GeometryCompiler : Form
     {
+
+
+
+        TabPage sectionPage = new TabPage();
+        TabPage surfacePage = new TabPage();
+
+
+        bool raycastBoolean = false;
+        int sectionCount = 0;
+        public int programFormat;
+        int levelFormat = 0;
+
+
         public GeometryCompiler()
         {
             InitializeComponent();
         }
 
-
+        Stopwatch clockTime = new Stopwatch();
         bool loadGL = false;
         bool wideScreen = false;
 
 
 
+        float[] flashRed = { 1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
+        float[] flashYellow = { 1.0f, 1.0f, 1.0f, 1.0f, 0.0f };
+        float[] flashWhite = { 1.0f, 1.0f, 1.0f, 0.5f, 0.0f };
+        int highlightedObject = -1;
 
+        int width, height = 0;
 
-
-        TM64_Geometry mk = new TM64_Geometry();
-        TM64_Paths mkPath = new TM64_Paths();
+        TM64_Geometry tm64Geo = new TM64_Geometry();
+        TM64_Paths tm64Path = new TM64_Paths();
+        TM64 tm64 = new TM64();
 
         TM64_Geometry.OK64SectionList[] sectionList = new TM64_Geometry.OK64SectionList[0];
         TM64_Geometry.OK64SectionList[] surfaceList = new TM64_Geometry.OK64SectionList[0];
+
+        TM64_Geometry.Face[] markerGeometry = new TM64_Geometry.Face[2];
+        TM64_Geometry.Face[] treeGeometry = new TM64_Geometry.Face[4];
+        TM64_Geometry.Face[] piranhaGeometry = new TM64_Geometry.Face[4];
+        TM64_Geometry.Face[] itemGeometry = new TM64_Geometry.Face[4];
 
         MemoryStream bs = new MemoryStream();
         BinaryReader br = new BinaryReader(Stream.Null);
@@ -63,14 +91,16 @@ namespace Tarmac64
         string[] surfaceType = new string[] { "Solid", "Dirt", "Dirt Track", "Cement", "Snow Track", "Wood", "Dirt Off-Road", "Grass", "Ice", "Beach Sand", "Snow Off-Road", "Rock Walls", "Dirt Off-Road", "Train Tracks", "Cave Interior", "Rickety Wood Bridge", "Solid Wood Bridge", "DK Parkyway Boost", "Out-Of-Bounds", "Royal Raceway Boost", "Walls" };
         int[] surfaceTypeID = new int[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0xFC, 0xFD, 0xFE, 0xFF };
 
-        string[] songNames = new string[] { "None", "Title", "Menu", "Raceways", "Moo Moo Farm", "Choco Mountain", "Koopa Troopa Beach", "Banshee Boardwalk", "Snowland", "Bowser's Castle", "Kalimari Desert", "#- GP Startup", "#- Final Lap (1st)", "#- Final Lap", "#- You Lose", "#- Race Results", "Star Music", "Rainbow Road", "DK Parkway", "#- Credits Failure", "Toad's Turnpike", "#- VS/Battle Start", "#- VS/Battle Results", "#- Retry/Quit", "Big Donut / Skyscraper", "#- Trophy A", "#- Trophy B1 (Win)", "Credits", "#- Trophy B2 (Lose)" }; 
+        public string[] songNames = new string[] { "None", "Title", "Menu", "Raceways", "Moo Moo Farm", "Choco Mountain", "Koopa Troopa Beach", "Banshee Boardwalk", "Snowland", "Bowser's Castle", "Kalimari Desert", "#- GP Startup", "#- Final Lap", "#- Final Lap (1st)", "#- Final Lap 2-4", "#- You Lose", "#- Race Results", "Star Music", "Rainbow Road", "DK Parkway", "#- Credits Failure", "Toad's Turnpike", "#- VS/Battle Start", "#- VS/Battle Results", "#- Retry/Quit", "Big Donut / Skyscraper", "#- Trophy A", "#- Trophy B1 (Win)", "Credits", "#- Trophy B2 (Lose)" };
 
         bool loaded = false;
 
         string FBXfilePath = "";
+        TM64_Paths.Pathgroup[] popData = new TM64_Paths.Pathgroup[0];
+        string popFile = "";
 
         TM64_Geometry.OK64F3DObject[] masterObjects = new TM64_Geometry.OK64F3DObject[0];
-        int masterCount = 0;
+        int moveDistance = 20;
 
 
         List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>();
@@ -85,8 +115,26 @@ namespace Tarmac64
 
         byte[] skyBytes = new byte[6];
 
-        AssimpSharp.FBX.FBXImporter assimpSharpImporter = new AssimpSharp.FBX.FBXImporter();
-        AssimpSharp.Scene fbx = new AssimpSharp.Scene();
+        AssimpContext AssimpImporter = new AssimpContext();
+        Assimp.Scene fbx = new Assimp.Scene();
+
+
+        TM64_Geometry.TMCamera localCamera = new TM64_Geometry.TMCamera();
+        OpenGL gl = new OpenGL();
+
+        public void updateOutput(string printText)
+        {
+            TimeSpan ts = clockTime.Elapsed;
+
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}",
+                ts.Hours, ts.Minutes, ts.Seconds);
+
+            currentOutput.Text = printText + "-" + elapsedTime;
+            currentOutput.Invalidate();
+            currentOutput.Refresh();
+            this.Invalidate();
+            this.Refresh();
+        }
 
 
         OpenFileDialog fileOpen = new OpenFileDialog();
@@ -94,6 +142,22 @@ namespace Tarmac64
         FolderBrowserDialog folderOpen = new FolderBrowserDialog();
         private void GeometryCompiler_Load(object sender, EventArgs e)
         {
+            
+            sectionPage = tabControl1.TabPages[3];
+            surfacePage = tabControl1.TabPages[4];
+            ui_formatBox.SelectedIndex = 1; //because the function below deletes or adds tabs, don't ask
+            ui_formatBox.SelectedIndex = 0;
+            CreateGeometry();
+            gl = openGLControl.OpenGL;
+            if (System.Diagnostics.Process.GetCurrentProcess().ProcessName == "Tarmac64 Designer")
+            {
+                about_button.Visible = true;
+            }
+            else
+            {
+                about_button.Visible = false;
+            }
+            this.MaximumSize = new System.Drawing.Size(575,440);
             this.Width = 575;
             courseBox.SelectedIndex = 0;
             cupBox.SelectedIndex = 0;
@@ -125,7 +189,316 @@ namespace Tarmac64
 
 
 
+        private void CreateGeometry()
+        {
+            markerGeometry[0] = new TM64_Geometry.Face();
+            markerGeometry[0].vertData = new TM64_Geometry.Vertex[3];
 
+            markerGeometry[0].vertData[0] = new TM64_Geometry.Vertex();
+            markerGeometry[0].vertData[0].position = new TM64_Geometry.Position();
+            markerGeometry[0].vertData[0].position.x = Convert.ToInt16(-5);
+            markerGeometry[0].vertData[0].position.y = Convert.ToInt16(0);
+            markerGeometry[0].vertData[0].position.z = Convert.ToInt16(0);
+
+            markerGeometry[0].vertData[1] = new TM64_Geometry.Vertex();
+            markerGeometry[0].vertData[1].position = new TM64_Geometry.Position();
+            markerGeometry[0].vertData[1].position.x = Convert.ToInt16(5);
+            markerGeometry[0].vertData[1].position.y = Convert.ToInt16(0);
+            markerGeometry[0].vertData[1].position.z = Convert.ToInt16(0);
+
+            markerGeometry[0].vertData[2] = new TM64_Geometry.Vertex();
+            markerGeometry[0].vertData[2].position = new TM64_Geometry.Position();
+            markerGeometry[0].vertData[2].position.x = Convert.ToInt16(0);
+            markerGeometry[0].vertData[2].position.y = Convert.ToInt16(0);
+            markerGeometry[0].vertData[2].position.z = Convert.ToInt16(10);
+
+
+            markerGeometry[1] = new TM64_Geometry.Face();
+            markerGeometry[1].vertData = new TM64_Geometry.Vertex[3];
+
+            markerGeometry[1].vertData[0] = new TM64_Geometry.Vertex();
+            markerGeometry[1].vertData[0].position = new TM64_Geometry.Position();
+            markerGeometry[1].vertData[0].position.x = Convert.ToInt16(0);
+            markerGeometry[1].vertData[0].position.y = Convert.ToInt16(-5);
+            markerGeometry[1].vertData[0].position.z = Convert.ToInt16(0);
+
+            markerGeometry[1].vertData[1] = new TM64_Geometry.Vertex();
+            markerGeometry[1].vertData[1].position = new TM64_Geometry.Position();
+            markerGeometry[1].vertData[1].position.x = Convert.ToInt16(0);
+            markerGeometry[1].vertData[1].position.y = Convert.ToInt16(5);
+            markerGeometry[1].vertData[1].position.z = Convert.ToInt16(0);
+
+            markerGeometry[1].vertData[2] = new TM64_Geometry.Vertex();
+            markerGeometry[1].vertData[2].position = new TM64_Geometry.Position();
+            markerGeometry[1].vertData[2].position.x = Convert.ToInt16(0);
+            markerGeometry[1].vertData[2].position.y = Convert.ToInt16(0);
+            markerGeometry[1].vertData[2].position.z = Convert.ToInt16(10);
+
+            treeGeometry[0] = new TM64_Geometry.Face();
+
+            treeGeometry[0].vertData = new TM64_Geometry.Vertex[3];
+
+            treeGeometry[0].vertData[0] = new TM64_Geometry.Vertex();
+            treeGeometry[0].vertData[0].position = new TM64_Geometry.Position();
+            treeGeometry[0].vertData[0].position.x = Convert.ToInt16(-40);
+            treeGeometry[0].vertData[0].position.y = Convert.ToInt16(0);
+            treeGeometry[0].vertData[0].position.z = Convert.ToInt16(0);
+
+            treeGeometry[0].vertData[1] = new TM64_Geometry.Vertex();
+            treeGeometry[0].vertData[1].position = new TM64_Geometry.Position();
+            treeGeometry[0].vertData[1].position.x = Convert.ToInt16(40);
+            treeGeometry[0].vertData[1].position.y = Convert.ToInt16(0);
+            treeGeometry[0].vertData[1].position.z = Convert.ToInt16(0);
+
+            treeGeometry[0].vertData[2] = new TM64_Geometry.Vertex();
+            treeGeometry[0].vertData[2].position = new TM64_Geometry.Position();
+            treeGeometry[0].vertData[2].position.x = Convert.ToInt16(40);
+            treeGeometry[0].vertData[2].position.y = Convert.ToInt16(0);
+            treeGeometry[0].vertData[2].position.z = Convert.ToInt16(80);
+
+
+            treeGeometry[1] = new TM64_Geometry.Face();
+            treeGeometry[1].vertData = new TM64_Geometry.Vertex[3];
+
+            treeGeometry[1].vertData[0] = new TM64_Geometry.Vertex();
+            treeGeometry[1].vertData[0].position = new TM64_Geometry.Position();
+            treeGeometry[1].vertData[0].position.x = Convert.ToInt16(0);
+            treeGeometry[1].vertData[0].position.y = Convert.ToInt16(-40);
+            treeGeometry[1].vertData[0].position.z = Convert.ToInt16(0);
+
+            treeGeometry[1].vertData[1] = new TM64_Geometry.Vertex();
+            treeGeometry[1].vertData[1].position = new TM64_Geometry.Position();
+            treeGeometry[1].vertData[1].position.x = Convert.ToInt16(0);
+            treeGeometry[1].vertData[1].position.y = Convert.ToInt16(40);
+            treeGeometry[1].vertData[1].position.z = Convert.ToInt16(0);
+
+            treeGeometry[1].vertData[2] = new TM64_Geometry.Vertex();
+            treeGeometry[1].vertData[2].position = new TM64_Geometry.Position();
+            treeGeometry[1].vertData[2].position.x = Convert.ToInt16(0);
+            treeGeometry[1].vertData[2].position.y = Convert.ToInt16(40);
+            treeGeometry[1].vertData[2].position.z = Convert.ToInt16(80);
+
+            treeGeometry[2] = new TM64_Geometry.Face();
+            treeGeometry[2].vertData = new TM64_Geometry.Vertex[3];
+
+            treeGeometry[2].vertData[0] = new TM64_Geometry.Vertex();
+            treeGeometry[2].vertData[0].position = new TM64_Geometry.Position();
+            treeGeometry[2].vertData[0].position.x = Convert.ToInt16(-40);
+            treeGeometry[2].vertData[0].position.y = Convert.ToInt16(0);
+            treeGeometry[2].vertData[0].position.z = Convert.ToInt16(0);
+
+            treeGeometry[2].vertData[1] = new TM64_Geometry.Vertex();
+            treeGeometry[2].vertData[1].position = new TM64_Geometry.Position();
+            treeGeometry[2].vertData[1].position.x = Convert.ToInt16(40);
+            treeGeometry[2].vertData[1].position.y = Convert.ToInt16(0);
+            treeGeometry[2].vertData[1].position.z = Convert.ToInt16(80);
+
+            treeGeometry[2].vertData[2] = new TM64_Geometry.Vertex();
+            treeGeometry[2].vertData[2].position = new TM64_Geometry.Position();
+            treeGeometry[2].vertData[2].position.x = Convert.ToInt16(-40);
+            treeGeometry[2].vertData[2].position.y = Convert.ToInt16(0);
+            treeGeometry[2].vertData[2].position.z = Convert.ToInt16(80);
+
+
+            treeGeometry[3] = new TM64_Geometry.Face();
+            treeGeometry[3].vertData = new TM64_Geometry.Vertex[3];
+
+            treeGeometry[3].vertData[0] = new TM64_Geometry.Vertex();
+            treeGeometry[3].vertData[0].position = new TM64_Geometry.Position();
+            treeGeometry[3].vertData[0].position.x = Convert.ToInt16(0);
+            treeGeometry[3].vertData[0].position.y = Convert.ToInt16(-40);
+            treeGeometry[3].vertData[0].position.z = Convert.ToInt16(0);
+
+            treeGeometry[3].vertData[1] = new TM64_Geometry.Vertex();
+            treeGeometry[3].vertData[1].position = new TM64_Geometry.Position();
+            treeGeometry[3].vertData[1].position.x = Convert.ToInt16(0);
+            treeGeometry[3].vertData[1].position.y = Convert.ToInt16(40);
+            treeGeometry[3].vertData[1].position.z = Convert.ToInt16(80);
+
+            treeGeometry[3].vertData[2] = new TM64_Geometry.Vertex();
+            treeGeometry[3].vertData[2].position = new TM64_Geometry.Position();
+            treeGeometry[3].vertData[2].position.x = Convert.ToInt16(0);
+            treeGeometry[3].vertData[2].position.y = Convert.ToInt16(-40);
+            treeGeometry[3].vertData[2].position.z = Convert.ToInt16(80);
+
+
+
+            piranhaGeometry[0] = new TM64_Geometry.Face();
+
+            piranhaGeometry[0].vertData = new TM64_Geometry.Vertex[3];
+
+            piranhaGeometry[0].vertData[0] = new TM64_Geometry.Vertex();
+            piranhaGeometry[0].vertData[0].position = new TM64_Geometry.Position();
+            piranhaGeometry[0].vertData[0].position.x = Convert.ToInt16(-30);
+            piranhaGeometry[0].vertData[0].position.y = Convert.ToInt16(0);
+            piranhaGeometry[0].vertData[0].position.z = Convert.ToInt16(0);
+
+            piranhaGeometry[0].vertData[1] = new TM64_Geometry.Vertex();
+            piranhaGeometry[0].vertData[1].position = new TM64_Geometry.Position();
+            piranhaGeometry[0].vertData[1].position.x = Convert.ToInt16(30);
+            piranhaGeometry[0].vertData[1].position.y = Convert.ToInt16(0);
+            piranhaGeometry[0].vertData[1].position.z = Convert.ToInt16(0);
+
+            piranhaGeometry[0].vertData[2] = new TM64_Geometry.Vertex();
+            piranhaGeometry[0].vertData[2].position = new TM64_Geometry.Position();
+            piranhaGeometry[0].vertData[2].position.x = Convert.ToInt16(30);
+            piranhaGeometry[0].vertData[2].position.y = Convert.ToInt16(0);
+            piranhaGeometry[0].vertData[2].position.z = Convert.ToInt16(60);
+
+
+            piranhaGeometry[1] = new TM64_Geometry.Face();
+            piranhaGeometry[1].vertData = new TM64_Geometry.Vertex[3];
+
+            piranhaGeometry[1].vertData[0] = new TM64_Geometry.Vertex();
+            piranhaGeometry[1].vertData[0].position = new TM64_Geometry.Position();
+            piranhaGeometry[1].vertData[0].position.x = Convert.ToInt16(0);
+            piranhaGeometry[1].vertData[0].position.y = Convert.ToInt16(-30);
+            piranhaGeometry[1].vertData[0].position.z = Convert.ToInt16(0);
+
+            piranhaGeometry[1].vertData[1] = new TM64_Geometry.Vertex();
+            piranhaGeometry[1].vertData[1].position = new TM64_Geometry.Position();
+            piranhaGeometry[1].vertData[1].position.x = Convert.ToInt16(0);
+            piranhaGeometry[1].vertData[1].position.y = Convert.ToInt16(30);
+            piranhaGeometry[1].vertData[1].position.z = Convert.ToInt16(0);
+
+            piranhaGeometry[1].vertData[2] = new TM64_Geometry.Vertex();
+            piranhaGeometry[1].vertData[2].position = new TM64_Geometry.Position();
+            piranhaGeometry[1].vertData[2].position.x = Convert.ToInt16(0);
+            piranhaGeometry[1].vertData[2].position.y = Convert.ToInt16(30);
+            piranhaGeometry[1].vertData[2].position.z = Convert.ToInt16(60);
+
+            piranhaGeometry[2] = new TM64_Geometry.Face();
+            piranhaGeometry[2].vertData = new TM64_Geometry.Vertex[3];
+
+            piranhaGeometry[2].vertData[0] = new TM64_Geometry.Vertex();
+            piranhaGeometry[2].vertData[0].position = new TM64_Geometry.Position();
+            piranhaGeometry[2].vertData[0].position.x = Convert.ToInt16(-30);
+            piranhaGeometry[2].vertData[0].position.y = Convert.ToInt16(0);
+            piranhaGeometry[2].vertData[0].position.z = Convert.ToInt16(0);
+
+            piranhaGeometry[2].vertData[1] = new TM64_Geometry.Vertex();
+            piranhaGeometry[2].vertData[1].position = new TM64_Geometry.Position();
+            piranhaGeometry[2].vertData[1].position.x = Convert.ToInt16(30);
+            piranhaGeometry[2].vertData[1].position.y = Convert.ToInt16(0);
+            piranhaGeometry[2].vertData[1].position.z = Convert.ToInt16(60);
+
+            piranhaGeometry[2].vertData[2] = new TM64_Geometry.Vertex();
+            piranhaGeometry[2].vertData[2].position = new TM64_Geometry.Position();
+            piranhaGeometry[2].vertData[2].position.x = Convert.ToInt16(-30);
+            piranhaGeometry[2].vertData[2].position.y = Convert.ToInt16(0);
+            piranhaGeometry[2].vertData[2].position.z = Convert.ToInt16(60);
+
+
+            piranhaGeometry[3] = new TM64_Geometry.Face();
+            piranhaGeometry[3].vertData = new TM64_Geometry.Vertex[3];
+
+            piranhaGeometry[3].vertData[0] = new TM64_Geometry.Vertex();
+            piranhaGeometry[3].vertData[0].position = new TM64_Geometry.Position();
+            piranhaGeometry[3].vertData[0].position.x = Convert.ToInt16(0);
+            piranhaGeometry[3].vertData[0].position.y = Convert.ToInt16(-30);
+            piranhaGeometry[3].vertData[0].position.z = Convert.ToInt16(0);
+
+            piranhaGeometry[3].vertData[1] = new TM64_Geometry.Vertex();
+            piranhaGeometry[3].vertData[1].position = new TM64_Geometry.Position();
+            piranhaGeometry[3].vertData[1].position.x = Convert.ToInt16(0);
+            piranhaGeometry[3].vertData[1].position.y = Convert.ToInt16(30);
+            piranhaGeometry[3].vertData[1].position.z = Convert.ToInt16(60);
+
+            piranhaGeometry[3].vertData[2] = new TM64_Geometry.Vertex();
+            piranhaGeometry[3].vertData[2].position = new TM64_Geometry.Position();
+            piranhaGeometry[3].vertData[2].position.x = Convert.ToInt16(0);
+            piranhaGeometry[3].vertData[2].position.y = Convert.ToInt16(-30);
+            piranhaGeometry[3].vertData[2].position.z = Convert.ToInt16(60);
+
+
+            itemGeometry[0] = new TM64_Geometry.Face();
+
+            itemGeometry[0].vertData = new TM64_Geometry.Vertex[3];
+
+            itemGeometry[0].vertData[0] = new TM64_Geometry.Vertex();
+            itemGeometry[0].vertData[0].position = new TM64_Geometry.Position();
+            itemGeometry[0].vertData[0].position.x = Convert.ToInt16(-8);
+            itemGeometry[0].vertData[0].position.y = Convert.ToInt16(0);
+            itemGeometry[0].vertData[0].position.z = Convert.ToInt16(0);
+
+            itemGeometry[0].vertData[1] = new TM64_Geometry.Vertex();
+            itemGeometry[0].vertData[1].position = new TM64_Geometry.Position();
+            itemGeometry[0].vertData[1].position.x = Convert.ToInt16(8);
+            itemGeometry[0].vertData[1].position.y = Convert.ToInt16(0);
+            itemGeometry[0].vertData[1].position.z = Convert.ToInt16(0);
+
+            itemGeometry[0].vertData[2] = new TM64_Geometry.Vertex();
+            itemGeometry[0].vertData[2].position = new TM64_Geometry.Position();
+            itemGeometry[0].vertData[2].position.x = Convert.ToInt16(8);
+            itemGeometry[0].vertData[2].position.y = Convert.ToInt16(0);
+            itemGeometry[0].vertData[2].position.z = Convert.ToInt16(16);
+
+
+            itemGeometry[1] = new TM64_Geometry.Face();
+            itemGeometry[1].vertData = new TM64_Geometry.Vertex[3];
+
+            itemGeometry[1].vertData[0] = new TM64_Geometry.Vertex();
+            itemGeometry[1].vertData[0].position = new TM64_Geometry.Position();
+            itemGeometry[1].vertData[0].position.x = Convert.ToInt16(0);
+            itemGeometry[1].vertData[0].position.y = Convert.ToInt16(-8);
+            itemGeometry[1].vertData[0].position.z = Convert.ToInt16(0);
+
+            itemGeometry[1].vertData[1] = new TM64_Geometry.Vertex();
+            itemGeometry[1].vertData[1].position = new TM64_Geometry.Position();
+            itemGeometry[1].vertData[1].position.x = Convert.ToInt16(0);
+            itemGeometry[1].vertData[1].position.y = Convert.ToInt16(8);
+            itemGeometry[1].vertData[1].position.z = Convert.ToInt16(0);
+
+            itemGeometry[1].vertData[2] = new TM64_Geometry.Vertex();
+            itemGeometry[1].vertData[2].position = new TM64_Geometry.Position();
+            itemGeometry[1].vertData[2].position.x = Convert.ToInt16(0);
+            itemGeometry[1].vertData[2].position.y = Convert.ToInt16(8);
+            itemGeometry[1].vertData[2].position.z = Convert.ToInt16(16);
+
+            itemGeometry[2] = new TM64_Geometry.Face();
+            itemGeometry[2].vertData = new TM64_Geometry.Vertex[3];
+
+            itemGeometry[2].vertData[0] = new TM64_Geometry.Vertex();
+            itemGeometry[2].vertData[0].position = new TM64_Geometry.Position();
+            itemGeometry[2].vertData[0].position.x = Convert.ToInt16(-8);
+            itemGeometry[2].vertData[0].position.y = Convert.ToInt16(0);
+            itemGeometry[2].vertData[0].position.z = Convert.ToInt16(0);
+
+            itemGeometry[2].vertData[1] = new TM64_Geometry.Vertex();
+            itemGeometry[2].vertData[1].position = new TM64_Geometry.Position();
+            itemGeometry[2].vertData[1].position.x = Convert.ToInt16(8);
+            itemGeometry[2].vertData[1].position.y = Convert.ToInt16(0);
+            itemGeometry[2].vertData[1].position.z = Convert.ToInt16(16);
+
+            itemGeometry[2].vertData[2] = new TM64_Geometry.Vertex();
+            itemGeometry[2].vertData[2].position = new TM64_Geometry.Position();
+            itemGeometry[2].vertData[2].position.x = Convert.ToInt16(-8);
+            itemGeometry[2].vertData[2].position.y = Convert.ToInt16(0);
+            itemGeometry[2].vertData[2].position.z = Convert.ToInt16(16);
+
+
+            itemGeometry[3] = new TM64_Geometry.Face();
+            itemGeometry[3].vertData = new TM64_Geometry.Vertex[3];
+
+            itemGeometry[3].vertData[0] = new TM64_Geometry.Vertex();
+            itemGeometry[3].vertData[0].position = new TM64_Geometry.Position();
+            itemGeometry[3].vertData[0].position.x = Convert.ToInt16(0);
+            itemGeometry[3].vertData[0].position.y = Convert.ToInt16(-8);
+            itemGeometry[3].vertData[0].position.z = Convert.ToInt16(0);
+
+            itemGeometry[3].vertData[1] = new TM64_Geometry.Vertex();
+            itemGeometry[3].vertData[1].position = new TM64_Geometry.Position();
+            itemGeometry[3].vertData[1].position.x = Convert.ToInt16(0);
+            itemGeometry[3].vertData[1].position.y = Convert.ToInt16(8);
+            itemGeometry[3].vertData[1].position.z = Convert.ToInt16(16);
+
+            itemGeometry[3].vertData[2] = new TM64_Geometry.Vertex();
+            itemGeometry[3].vertData[2].position = new TM64_Geometry.Position();
+            itemGeometry[3].vertData[2].position.x = Convert.ToInt16(0);
+            itemGeometry[3].vertData[2].position.y = Convert.ToInt16(-8);
+            itemGeometry[3].vertData[2].position.z = Convert.ToInt16(16);
+
+        }
         private void colorUpdate()
         {
 
@@ -152,7 +525,7 @@ namespace Tarmac64
 
         }
 
-     
+
 
 
 
@@ -170,7 +543,6 @@ namespace Tarmac64
             {
                 string outputDirectory = folderOpen.SelectedPath;
 
-                string popFile = pathBox.Text;
                 List<byte[]> Segments = new List<byte[]>();
                 byte[] rom = File.ReadAllBytes(romPath);
 
@@ -179,10 +551,9 @@ namespace Tarmac64
                 byte[] segment6 = new byte[0];
                 byte[] segment7 = new byte[0];
                 byte[] segment9 = new byte[0];
-
+                byte[] popList = new byte[0];
                 byte[] collisionList = new byte[0];
                 byte[] renderList = new byte[0];
-                byte[] popList = new byte[0];
 
 
                 byte[] popData = Resources.popResources;
@@ -202,7 +573,7 @@ namespace Tarmac64
                 Byte.TryParse(sp3Box.Text, out gameSpeed[2]);
 
 
-                
+
                 //Course Music
 
                 byte songID = Convert.ToByte(songBox.SelectedIndex);
@@ -210,83 +581,126 @@ namespace Tarmac64
 
                 // This command writes all the bitmaps to the end of the ROM
 
-                rom = mk.writeTextures(rom, textureArray);
-                segment9 = mk.compiletextureTable(textureArray);
+                rom = tm64Geo.writeTextures(rom, textureArray);
+                segment9 = tm64Geo.compiletextureTable(textureArray);
 
 
-                
 
-                
-                popList = mkPath.popMarkers(popFile);
-                
+
+
+
 
                 //build segment 7 out of the main course objects and surface geometry
                 //build segment 4 out of the same objects.
 
-                mk.compileF3DObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
+                
                 byte[] tempBytes = new byte[0];
-                mk.compileF3DObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
+                if (levelFormat == 0)
+                {
+                    tm64Geo.compileF3DObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
+                    tm64Geo.compileF3DObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
 
 
-                // build various segment data
-
-     
-                renderList = mk.compileF3DList(ref sectionList, fbx, masterObjects, sectionList);
+                    // build various segment data
 
 
+                    renderList = tm64Geo.compileF3DList(ref sectionList, fbx, masterObjects, sectionList);
 
 
+                    popList = tm64Path.popMarkers(popFile);
 
 
-                surfaceTable = mk.compilesurfaceTable(surfaceObjects);
+                    surfaceTable = tm64Geo.compilesurfaceTable(surfaceObjects);
 
-                magic = (8 + 7968 + 952 + 8 + 528 + (surfaceObjects.Length * 8));
-                // 8 bytes for header
-                // 7968 bytes for the POP data
-                // 952 bytes for the POP resources
-                // 8 bytes for Surface Table Footer
-                // 528 bytes for the Display Table itself.
-                // The surface table is 8 bytes per object.
-                // We tracked the number of surface meshes while loading into surfaceObjects.
-                // magic is the size of data written before the display lists.
-                // it's needed to properly calculate the offsets.
-                // We're calculating hardcoded offsets before writing them.
-                // So we need to use magic to do it.
+                    magic = (8 + 7968 + 952 + 8 + 528 + (surfaceObjects.Length * 8));
+                    // 8 bytes for header
+                    // 7968 bytes for the POP data
+                    // 952 bytes for the POP resources
+                    // 8 bytes for Surface Table Footer
+                    // 528 bytes for the Display Table itself.
+                    // The surface table is 8 bytes per object.
+                    // We tracked the number of surface meshes while loading into surfaceObjects.
+                    // magic is the size of data written before the display lists.
+                    // it's needed to properly calculate the offsets.
+                    // We're calculating hardcoded offsets before writing them.
+                    // So we need to use magic to do it.
 
-                // Build the display table with the above magic value
+                    // Build the display table with the above magic value
 
-                displayTable = mk.compilesectionviewTable(sectionList, magic);
-
+                    displayTable = tm64Geo.compilesectionviewTable(sectionList, magic);
 
 
 
-                //First, let's build Segment 6.
 
 
-                bs = new MemoryStream();
-                br = new BinaryReader(bs);
-                bw = new BinaryWriter(bs);
-                byte[] byteArray = new byte[0];
+                    bs = new MemoryStream();
+                    br = new BinaryReader(bs);
+                    bw = new BinaryWriter(bs);
+                    byte[] byteArray = new byte[0];
 
-                byteArray = BitConverter.GetBytes(0xB8000000);
-                Array.Reverse(byteArray);
-                bw.Write(byteArray);
-                byteArray = BitConverter.GetBytes(0x00000000);
-                Array.Reverse(byteArray);
-                bw.Write(byteArray);
+                    byteArray = BitConverter.GetBytes(0xB8000000);
+                    Array.Reverse(byteArray);
+                    bw.Write(byteArray);
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    bw.Write(byteArray);
 
-                bw.Write(popList);
-                bw.Write(popData);
-                bw.Write(displayTable);
-                bw.Write(surfaceTable);
-                bw.Write(renderList);
+                    bw.Write(popList);
+                    bw.Write(popData);
+                    bw.Write(displayTable);
+                    bw.Write(surfaceTable);
+                    bw.Write(renderList);
 
-                segment6 = bs.ToArray();
+                    segment6 = bs.ToArray();
+                }
+                else
+                {
+                    int battleOffset = 0;
+                    tm64Geo.compileBattleObject(ref battleOffset, ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
+                    
 
+
+                    popList = tm64Path.popBattle(popFile);
+
+
+
+
+
+                    bs = new MemoryStream();
+                    br = new BinaryReader(bs);
+                    bw = new BinaryWriter(bs);
+                    byte[] byteArray = new byte[0];
+                    //FC121824FF33FFFF
+                    byteArray = BitConverter.GetBytes(0xFC121824);
+                    Array.Reverse(byteArray);
+                    bw.Write(byteArray);
+                    byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                    Array.Reverse(byteArray);
+                    bw.Write(byteArray);
+                    //B900031D 00552078
+                    byteArray = BitConverter.GetBytes(0xB900031D);
+                    Array.Reverse(byteArray);
+                    bw.Write(byteArray);
+                    byteArray = BitConverter.GetBytes(0x00552078);
+                    Array.Reverse(byteArray);
+                    bw.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x06000000);
+                    Array.Reverse(byteArray);
+                    bw.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(battleOffset | 0x07000000);
+                    Array.Reverse(byteArray);
+                    bw.Write(byteArray);
+
+                    bw.Write(popList);
+
+                    segment6 = bs.ToArray();
+                }
 
                 //Compress appropriate segment data
 
-                byte[] cseg7 = mk.compress_seg7(segment7);
+                byte[] cseg7 = tm64Geo.compress_seg7(segment7);
 
 
 
@@ -306,10 +720,18 @@ namespace Tarmac64
                 Int16.TryParse(yBox.Text, out mapCoords[1]);
 
 
-                byte[] cseg4 = mk.compressMIO0(segment4);
-                byte[] cseg6 = mk.compressMIO0(segment6);
+                byte[] cseg4 = tm64Geo.compressMIO0(segment4);
+                byte[] cseg6 = tm64Geo.compressMIO0(segment6);
 
-                rom = mk.compileHotswap(segment4, segment6, segment7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, ghostData, skyColor, songID, gameSpeed, rom, cID, setID);
+                if (levelFormat == 0)
+                {
+                    rom = tm64Geo.compileHotswap(segment4, segment6, segment7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, ghostData, skyColor, songID, gameSpeed, rom, cID, setID);
+                }
+                else
+                {
+                    rom = tm64Geo.compileBattle(segment4, segment6, segment7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, skyColor, songID, gameSpeed, rom, cID, setID);
+
+                }
 
 
 
@@ -347,184 +769,228 @@ namespace Tarmac64
 
 
 
-        
+
 
 
         private void loadBtn_click(object sender, EventArgs e)
         {
-
+            MessageBox.Show("Select .FBX File");
             if (fileOpen.ShowDialog() == DialogResult.OK)
             {
                 //Get the path of specified file
                 FBXfilePath = fileOpen.FileName;
-            }
+                levelFormat = ui_formatBox.SelectedIndex;
+
+                clockTime = new Stopwatch();
+                clockTime.Start();
 
 
-            bool simpleFormat = false;  // flipped if simpleFormat is detected.
-            
-            fbx = assimpSharpImporter.ReadFile(FBXfilePath);
+                
+                raycastBoolean = raycastCheck.Checked;
+                int modelFormat = 0;  // 
 
-            
-            int materialCount = fbx.Materials.Count;
-            int textureCount = 0;
+                Scene fbx = new Scene();
+                AssimpContext importer = new AssimpContext();
 
-            int mastervertCount = 0;
-            int masterfaceCount = 0;
+                fbx = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
 
-            int surfacevertCount = 0;
-            int surfacefaceCount = 0;
+                int materialCount = fbx.MaterialCount;
+                int textureCount = 0;
 
 
-            int masterObjectCount = 0;
-
-
-
-            AssimpSharp.Node masterNode = fbx.RootNode.FindNode("Course Master Objects");
-            if (masterNode == null)
-            {
-                simpleFormat = true;
-            }
-            else
-            {
-                simpleFormat = false;
-            }
-
-            
-            AssimpSharp.Node pathNode = fbx.RootNode.FindNode("Course Paths");
-            AssimpSharp.Mesh countObj = null;
-            int sectionCount = 0;
-
-
-            for (int searchSection = 1; ; searchSection++)
-            {
-                AssimpSharp.Node searchNode = fbx.RootNode.FindNode("Section " + searchSection.ToString());
-                if (searchNode != null)
+                Assimp.Node masterNode = fbx.RootNode.FindNode("Course Master Objects");
+                if (masterNode == null)
                 {
-                    sectionCount++;
+                    modelFormat = 0;
                 }
                 else
                 {
-                    break;
-                }
-
-            }
-            
-            
-            //
-            // Textures
-            //
-
-
-
-
-            textureArray = mk.loadTextures(fbx);
-            
-            materialCount = textureArray.Length;
-
-            //
-            // Course Objects
-            // Surface Map
-            //
-
-            if (simpleFormat == false)
-            {
-                masterObjects = mk.loadMaster(fbx, textureArray);
-                masterObjectCount = masterObjects.Length;
-                surfaceObjects = mk.loadCollision(fbx, sectionCount, textureArray, simpleFormat);
-                sectionList = mk.loadSection(fbx, sectionCount, masterObjects);
-            }
-            else
-            {
-                masterObjects = mk.createMaster(fbx,sectionCount, textureArray);
-                masterObjectCount = masterObjects.Length;
-                surfaceObjects = mk.loadCollision(fbx, sectionCount, textureArray, simpleFormat);
-                sectionList = mk.automateSection(sectionCount, surfaceObjects, masterObjects, fbx);
-            }
-
-            //
-            // Section Views
-            //
-            
-
-
-
-
-
-
-            countBox.Text = sectionCount.ToString();
-            surfcountBox.Text = sectionCount.ToString();
-
-
-            
-
-            for (int currentChild = 0; currentChild < masterObjects.Length; currentChild++)
-            {
-                masterBox.Items.Add(masterObjects[currentChild].objectName);
-            }
-
-            for (int currentIndex = 0; currentIndex < surfaceObjects.Length; currentIndex++)
-            {
-                surfaceobjectBox.Items.Add(surfaceObjects[currentIndex].objectName);
-            }
-            for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-            {
-                surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
-                sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
-                
-            }
-            for (int surfacematerialIndex = 0; surfacematerialIndex < surfaceType.Length; surfacematerialIndex++)
-            {
-                surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString("X") + "- " + surfaceType[surfacematerialIndex]);
-            }
-            foreach (var viewstring in viewString)
-            {
-                viewBox.Items.Add(viewstring);
-            }
-
-            
-
-            for (int materialIndex = 0; materialIndex < materialCount;materialIndex++)
-            {
-                if (textureArray[materialIndex].texturePath != null)
-                {
-                    if (textureArray[materialIndex].textureClass == -1)
+                    Assimp.Node searchNode = fbx.RootNode.FindNode("Section 1 North");
+                    if (searchNode == null)
                     {
-                        MessageBox.Show("Warning! Texture wrong dimensions -" + textureArray[materialIndex].textureName + "- Height: " + textureArray[materialIndex].textureHeight + "   Width: " + textureArray[materialIndex].textureWidth);
-                        textureBox.Items.Add("UNUSABLE " + materialIndex.ToString() + " - " + textureArray[materialIndex].textureName);
+                        modelFormat = 1;
                     }
                     else
                     {
-                        textureBox.Items.Add("Material " + materialIndex.ToString() + " - " + textureArray[materialIndex].textureName);
+                        modelFormat = 2;
                     }
-                    textureCount++;
+
+
+
+                }
+
+
+                Assimp.Node pathNode = fbx.RootNode.FindNode("Course Paths");
+                Assimp.Mesh countObj = null;
+
+
+                for (int searchSection = 1; ; searchSection++)
+                {
+                    Assimp.Node searchNode = fbx.RootNode.FindNode("Section " + searchSection.ToString());
+                    if (searchNode != null)
+                    {
+                        sectionCount++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                }
+
+                //
+                // Textures
+                //
+
+
+
+
+                textureArray = tm64Geo.loadTextures(fbx, FBXfilePath);
+
+                materialCount = textureArray.Length;
+
+                //
+                // Course Objects
+                // Surface Map
+                //
+
+                if (levelFormat == 0)
+                {
+                    switch (modelFormat)
+                    {
+                        case 0:
+                            {
+                                masterObjects = tm64Geo.createMaster(fbx, sectionCount, textureArray);
+                                surfaceObjects = tm64Geo.loadCollision(fbx, sectionCount, textureArray, modelFormat);
+                                sectionList = tm64Geo.automateSection(sectionCount, surfaceObjects, masterObjects, fbx, raycastBoolean);
+                                break;
+                            }
+                        case 1:
+                            {
+                                masterObjects = tm64Geo.loadMaster(fbx, textureArray);
+                                surfaceObjects = tm64Geo.loadCollision(fbx, sectionCount, textureArray, modelFormat);
+                                sectionList = tm64Geo.automateSection(sectionCount, surfaceObjects, masterObjects, fbx, raycastBoolean);
+                                break;
+                            }
+                        case 2:
+                            {
+                                masterObjects = tm64Geo.loadMaster(fbx, textureArray);
+                                surfaceObjects = tm64Geo.loadCollision(fbx, sectionCount, textureArray, modelFormat);
+                                sectionList = tm64Geo.loadSection(fbx, sectionCount, masterObjects);
+                                break;
+                            }
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Warning! Material " + fbx.Materials[materialIndex].Name + " does not have a diffuse texture and cannot be used.");
-                    textureArray[materialIndex].textureName = fbx.Materials[materialIndex].Name;
-                    textureBox.Items.Add("UNUSABLE " + materialIndex.ToString() + " - " + textureArray[materialIndex].textureName);
+                        
+                    masterObjects = tm64Geo.loadMaster(fbx, textureArray);
+                                
+                }
+
+
+
+                clockTime.Stop();
+                TimeSpan ts = clockTime.Elapsed;
+                masterBox.Items.Clear();
+                for (int currentChild = 0; currentChild < masterObjects.Length; currentChild++)
+                {
+                    masterBox.Items.Add(masterObjects[currentChild].objectName);
+                }
+                if (levelFormat == 0)
+                {
+                    surfaceobjectBox.Items.Clear();
+                    for (int currentIndex = 0; currentIndex < surfaceObjects.Length; currentIndex++)
+                    {
+                        surfaceobjectBox.Items.Add(surfaceObjects[currentIndex].objectName);
+                    }
+                    sectionBox.Items.Clear();
+                    for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                    {
+                        surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
+                        sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
+
+                    }
+                    surfmaterialBox.Items.Clear();
+                    for (int surfacematerialIndex = 0; surfacematerialIndex < surfaceType.Length; surfacematerialIndex++)
+                    {
+                        surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString("X") + "- " + surfaceType[surfacematerialIndex]);
+                    }
+                    viewBox.Items.Clear();
+                    foreach (var viewstring in viewString)
+                    {
+                        viewBox.Items.Add(viewstring);
+                    }
+                }
+
+                textureBox.Items.Clear();
+                for (int materialIndex = 0; materialIndex < materialCount; materialIndex++)
+                {
+                    if (textureArray[materialIndex].texturePath != null)
+                    {
+                        if (textureArray[materialIndex].textureClass == -1)
+                        {
+                            MessageBox.Show("Warning! Texture wrong dimensions -" + textureArray[materialIndex].textureName + "- Height: " + textureArray[materialIndex].textureHeight + "   Width: " + textureArray[materialIndex].textureWidth);
+                            textureBox.Items.Add("UNUSABLE " + materialIndex.ToString() + " - " + textureArray[materialIndex].textureName);
+                        }
+                        else
+                        {
+                            textureBox.Items.Add("Material " + materialIndex.ToString() + " - " + textureArray[materialIndex].textureName);
+                        }
+                        textureCount++;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Warning! Material " + fbx.Materials[materialIndex].Name + " does not have a diffuse texture and cannot be used.");
+                        textureArray[materialIndex].textureName = fbx.Materials[materialIndex].Name;
+                        textureBox.Items.Add("UNUSABLE " + materialIndex.ToString() + " - " + textureArray[materialIndex].textureName);
+                    }
+                }
+                if (levelFormat == 0)
+                {
+                    viewBox.SelectedIndex = 0;
+                    sectionBox.SelectedIndex = 0;
+                    mcountBox.Text = materialCount.ToString();
+                    tcountBox.Text = textureCount.ToString();
+
+                    textureBox.SelectedIndex = 0;
+                    lastMaterial = 0;
+
+                    objcountBox.Text = surfaceCount.ToString();
+                }
+                    updateOutput(fileOpen.FileName);
+                
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+
+                MessageBox.Show("Finished in " + elapsedTime);
+                loaded = true;
+                
+
+                compilebtn.Enabled = true;
+                ui_formatBox.Enabled = false;
+
+
+
+                wideBtn.Enabled = true;
+                wideBtn.Visible = true;
+            }
+            
+            MessageBox.Show("Select OK64.POP File");
+            if (fileOpen.ShowDialog() == DialogResult.OK)
+            {
+                popFile = fileOpen.FileName;
+                if (levelFormat == 0)
+                {
+                    popData = tm64Path.loadPOP(popFile,surfaceObjects);
+                }
+                else
+                {
+                    popData = tm64Path.loadBattlePOP(popFile);
                 }
             }
-
-            viewBox.SelectedIndex = 0;
-
-            mcountBox.Text = materialCount.ToString();
-            tcountBox.Text = textureCount.ToString();
-
-            textureBox.SelectedIndex = 0;
-            lastMaterial = 0;
-
-
-            objcountBox.Text = surfaceCount.ToString();
-
-            MessageBox.Show("Finished Loading .FBX");
-            loaded = true;
-            sectionBox.SelectedIndex = 0;
-
-            compilebtn.Enabled = true;
-            mvertBox.Text = mastervertCount.ToString();
-            mfaceBox.Text = masterfaceCount.ToString();
-            mobjectbox.Text = masterObjectCount.ToString();
+            
         }
         private void Matbox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -578,7 +1044,6 @@ namespace Tarmac64
         private void updateCounter(int faceCount, int vertCount)
         {
 
-            vertBox.Text = vertCount.ToString();
             faceBox.Text = faceCount.ToString();
             objectBox.Text = masterBox.CheckedItems.Count.ToString();
         }
@@ -590,7 +1055,7 @@ namespace Tarmac64
                 int objectIndex = surfaceobjectBox.SelectedIndex;
 
                 surfsectionBox.SelectedIndex = surfaceObjects[objectIndex].surfaceID - 1;
-                int materialIndex = Array.IndexOf(surfaceTypeID,surfaceObjects[objectIndex].surfaceMaterial);
+                int materialIndex = Array.IndexOf(surfaceTypeID, surfaceObjects[objectIndex].surfaceMaterial);
                 surfmaterialBox.SelectedIndex = materialIndex;
                 surfcheckA.Checked = surfaceObjects[objectIndex].flagA;
                 surfcheckB.Checked = surfaceObjects[objectIndex].flagB;
@@ -621,7 +1086,7 @@ namespace Tarmac64
 
         private void ObjectBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            
+
             this.BeginInvoke(new MethodInvoker(CheckList), null);
         }
 
@@ -632,7 +1097,7 @@ namespace Tarmac64
                 int vertCount = 0;
                 int faceCount = 0;
                 List<int> checkList = new List<int>();
-                foreach(var checkObject in masterBox.CheckedItems)
+                foreach (var checkObject in masterBox.CheckedItems)
                 {
                     int checkIndex = masterBox.Items.IndexOf(checkObject);
                     checkList.Add(checkIndex);
@@ -640,7 +1105,7 @@ namespace Tarmac64
                     faceCount = faceCount + masterObjects[checkIndex].faceCount;
                 }
                 sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList = checkList.ToArray();
-                
+
                 updateCounter(faceCount, vertCount);
             }
         }
@@ -655,7 +1120,7 @@ namespace Tarmac64
 
 
             textureArray[textureBox.SelectedIndex].textureFormat = formatBox.SelectedIndex;
-            mk.textureClass(textureArray[textureBox.SelectedIndex]);
+            tm64Geo.textureClass(textureArray[textureBox.SelectedIndex]);
             updateTXDisplay();
         }
 
@@ -673,6 +1138,7 @@ namespace Tarmac64
         {
             string[] surfacesplit = surfmaterialBox.Items[surfmaterialBox.SelectedIndex].ToString().Split('-');
             int surfaceIndex = Convert.ToInt32(surfacesplit[0], 16);
+            surfaceObjects[surfaceobjectBox.SelectedIndex].surfaceMaterial = Convert.ToByte(surfaceIndex);
         }
 
         private void Rtbox_TextChanged(object sender, EventArgs e)
@@ -781,14 +1247,6 @@ namespace Tarmac64
 
         }
 
-        private void PathBtn_Click(object sender, EventArgs e)
-        {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
-            {
-                //Get the path of specified file
-                pathBox.Text = fileOpen.FileName;
-            }
-        }
 
         private void PreviewBtn_Click(object sender, EventArgs e)
         {
@@ -859,155 +1317,360 @@ namespace Tarmac64
             return ms.ToArray();
         }
 
+        public void wait(int milliseconds)
+        {
+            var timer1 = new System.Windows.Forms.Timer();
+            if (milliseconds == 0 || milliseconds < 0) return;
+
+            // Console.WriteLine("start wait timer");
+            timer1.Interval = milliseconds;
+            timer1.Enabled = true;
+            timer1.Start();
+
+            timer1.Tick += (s, e) =>
+            {
+                timer1.Enabled = false;
+                timer1.Stop();
+                // Console.WriteLine("stop wait timer");
+            };
+
+            while (timer1.Enabled)
+            {
+                Application.DoEvents();
+            }
+        }
 
 
+        private void drawFace(TM64_Geometry.Face subFace)
+        {            
+            foreach (var subVert in subFace.vertData)
+            {
+                gl.Color(subVert.color.r, subVert.color.g, subVert.color.b, Convert.ToByte(0x255));
+                gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
+            }            
+        }
+        private void drawMarker(TM64_Geometry.Face[] subFace, TM64_Paths.Marker pathMarker, float[] colorArray)
+        {
+            foreach (var face in subFace)
+            {
+                if (colorArray.Length > 3)
+                {
+                    foreach (var subVert in face.vertData)
+                    {
+                        gl.Color(colorArray[0], colorArray[1], colorArray[2], colorArray[3]);
+                        gl.Vertex(subVert.position.x + pathMarker.xval, subVert.position.y + pathMarker.yval, subVert.position.z + pathMarker.zval);
+                    }
+                }
+                else
+                {
+                    foreach (var subVert in face.vertData)
+                    {
+                        gl.Color(colorArray[0], colorArray[1], colorArray[2], 1.0f);
+                        gl.Vertex(subVert.position.x + pathMarker.xval, subVert.position.y + pathMarker.yval, subVert.position.z + pathMarker.zval);
+                    }
+                }
+            }
+        }
+
+        private void drawFace(TM64_Geometry.Face subFace, float[] colorArray)
+        {
+            if (colorArray.Length > 3)
+            {
+                foreach (var subVert in subFace.vertData)
+                {
+                    gl.Color(colorArray[0], colorArray[1], colorArray[2], colorArray[3]);
+                    gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
+                }
+            }
+            else
+            {
+                foreach (var subVert in subFace.vertData)
+                {
+                    gl.Color(colorArray[0], colorArray[1], colorArray[2], 1.0f);
+                    gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
+                }
+            }
+        }
+
+        public float[] GetAlphaFlash(float[] flashColor)
+        {
+            if (flashColor[4] == 0.0f)
+            {
+                if (flashColor[3] < 1.0f)
+                {
+                    flashColor[3] = Convert.ToSingle(flashColor[3] + 0.05);
+                }
+                else
+                {
+                    flashColor[4] = 1.0f;
+                }
+            }
+            else
+            {
+                if (flashColor[3] > 0.0)
+                {
+                    flashColor[3] = Convert.ToSingle(flashColor[3] - 0.05);
+                }
+                else
+                {
+                    flashColor[4] = 0.0f;
+                }
+            }
+
+            float[] outputColor = { flashColor[0], flashColor[1], flashColor[2], flashColor[3] };
+            return outputColor;
+        }
+
+        public float[] GetYellowFlash(float[] flashColor)
+        {
+            if (flashColor[4] == 0.0f)
+            {
+                if (flashColor[2] < 1.0f)
+                {
+                    flashColor[2] = Convert.ToSingle(flashColor[2] + 0.05);
+                }
+                else
+                {
+                    flashColor[4] = 1.0f;
+                }
+            }
+            else
+            {
+                if (flashColor[2] > 0.0)
+                {
+                    flashColor[2] = Convert.ToSingle(flashColor[2] - 0.05);
+                }
+                else
+                {
+                    flashColor[4] = 0.0f;
+                }
+            }
+
+            float[] outputColor = { flashColor[0], flashColor[1], flashColor[2], flashColor[3] };
+            return outputColor;
+        }
 
         private void drawObjects()
         {
-            OpenGL gl = openGLControl.OpenGL;
+
+            
             List<string> drawnObjects = new List<string>();
             //draw faces
 
             switch (tabControl1.SelectedIndex)
             {
                 case 3:
-
-                    foreach (var subObject in surfaceObjects)
                     {
-                        gl.Begin(OpenGL.GL_TRIANGLES);
-                        if (subObject.surfaceID == (sectionBox.SelectedIndex + 1))
-                        {
-                            drawnObjects.Add(subObject.objectName);
+                        float[] surfaceWhite = GetAlphaFlash(flashWhite);
+                        float[] surfaceRed = GetAlphaFlash(flashRed);
 
+
+                        for (int subIndex = 0; subIndex < masterObjects.Length; subIndex++)
+                        {
+                            
+                            if (subIndex == highlightedObject)
+                            {
+                                if (chkHover.Checked)
+                                {
+                                    gl.End();
+                                    gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                                    gl.Begin(OpenGL.GL_TRIANGLES);
+                                    foreach (var subFace in masterObjects[subIndex].modelGeometry)
+                                    {
+                                        drawFace(subFace, surfaceWhite);
+                                    }
+                                }
+                                else
+                                {
+                                    if (masterBox.GetItemChecked(subIndex))
+                                    {
+                                        gl.End();
+                                        gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                                        gl.Begin(OpenGL.GL_TRIANGLES);
+                                        foreach (var subFace in masterObjects[subIndex].modelGeometry)
+                                        {
+                                            drawFace(subFace, masterObjects[subIndex].objectColor);
+                                        }
+                                    }
+                                    else if (chkWireframe.Checked)
+                                    {
+                                        gl.End();
+                                        gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
+                                        gl.Begin(OpenGL.GL_TRIANGLES);
+                                        foreach (var subFace in masterObjects[subIndex].modelGeometry)
+                                        {
+                                            drawFace(subFace, masterObjects[subIndex].objectColor);
+                                        }
+
+                                    }
+                                }
+                            }
+                            else
+                            {
+
+                                if (masterBox.GetItemChecked(subIndex))
+                                {
+                                    gl.End();
+                                    gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                                    gl.Begin(OpenGL.GL_TRIANGLES);
+                                    foreach (var subFace in masterObjects[subIndex].modelGeometry)
+                                    {
+                                        drawFace(subFace, masterObjects[subIndex].objectColor);
+                                    }
+                                }
+                                else if (chkWireframe.Checked)
+                                {
+                                    gl.End();
+                                    gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
+                                    gl.Begin(OpenGL.GL_TRIANGLES);
+                                    foreach (var subFace in masterObjects[subIndex].modelGeometry)
+                                    {
+                                        drawFace(subFace, masterObjects[subIndex].objectColor);
+                                    }
+
+                                }
+                            }
+                            
+                        }
+
+
+                        gl.End();
+                        gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                        gl.Begin(OpenGL.GL_TRIANGLES);
+
+                        if (chkSection.Checked)
+                        {
+                            foreach (var subObject in surfaceObjects)
+                            {
+                                if (subObject.surfaceID == (sectionBox.SelectedIndex + 1))
+                                {
+                                    foreach (var subFace in subObject.modelGeometry)
+                                    {
+                                        drawFace(subFace, surfaceRed);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case 4:
+                    {
+                        foreach (var subObject in surfaceObjects)
+                        {
                             foreach (var subFace in subObject.modelGeometry)
                             {
-                                foreach (var subVert in subFace.vertData)
-                                {
-                                    gl.Color(1.0f, 0.0f, 0.0f, 1.0f);
-                                    gl.Vertex(subVert.position.x, subVert.position.z, -1 * subVert.position.y);
-                                }
-
+                                drawFace(subFace, subObject.objectColor);
                             }
                         }
-                        gl.End();
+                        break;
                     }
-                    foreach (var subIndex in sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList)
-                    {
-                        gl.Begin(OpenGL.GL_TRIANGLES);
-                        
-
-                        foreach (var subFace in masterObjects[subIndex].modelGeometry)
-                        {
-                            foreach (var subVert in subFace.vertData)
-                            {
-                                gl.Color(masterObjects[subIndex].objectColor[0], masterObjects[subIndex].objectColor[1], masterObjects[subIndex].objectColor[2], 1.0f);
-                                gl.Vertex(subVert.position.x, subVert.position.z, -1 * subVert.position.y);
-                            }
-
-                        }
-                        gl.End();
-
-                    }
-                    
-                    break;
-                case 4:
-                    foreach (var subObject in surfaceObjects)
-                    {
-                        gl.Begin(OpenGL.GL_TRIANGLES);
-                        drawnObjects.Add(subObject.objectName);
-
-                        foreach (var subFace in subObject.modelGeometry)
-                        {
-                            foreach (var subVert in subFace.vertData)
-                            {
-                                gl.Color(subObject.objectColor[0], subObject.objectColor[1], subObject.objectColor[2], 1.0f);
-                                gl.Vertex(subVert.position.x, subVert.position.z, -1 * subVert.position.y);
-                            }
-
-                        }
-                        gl.End();
-                    }
-                    break;
                 default:
-                    foreach (var subObject in masterObjects)
                     {
-
-                        gl.Begin(OpenGL.GL_TRIANGLES);
-                        
-
-                        foreach (var subFace in subObject.modelGeometry)
+                        foreach (var subObject in masterObjects)
                         {
-                            foreach (var subVert in subFace.vertData)
+                            foreach (var subFace in subObject.modelGeometry)
                             {
-                                gl.Color(subObject.objectColor[0], subObject.objectColor[1], subObject.objectColor[2], 1.0f);
-                                gl.Vertex(subVert.position.x, subVert.position.z, -1 * subVert.position.y);
+                                drawFace(subFace, subObject.objectColor);
                             }
-
                         }
-                        gl.End();
+                        break;
                     }
-                    break;
+            }
 
+            if (levelFormat == 0)
+            {
+                foreach (var list in popData[0].pathList)
+                {
+                    float[] surfaceYellow = GetYellowFlash(flashYellow);
+                    foreach (var marker in list.pathmarker)
+                    {
+                        drawMarker(markerGeometry, marker, surfaceYellow);
+                    }
+                }
+                foreach (var list in popData[1].pathList)
+                {
+                    float[] surfaceYellow = GetYellowFlash(flashYellow);
+                    foreach (var marker in list.pathmarker)
+                    {
+                        drawMarker(itemGeometry, marker, surfaceYellow);
+                    }
+                }
+                foreach (var list in popData[2].pathList)
+                {
+                    float[] surfaceYellow = GetYellowFlash(flashYellow);
+                    foreach (var marker in list.pathmarker)
+                    {
+                        drawMarker(treeGeometry, marker, surfaceYellow);
+                    }
+                }
+                foreach (var list in popData[3].pathList)
+                {
+                    float[] surfaceYellow = GetYellowFlash(flashYellow);
+                    foreach (var marker in list.pathmarker)
+                    {
+                        drawMarker(piranhaGeometry, marker, surfaceYellow);
+                    }
+                }
             }
             loadGL = true;
         }
 
-       
+
 
         private void openGLControl_OpenGLDraw(object sender, RenderEventArgs args)
         {
-            //  Get the OpenGL object.
-            OpenGL gl = openGLControl.OpenGL;
+            //  Get the OpenGL object. 
+
 
             //  Clear the color and depth buffer.
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            gl.LoadIdentity();
 
+            gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            gl.Enable(OpenGL.GL_BLEND);
             gl.Begin(OpenGL.GL_TRIANGLES);
 
+
             gl.Color(1.0f, 0.0f, 0.0f);
-            gl.Vertex(lookX + 0.0f, lookY + 1.0f, lookZ + 0.0f);
-            gl.Color(0.0f, 1.0f, 0.0f);
-            gl.Vertex(lookX + -1.0f, lookY + -1.0f, lookZ + 1.0f);
+            gl.Vertex(localCamera.target.X + 0.0f, localCamera.target.Y + 2.0f, localCamera.target.Z + 0.0f);
             gl.Color(0.0f, 0.0f, 1.0f);
-            gl.Vertex(lookX + 1.0f, lookY + -1.0f, lookZ + 1.0f);
+            gl.Vertex(localCamera.target.X + -2.0f, localCamera.target.Y + -2.0f, localCamera.target.Z + 2.0f);
+            gl.Color(0.0f, 0.0f, 1.0f);
+            gl.Vertex(localCamera.target.X + 2.0f, localCamera.target.Y + -2.0f, localCamera.target.Z + 2.0f);
             gl.Color(1.0f, 0.0f, 0.0f);
-            gl.Vertex(lookX + 0.0f, lookY + 1.0f, lookZ + 0.0f);
+            gl.Vertex(localCamera.target.X + 0.0f, localCamera.target.Y + 2.0f, localCamera.target.Z + 0.0f);
             gl.Color(0.0f, 0.0f, 1.0f);
-            gl.Vertex(lookX + 1.0f, lookY + -1.0f, lookZ + 1.0f);
-            gl.Color(0.0f, 1.0f, 0.0f);
-            gl.Vertex(lookX + 1.0f, lookY + -1.0f, lookZ + -1.0f);
+            gl.Vertex(localCamera.target.X + 2.0f, localCamera.target.Y + -2.0f, localCamera.target.Z + 2.0f);
+            gl.Color(0.0f, 0.0f, 1.0f);
+            gl.Vertex(localCamera.target.X + 2.0f, localCamera.target.Y + -2.0f, localCamera.target.Z + -2.0f);
             gl.Color(1.0f, 0.0f, 0.0f);
-            gl.Vertex(lookX + 0.0f, lookY + 1.0f, lookZ + 0.0f);
-            gl.Color(0.0f, 1.0f, 0.0f);
-            gl.Vertex(lookX + 1.0f, lookY + -1.0f, lookZ + -1.0f);
+            gl.Vertex(localCamera.target.X + 0.0f, localCamera.target.Y + 2.0f, localCamera.target.Z + 0.0f);
             gl.Color(0.0f, 0.0f, 1.0f);
-            gl.Vertex(lookX + -1.0f, lookY + -1.0f, lookZ + -1.0f);
+            gl.Vertex(localCamera.target.X + 2.0f, localCamera.target.Y + -2.0f, localCamera.target.Z + -2.0f);
+            gl.Color(0.0f, 0.0f, 1.0f);
+            gl.Vertex(localCamera.target.X + -2.0f, localCamera.target.Y + -2.0f, localCamera.target.Z + -2.0f);
             gl.Color(1.0f, 0.0f, 0.0f);
-            gl.Vertex(lookX + 0.0f, lookY + 1.0f, lookZ + 0.0f);
+            gl.Vertex(localCamera.target.X + 0.0f, localCamera.target.Y + 2.0f, localCamera.target.Z + 0.0f);
             gl.Color(0.0f, 0.0f, 1.0f);
-            gl.Vertex(lookX + -1.0f, lookY + -1.0f, lookZ + -1.0f);
-            gl.Color(0.0f, 1.0f, 0.0f);
-            gl.Vertex(lookX + -1.0f, lookY + -1.0f, lookZ + 1.0f);
+            gl.Vertex(localCamera.target.X + -2.0f, localCamera.target.Y + -2.0f, localCamera.target.Z + -2.0f);
+            gl.Color(0.0f, 0.0f, 1.0f);
+            gl.Vertex(localCamera.target.X + -2.0f, localCamera.target.Y + -2.0f, localCamera.target.Z + 2.0f);
+
+            if (loaded)
+            {
+                drawObjects();
+            }
             gl.End();
-
-            drawObjects();
-
+            
+            gl.Flush();
+            
             openGLControl_Resized(null, null);
 
         }
 
-        double cameraX = 0;
-        double cameraY = 5;
-        double cameraZ = -30;
-        double cameraH = 1;
-        double lookX = 0;
-        double lookY = 0;
-        double lookZ = 0;
-
         private void openGLControl_Resized(object sender, EventArgs e)
         {
             //  Get the OpenGL object.
-            OpenGL gl = openGLControl.OpenGL;
 
             //  Set the projection matrix.
             gl.MatrixMode(OpenGL.GL_PROJECTION);
@@ -1019,165 +1682,178 @@ namespace Tarmac64
             gl.Perspective(90.0f, (double)Width / (double)Height, 0.01, 50000.0);
 
             //  Use the 'look at' helper function to position and aim the camera.
-            gl.LookAt(cameraX, cameraY, cameraZ, lookX, lookY , lookZ, 0, 1, 0);
+            gl.LookAt(localCamera.position.X, localCamera.position.Y, localCamera.position.Z, localCamera.target.X, localCamera.target.Y, localCamera.target.Z, 0, 0, 1);
 
             //  Set the modelview matrix.
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
         }
 
-        public static System.Windows.Point RotatePoint(System.Windows.Point pointToRotate, System.Windows.Point centerPoint, double angleInDegrees)
-        {
-            double angleInRadians = angleInDegrees * (Math.PI / 180);
-            double cosTheta = Math.Cos(angleInRadians);
-            double sinTheta = Math.Sin(angleInRadians);
-            return new System.Windows.Point
-            {
-                X =
-                    (int)
-                    (cosTheta * (pointToRotate.X - centerPoint.X) -
-                    sinTheta * (pointToRotate.Y - centerPoint.Y) + centerPoint.X),
-                Y =
-                    (int)
-                    (sinTheta * (pointToRotate.X - centerPoint.X) +
-                    cosTheta * (pointToRotate.Y - centerPoint.Y) + centerPoint.Y)
-            };
-        }
 
+
+        private void updateTarget()
+        {
+            float hAngle = Convert.ToSingle(localCamera.rotation * (Math.PI / 180));
+            float[] localCoord = new float[3];
+            localCoord[0] = Convert.ToSingle(localCamera.position.X + 50 * Math.Cos(hAngle));
+            localCoord[1] = Convert.ToSingle(localCamera.position.Y + 50 * Math.Sin(hAngle));
+            localCoord[2] = localCamera.position.Z;
+            localCamera.target = new Vector3D(localCoord[0], localCoord[1], localCoord[2]);
+        }
+        private void moveCamera(int direction)
+        {
+            switch (direction)
+            {
+                case 0:
+                    {
+                        //forward
+                        float hAngle = Convert.ToSingle(localCamera.rotation * (Math.PI / 180));
+                        float[] localCoord = new float[3];
+                        localCoord[0] = Convert.ToSingle(localCamera.position.X + moveDistance * Math.Cos(hAngle));
+                        localCoord[1] = Convert.ToSingle(localCamera.position.Y + moveDistance * Math.Sin(hAngle));
+                        localCoord[2] = localCamera.position.Z;
+                        localCamera.position = new Vector3D(localCoord[0], localCoord[1], localCoord[2]);
+                        updateTarget();
+
+                        break;
+                    }
+                case 1:
+                    {
+                        //back
+                        float hAngle = Convert.ToSingle(localCamera.rotation * (Math.PI / 180));
+                        float[] localCoord = new float[3];
+                        localCoord[0] = Convert.ToSingle(localCamera.position.X - moveDistance * Math.Cos(hAngle));
+                        localCoord[1] = Convert.ToSingle(localCamera.position.Y - moveDistance * Math.Sin(hAngle));
+                        localCoord[2] = localCamera.position.Z;
+                        localCamera.position = new Vector3D(localCoord[0], localCoord[1], localCoord[2]);
+                        updateTarget();
+
+                        break;
+                    }
+                case 2:
+                    {
+                        //up
+                        float hAngle = Convert.ToSingle(localCamera.rotation * (Math.PI / 180));
+                        float[] localCoord = new float[3];
+                        localCoord[0] = localCamera.position.X;
+                        localCoord[1] = localCamera.position.Y;
+                        localCoord[2] = localCamera.position.Z + moveDistance;
+                        localCamera.position = new Vector3D(localCoord[0], localCoord[1], localCoord[2]);
+                        updateTarget();
+
+                        break;
+                    }
+                case 3:
+                    {
+                        //down
+                        float hAngle = Convert.ToSingle(localCamera.rotation * (Math.PI / 180));
+                        float[] localCoord = new float[3];
+                        localCoord[0] = localCamera.position.X;
+                        localCoord[1] = localCamera.position.Y;
+                        localCoord[2] = localCamera.position.Z - moveDistance;
+                        localCamera.position = new Vector3D(localCoord[0], localCoord[1], localCoord[2]);
+                        updateTarget();
+
+                        break;
+                    }
+                case 4:
+                    {
+                        //strafe
+                        float strafeAngle = Convert.ToSingle(localCamera.rotation - 90);
+                        if (strafeAngle < 0)
+                            strafeAngle += 360;
+                        float hAngle = Convert.ToSingle(strafeAngle * (Math.PI / 180));
+                        float[] localCoord = new float[3];
+                        localCoord[0] = Convert.ToSingle(localCamera.position.X + moveDistance * Math.Cos(hAngle));
+                        localCoord[1] = Convert.ToSingle(localCamera.position.Y + moveDistance * Math.Sin(hAngle));
+                        localCoord[2] = localCamera.position.Z;
+                        localCamera.position = new Vector3D(localCoord[0], localCoord[1], localCoord[2]);
+                        updateTarget();
+
+                        break;
+                    }
+                case 5:
+                    {
+                        //strafe
+                        float strafeAngle = Convert.ToSingle(localCamera.rotation + 90);
+                        if (strafeAngle > 360)
+                            strafeAngle -= 360;
+                        float hAngle = Convert.ToSingle(strafeAngle * (Math.PI / 180));
+                        float[] localCoord = new float[3];
+                        localCoord[0] = Convert.ToSingle(localCamera.position.X + moveDistance * Math.Cos(hAngle));
+                        localCoord[1] = Convert.ToSingle(localCamera.position.Y + moveDistance * Math.Sin(hAngle));
+                        localCoord[2] = localCamera.position.Z;
+                        localCamera.position = new Vector3D(localCoord[0], localCoord[1], localCoord[2]);
+                        updateTarget();
+
+                        break;
+                    }
+
+            }
+
+        }
         private void openGLControl_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (loadGL)
             {
-                
+
                 if (Keyboard.IsKeyDown(Key.W))
                 {
-                    
-                    double midZ = (lookZ + cameraZ)/2;
-                    double midX = (lookX + cameraX) / 2;
-                    double gapZ = cameraZ - midZ;
-                    double gapX = cameraX - midX;
-                    cameraZ = midZ;
-                    lookZ -= gapZ;
-                    cameraX = midX;
-                    lookX -= gapX;
-
+                    moveCamera(0);
                 }
                 if (Keyboard.IsKeyDown(Key.S))
                 {
-                    
-                    double midZ = (lookZ + cameraZ) / 2;
-                    double midX = (lookX + cameraX) / 2;
-                    double gapZ = cameraZ - midZ;
-                    double gapX = cameraX - midX;
-                    cameraZ += gapZ;
-                    lookZ += gapZ;
-                    cameraX += gapX;
-                    lookX += gapX;
-
-
-                }
-                if (Keyboard.IsKeyDown(Key.Q))
-                {
-                    double midZ = (lookZ + cameraZ) / 2;
-                    double midX = (lookX + cameraX) / 2;
-                    double gapZ = cameraZ - midZ;
-                    double gapX = cameraX - midX;
-                    cameraZ -= gapZ;
-                    lookZ -= gapZ;
-                    cameraX += gapX;
-                    lookX += gapX;
-                }
-                if (Keyboard.IsKeyDown(Key.E))
-                {
-                    double midZ = (lookZ + cameraZ) / 2;
-                    double midX = (lookX + cameraX) / 2;
-                    double gapZ = cameraZ - midZ;
-                    double gapX = cameraX - midX;
-                    cameraZ += gapZ;
-                    lookZ += gapZ;
-                    cameraX -= gapX;
-                    lookX -= gapX;
-
-                }
-                if (Keyboard.IsKeyDown(Key.R))
-                {
-
-                    cameraY += 10;
-                    lookY += 10;
-
-                }
-                if (Keyboard.IsKeyDown(Key.F))
-                {
-
-                    cameraY -= 10;
-                    lookY -= 10;
-
+                    moveCamera(1);
                 }
                 if (Keyboard.IsKeyDown(Key.A))
                 {
-                    var centerPoint = new System.Windows.Point(cameraX, cameraZ);
-                    var originalPoint = new System.Windows.Point(lookX,lookZ);                    
-                    var newPoint = RotatePoint(originalPoint, centerPoint, 5);
-                    double midZ = (lookZ + cameraZ) / 90;
-                    double midX = (lookX + cameraX) / 90;
-
-                    lookX = newPoint.X + midX;
-                    lookZ = newPoint.Y + midZ;
+                    localCamera.rotation += (moveDistance / 5);
+                    if (localCamera.rotation < 0)
+                        localCamera.rotation += 360;
+                    if (localCamera.rotation > 360)
+                        localCamera.rotation -= 360;
+                    updateTarget();
 
                 }
                 if (Keyboard.IsKeyDown(Key.D))
                 {
 
-                    var centerPoint = new System.Windows.Point(cameraX, cameraZ);
-                    var originalPoint = new System.Windows.Point(lookX, lookZ);
-                    var newPoint = RotatePoint(originalPoint, centerPoint, -5);
-                    double midZ = (lookZ + cameraZ) / 90;
-                    double midX = (lookX + cameraX) / 90;
-
-                    lookX = newPoint.X + midX;
-                    lookZ = newPoint.Y + midZ;
-
+                    localCamera.rotation -= (moveDistance / 5);
+                    if (localCamera.rotation < 0)
+                        localCamera.rotation += 360;
+                    if (localCamera.rotation > 360)
+                        localCamera.rotation -= 360;
+                    updateTarget();
                 }
-                
-                if (Keyboard.IsKeyDown(Key.C))
+                if (Keyboard.IsKeyDown(Key.Q))
                 {
-
-                    double midZ = (lookZ + cameraZ) / 2;
-                    double midX = (lookX + cameraX) / 2;
-                    double gapZ = cameraZ - midZ;
-                    double gapX = cameraX - midX;
-                    
-                    lookZ += gapZ;                    
-                    lookX += gapX;
-
+                    moveCamera(5);
                 }
-                if (Keyboard.IsKeyDown(Key.V))
+                if (Keyboard.IsKeyDown(Key.E))
                 {
-
-                    double midZ = (lookZ + cameraZ) / 2;
-                    double midX = (lookX + cameraX) / 2;
-                    double gapZ = cameraZ - midZ;
-                    double gapX = cameraX - midX;
-                    
-                    lookZ -= gapZ;                    
-                    lookX -= gapX;
-
+                    moveCamera(4);
+                }
+                if (Keyboard.IsKeyDown(Key.R))
+                {
+                    moveCamera(2);
+                }
+                if (Keyboard.IsKeyDown(Key.F))
+                {
+                    moveCamera(3);
+                }
+                if (Keyboard.IsKeyDown(Key.T))
+                {
+                    moveDistance += 5;
                 }
                 if (Keyboard.IsKeyDown(Key.G))
                 {
-
-                    lookX = 0;
-                    lookZ = 0;
-                    lookY = 0;
-
+                    moveDistance -= 5;
                 }
 
-                cxBox.Text = cameraX.ToString();
-                czBox.Text = cameraZ.ToString();
-                cyBox.Text = cameraY.ToString();
+                cxBox.Text = localCamera.position.X.ToString();
+                cyBox.Text = localCamera.position.Y.ToString();
+                czBox.Text = localCamera.position.Z.ToString();
+                csBox.Text = moveDistance.ToString();
 
-                lxBox.Text = lookX.ToString();
-                lzBox.Text = lookZ.ToString();
-                lyBox.Text = lookY.ToString();
 
                 openGLControl_Resized(null, null);
             }
@@ -1187,35 +1863,240 @@ namespace Tarmac64
         {
             if (wideScreen)
             {
+                groupBox3.Visible = false;
                 wideScreen = false;
                 this.Width = 575;
+                this.Height = 440;
+                this.MaximumSize = new System.Drawing.Size(575, 440);
                 wideBtn.Text = ">>>";
             }
             else
             {
+                groupBox3.Visible = true;
                 wideScreen = true;
+                this.MaximumSize = new System.Drawing.Size(1920, 1080);
                 this.Width = 1235;
+                
                 wideBtn.Text = "<<<";
             }
         }
 
         private void openGLControl_OpenGLInitialized(object sender, EventArgs e)
         {
-            
+
             //  Get the OpenGL object.
-            OpenGL gl = openGLControl.OpenGL;
 
             //  Set the clear color.
             gl.ClearColor(.0f, .0f, .0f, 0);
-            
+
         }
 
         private void openGLControl_Load(object sender, EventArgs e)
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Tarmac64.OKRetail tarmacAbout = new Tarmac64.OKRetail();
+            tarmacAbout.Show();
+
+        }
+
+        //
+
+        //
+
+        //
+
+        //
+
+
+
+
+        private void openGLControl_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            System.Windows.Point mouseClick = new System.Windows.Point(e.Location.X, e.Location.Y);
+
+            double[] pointA = gl.UnProject(e.Location.X, e.Location.Y, 0);
+            double[] pointB = gl.UnProject(e.Location.X, e.Location.Y, 1);
+
+            Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
+            Vector3D rayTarget = new Vector3D(Convert.ToSingle(pointB[0]), Convert.ToSingle(pointB[1]), Convert.ToSingle(pointB[2] * -1));
+
+
+            float objectDistance = -1;
+            TM64_Geometry tmGeo = new TM64_Geometry();
+            int objectID = -1;
+            cName.Text = "";
+            for (int currentObject = 0; (currentObject < masterObjects.Length); currentObject++)
+            {
+
+                foreach (var face in masterObjects[currentObject].modelGeometry)
+                {
+
+                    Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin, rayTarget, face.vertData[0], face.vertData[1], face.vertData[2]);
+                    if (intersectPoint.X > 0)
+                    {
+                        if (objectDistance > intersectPoint.X | objectDistance == -1)
+                        {
+                            objectDistance = intersectPoint.X;
+                            objectID = currentObject;
+                            cName.Text = masterObjects[currentObject].objectName;
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+            switch (tabControl1.SelectedIndex)
+            {
+                default:
+                    {
+                        break;
+                    }
+                case 3:
+                    {
+                        masterBox.SelectedIndex = objectID;
+                        if (objectID > -1)
+                        {
+                            if (e.Button == MouseButtons.Right)
+                            {
+                                masterBox.SetItemChecked(objectID, !(masterBox.GetItemChecked(objectID)));
+                            }
+                        }
+                        
+                        break;
+                    }
+            }
+        }
+
+        
+
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = saveFile.FileName;
+
+                TM64_Geometry tm64Geo = new TM64_Geometry();
+                tm64Geo.ExportSVL(filePath, masterObjects.Length, sectionList, masterObjects);                
+            }
+        }
+
+        private void importBtn_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openFile.FileName;
+
+                TM64_Geometry tm64Geo = new TM64_Geometry();
+                TM64_Geometry.OK64SectionList[] tempList = tm64Geo.ImportSVL(filePath, masterObjects.Length, masterObjects);
+                if (tempList.Length > 0)
+                {
+                    sectionList = tempList;
+                    updateSVDisplay();
+
+                }
+                else
+                {
+                    MessageBox.Show("Error! Incorrect Object Count");
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            
+            foreach (var list in popData[0].pathList)
+            {
+                for (int currentMarker = 0; currentMarker < list.pathmarker.Count; currentMarker++)
+                {
+                    localCamera.position = new Vector3D(list.pathmarker[currentMarker].xval, list.pathmarker[currentMarker].yval, list.pathmarker[currentMarker].zval + 10);
+                    if (currentMarker < list.pathmarker.Count - 1)
+                    {
+                        localCamera.target = new Vector3D(list.pathmarker[currentMarker + 1].xval, list.pathmarker[currentMarker + 1].yval, list.pathmarker[currentMarker + 1].zval + 6);
+                    }
+                    else
+                    {
+                        localCamera.target = new Vector3D(list.pathmarker[0].xval, list.pathmarker[0].yval, list.pathmarker[0].zval + 6);                    
+                    }
+                    wait(25);
+                }
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox6_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ui_formatBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ui_formatBox.SelectedIndex == 0)
+            {
+                tabControl1.TabPages.Add(sectionPage);
+                tabControl1.TabPages.Add(surfacePage);
+            }
+            else
+            {                
+                tabControl1.TabPages.Remove(sectionPage);
+                tabControl1.TabPages.Remove(surfacePage);
+            }
+        }
+
+        private void openGLControl_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            System.Windows.Point mouseClick = new System.Windows.Point(e.Location.X, e.Location.Y);
+
+            double[] pointA = gl.UnProject(e.Location.X, e.Location.Y, 0);
+            double[] pointB = gl.UnProject(e.Location.X, e.Location.Y, 1);
+
+            Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
+            Vector3D rayTarget = new Vector3D(Convert.ToSingle(pointB[0]), Convert.ToSingle(pointB[1]), Convert.ToSingle(pointB[2] * -1));
+
+
+            float objectDistance = -1;
+            TM64_Geometry tmGeo = new TM64_Geometry();
+            int objectID = -1;
+            cName.Text = "";
+            for (int currentObject = 0; (currentObject < masterObjects.Length); currentObject++)
+            {
+
+                foreach (var face in masterObjects[currentObject].modelGeometry)
+                {
+
+                    Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin, rayTarget, face.vertData[0], face.vertData[1], face.vertData[2]);
+                    if (intersectPoint.X > 0)
+                    {
+                        if (objectDistance > intersectPoint.X | objectDistance == -1)
+                        {
+                            objectDistance = intersectPoint.X;
+                            objectID = currentObject;
+                            cName.Text = masterObjects[currentObject].objectName;
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+            highlightedObject = objectID;
+        }
     }
 }
+
 
 
 

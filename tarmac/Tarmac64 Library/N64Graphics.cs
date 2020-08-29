@@ -5,7 +5,7 @@ namespace Texture64
     public enum N64Codec { RGBA16, RGBA32, IA16, IA8, IA4, I8, I4, CI8, CI4, ONEBPP };
     public enum N64IMode { AlphaCopyIntensity, AlphaBinary, AlphaOne };
 
-    class N64Graphics
+    public class N64Graphics
     {
         private static int SCALE_5_8(int val)
         {
