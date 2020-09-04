@@ -5533,6 +5533,7 @@ namespace Tarmac64_Geometry
                     }
                     else
                     {
+                        /*
                         while (!(File.Exists(textureArray[materialIndex].texturePath)))
                         {
                             MessageBox.Show(textureArray[materialIndex].texturePath + " not found, browse to file!");
@@ -5552,7 +5553,10 @@ namespace Tarmac64_Geometry
                                 break;
                             }
                         }
+                        */
 
+                        textureArray[materialIndex].textureHeight = 32;
+                        textureArray[materialIndex].textureWidth = 32;
                     }
                     
 
@@ -6708,9 +6712,16 @@ namespace Tarmac64_Geometry
                         currentLine++;
                         sectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
 
+                        string[] masterNames = new string[masterObjects.Length];
+
+                        for (int currentName = 0; currentName < masterObjects.Length; currentName++)
+                        {
+                            masterNames[currentName] = masterObjects[currentName].objectName;
+                        }
+
                         for (int currentObject = 0; currentObject < objectCount; currentObject++)
                         {
-                            sectionList[currentSection].viewList[currentView].objectList[currentObject] = Array.IndexOf(masterObjects,fileText[currentLine]);
+                            sectionList[currentSection].viewList[currentView].objectList[currentObject] = Array.IndexOf(masterNames, fileText[currentLine]);
                             currentLine++;
                         }
                     }

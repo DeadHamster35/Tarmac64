@@ -1033,9 +1033,11 @@ namespace Tarmac64
                 }
                 foreach (var subObject in sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList)
                 {
+                    
                     masterBox.SetItemCheckState(subObject, CheckState.Checked);
                     vertCount = vertCount + masterObjects[subObject].vertCount;
                     faceCount = faceCount + masterObjects[subObject].faceCount;
+                    
                 }
                 updateCounter(faceCount, vertCount);
             }
