@@ -262,7 +262,7 @@ namespace Tarmac64_Paths
                     Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
                     Vector3D rayTarget = new Vector3D(Convert.ToSingle(pointB[0]), Convert.ToSingle(pointB[1]), Convert.ToSingle(pointB[2] * -1));
 
-                    /*
+                    
                     float objectDistance = -1;
                     TM64_Geometry tmGeo = new TM64_Geometry();
                     int objectID = -1;
@@ -283,9 +283,21 @@ namespace Tarmac64_Paths
                             }
                         }                    
                     }
-                    */
-                    //tempList[0].pathmarker[marker].flag = Convert.ToInt32(surfaceObjects[objectID].surfaceID);
-
+                    if (objectID > 0)
+                    {
+                        tempList[0].pathmarker[marker].flag = Convert.ToInt32(surfaceObjects[objectID].surfaceID);
+                    }
+                    else
+                    {
+                        if (marker > 0)
+                        {
+                            tempList[0].pathmarker[marker].flag = tempList[0].pathmarker[marker - 1].flag;
+                        }
+                        else
+                        {
+                            tempList[0].pathmarker[marker].flag = 1;
+                        }
+                    }
                 }
 
                 pathgroup[group].pathList = tempList.ToArray();

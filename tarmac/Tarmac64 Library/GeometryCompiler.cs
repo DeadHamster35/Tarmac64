@@ -38,7 +38,7 @@ namespace Tarmac64
         TabPage sectionPage = new TabPage();
         TabPage surfacePage = new TabPage();
 
-
+        bool updateBool = false;
         bool raycastBoolean = false;
         int sectionCount = 0;
         public int programFormat;
@@ -52,7 +52,6 @@ namespace Tarmac64
 
         Stopwatch clockTime = new Stopwatch();
         bool loadGL = false;
-        bool wideScreen = false;
 
 
 
@@ -61,7 +60,6 @@ namespace Tarmac64
         float[] flashWhite = { 1.0f, 1.0f, 1.0f, 0.5f, 0.0f };
         int highlightedObject = -1;
 
-        int width, height = 0;
 
         TM64_Geometry tm64Geo = new TM64_Geometry();
         TM64_Paths tm64Path = new TM64_Paths();
@@ -100,13 +98,14 @@ namespace Tarmac64
         string popFile = "";
 
         TM64_Geometry.OK64F3DObject[] masterObjects = new TM64_Geometry.OK64F3DObject[0];
+        TM64_Geometry.OK64F3DGroup[] masterGroups = new TM64_Geometry.OK64F3DGroup[0];
         int moveDistance = 20;
 
 
         List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>();
 
         TM64_Geometry.OK64F3DObject[] surfaceObjects = new TM64_Geometry.OK64F3DObject[0];
-        int surfaceCount = 0;
+    
 
         TM64_Geometry.OK64Texture[] textureArray = new TM64_Geometry.OK64Texture[0];
 
@@ -117,24 +116,11 @@ namespace Tarmac64
 
         AssimpContext AssimpImporter = new AssimpContext();
         Assimp.Scene fbx = new Assimp.Scene();
-
+        int materialCount;
 
         TM64_Geometry.TMCamera localCamera = new TM64_Geometry.TMCamera();
         OpenGL gl = new OpenGL();
 
-        public void updateOutput(string printText)
-        {
-            TimeSpan ts = clockTime.Elapsed;
-
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}",
-                ts.Hours, ts.Minutes, ts.Seconds);
-
-            currentOutput.Text = printText + "-" + elapsedTime;
-            currentOutput.Invalidate();
-            currentOutput.Refresh();
-            this.Invalidate();
-            this.Refresh();
-        }
 
 
         OpenFileDialog fileOpen = new OpenFileDialog();
@@ -142,12 +128,11 @@ namespace Tarmac64
         FolderBrowserDialog folderOpen = new FolderBrowserDialog();
         private void GeometryCompiler_Load(object sender, EventArgs e)
         {
-            
+            CreateGeometry();
             sectionPage = tabControl1.TabPages[3];
             surfacePage = tabControl1.TabPages[4];
-            ui_formatBox.SelectedIndex = 1; //because the function below deletes or adds tabs, don't ask
-            ui_formatBox.SelectedIndex = 0;
-            CreateGeometry();
+            
+            
             gl = openGLControl.OpenGL;
             if (System.Diagnostics.Process.GetCurrentProcess().ProcessName == "Tarmac64 Designer")
             {
@@ -529,264 +514,262 @@ namespace Tarmac64
 
 
 
-        private void Button6_Click(object sender, EventArgs e)
+        private void compileModel()
         {
 
             int cID = (cupBox.SelectedIndex * 4) + courseBox.SelectedIndex;
             int setID = setBox.SelectedIndex;
 
-
-            string romPath = romBox.Text;
-
-            MessageBox.Show("Please select an output Directory");
-            if (folderOpen.ShowDialog() == DialogResult.OK)
+            MessageBox.Show("Select OverKart Patched ROM");
+            if (fileOpen.ShowDialog() == DialogResult.OK)
             {
-                string outputDirectory = folderOpen.SelectedPath;
+                string romPath = fileOpen.FileName;
 
-                List<byte[]> Segments = new List<byte[]>();
-                byte[] rom = File.ReadAllBytes(romPath);
-
-
-                byte[] segment4 = new byte[0];
-                byte[] segment6 = new byte[0];
-                byte[] segment7 = new byte[0];
-                byte[] segment9 = new byte[0];
-                byte[] popList = new byte[0];
-                byte[] collisionList = new byte[0];
-                byte[] renderList = new byte[0];
-
-
-                byte[] popData = Resources.popResources;
-
-                byte[] surfaceTable = new byte[0];
-                byte[] displayTable = new byte[0];
-
-                int magic = 0;
-
-                int vertMagic = 0;
-
-                // Game speed multiplier. Default is 2
-                byte[] gameSpeed = new byte[3];
-
-                Byte.TryParse(sp1Box.Text, out gameSpeed[0]);
-                Byte.TryParse(sp2Box.Text, out gameSpeed[1]);
-                Byte.TryParse(sp3Box.Text, out gameSpeed[2]);
-
-
-
-                //Course Music
-
-                byte songID = Convert.ToByte(songBox.SelectedIndex);
-
-
-                // This command writes all the bitmaps to the end of the ROM
-
-                rom = tm64Geo.writeTextures(rom, textureArray);
-                segment9 = tm64Geo.compiletextureTable(textureArray);
-
-
-
-
-
-
-
-                //build segment 7 out of the main course objects and surface geometry
-                //build segment 4 out of the same objects.
-
-                
-                byte[] tempBytes = new byte[0];
-                if (levelFormat == 0)
+                MessageBox.Show("Please select an output Directory");
+                if (folderOpen.ShowDialog() == DialogResult.OK)
                 {
-                    tm64Geo.compileF3DObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
-                    tm64Geo.compileF3DObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
+                    string outputDirectory = folderOpen.SelectedPath;
+
+                    List<byte[]> Segments = new List<byte[]>();
+                    byte[] rom = File.ReadAllBytes(romPath);
 
 
-                    // build various segment data
+                    byte[] segment4 = new byte[0];
+                    byte[] segment6 = new byte[0];
+                    byte[] segment7 = new byte[0];
+                    byte[] segment9 = new byte[0];
+                    byte[] popList = new byte[0];
+                    byte[] collisionList = new byte[0];
+                    byte[] renderList = new byte[0];
 
 
-                    renderList = tm64Geo.compileF3DList(ref sectionList, fbx, masterObjects, sectionList);
+                    byte[] popData = Resources.popResources;
 
+                    byte[] surfaceTable = new byte[0];
+                    byte[] displayTable = new byte[0];
 
-                    popList = tm64Path.popMarkers(popFile);
+                    int magic = 0;
 
+                    int vertMagic = 0;
 
-                    surfaceTable = tm64Geo.compilesurfaceTable(surfaceObjects);
+                    // Game speed multiplier. Default is 2
+                    byte[] gameSpeed = new byte[3];
 
-                    magic = (8 + 7968 + 952 + 8 + 528 + (surfaceObjects.Length * 8));
-                    // 8 bytes for header
-                    // 7968 bytes for the POP data
-                    // 952 bytes for the POP resources
-                    // 8 bytes for Surface Table Footer
-                    // 528 bytes for the Display Table itself.
-                    // The surface table is 8 bytes per object.
-                    // We tracked the number of surface meshes while loading into surfaceObjects.
-                    // magic is the size of data written before the display lists.
-                    // it's needed to properly calculate the offsets.
-                    // We're calculating hardcoded offsets before writing them.
-                    // So we need to use magic to do it.
-
-                    // Build the display table with the above magic value
-
-                    displayTable = tm64Geo.compilesectionviewTable(sectionList, magic);
-
-
+                    Byte.TryParse(sp1Box.Text, out gameSpeed[0]);
+                    Byte.TryParse(sp2Box.Text, out gameSpeed[1]);
+                    Byte.TryParse(sp3Box.Text, out gameSpeed[2]);
 
 
 
-                    bs = new MemoryStream();
-                    br = new BinaryReader(bs);
-                    bw = new BinaryWriter(bs);
-                    byte[] byteArray = new byte[0];
+                    //Course Music
 
-                    byteArray = BitConverter.GetBytes(0xB8000000);
-                    Array.Reverse(byteArray);
-                    bw.Write(byteArray);
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    bw.Write(byteArray);
+                    byte songID = Convert.ToByte(songBox.SelectedIndex);
 
-                    bw.Write(popList);
-                    bw.Write(popData);
-                    bw.Write(displayTable);
-                    bw.Write(surfaceTable);
-                    bw.Write(renderList);
 
-                    segment6 = bs.ToArray();
+                    // This command writes all the bitmaps to the end of the ROM
+
+                    rom = tm64Geo.writeTextures(rom, textureArray);
+                    segment9 = tm64Geo.compiletextureTable(textureArray);
+
+
+
+
+
+
+
+                    //build segment 7 out of the main course objects and surface geometry
+                    //build segment 4 out of the same objects.
+
+                    TM64_Geometry.OK64F3DObject[] textureObjects = masterObjects;
+                    byte[] tempBytes = new byte[0];
+                    if (levelFormat == 0)
+                    {
+                        tm64Geo.compileTextureObject(ref segment7, segment7, textureArray, vertMagic);
+                        tm64Geo.compileF3DObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
+                        tm64Geo.compileF3DObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
+
+
+                        // build various segment data
+                        
+
+                        renderList = tm64Geo.compileF3DList(ref sectionList, fbx, masterObjects, sectionList, textureArray);
+
+
+                        popList = tm64Path.popMarkers(popFile);
+
+
+                        surfaceTable = tm64Geo.compilesurfaceTable(surfaceObjects);
+
+                        magic = (8 + 7968 + 952 + 8 + 528 + (surfaceObjects.Length * 8));
+                        // 8 bytes for header
+                        // 7968 bytes for the POP data
+                        // 952 bytes for the POP resources
+                        // 8 bytes for Surface Table Footer
+                        // 528 bytes for the Display Table itself.
+                        // The surface table is 8 bytes per object.
+                        // We tracked the number of surface meshes while loading into surfaceObjects.
+                        // magic is the size of data written before the display lists.
+                        // it's needed to properly calculate the offsets.
+                        // We're calculating hardcoded offsets before writing them.
+                        // So we need to use magic to do it.
+
+                        // Build the display table with the above magic value
+
+                        displayTable = tm64Geo.compilesectionviewTable(sectionList, magic);
+
+
+
+
+
+                        bs = new MemoryStream();
+                        br = new BinaryReader(bs);
+                        bw = new BinaryWriter(bs);
+                        byte[] byteArray = new byte[0];
+
+                        byteArray = BitConverter.GetBytes(0xB8000000);
+                        Array.Reverse(byteArray);
+                        bw.Write(byteArray);
+                        byteArray = BitConverter.GetBytes(0x00000000);
+                        Array.Reverse(byteArray);
+                        bw.Write(byteArray);
+
+                        bw.Write(popList);
+                        bw.Write(popData);
+                        bw.Write(displayTable);
+                        bw.Write(surfaceTable);
+                        bw.Write(renderList);
+
+                        segment6 = bs.ToArray();
+                    }
+                    else
+                    {
+                        int battleOffset = 0;
+                        tm64Geo.compileBattleObject(ref battleOffset, ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
+
+
+
+                        popList = tm64Path.popBattle(popFile);
+
+
+
+
+
+                        bs = new MemoryStream();
+                        br = new BinaryReader(bs);
+                        bw = new BinaryWriter(bs);
+                        byte[] byteArray = new byte[0];
+                        //FC121824FF33FFFF
+                        byteArray = BitConverter.GetBytes(0xFC121824);
+                        Array.Reverse(byteArray);
+                        bw.Write(byteArray);
+                        byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                        Array.Reverse(byteArray);
+                        bw.Write(byteArray);
+                        //B900031D 00552078
+                        byteArray = BitConverter.GetBytes(0xB900031D);
+                        Array.Reverse(byteArray);
+                        bw.Write(byteArray);
+                        byteArray = BitConverter.GetBytes(0x00552078);
+                        Array.Reverse(byteArray);
+                        bw.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(0x06000000);
+                        Array.Reverse(byteArray);
+                        bw.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(battleOffset | 0x07000000);
+                        Array.Reverse(byteArray);
+                        bw.Write(byteArray);
+
+                        bw.Write(popList);
+
+                        segment6 = bs.ToArray();
+                    }
+
+                    //Compress appropriate segment data
+
+                    byte[] cseg7 = tm64Geo.compress_seg7(segment7);
+
+
+
+                    string courseName = nameBox.Text;
+                    string previewImage = previewBox.Text;
+                    string bannerImage = bannerBox.Text;
+                    string mapImage = mapBox.Text;
+                    string customASM = asmBox.Text;
+                    string ghostData = ghostBox.Text;
+
+                    byte[] skyColor = skyBytes;
+
+
+                    Int16[] mapCoords = new Int16[2];
+
+                    Int16.TryParse(xBox.Text, out mapCoords[0]);
+                    Int16.TryParse(yBox.Text, out mapCoords[1]);
+
+
+                    byte[] cseg4 = tm64Geo.compressMIO0(segment4);
+                    byte[] cseg6 = tm64Geo.compressMIO0(segment6);
+
+                    if (levelFormat == 0)
+                    {
+                        rom = tm64Geo.compileHotswap(segment4, segment6, segment7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, ghostData, skyColor, songID, gameSpeed, rom, cID, setID);
+                    }
+                    else
+                    {
+                        rom = tm64Geo.compileBattle(segment4, segment6, segment7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, skyColor, songID, gameSpeed, rom, cID, setID);
+
+                    }
+
+
+
+                    string savepath = "";
+
+                    savepath = Path.Combine(outputDirectory, "Mario Kart 64 (U) [!].z64");
+                    File.WriteAllBytes(savepath, rom);
+                    savepath = Path.Combine(outputDirectory, "Segment 4.bin");
+                    File.WriteAllBytes(savepath, segment4);
+
+                    savepath = Path.Combine(outputDirectory, "Compressed Segment 4.bin");
+                    File.WriteAllBytes(savepath, cseg4);
+
+                    savepath = Path.Combine(outputDirectory, "Segment 6.bin");
+                    File.WriteAllBytes(savepath, segment6);
+
+                    savepath = Path.Combine(outputDirectory, "Compressed Segment 6.bin");
+                    File.WriteAllBytes(savepath, cseg6);
+
+                    savepath = Path.Combine(outputDirectory, "Segment 7.bin");
+                    File.WriteAllBytes(savepath, segment7);
+
+                    savepath = Path.Combine(outputDirectory, "Compressed Segment 7.bin");
+                    File.WriteAllBytes(savepath, cseg7);
+
+                    savepath = Path.Combine(outputDirectory, "Segment 9.bin");
+                    File.WriteAllBytes(savepath, segment9);
+
+
+                    MessageBox.Show("Finished");
                 }
-                else
-                {
-                    int battleOffset = 0;
-                    tm64Geo.compileBattleObject(ref battleOffset, ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
-                    
-
-
-                    popList = tm64Path.popBattle(popFile);
-
-
-
-
-
-                    bs = new MemoryStream();
-                    br = new BinaryReader(bs);
-                    bw = new BinaryWriter(bs);
-                    byte[] byteArray = new byte[0];
-                    //FC121824FF33FFFF
-                    byteArray = BitConverter.GetBytes(0xFC121824);
-                    Array.Reverse(byteArray);
-                    bw.Write(byteArray);
-                    byteArray = BitConverter.GetBytes(0xFF33FFFF);
-                    Array.Reverse(byteArray);
-                    bw.Write(byteArray);
-                    //B900031D 00552078
-                    byteArray = BitConverter.GetBytes(0xB900031D);
-                    Array.Reverse(byteArray);
-                    bw.Write(byteArray);
-                    byteArray = BitConverter.GetBytes(0x00552078);
-                    Array.Reverse(byteArray);
-                    bw.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x06000000);
-                    Array.Reverse(byteArray);
-                    bw.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(battleOffset | 0x07000000);
-                    Array.Reverse(byteArray);
-                    bw.Write(byteArray);
-
-                    bw.Write(popList);
-
-                    segment6 = bs.ToArray();
-                }
-
-                //Compress appropriate segment data
-
-                byte[] cseg7 = tm64Geo.compress_seg7(segment7);
-
-
-
-                string courseName = nameBox.Text;
-                string previewImage = previewBox.Text;
-                string bannerImage = bannerBox.Text;
-                string mapImage = mapBox.Text;
-                string customASM = asmBox.Text;
-                string ghostData = ghostBox.Text;
-
-                byte[] skyColor = skyBytes;
-
-
-                Int16[] mapCoords = new Int16[2];
-
-                Int16.TryParse(xBox.Text, out mapCoords[0]);
-                Int16.TryParse(yBox.Text, out mapCoords[1]);
-
-
-                byte[] cseg4 = tm64Geo.compressMIO0(segment4);
-                byte[] cseg6 = tm64Geo.compressMIO0(segment6);
-
-                if (levelFormat == 0)
-                {
-                    rom = tm64Geo.compileHotswap(segment4, segment6, segment7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, ghostData, skyColor, songID, gameSpeed, rom, cID, setID);
-                }
-                else
-                {
-                    rom = tm64Geo.compileBattle(segment4, segment6, segment7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, skyColor, songID, gameSpeed, rom, cID, setID);
-
-                }
-
-
-
-                string savepath = "";
-
-                savepath = Path.Combine(outputDirectory, "Mario Kart 64 (U) [!].z64");
-                File.WriteAllBytes(savepath, rom);
-                savepath = Path.Combine(outputDirectory, "Segment 4.bin");
-                File.WriteAllBytes(savepath, segment4);
-
-                savepath = Path.Combine(outputDirectory, "Compressed Segment 4.bin");
-                File.WriteAllBytes(savepath, cseg4);
-
-                savepath = Path.Combine(outputDirectory, "Segment 6.bin");
-                File.WriteAllBytes(savepath, segment6);
-
-                savepath = Path.Combine(outputDirectory, "Compressed Segment 6.bin");
-                File.WriteAllBytes(savepath, cseg6);
-
-                savepath = Path.Combine(outputDirectory, "Segment 7.bin");
-                File.WriteAllBytes(savepath, segment7);
-
-                savepath = Path.Combine(outputDirectory, "Compressed Segment 7.bin");
-                File.WriteAllBytes(savepath, cseg7);
-
-                savepath = Path.Combine(outputDirectory, "Segment 9.bin");
-                File.WriteAllBytes(savepath, segment9);
-
-
-                MessageBox.Show("Finished");
             }
         }
 
 
-
-
-
-
-
-
-        private void loadBtn_click(object sender, EventArgs e)
+        private void loadModel()
         {
             MessageBox.Show("Select .FBX File");
             if (fileOpen.ShowDialog() == DialogResult.OK)
             {
                 //Get the path of specified file
                 FBXfilePath = fileOpen.FileName;
-                levelFormat = ui_formatBox.SelectedIndex;
+                levelFormat = 0;
 
                 clockTime = new Stopwatch();
                 clockTime.Start();
 
 
-                
-                raycastBoolean = raycastCheck.Checked;
+
+                raycastBoolean = false;
                 int modelFormat = 0;  // 
 
                 Scene fbx = new Scene();
@@ -794,7 +777,7 @@ namespace Tarmac64
 
                 fbx = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
 
-                int materialCount = fbx.MaterialCount;
+                materialCount = fbx.MaterialCount;
                 int textureCount = 0;
 
 
@@ -867,14 +850,14 @@ namespace Tarmac64
                             }
                         case 1:
                             {
-                                masterObjects = tm64Geo.loadMaster(fbx, textureArray);
+                                masterObjects = tm64Geo.loadMaster(ref masterGroups, fbx, textureArray);
                                 surfaceObjects = tm64Geo.loadCollision(fbx, sectionCount, textureArray, modelFormat);
                                 sectionList = tm64Geo.automateSection(sectionCount, surfaceObjects, masterObjects, fbx, raycastBoolean);
                                 break;
                             }
                         case 2:
                             {
-                                masterObjects = tm64Geo.loadMaster(fbx, textureArray);
+                                masterObjects = tm64Geo.loadMaster(ref masterGroups, fbx, textureArray);
                                 surfaceObjects = tm64Geo.loadCollision(fbx, sectionCount, textureArray, modelFormat);
                                 sectionList = tm64Geo.loadSection(fbx, sectionCount, masterObjects);
                                 break;
@@ -883,20 +866,36 @@ namespace Tarmac64
                 }
                 else
                 {
-                        
-                    masterObjects = tm64Geo.loadMaster(fbx, textureArray);
-                                
+
+                    masterObjects = tm64Geo.loadMaster(ref masterGroups, fbx, textureArray);
+
                 }
 
 
 
                 clockTime.Stop();
                 TimeSpan ts = clockTime.Elapsed;
-                masterBox.Items.Clear();
-                for (int currentChild = 0; currentChild < masterObjects.Length; currentChild++)
+                masterBox.Nodes.Clear();
+                List<int> listedObjects = new List<int>();
+                
+                    
+                for (int currentGroup = 0; currentGroup < masterGroups.Length; currentGroup++)
                 {
-                    masterBox.Items.Add(masterObjects[currentChild].objectName);
+                    masterBox.Nodes.Add(masterGroups[currentGroup].groupName, masterGroups[currentGroup].groupName);
+                    for (int currentGrandchild = 0; currentGrandchild < masterGroups[currentGroup].subIndexes.Length; currentGrandchild++)
+                    {
+                        masterBox.Nodes[currentGroup].Nodes.Add(masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName, masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName);
+                        listedObjects.Add(masterGroups[currentGroup].subIndexes[currentGrandchild]);
+                    }
                 }
+                for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
+                {
+                    if (listedObjects.IndexOf(currentMaster) == -1)
+                    {
+                        masterBox.Nodes.Add(masterObjects[currentMaster].objectName, masterObjects[currentMaster].objectName);                            
+                    }
+                }
+                
                 if (levelFormat == 0)
                 {
                     surfaceobjectBox.Items.Clear();
@@ -935,7 +934,7 @@ namespace Tarmac64
                         }
                         else
                         {
-                            textureBox.Items.Add("Material " + materialIndex.ToString() + " - " + textureArray[materialIndex].textureName);
+                            textureBox.Items.Add("M-" + materialIndex.ToString() + " " + textureArray[materialIndex].textureName);
                         }
                         textureCount++;
                     }
@@ -956,41 +955,49 @@ namespace Tarmac64
                     textureBox.SelectedIndex = 0;
                     lastMaterial = 0;
 
-                    objcountBox.Text = surfaceCount.ToString();
                 }
-                    updateOutput(fileOpen.FileName);
-                
+
                 string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
                 ts.Hours, ts.Minutes, ts.Seconds,
                 ts.Milliseconds / 10);
 
                 MessageBox.Show("Finished in " + elapsedTime);
                 loaded = true;
-                
-
-                compilebtn.Enabled = true;
-                ui_formatBox.Enabled = false;
-
-
-
-                wideBtn.Enabled = true;
-                wideBtn.Visible = true;
+                actionBtn.Text = "Compile";
             }
-            
+
             MessageBox.Show("Select OK64.POP File");
             if (fileOpen.ShowDialog() == DialogResult.OK)
             {
                 popFile = fileOpen.FileName;
                 if (levelFormat == 0)
                 {
-                    popData = tm64Path.loadPOP(popFile,surfaceObjects);
+                    popData = tm64Path.loadPOP(popFile, surfaceObjects);
                 }
                 else
                 {
                     popData = tm64Path.loadBattlePOP(popFile);
                 }
             }
+            openGLControl.Visible = true;
+            openGLControl.Enabled = true;
             
+        }
+
+
+
+
+
+        private void loadBtn_click(object sender, EventArgs e)
+        {
+            if (loaded)
+            {
+                compileModel();
+            }
+            else
+            {
+                loadModel();
+            }
         }
         private void Matbox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1023,31 +1030,67 @@ namespace Tarmac64
 
         private void updateSVDisplay()
         {
-            if (loaded == true)
+            if (!updateBool)
             {
-                int vertCount = 0;
-                int faceCount = 0;
-                foreach (int checkedIndex in masterBox.CheckedIndices)
+                updateBool = true;
+                if (loaded == true)
                 {
-                    masterBox.SetItemCheckState(checkedIndex, CheckState.Unchecked);
+                    int vertCount = 0;
+                    int faceCount = 0;
+                    for (int currentTree = 0; currentTree < masterBox.Nodes.Count; currentTree++)
+                    {
+                        if (masterBox.Nodes[currentTree].Nodes.Count > 0)
+                        {
+                            for (int currentNode = 0; currentNode < masterBox.Nodes[currentTree].Nodes.Count; currentNode++)
+                            {
+                                masterBox.Nodes[currentTree].Nodes[currentNode].Checked = false;
+                            }
+                        }
+                        else
+                        {
+                            masterBox.Nodes[currentTree].Checked = false;
+                        }
+                    }
+                    foreach (var subObject in sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList)
+                    {
+
+                        TreeNode[] thisNode = masterBox.Nodes.Find(masterObjects[subObject].objectName, true);
+                        thisNode[0].Checked = true;
+                        vertCount = vertCount + masterObjects[subObject].vertCount;
+                        faceCount = faceCount + masterObjects[subObject].faceCount;
+
+                    }
+                    updateCounter(faceCount);
                 }
-                foreach (var subObject in sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList)
-                {
-                    
-                    masterBox.SetItemCheckState(subObject, CheckState.Checked);
-                    vertCount = vertCount + masterObjects[subObject].vertCount;
-                    faceCount = faceCount + masterObjects[subObject].faceCount;
-                    
-                }
-                updateCounter(faceCount, vertCount);
+                updateBool = false;
             }
         }
         //Seperate loading the counters to prevent infinite loop. 
-        private void updateCounter(int faceCount, int vertCount)
+        private void updateCounter(int faceCount)
         {
-
+            int objectCount = 0;
             faceBox.Text = faceCount.ToString();
-            objectBox.Text = masterBox.CheckedItems.Count.ToString();
+            for (int currentTree = 0; currentTree < masterBox.Nodes.Count; currentTree++)
+            {
+                if (masterBox.Nodes[currentTree].Nodes.Count > 0)
+                {
+                    for (int currentNode = 0; currentNode < masterBox.Nodes[currentTree].Nodes.Count; currentNode++)
+                    {
+                        if (masterBox.Nodes[currentTree].Nodes[currentNode].Checked == true)
+                        {
+                            objectCount++;
+                        }
+                    }
+                }
+                else
+                {
+                    if (masterBox.Nodes[currentTree].Checked == true)
+                    {
+                        objectCount++;
+                    }
+                }
+            }
+            objectBox.Text = objectCount.ToString();
         }
         //
         private void updateSMDisplay()
@@ -1059,9 +1102,8 @@ namespace Tarmac64
                 surfsectionBox.SelectedIndex = surfaceObjects[objectIndex].surfaceID - 1;
                 int materialIndex = Array.IndexOf(surfaceTypeID, surfaceObjects[objectIndex].surfaceMaterial);
                 surfmaterialBox.SelectedIndex = materialIndex;
-                surfcheckA.Checked = surfaceObjects[objectIndex].flagA;
-                surfcheckB.Checked = surfaceObjects[objectIndex].flagB;
-                surfcheckC.Checked = surfaceObjects[objectIndex].flagC;
+                surfpropertybox.SelectedIndex = surfaceObjects[objectIndex].surfaceProperty;
+
                 surfvertBox.Text = surfaceObjects[objectIndex].vertCount.ToString();
                 surffaceBox.Text = surfaceObjects[objectIndex].faceCount.ToString();
             }
@@ -1098,17 +1140,37 @@ namespace Tarmac64
             {
                 int vertCount = 0;
                 int faceCount = 0;
+                int currentIndex = 0;
                 List<int> checkList = new List<int>();
-                foreach (var checkObject in masterBox.CheckedItems)
+                for (int currentTree = 0; currentTree < masterBox.Nodes.Count; currentTree++)
                 {
-                    int checkIndex = masterBox.Items.IndexOf(checkObject);
-                    checkList.Add(checkIndex);
-                    vertCount = vertCount + masterObjects[checkIndex].vertCount;
-                    faceCount = faceCount + masterObjects[checkIndex].faceCount;
+                    currentIndex++;
+                    if (masterBox.Nodes[currentTree].Nodes.Count > 0)
+                    {
+                        for (int currentNode = 0; currentNode < masterBox.Nodes[currentTree].Nodes.Count; currentNode++)
+                        {
+                            currentIndex++;
+                            if (masterBox.Nodes[currentTree].Nodes[currentNode].Checked == true)
+                            {
+                                checkList.Add(currentIndex);
+                                vertCount = vertCount + masterObjects[currentIndex].vertCount;
+                                faceCount = faceCount + masterObjects[currentIndex].faceCount;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (masterBox.Nodes[currentTree].Checked == true)
+                        {
+                            checkList.Add(currentIndex);
+                            vertCount = vertCount + masterObjects[currentIndex].vertCount;
+                            faceCount = faceCount + masterObjects[currentIndex].faceCount;
+                        }
+                    }
                 }
                 sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList = checkList.ToArray();
 
-                updateCounter(faceCount, vertCount);
+                updateCounter(faceCount);
             }
         }
 
@@ -1239,16 +1301,6 @@ namespace Tarmac64
 
         }
 
-        private void RomBtn_Click(object sender, EventArgs e)
-        {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
-            {
-                //Get the path of specified file
-                romBox.Text = fileOpen.FileName;
-            }
-
-        }
-
 
         private void PreviewBtn_Click(object sender, EventArgs e)
         {
@@ -1319,28 +1371,6 @@ namespace Tarmac64
             return ms.ToArray();
         }
 
-        public void wait(int milliseconds)
-        {
-            var timer1 = new System.Windows.Forms.Timer();
-            if (milliseconds == 0 || milliseconds < 0) return;
-
-            // Console.WriteLine("start wait timer");
-            timer1.Interval = milliseconds;
-            timer1.Enabled = true;
-            timer1.Start();
-
-            timer1.Tick += (s, e) =>
-            {
-                timer1.Enabled = false;
-                timer1.Stop();
-                // Console.WriteLine("stop wait timer");
-            };
-
-            while (timer1.Enabled)
-            {
-                Application.DoEvents();
-            }
-        }
 
 
         private void drawFace(TM64_Geometry.Face subFace)
@@ -1461,7 +1491,7 @@ namespace Tarmac64
 
             switch (tabControl1.SelectedIndex)
             {
-                case 3:
+                case 2:
                     {
                         float[] surfaceWhite = GetAlphaFlash(flashWhite);
                         float[] surfaceRed = GetAlphaFlash(flashRed);
@@ -1484,7 +1514,7 @@ namespace Tarmac64
                                 }
                                 else
                                 {
-                                    if (masterBox.GetItemChecked(subIndex))
+                                    if (Array.IndexOf(sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList, subIndex) != -1)
                                     {
                                         gl.End();
                                         gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
@@ -1510,7 +1540,7 @@ namespace Tarmac64
                             else
                             {
 
-                                if (masterBox.GetItemChecked(subIndex))
+                                if (Array.IndexOf(sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList, subIndex) != -1)
                                 {
                                     gl.End();
                                     gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
@@ -1555,7 +1585,7 @@ namespace Tarmac64
                         }
                         break;
                     }
-                case 4:
+                case 3:
                     {
                         foreach (var subObject in surfaceObjects)
                         {
@@ -1861,28 +1891,6 @@ namespace Tarmac64
             }
         }
 
-        private void wideBtn_Click(object sender, EventArgs e)
-        {
-            if (wideScreen)
-            {
-                groupBox3.Visible = false;
-                wideScreen = false;
-                this.Width = 575;
-                this.Height = 440;
-                this.MaximumSize = new System.Drawing.Size(575, 440);
-                wideBtn.Text = ">>>";
-            }
-            else
-            {
-                groupBox3.Visible = true;
-                wideScreen = true;
-                this.MaximumSize = new System.Drawing.Size(1920, 1080);
-                this.Width = 1235;
-                
-                wideBtn.Text = "<<<";
-            }
-        }
-
         private void openGLControl_OpenGLInitialized(object sender, EventArgs e)
         {
 
@@ -1959,14 +1967,17 @@ namespace Tarmac64
                     {
                         break;
                     }
-                case 3:
+                case 2:
                     {
-                        masterBox.SelectedIndex = objectID;
+                        
                         if (objectID > -1)
                         {
+                            var SelectedNodes = masterBox.Nodes.Find(masterObjects[objectID].objectName, true);
+                            masterBox.SelectedNode = SelectedNodes[0];
                             if (e.Button == MouseButtons.Right)
                             {
-                                masterBox.SetItemChecked(objectID, !(masterBox.GetItemChecked(objectID)));
+                                SelectedNodes[0].Checked = !SelectedNodes[0].Checked;
+                                updateSectionList(masterObjects[objectID].objectName);
                             }
                         }
                         
@@ -2028,7 +2039,6 @@ namespace Tarmac64
                     {
                         localCamera.target = new Vector3D(list.pathmarker[0].xval, list.pathmarker[0].yval, list.pathmarker[0].zval + 6);                    
                     }
-                    wait(25);
                 }
             }
         }
@@ -2043,18 +2053,20 @@ namespace Tarmac64
 
         }
 
-        private void ui_formatBox_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void label19_Click(object sender, EventArgs e)
         {
-            if (ui_formatBox.SelectedIndex == 0)
-            {
-                tabControl1.TabPages.Add(sectionPage);
-                tabControl1.TabPages.Add(surfacePage);
-            }
-            else
-            {                
-                tabControl1.TabPages.Remove(sectionPage);
-                tabControl1.TabPages.Remove(surfacePage);
-            }
+
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void surfacepropertybox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            surfaceObjects[surfaceobjectBox.SelectedIndex].surfaceProperty = surfpropertybox.SelectedIndex;
         }
 
         private void openGLControl_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -2095,6 +2107,74 @@ namespace Tarmac64
                 }
             }
             highlightedObject = objectID;
+        }
+
+        private void updateSectionList(string objectName)
+        {
+            List<int> objectList = sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList.ToList();
+            int objectIndex = -1;
+            for (int currentObject = 0; currentObject < masterObjects.Length; currentObject++)
+            {                
+                if (masterObjects[currentObject].objectName == objectName)
+                {
+                    objectIndex = currentObject;
+                    break;
+                }
+            }
+            if (objectIndex > -1)
+            {
+                int objectCount = objectList.Count; //this value is dynamic as we add/remove items.
+                for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                {
+                    if (currentObject < objectList.Count) //dynamic
+                    {
+                        if (objectList[currentObject] == objectIndex)
+                        {
+                            objectList.RemoveAt(currentObject);
+                            break;
+                        }
+                        else
+                        {
+                            if (currentObject + 1 == objectList.Count)
+                            {
+                                objectList.Add(objectIndex);
+                            }
+                        }
+                    }
+                }
+                sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList = objectList.ToArray();
+            }
+        }
+
+        private void masterBox_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            if (e.Action != TreeViewAction.Unknown)
+            {
+                List<int> checkList = new List<int>();
+                bool checkState = e.Node.Checked;
+                checkList = sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList.ToList();
+                int vertCount = 0, faceCount = 0;
+                if (loaded == true)
+                {
+                    if (e.Node.Nodes.Count > 0)
+                    {
+                        
+                        foreach (TreeNode childNode in e.Node.Nodes)
+                        {
+                            childNode.Checked = checkState;
+                            updateSectionList(childNode.Name);
+                        }
+                        
+
+                    }
+                    else
+                    {
+                        updateSectionList(e.Node.Name);
+                    }
+                    
+                    updateCounter(faceCount);
+                }
+            }
         }
     }
 }

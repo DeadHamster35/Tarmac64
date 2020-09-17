@@ -65,9 +65,9 @@
             this.label4.Location = new System.Drawing.Point(12, 109);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(402, 104);
-            this.label4.TabIndex = 30;
-            this.label4.Text = "Micro500  -  RenaKunisaki \r\nTriclon - QueueRAM\r\nmib-f8sm9c - Rain\r\nMegaMech - shy" +
-    "goo\r\nPeter Lemon - dwmkerr\r\nzouzzz - red\r\nYumi";
+            this.label4.TabIndex = 31;
+            this.label4.Text = "Micro500  -  Triclon \r\nshygoo - RenaKunisaki\r\nmib-f8sm9c - Rain\r\nPeter Lemon - dw" +
+    "mkerr\r\nqueueRAM - Daniel McCarthy\r\nzouzzz - red\r\ntherektafire - mdta\r\nYumi \r\n";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // OKRetail
