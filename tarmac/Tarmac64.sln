@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarmac64 Developer", "Tarmac64 Developer\Tarmac64 Developer.csproj", "{3758A650-4444-4B91-A2FC-A8FB872229BC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8BED16F1-6BBF-4A49-8620-FA3B0AD2E794}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarmac64 Designer", "Tarmac64 Retail\Tarmac64 Designer.csproj", "{5D094EE2-1FD1-4E91-8719-1EF35BDD5BAD}"
 EndProject

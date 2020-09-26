@@ -1113,7 +1113,7 @@ namespace Tarmac64
                 {
                     vertCache[currentVert] = new TM64_Geometry.Vertex();
                     vertCache[currentVert].position = new TM64_Geometry.Position();
-                    vertCache[currentVert].color = new TM64_Geometry.Color();
+                    vertCache[currentVert].color = new TM64_Geometry.OK64Color();
                 }
 
                 int targetOffset = Convert.ToInt32(seg6_addr[cID]);
@@ -1440,18 +1440,18 @@ namespace Tarmac64
 
                 int[] surfaceoffset = { 0x9650, 0x72d0, 0x93d8, 0xb458, 0x18240, 0x79a0, 0x18fd8, 0xdc28, 0xff28, 0x144b8, 0x23b68, 0x23070, 0x9c20, 0x16440, 0xcc38, 0xff, 0xff, 0xff, 0x14338, 0xff };
 
-                TM64_Geometry.Color[] segmentColors = new TM64_Geometry.Color[64];
+                TM64_Geometry.OK64Color[] segmentColors = new TM64_Geometry.OK64Color[64];
                 Random rngValue = new Random();
                 for (int i=0; i < 64; i++)
                 {
-                    segmentColors[i] = new TM64_Geometry.Color();
+                    segmentColors[i] = new TM64_Geometry.OK64Color();
                     byte r, g, b = new int();
                     r = Convert.ToByte(rngValue.Next(0, 255));
                     g = Convert.ToByte(rngValue.Next(0, 255));
                     b = Convert.ToByte(rngValue.Next(0, 255));
-                    segmentColors[i].r = r;
-                    segmentColors[i].g = g;
-                    segmentColors[i].b = b;
+                    segmentColors[i].R = r;
+                    segmentColors[i].G = g;
+                    segmentColors[i].B = b;
                 }
 
                 current_offset = surfaceoffset[cID];
@@ -1477,19 +1477,19 @@ namespace Tarmac64
                         {
 
                             int colorOffset = rngValue.Next(0, 20);
-                            newR = segmentColors[sectionID].r - colorOffset;
+                            newR = segmentColors[sectionID].R - colorOffset;
                             if (newR < 0)
                             {
                                 newR = 0;
                             }
 
-                            newG = segmentColors[sectionID].g - colorOffset;
+                            newG = segmentColors[sectionID].G - colorOffset;
                             if (newG < 0)
                             {
                                 newR = 0;
                             }
 
-                            newB = segmentColors[sectionID].b - colorOffset;
+                            newB = segmentColors[sectionID].B - colorOffset;
                             if (newB < 0)
                             {
                                 newB = 0;

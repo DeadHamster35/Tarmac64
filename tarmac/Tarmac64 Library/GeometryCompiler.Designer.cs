@@ -89,28 +89,53 @@
             this.widthBox = new System.Windows.Forms.TextBox();
             this.bitm = new System.Windows.Forms.PictureBox();
             this.CourseInfo = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.sp4Box = new System.Windows.Forms.TextBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.sp1Box = new System.Windows.Forms.TextBox();
+            this.label42 = new System.Windows.Forms.Label();
+            this.sp2Box = new System.Windows.Forms.TextBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.sp3Box = new System.Windows.Forms.TextBox();
+            this.label40 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.songBox = new System.Windows.Forms.ComboBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.SkyRMB = new System.Windows.Forms.TextBox();
+            this.SkyGMB = new System.Windows.Forms.TextBox();
+            this.SkyBMB = new System.Windows.Forms.TextBox();
+            this.SkyRB = new System.Windows.Forms.TextBox();
+            this.SkyGB = new System.Windows.Forms.TextBox();
+            this.SkyBB = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.rtbox = new System.Windows.Forms.TextBox();
-            this.gtbox = new System.Windows.Forms.TextBox();
+            this.SkyRT = new System.Windows.Forms.TextBox();
+            this.SkyGT = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.btbox = new System.Windows.Forms.TextBox();
-            this.rbbox = new System.Windows.Forms.TextBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.gbbox = new System.Windows.Forms.TextBox();
-            this.bbbox = new System.Windows.Forms.TextBox();
-            this.button4 = new System.Windows.Forms.Button();
+            this.SkyBT = new System.Windows.Forms.TextBox();
+            this.SkyRMT = new System.Windows.Forms.TextBox();
+            this.ColorPickMB = new System.Windows.Forms.Button();
+            this.SkyGMT = new System.Windows.Forms.TextBox();
+            this.SkyBMT = new System.Windows.Forms.TextBox();
+            this.ColorPickB = new System.Windows.Forms.Button();
             this.label29 = new System.Windows.Forms.Label();
             this.label27 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
-            this.cptop = new System.Windows.Forms.Button();
-            this.cpbot = new System.Windows.Forms.Button();
+            this.ColorPickT = new System.Windows.Forms.Button();
+            this.ColorPickMT = new System.Windows.Forms.Button();
             this.label30 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
@@ -136,23 +161,7 @@
             this.label15 = new System.Windows.Forms.Label();
             this.nameBox = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.sp1Box = new System.Windows.Forms.TextBox();
-            this.sp2Box = new System.Windows.Forms.TextBox();
-            this.label41 = new System.Windows.Forms.Label();
-            this.sp3Box = new System.Windows.Forms.TextBox();
-            this.label40 = new System.Windows.Forms.Label();
-            this.label39 = new System.Windows.Forms.Label();
-            this.songBox = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.textBox9 = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.label42 = new System.Windows.Forms.Label();
-            this.label43 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
+            this.raycastBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -164,6 +173,7 @@
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bitm)).BeginInit();
             this.CourseInfo.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
@@ -191,7 +201,7 @@
             this.actionBtn.TabIndex = 19;
             this.actionBtn.Text = "Load";
             this.actionBtn.UseVisualStyleBackColor = true;
-            this.actionBtn.Click += new System.EventHandler(this.loadBtn_click);
+            this.actionBtn.Click += new System.EventHandler(this.LoadBtn_Click);
             // 
             // cupBox
             // 
@@ -241,7 +251,7 @@
             this.openGLControl.OpenGLInitialized += new System.EventHandler(this.openGLControl_OpenGLInitialized);
             this.openGLControl.OpenGLDraw += new SharpGL.RenderEventHandler(this.openGLControl_OpenGLDraw);
             this.openGLControl.Resized += new System.EventHandler(this.openGLControl_Resized);
-            this.openGLControl.Load += new System.EventHandler(this.openGLControl_Load);
+            this.openGLControl.Load += new System.EventHandler(this.OpenGLControl_Load);
             this.openGLControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.openGLControl_KeyDown);
             this.openGLControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.openGLControl_MouseClick);
             this.openGLControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.openGLControl_MouseMove);
@@ -281,7 +291,7 @@
             this.about_button.TabIndex = 88;
             this.about_button.Text = "About";
             this.about_button.UseVisualStyleBackColor = true;
-            this.about_button.Click += new System.EventHandler(this.button1_Click);
+            this.about_button.Click += new System.EventHandler(this.Button1_Click);
             // 
             // csBox
             // 
@@ -565,7 +575,7 @@
             this.button1.TabIndex = 95;
             this.button1.Text = "Export";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            this.button1.Click += new System.EventHandler(this.Button1_Click_1);
             // 
             // importBtn
             // 
@@ -576,7 +586,7 @@
             this.importBtn.TabIndex = 94;
             this.importBtn.Text = "Import";
             this.importBtn.UseVisualStyleBackColor = true;
-            this.importBtn.Click += new System.EventHandler(this.importBtn_Click);
+            this.importBtn.Click += new System.EventHandler(this.ImportBtn_Click);
             // 
             // groupBox1
             // 
@@ -862,13 +872,14 @@
             // CourseInfo
             // 
             this.CourseInfo.AutoScroll = true;
+            this.CourseInfo.Controls.Add(this.groupBox4);
             this.CourseInfo.Controls.Add(this.label16);
             this.CourseInfo.Controls.Add(this.label12);
             this.CourseInfo.Controls.Add(this.textBox9);
             this.CourseInfo.Controls.Add(this.label11);
             this.CourseInfo.Controls.Add(this.textBox8);
             this.CourseInfo.Controls.Add(this.label7);
-            this.CourseInfo.Controls.Add(this.textBox7);
+            this.CourseInfo.Controls.Add(this.sp4Box);
             this.CourseInfo.Controls.Add(this.label43);
             this.CourseInfo.Controls.Add(this.sp1Box);
             this.CourseInfo.Controls.Add(this.label42);
@@ -909,29 +920,276 @@
             this.CourseInfo.Text = "Course Info";
             this.CourseInfo.UseVisualStyleBackColor = true;
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label21);
+            this.groupBox4.Controls.Add(this.checkBox2);
+            this.groupBox4.Controls.Add(this.textBox10);
+            this.groupBox4.Controls.Add(this.label19);
+            this.groupBox4.Controls.Add(this.comboBox2);
+            this.groupBox4.Controls.Add(this.label18);
+            this.groupBox4.Controls.Add(this.comboBox1);
+            this.groupBox4.Location = new System.Drawing.Point(5, 543);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(280, 110);
+            this.groupBox4.TabIndex = 151;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Mod Options";
+            this.groupBox4.Visible = false;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(205, 82);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(40, 13);
+            this.label21.TabIndex = 153;
+            this.label21.Text = "Gravity";
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(5, 81);
+            this.checkBox2.Margin = new System.Windows.Forms.Padding(5);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(81, 17);
+            this.checkBox2.TabIndex = 155;
+            this.checkBox2.Text = "Slippery Ice";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(147, 81);
+            this.textBox10.Margin = new System.Windows.Forms.Padding(5);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(50, 20);
+            this.textBox10.TabIndex = 152;
+            this.textBox10.Text = "0";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.Location = new System.Drawing.Point(203, 53);
+            this.label19.Margin = new System.Windows.Forms.Padding(5);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(52, 13);
+            this.label19.TabIndex = 154;
+            this.label19.Text = "DK Boost";
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(5, 50);
+            this.comboBox2.Margin = new System.Windows.Forms.Padding(5);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(192, 21);
+            this.comboBox2.TabIndex = 153;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Location = new System.Drawing.Point(204, 22);
+            this.label18.Margin = new System.Windows.Forms.Padding(5);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(51, 13);
+            this.label18.TabIndex = 152;
+            this.label18.Text = "RR Boost";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(6, 19);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(5);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(192, 21);
+            this.comboBox1.TabIndex = 0;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label16.Location = new System.Drawing.Point(8, 182);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(14, 13);
+            this.label16.TabIndex = 150;
+            this.label16.Text = "X";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label12.Location = new System.Drawing.Point(116, 431);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(26, 13);
+            this.label12.TabIndex = 149;
+            this.label12.Text = "End";
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(153, 428);
+            this.textBox9.Margin = new System.Windows.Forms.Padding(5);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(50, 20);
+            this.textBox9.TabIndex = 148;
+            this.textBox9.Text = "0";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label11.Location = new System.Drawing.Point(19, 431);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(29, 13);
+            this.label11.TabIndex = 147;
+            this.label11.Text = "Start";
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(56, 428);
+            this.textBox8.Margin = new System.Windows.Forms.Padding(5);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(50, 20);
+            this.textBox8.TabIndex = 146;
+            this.textBox8.Text = "0";
+            // 
+            // label7
+            // 
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label7.Location = new System.Drawing.Point(162, 466);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(40, 13);
+            this.label7.TabIndex = 145;
+            this.label7.Text = "4P";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // sp4Box
+            // 
+            this.sp4Box.Location = new System.Drawing.Point(162, 484);
+            this.sp4Box.Margin = new System.Windows.Forms.Padding(5);
+            this.sp4Box.Name = "sp4Box";
+            this.sp4Box.Size = new System.Drawing.Size(40, 20);
+            this.sp4Box.TabIndex = 144;
+            // 
+            // label43
+            // 
+            this.label43.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label43.Location = new System.Drawing.Point(12, 466);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(40, 13);
+            this.label43.TabIndex = 143;
+            this.label43.Text = "1P";
+            this.label43.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // sp1Box
+            // 
+            this.sp1Box.Location = new System.Drawing.Point(12, 484);
+            this.sp1Box.Margin = new System.Windows.Forms.Padding(5);
+            this.sp1Box.Name = "sp1Box";
+            this.sp1Box.Size = new System.Drawing.Size(40, 20);
+            this.sp1Box.TabIndex = 142;
+            // 
+            // label42
+            // 
+            this.label42.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label42.Location = new System.Drawing.Point(62, 466);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(40, 13);
+            this.label42.TabIndex = 141;
+            this.label42.Text = "2P";
+            this.label42.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // sp2Box
+            // 
+            this.sp2Box.Location = new System.Drawing.Point(62, 484);
+            this.sp2Box.Margin = new System.Windows.Forms.Padding(5);
+            this.sp2Box.Name = "sp2Box";
+            this.sp2Box.Size = new System.Drawing.Size(40, 20);
+            this.sp2Box.TabIndex = 140;
+            // 
+            // label41
+            // 
+            this.label41.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label41.Location = new System.Drawing.Point(112, 466);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(40, 13);
+            this.label41.TabIndex = 139;
+            this.label41.Text = "3P";
+            this.label41.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // sp3Box
+            // 
+            this.sp3Box.Location = new System.Drawing.Point(112, 484);
+            this.sp3Box.Margin = new System.Windows.Forms.Padding(5);
+            this.sp3Box.Name = "sp3Box";
+            this.sp3Box.Size = new System.Drawing.Size(40, 20);
+            this.sp3Box.TabIndex = 138;
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label40.Location = new System.Drawing.Point(210, 517);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(70, 13);
+            this.label40.TabIndex = 137;
+            this.label40.Text = "Course Music";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label39.Location = new System.Drawing.Point(210, 487);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(69, 13);
+            this.label39.TabIndex = 136;
+            this.label39.Text = "Game Tempo";
+            // 
+            // songBox
+            // 
+            this.songBox.FormattingEnabled = true;
+            this.songBox.Location = new System.Drawing.Point(5, 514);
+            this.songBox.Margin = new System.Windows.Forms.Padding(5);
+            this.songBox.Name = "songBox";
+            this.songBox.Size = new System.Drawing.Size(197, 21);
+            this.songBox.TabIndex = 135;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.checkBox1.Location = new System.Drawing.Point(211, 430);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(50, 17);
+            this.checkBox1.TabIndex = 130;
+            this.checkBox1.Text = "Echo";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.textBox1);
-            this.groupBox2.Controls.Add(this.textBox2);
-            this.groupBox2.Controls.Add(this.textBox3);
-            this.groupBox2.Controls.Add(this.textBox4);
-            this.groupBox2.Controls.Add(this.textBox5);
-            this.groupBox2.Controls.Add(this.textBox6);
+            this.groupBox2.Controls.Add(this.SkyRMB);
+            this.groupBox2.Controls.Add(this.SkyGMB);
+            this.groupBox2.Controls.Add(this.SkyBMB);
+            this.groupBox2.Controls.Add(this.SkyRB);
+            this.groupBox2.Controls.Add(this.SkyGB);
+            this.groupBox2.Controls.Add(this.SkyBB);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.rtbox);
-            this.groupBox2.Controls.Add(this.gtbox);
+            this.groupBox2.Controls.Add(this.SkyRT);
+            this.groupBox2.Controls.Add(this.SkyGT);
             this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.btbox);
-            this.groupBox2.Controls.Add(this.rbbox);
-            this.groupBox2.Controls.Add(this.button3);
-            this.groupBox2.Controls.Add(this.gbbox);
-            this.groupBox2.Controls.Add(this.bbbox);
-            this.groupBox2.Controls.Add(this.button4);
+            this.groupBox2.Controls.Add(this.SkyBT);
+            this.groupBox2.Controls.Add(this.SkyRMT);
+            this.groupBox2.Controls.Add(this.ColorPickMB);
+            this.groupBox2.Controls.Add(this.SkyGMT);
+            this.groupBox2.Controls.Add(this.SkyBMT);
+            this.groupBox2.Controls.Add(this.ColorPickB);
             this.groupBox2.Controls.Add(this.label29);
             this.groupBox2.Controls.Add(this.label27);
             this.groupBox2.Controls.Add(this.label28);
-            this.groupBox2.Controls.Add(this.cptop);
-            this.groupBox2.Controls.Add(this.cpbot);
+            this.groupBox2.Controls.Add(this.ColorPickT);
+            this.groupBox2.Controls.Add(this.ColorPickMT);
             this.groupBox2.Controls.Add(this.label30);
             this.groupBox2.Controls.Add(this.label31);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
@@ -942,53 +1200,53 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Sky Colors";
             // 
-            // textBox1
+            // SkyRMB
             // 
-            this.textBox1.Location = new System.Drawing.Point(8, 120);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(60, 19);
-            this.textBox1.TabIndex = 97;
+            this.SkyRMB.Location = new System.Drawing.Point(8, 120);
+            this.SkyRMB.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.SkyRMB.Name = "SkyRMB";
+            this.SkyRMB.Size = new System.Drawing.Size(60, 19);
+            this.SkyRMB.TabIndex = 97;
             // 
-            // textBox2
+            // SkyGMB
             // 
-            this.textBox2.Location = new System.Drawing.Point(80, 120);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(60, 19);
-            this.textBox2.TabIndex = 98;
+            this.SkyGMB.Location = new System.Drawing.Point(80, 120);
+            this.SkyGMB.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.SkyGMB.Name = "SkyGMB";
+            this.SkyGMB.Size = new System.Drawing.Size(60, 19);
+            this.SkyGMB.TabIndex = 98;
             // 
-            // textBox3
+            // SkyBMB
             // 
-            this.textBox3.Location = new System.Drawing.Point(150, 120);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(60, 19);
-            this.textBox3.TabIndex = 99;
+            this.SkyBMB.Location = new System.Drawing.Point(150, 120);
+            this.SkyBMB.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.SkyBMB.Name = "SkyBMB";
+            this.SkyBMB.Size = new System.Drawing.Size(60, 19);
+            this.SkyBMB.TabIndex = 99;
             // 
-            // textBox4
+            // SkyRB
             // 
-            this.textBox4.Location = new System.Drawing.Point(8, 149);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(60, 19);
-            this.textBox4.TabIndex = 100;
+            this.SkyRB.Location = new System.Drawing.Point(8, 149);
+            this.SkyRB.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
+            this.SkyRB.Name = "SkyRB";
+            this.SkyRB.Size = new System.Drawing.Size(60, 19);
+            this.SkyRB.TabIndex = 100;
             // 
-            // textBox5
+            // SkyGB
             // 
-            this.textBox5.Location = new System.Drawing.Point(80, 149);
-            this.textBox5.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(60, 19);
-            this.textBox5.TabIndex = 101;
+            this.SkyGB.Location = new System.Drawing.Point(80, 149);
+            this.SkyGB.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
+            this.SkyGB.Name = "SkyGB";
+            this.SkyGB.Size = new System.Drawing.Size(60, 19);
+            this.SkyGB.TabIndex = 101;
             // 
-            // textBox6
+            // SkyBB
             // 
-            this.textBox6.Location = new System.Drawing.Point(150, 149);
-            this.textBox6.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(60, 19);
-            this.textBox6.TabIndex = 102;
+            this.SkyBB.Location = new System.Drawing.Point(150, 149);
+            this.SkyBB.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
+            this.SkyBB.Name = "SkyBB";
+            this.SkyBB.Size = new System.Drawing.Size(60, 19);
+            this.SkyBB.TabIndex = 102;
             // 
             // label1
             // 
@@ -1001,21 +1259,21 @@
             this.label1.Text = "Mid";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // rtbox
+            // SkyRT
             // 
-            this.rtbox.Location = new System.Drawing.Point(8, 45);
-            this.rtbox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.rtbox.Name = "rtbox";
-            this.rtbox.Size = new System.Drawing.Size(60, 19);
-            this.rtbox.TabIndex = 84;
+            this.SkyRT.Location = new System.Drawing.Point(8, 45);
+            this.SkyRT.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.SkyRT.Name = "SkyRT";
+            this.SkyRT.Size = new System.Drawing.Size(60, 19);
+            this.SkyRT.TabIndex = 84;
             // 
-            // gtbox
+            // SkyGT
             // 
-            this.gtbox.Location = new System.Drawing.Point(80, 45);
-            this.gtbox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.gtbox.Name = "gtbox";
-            this.gtbox.Size = new System.Drawing.Size(60, 19);
-            this.gtbox.TabIndex = 85;
+            this.SkyGT.Location = new System.Drawing.Point(80, 45);
+            this.SkyGT.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.SkyGT.Name = "SkyGT";
+            this.SkyGT.Size = new System.Drawing.Size(60, 19);
+            this.SkyGT.TabIndex = 85;
             // 
             // label2
             // 
@@ -1028,55 +1286,55 @@
             this.label2.Text = "Bot.";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btbox
+            // SkyBT
             // 
-            this.btbox.Location = new System.Drawing.Point(150, 45);
-            this.btbox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.btbox.Name = "btbox";
-            this.btbox.Size = new System.Drawing.Size(60, 19);
-            this.btbox.TabIndex = 86;
+            this.SkyBT.Location = new System.Drawing.Point(150, 45);
+            this.SkyBT.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.SkyBT.Name = "SkyBT";
+            this.SkyBT.Size = new System.Drawing.Size(60, 19);
+            this.SkyBT.TabIndex = 86;
             // 
-            // rbbox
+            // SkyRMT
             // 
-            this.rbbox.Location = new System.Drawing.Point(8, 74);
-            this.rbbox.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
-            this.rbbox.Name = "rbbox";
-            this.rbbox.Size = new System.Drawing.Size(60, 19);
-            this.rbbox.TabIndex = 87;
+            this.SkyRMT.Location = new System.Drawing.Point(8, 74);
+            this.SkyRMT.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
+            this.SkyRMT.Name = "SkyRMT";
+            this.SkyRMT.Size = new System.Drawing.Size(60, 19);
+            this.SkyRMT.TabIndex = 87;
             // 
-            // button3
+            // ColorPickMB
             // 
-            this.button3.BackColor = System.Drawing.Color.Fuchsia;
-            this.button3.Location = new System.Drawing.Point(218, 118);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(24, 23);
-            this.button3.TabIndex = 105;
-            this.button3.UseVisualStyleBackColor = false;
+            this.ColorPickMB.BackColor = System.Drawing.Color.Fuchsia;
+            this.ColorPickMB.Location = new System.Drawing.Point(218, 118);
+            this.ColorPickMB.Name = "ColorPickMB";
+            this.ColorPickMB.Size = new System.Drawing.Size(24, 23);
+            this.ColorPickMB.TabIndex = 105;
+            this.ColorPickMB.UseVisualStyleBackColor = false;
             // 
-            // gbbox
+            // SkyGMT
             // 
-            this.gbbox.Location = new System.Drawing.Point(80, 74);
-            this.gbbox.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
-            this.gbbox.Name = "gbbox";
-            this.gbbox.Size = new System.Drawing.Size(60, 19);
-            this.gbbox.TabIndex = 88;
+            this.SkyGMT.Location = new System.Drawing.Point(80, 74);
+            this.SkyGMT.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
+            this.SkyGMT.Name = "SkyGMT";
+            this.SkyGMT.Size = new System.Drawing.Size(60, 19);
+            this.SkyGMT.TabIndex = 88;
             // 
-            // bbbox
+            // SkyBMT
             // 
-            this.bbbox.Location = new System.Drawing.Point(150, 74);
-            this.bbbox.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
-            this.bbbox.Name = "bbbox";
-            this.bbbox.Size = new System.Drawing.Size(60, 19);
-            this.bbbox.TabIndex = 89;
+            this.SkyBMT.Location = new System.Drawing.Point(150, 74);
+            this.SkyBMT.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
+            this.SkyBMT.Name = "SkyBMT";
+            this.SkyBMT.Size = new System.Drawing.Size(60, 19);
+            this.SkyBMT.TabIndex = 89;
             // 
-            // button4
+            // ColorPickB
             // 
-            this.button4.BackColor = System.Drawing.Color.Fuchsia;
-            this.button4.Location = new System.Drawing.Point(218, 147);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(24, 23);
-            this.button4.TabIndex = 106;
-            this.button4.UseVisualStyleBackColor = false;
+            this.ColorPickB.BackColor = System.Drawing.Color.Fuchsia;
+            this.ColorPickB.Location = new System.Drawing.Point(218, 147);
+            this.ColorPickB.Name = "ColorPickB";
+            this.ColorPickB.Size = new System.Drawing.Size(24, 23);
+            this.ColorPickB.TabIndex = 106;
+            this.ColorPickB.UseVisualStyleBackColor = false;
             // 
             // label29
             // 
@@ -1108,23 +1366,23 @@
             this.label28.Text = "G";
             this.label28.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // cptop
+            // ColorPickT
             // 
-            this.cptop.BackColor = System.Drawing.Color.Fuchsia;
-            this.cptop.Location = new System.Drawing.Point(218, 43);
-            this.cptop.Name = "cptop";
-            this.cptop.Size = new System.Drawing.Size(24, 23);
-            this.cptop.TabIndex = 95;
-            this.cptop.UseVisualStyleBackColor = false;
+            this.ColorPickT.BackColor = System.Drawing.Color.Fuchsia;
+            this.ColorPickT.Location = new System.Drawing.Point(218, 43);
+            this.ColorPickT.Name = "ColorPickT";
+            this.ColorPickT.Size = new System.Drawing.Size(24, 23);
+            this.ColorPickT.TabIndex = 95;
+            this.ColorPickT.UseVisualStyleBackColor = false;
             // 
-            // cpbot
+            // ColorPickMT
             // 
-            this.cpbot.BackColor = System.Drawing.Color.Fuchsia;
-            this.cpbot.Location = new System.Drawing.Point(218, 72);
-            this.cpbot.Name = "cpbot";
-            this.cpbot.Size = new System.Drawing.Size(24, 23);
-            this.cpbot.TabIndex = 96;
-            this.cpbot.UseVisualStyleBackColor = false;
+            this.ColorPickMT.BackColor = System.Drawing.Color.Fuchsia;
+            this.ColorPickMT.Location = new System.Drawing.Point(218, 72);
+            this.ColorPickMT.Name = "ColorPickMT";
+            this.ColorPickMT.Size = new System.Drawing.Size(24, 23);
+            this.ColorPickMT.TabIndex = 96;
+            this.ColorPickMT.UseVisualStyleBackColor = false;
             // 
             // label30
             // 
@@ -1274,6 +1532,7 @@
             this.previewBtn.TabIndex = 112;
             this.previewBtn.Text = "...";
             this.previewBtn.UseVisualStyleBackColor = true;
+            this.previewBtn.Click += new System.EventHandler(this.previewBtn_Click_1);
             // 
             // previewBox
             // 
@@ -1362,171 +1621,23 @@
             this.tabControl1.Size = new System.Drawing.Size(315, 599);
             this.tabControl1.TabIndex = 35;
             // 
-            // checkBox1
+            // raycastBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.checkBox1.Location = new System.Drawing.Point(211, 430);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(50, 17);
-            this.checkBox1.TabIndex = 130;
-            this.checkBox1.Text = "Echo";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.raycastBox.AutoSize = true;
+            this.raycastBox.Location = new System.Drawing.Point(85, 17);
+            this.raycastBox.Name = "raycastBox";
+            this.raycastBox.Size = new System.Drawing.Size(65, 17);
+            this.raycastBox.TabIndex = 94;
+            this.raycastBox.Text = "Raycast";
+            this.raycastBox.UseVisualStyleBackColor = true;
             // 
-            // label7
-            // 
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label7.Location = new System.Drawing.Point(162, 466);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(40, 13);
-            this.label7.TabIndex = 145;
-            this.label7.Text = "4P";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // textBox7
-            // 
-            this.textBox7.Location = new System.Drawing.Point(162, 484);
-            this.textBox7.Margin = new System.Windows.Forms.Padding(5);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(40, 20);
-            this.textBox7.TabIndex = 144;
-            // 
-            // sp1Box
-            // 
-            this.sp1Box.Location = new System.Drawing.Point(12, 484);
-            this.sp1Box.Margin = new System.Windows.Forms.Padding(5);
-            this.sp1Box.Name = "sp1Box";
-            this.sp1Box.Size = new System.Drawing.Size(40, 20);
-            this.sp1Box.TabIndex = 142;
-            // 
-            // sp2Box
-            // 
-            this.sp2Box.Location = new System.Drawing.Point(62, 484);
-            this.sp2Box.Margin = new System.Windows.Forms.Padding(5);
-            this.sp2Box.Name = "sp2Box";
-            this.sp2Box.Size = new System.Drawing.Size(40, 20);
-            this.sp2Box.TabIndex = 140;
-            // 
-            // label41
-            // 
-            this.label41.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label41.Location = new System.Drawing.Point(112, 466);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(40, 13);
-            this.label41.TabIndex = 139;
-            this.label41.Text = "3P";
-            this.label41.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // sp3Box
-            // 
-            this.sp3Box.Location = new System.Drawing.Point(112, 484);
-            this.sp3Box.Margin = new System.Windows.Forms.Padding(5);
-            this.sp3Box.Name = "sp3Box";
-            this.sp3Box.Size = new System.Drawing.Size(40, 20);
-            this.sp3Box.TabIndex = 138;
-            // 
-            // label40
-            // 
-            this.label40.AutoSize = true;
-            this.label40.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label40.Location = new System.Drawing.Point(210, 517);
-            this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(70, 13);
-            this.label40.TabIndex = 137;
-            this.label40.Text = "Course Music";
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label39.Location = new System.Drawing.Point(210, 487);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(69, 13);
-            this.label39.TabIndex = 136;
-            this.label39.Text = "Game Tempo";
-            // 
-            // songBox
-            // 
-            this.songBox.FormattingEnabled = true;
-            this.songBox.Location = new System.Drawing.Point(5, 514);
-            this.songBox.Margin = new System.Windows.Forms.Padding(5);
-            this.songBox.Name = "songBox";
-            this.songBox.Size = new System.Drawing.Size(197, 21);
-            this.songBox.TabIndex = 135;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label12.Location = new System.Drawing.Point(116, 431);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(26, 13);
-            this.label12.TabIndex = 149;
-            this.label12.Text = "End";
-            // 
-            // textBox9
-            // 
-            this.textBox9.Location = new System.Drawing.Point(153, 428);
-            this.textBox9.Margin = new System.Windows.Forms.Padding(5);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(50, 20);
-            this.textBox9.TabIndex = 148;
-            this.textBox9.Text = "0";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label11.Location = new System.Drawing.Point(19, 431);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(29, 13);
-            this.label11.TabIndex = 147;
-            this.label11.Text = "Start";
-            // 
-            // textBox8
-            // 
-            this.textBox8.Location = new System.Drawing.Point(56, 428);
-            this.textBox8.Margin = new System.Windows.Forms.Padding(5);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(50, 20);
-            this.textBox8.TabIndex = 146;
-            this.textBox8.Text = "0";
-            // 
-            // label42
-            // 
-            this.label42.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label42.Location = new System.Drawing.Point(62, 466);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(40, 13);
-            this.label42.TabIndex = 141;
-            this.label42.Text = "2P";
-            this.label42.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label43
-            // 
-            this.label43.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label43.Location = new System.Drawing.Point(12, 466);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(40, 13);
-            this.label43.TabIndex = 143;
-            this.label43.Text = "1P";
-            this.label43.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label16.Location = new System.Drawing.Point(8, 182);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(14, 13);
-            this.label16.TabIndex = 150;
-            this.label16.Text = "X";
-            // 
+
             // GeometryCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 682);
+            this.Controls.Add(this.raycastBox);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.about_button);
             this.Controls.Add(this.setBox);
@@ -1559,6 +1670,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.bitm)).EndInit();
             this.CourseInfo.ResumeLayout(false);
             this.CourseInfo.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -1625,33 +1738,33 @@
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.TextBox yBox;
         private System.Windows.Forms.TextBox xBox;
-        private System.Windows.Forms.Button cpbot;
-        private System.Windows.Forms.Button cptop;
+        private System.Windows.Forms.Button ColorPickMT;
+        private System.Windows.Forms.Button ColorPickT;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.TextBox bbbox;
-        private System.Windows.Forms.TextBox gbbox;
-        private System.Windows.Forms.TextBox rbbox;
-        private System.Windows.Forms.TextBox btbox;
-        private System.Windows.Forms.TextBox gtbox;
-        private System.Windows.Forms.TextBox rtbox;
+        private System.Windows.Forms.TextBox SkyBMT;
+        private System.Windows.Forms.TextBox SkyGMT;
+        private System.Windows.Forms.TextBox SkyRMT;
+        private System.Windows.Forms.TextBox SkyBT;
+        private System.Windows.Forms.TextBox SkyGT;
+        private System.Windows.Forms.TextBox SkyRT;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox nameBox;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox SkyRMB;
+        private System.Windows.Forms.TextBox SkyGMB;
+        private System.Windows.Forms.TextBox SkyBMB;
+        private System.Windows.Forms.TextBox SkyRB;
+        private System.Windows.Forms.TextBox SkyGB;
+        private System.Windows.Forms.TextBox SkyBB;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button ColorPickMB;
+        private System.Windows.Forms.Button ColorPickB;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Button ghostBtn;
         private System.Windows.Forms.TextBox ghostBox;
@@ -1681,7 +1794,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox textBox8;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.TextBox sp4Box;
         private System.Windows.Forms.Label label43;
         private System.Windows.Forms.TextBox sp1Box;
         private System.Windows.Forms.Label label42;
@@ -1692,5 +1805,14 @@
         private System.Windows.Forms.Label label39;
         private System.Windows.Forms.ComboBox songBox;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox raycastBox;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.ComboBox comboBox2;
     }
 }

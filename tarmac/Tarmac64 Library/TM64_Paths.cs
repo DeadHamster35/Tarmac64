@@ -272,7 +272,7 @@ namespace Tarmac64_Paths
                         foreach (var face in surfaceObjects[currentObject].modelGeometry)
                         {
 
-                            Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin,  rayTarget, face.vertData[0], face.vertData[1], face.vertData[2]);
+                            Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin,  rayTarget, face.VertData[0], face.VertData[1], face.VertData[2]);
                             if (intersectPoint.X > 0)
                             {
                                 if (objectDistance > intersectPoint.X | objectDistance == -1)

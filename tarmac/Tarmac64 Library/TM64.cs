@@ -5052,24 +5052,24 @@ namespace Tarmac64_Library
 
                         face[f] = new TM64_Geometry.Face();
 
-                        face[f].vertIndex.indexA = current_subobject.Faces[f].Indices[0];
+                        face[f].VertIndex.IndexA = current_subobject.Faces[f].Indices[0];
 
-                        face[f].vertIndex.indexC = current_subobject.Faces[f].Indices[1];
+                        face[f].VertIndex.IndexC = current_subobject.Faces[f].Indices[1];
 
-                        face[f].vertIndex.indexB = current_subobject.Faces[f].Indices[2]; ;
+                        face[f].VertIndex.IndexB = current_subobject.Faces[f].Indices[2]; ;
 
-                        face[f].material = materialID;
+                        face[f].Material = materialID;
 
-                        vert[face[f].vertIndex.indexA] = new TM64_Geometry.Vertex { };
-                        vert[face[f].vertIndex.indexA].position = new TM64_Geometry.Position { };
+                        vert[face[f].VertIndex.IndexA] = new TM64_Geometry.Vertex { };
+                        vert[face[f].VertIndex.IndexA].position = new TM64_Geometry.Position { };
 
 
-                        vert[face[f].vertIndex.indexA].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexA].X);
+                        vert[face[f].VertIndex.IndexA].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].VertIndex.IndexA].X);
 
-                        vert[face[f].vertIndex.indexA].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexA].Y);
+                        vert[face[f].VertIndex.IndexA].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].VertIndex.IndexA].Y);
                         /// Flip YZ Axis 
-                        vert[face[f].vertIndex.indexA].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexA].Z);    /// Flip YZ Axis 
-                        vert[face[f].vertIndex.indexA].position.z = Convert.ToInt16(vert[face[f].vertIndex.indexA].position.z); /// Flip Y Axis
+                        vert[face[f].VertIndex.IndexA].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].VertIndex.IndexA].Z);    /// Flip YZ Axis 
+                        vert[face[f].VertIndex.IndexA].position.z = Convert.ToInt16(vert[face[f].VertIndex.IndexA].position.z); /// Flip Y Axis
 
 
                        
@@ -5077,30 +5077,30 @@ namespace Tarmac64_Library
                         
 
 
-                        vert[face[f].vertIndex.indexC] = new TM64_Geometry.Vertex { };
-                        vert[face[f].vertIndex.indexC].position = new TM64_Geometry.Position { };
+                        vert[face[f].VertIndex.IndexC] = new TM64_Geometry.Vertex { };
+                        vert[face[f].VertIndex.IndexC].position = new TM64_Geometry.Position { };
 
-                        vert[face[f].vertIndex.indexC].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexC].X);
+                        vert[face[f].VertIndex.IndexC].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].VertIndex.IndexC].X);
 
-                        vert[face[f].vertIndex.indexC].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexC].Y);
+                        vert[face[f].VertIndex.IndexC].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].VertIndex.IndexC].Y);
 
-                        vert[face[f].vertIndex.indexC].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexC].Z);    /// Flip YZ Axis 
-                        vert[face[f].vertIndex.indexC].position.z = Convert.ToInt16(vert[face[f].vertIndex.indexC].position.z); /// Flip Y Axis
+                        vert[face[f].VertIndex.IndexC].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].VertIndex.IndexC].Z);    /// Flip YZ Axis 
+                        vert[face[f].VertIndex.IndexC].position.z = Convert.ToInt16(vert[face[f].VertIndex.IndexC].position.z); /// Flip Y Axis
 
 
 
                         //
 
-                        vert[face[f].vertIndex.indexB] = new TM64_Geometry.Vertex { };
-                        vert[face[f].vertIndex.indexB].position = new TM64_Geometry.Position { };
+                        vert[face[f].VertIndex.IndexB] = new TM64_Geometry.Vertex { };
+                        vert[face[f].VertIndex.IndexB].position = new TM64_Geometry.Position { };
 
 
-                        vert[face[f].vertIndex.indexB].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexB].X);
+                        vert[face[f].VertIndex.IndexB].position.x = Convert.ToInt16(current_subobject.Vertices[face[f].VertIndex.IndexB].X);
 
-                        vert[face[f].vertIndex.indexB].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexB].Y);
+                        vert[face[f].VertIndex.IndexB].position.y = Convert.ToInt16(current_subobject.Vertices[face[f].VertIndex.IndexB].Y);
 
-                        vert[face[f].vertIndex.indexB].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].vertIndex.indexB].Z);    /// Flip YZ Axis 
-                        vert[face[f].vertIndex.indexB].position.z = Convert.ToInt16(vert[face[f].vertIndex.indexB].position.z); /// Flip Y Axis
+                        vert[face[f].VertIndex.IndexB].position.z = Convert.ToInt16(current_subobject.Vertices[face[f].VertIndex.IndexB].Z);    /// Flip YZ Axis 
+                        vert[face[f].VertIndex.IndexB].position.z = Convert.ToInt16(vert[face[f].VertIndex.IndexB].position.z); /// Flip Y Axis
 
 
 
@@ -5122,14 +5122,14 @@ namespace Tarmac64_Library
 
                         
 
-                        u_offset[0] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexA][0]);
-                        v_offset[0] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexA][1]);
+                        u_offset[0] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].VertIndex.IndexA][0]);
+                        v_offset[0] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].VertIndex.IndexA][1]);
 
-                        u_offset[1] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexB][0]);
-                        v_offset[1] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexB][1]);
+                        u_offset[1] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].VertIndex.IndexB][0]);
+                        v_offset[1] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].VertIndex.IndexB][1]);
 
-                        u_offset[2] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexC][0]);
-                        v_offset[2] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].vertIndex.indexC][1]);
+                        u_offset[2] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].VertIndex.IndexC][0]);
+                        v_offset[2] = Convert.ToSingle(current_subobject.TextureCoordinateChannels[0][face[f].VertIndex.IndexC][1]);
 
                         // So we check the absolute values to find which is the least distance from the origin.
                         // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
@@ -5207,8 +5207,8 @@ namespace Tarmac64_Library
                         {
                             MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + cObj.objectName);
                         }
-                        vert[face[f].vertIndex.indexA].position.s = Convert.ToInt16(s_coord);
-                        vert[face[f].vertIndex.indexA].position.t = Convert.ToInt16(t_coord);
+                        vert[face[f].VertIndex.IndexA].position.s = Convert.ToInt16(s_coord);
+                        vert[face[f].VertIndex.IndexA].position.t = Convert.ToInt16(t_coord);
 
 
                         //
@@ -5223,8 +5223,8 @@ namespace Tarmac64_Library
                             MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + cObj.objectName);
                         }
 
-                        vert[face[f].vertIndex.indexB].position.s = Convert.ToInt16(s_coord);
-                        vert[face[f].vertIndex.indexB].position.t = Convert.ToInt16(t_coord);
+                        vert[face[f].VertIndex.IndexB].position.s = Convert.ToInt16(s_coord);
+                        vert[face[f].VertIndex.IndexB].position.t = Convert.ToInt16(t_coord);
 
 
                         //
@@ -5242,8 +5242,8 @@ namespace Tarmac64_Library
                         }
 
 
-                        vert[face[f].vertIndex.indexC].position.s = Convert.ToInt16(s_coord);
-                        vert[face[f].vertIndex.indexC].position.t = Convert.ToInt16(t_coord);
+                        vert[face[f].VertIndex.IndexC].position.s = Convert.ToInt16(s_coord);
+                        vert[face[f].VertIndex.IndexC].position.t = Convert.ToInt16(t_coord);
 
 
                         //
@@ -5413,16 +5413,16 @@ namespace Tarmac64_Library
                         if (x + 2 <= facecount)
                         {
                             /// draw 2 triangles, check for additional verts in both.
-                            if (face[x].vertIndex.indexA > (relativeIndex + 31) | face[x].vertIndex.indexB > (relativeIndex + 31) | face[x].vertIndex.indexC > (relativeIndex + 31) | /// OR with next line
-                                                face[x + 1].vertIndex.indexA > (relativeIndex + 31) | face[x + 1].vertIndex.indexB > (relativeIndex + 31) | face[x + 1].vertIndex.indexC > (relativeIndex + 31))
+                            if (face[x].VertIndex.IndexA > (relativeIndex + 31) | face[x].VertIndex.IndexB > (relativeIndex + 31) | face[x].VertIndex.IndexC > (relativeIndex + 31) | /// OR with next line
+                                                face[x + 1].VertIndex.IndexA > (relativeIndex + 31) | face[x + 1].VertIndex.IndexB > (relativeIndex + 31) | face[x + 1].VertIndex.IndexC > (relativeIndex + 31))
                             {
 
                                 /// OVER VERT LIMIT, LOAD NEW VERTS
-                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexA, face[x].vertIndex.indexB));
-                                minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexC, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexA, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexB, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexC, minvalue));
+                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].VertIndex.IndexA, face[x].VertIndex.IndexB));
+                                minvalue = Convert.ToUInt16(GetMin(face[x].VertIndex.IndexC, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].VertIndex.IndexA, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].VertIndex.IndexB, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].VertIndex.IndexC, minvalue));
 
 
                                 if (minvalue - 4 < 0)
@@ -5445,16 +5445,16 @@ namespace Tarmac64_Library
                                 relativeIndex = minvalue;
                             }
 
-                            if ((face[x].vertIndex.indexA < relativeIndex) | (face[x].vertIndex.indexB < relativeIndex) | (face[x].vertIndex.indexC < relativeIndex) |
-                                (face[x + 1].vertIndex.indexA < relativeIndex) | (face[x + 1].vertIndex.indexB < relativeIndex) | (face[x + 1].vertIndex.indexC < relativeIndex))
+                            if ((face[x].VertIndex.IndexA < relativeIndex) | (face[x].VertIndex.IndexB < relativeIndex) | (face[x].VertIndex.IndexC < relativeIndex) |
+                                (face[x + 1].VertIndex.IndexA < relativeIndex) | (face[x + 1].VertIndex.IndexB < relativeIndex) | (face[x + 1].VertIndex.IndexC < relativeIndex))
                             {
 
                                 /// UNDER VERT LIMIT, LOAD NEW VERTS
-                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexA, face[x].vertIndex.indexB));
-                                minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexC, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexA, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexB, minvalue));
-                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].vertIndex.indexC, minvalue));
+                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].VertIndex.IndexA, face[x].VertIndex.IndexB));
+                                minvalue = Convert.ToUInt16(GetMin(face[x].VertIndex.IndexC, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].VertIndex.IndexA, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].VertIndex.IndexB, minvalue));
+                                minvalue = Convert.ToUInt16(GetMin(face[x + 1].VertIndex.IndexC, minvalue));
 
                                 if (minvalue - 4 < 0)
                                 {
@@ -5482,18 +5482,18 @@ namespace Tarmac64_Library
 
 
 
-                            v0 = face[x].vertIndex.indexA - relativeIndex;
-                            v1 = face[x].vertIndex.indexB - relativeIndex;
-                            v2 = face[x].vertIndex.indexC - relativeIndex;
+                            v0 = face[x].VertIndex.IndexA - relativeIndex;
+                            v1 = face[x].VertIndex.IndexB - relativeIndex;
+                            v2 = face[x].VertIndex.IndexC - relativeIndex;
 
 
                             byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xB1000000 | (v2 << 17) | (v1 << 9) | v0 << 1));
                             Array.Reverse(byteArray);
                             seg7w.Write(byteArray);
 
-                            v0 = face[x + 1].vertIndex.indexA - relativeIndex;
-                            v1 = face[x + 1].vertIndex.indexB - relativeIndex;
-                            v2 = face[x + 1].vertIndex.indexC - relativeIndex;
+                            v0 = face[x + 1].VertIndex.IndexA - relativeIndex;
+                            v1 = face[x + 1].VertIndex.IndexB - relativeIndex;
+                            v2 = face[x + 1].VertIndex.IndexC - relativeIndex;
 
                             byteArray = BitConverter.GetBytes(Convert.ToUInt32((v2 << 17) | (v1 << 9) | v0 << 1));
                             Array.Reverse(byteArray);
@@ -5505,12 +5505,12 @@ namespace Tarmac64_Library
                         {
                             /// draw 1 triangle, only 1 vert check
 
-                            if (face[x].vertIndex.indexA > (relativeIndex + 31) | face[x].vertIndex.indexB > (relativeIndex + 31) | face[x].vertIndex.indexC > (relativeIndex + 31))
+                            if (face[x].VertIndex.IndexA > (relativeIndex + 31) | face[x].VertIndex.IndexB > (relativeIndex + 31) | face[x].VertIndex.IndexC > (relativeIndex + 31))
                             {
 
                                 /// OVER VERT LIMIT, LOAD NEW VERTS
-                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexA, face[x].vertIndex.indexB));
-                                minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexC, minvalue));
+                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].VertIndex.IndexA, face[x].VertIndex.IndexB));
+                                minvalue = Convert.ToUInt16(GetMin(face[x].VertIndex.IndexC, minvalue));
 
 
                                 if (minvalue - 4 < 0)
@@ -5533,12 +5533,12 @@ namespace Tarmac64_Library
                                 relativeIndex = minvalue;
                             }
 
-                            if ((face[x].vertIndex.indexA < relativeIndex) | (face[x].vertIndex.indexB < relativeIndex) | (face[x].vertIndex.indexC < relativeIndex))
+                            if ((face[x].VertIndex.IndexA < relativeIndex) | (face[x].VertIndex.IndexB < relativeIndex) | (face[x].VertIndex.IndexC < relativeIndex))
                             {
 
                                 /// UNDER VERT LIMIT, LOAD NEW VERTS
-                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexA, face[x].vertIndex.indexB));
-                                minvalue = Convert.ToUInt16(GetMin(face[x].vertIndex.indexC, minvalue));
+                                UInt16 minvalue = Convert.ToUInt16(GetMin(face[x].VertIndex.IndexA, face[x].VertIndex.IndexB));
+                                minvalue = Convert.ToUInt16(GetMin(face[x].VertIndex.IndexC, minvalue));
 
                                 if (minvalue - 4 < 0)
                                 {
@@ -5570,9 +5570,9 @@ namespace Tarmac64_Library
                             Array.Reverse(byteArray);
                             seg7w.Write(byteArray);
 
-                            v0 = face[x].vertIndex.indexA - relativeIndex;
-                            v1 = face[x].vertIndex.indexB - relativeIndex;
-                            v2 = face[x].vertIndex.indexC - relativeIndex;
+                            v0 = face[x].VertIndex.IndexA - relativeIndex;
+                            v1 = face[x].VertIndex.IndexB - relativeIndex;
+                            v2 = face[x].VertIndex.IndexC - relativeIndex;
 
 
                             byteArray = BitConverter.GetBytes(Convert.ToUInt32((v2 << 17) | (v1 << 9) | v0 << 1));

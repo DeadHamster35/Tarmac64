@@ -112,7 +112,8 @@ namespace Tarmac64
         int lastMaterial = 0;
 
 
-        byte[] skyBytes = new byte[6];
+        TM64_Geometry.Sky skyData = new TM64_Geometry.Sky();
+        int[] gameSpeed = new int[0];
 
         AssimpContext AssimpImporter = new AssimpContext();
         Assimp.Scene fbx = new Assimp.Scene();
@@ -131,8 +132,32 @@ namespace Tarmac64
             CreateGeometry();
             sectionPage = tabControl1.TabPages[3];
             surfacePage = tabControl1.TabPages[4];
-            
-            
+
+            skyData.TopColor = new TM64_Geometry.OK64Color();
+            skyData.TopColor.R = 0;
+            skyData.TopColor.G = 0;
+            skyData.TopColor.B = 0;
+            skyData.TopColor.A = 0;
+
+            skyData.MidBotColor = new TM64_Geometry.OK64Color();
+            skyData.MidBotColor.R = 0;
+            skyData.MidBotColor.G = 0;
+            skyData.MidBotColor.B = 0;
+            skyData.MidBotColor.A = 0;
+
+            skyData.MidTopColor = new TM64_Geometry.OK64Color();
+            skyData.MidTopColor.R = 0;
+            skyData.MidTopColor.G = 0;
+            skyData.MidTopColor.B = 0;
+            skyData.MidTopColor.A = 0; 
+
+            skyData.BotColor = new TM64_Geometry.OK64Color();
+            skyData.BotColor.R = 0;
+            skyData.BotColor.G = 0;
+            skyData.BotColor.B = 0;
+            skyData.BotColor.A = 0;
+
+
             gl = openGLControl.OpenGL;
             if (System.Diagnostics.Process.GetCurrentProcess().ProcessName == "Tarmac64 Designer")
             {
@@ -148,15 +173,15 @@ namespace Tarmac64
             cupBox.SelectedIndex = 0;
             setBox.SelectedIndex = 0;
 
-            rbbox.Text = "216";
-            gbbox.Text = "232";
-            bbbox.Text = "248";
+            SkyRMT.Text = "216";
+            SkyGMT.Text = "232";
+            SkyBMT.Text = "248";
 
 
-            rtbox.Text = "128";
-            gtbox.Text = "184";
-            btbox.Text = "248";
-            colorUpdate();
+            SkyRT.Text = "128";
+            SkyGT.Text = "184";
+            SkyBT.Text = "248";
+            ColorUpdate();
 
             for (int songIndex = 0; songIndex < songNames.Length; songIndex++)
             {
@@ -177,336 +202,385 @@ namespace Tarmac64
         private void CreateGeometry()
         {
             markerGeometry[0] = new TM64_Geometry.Face();
-            markerGeometry[0].vertData = new TM64_Geometry.Vertex[3];
+            markerGeometry[0].VertData = new TM64_Geometry.Vertex[3];
 
-            markerGeometry[0].vertData[0] = new TM64_Geometry.Vertex();
-            markerGeometry[0].vertData[0].position = new TM64_Geometry.Position();
-            markerGeometry[0].vertData[0].position.x = Convert.ToInt16(-5);
-            markerGeometry[0].vertData[0].position.y = Convert.ToInt16(0);
-            markerGeometry[0].vertData[0].position.z = Convert.ToInt16(0);
+            markerGeometry[0].VertData[0] = new TM64_Geometry.Vertex();
+            markerGeometry[0].VertData[0].position = new TM64_Geometry.Position();
+            markerGeometry[0].VertData[0].position.x = Convert.ToInt16(-5);
+            markerGeometry[0].VertData[0].position.y = Convert.ToInt16(0);
+            markerGeometry[0].VertData[0].position.z = Convert.ToInt16(0);
 
-            markerGeometry[0].vertData[1] = new TM64_Geometry.Vertex();
-            markerGeometry[0].vertData[1].position = new TM64_Geometry.Position();
-            markerGeometry[0].vertData[1].position.x = Convert.ToInt16(5);
-            markerGeometry[0].vertData[1].position.y = Convert.ToInt16(0);
-            markerGeometry[0].vertData[1].position.z = Convert.ToInt16(0);
+            markerGeometry[0].VertData[1] = new TM64_Geometry.Vertex();
+            markerGeometry[0].VertData[1].position = new TM64_Geometry.Position();
+            markerGeometry[0].VertData[1].position.x = Convert.ToInt16(5);
+            markerGeometry[0].VertData[1].position.y = Convert.ToInt16(0);
+            markerGeometry[0].VertData[1].position.z = Convert.ToInt16(0);
 
-            markerGeometry[0].vertData[2] = new TM64_Geometry.Vertex();
-            markerGeometry[0].vertData[2].position = new TM64_Geometry.Position();
-            markerGeometry[0].vertData[2].position.x = Convert.ToInt16(0);
-            markerGeometry[0].vertData[2].position.y = Convert.ToInt16(0);
-            markerGeometry[0].vertData[2].position.z = Convert.ToInt16(10);
+            markerGeometry[0].VertData[2] = new TM64_Geometry.Vertex();
+            markerGeometry[0].VertData[2].position = new TM64_Geometry.Position();
+            markerGeometry[0].VertData[2].position.x = Convert.ToInt16(0);
+            markerGeometry[0].VertData[2].position.y = Convert.ToInt16(0);
+            markerGeometry[0].VertData[2].position.z = Convert.ToInt16(10);
 
 
             markerGeometry[1] = new TM64_Geometry.Face();
-            markerGeometry[1].vertData = new TM64_Geometry.Vertex[3];
+            markerGeometry[1].VertData = new TM64_Geometry.Vertex[3];
 
-            markerGeometry[1].vertData[0] = new TM64_Geometry.Vertex();
-            markerGeometry[1].vertData[0].position = new TM64_Geometry.Position();
-            markerGeometry[1].vertData[0].position.x = Convert.ToInt16(0);
-            markerGeometry[1].vertData[0].position.y = Convert.ToInt16(-5);
-            markerGeometry[1].vertData[0].position.z = Convert.ToInt16(0);
+            markerGeometry[1].VertData[0] = new TM64_Geometry.Vertex();
+            markerGeometry[1].VertData[0].position = new TM64_Geometry.Position();
+            markerGeometry[1].VertData[0].position.x = Convert.ToInt16(0);
+            markerGeometry[1].VertData[0].position.y = Convert.ToInt16(-5);
+            markerGeometry[1].VertData[0].position.z = Convert.ToInt16(0);
 
-            markerGeometry[1].vertData[1] = new TM64_Geometry.Vertex();
-            markerGeometry[1].vertData[1].position = new TM64_Geometry.Position();
-            markerGeometry[1].vertData[1].position.x = Convert.ToInt16(0);
-            markerGeometry[1].vertData[1].position.y = Convert.ToInt16(5);
-            markerGeometry[1].vertData[1].position.z = Convert.ToInt16(0);
+            markerGeometry[1].VertData[1] = new TM64_Geometry.Vertex();
+            markerGeometry[1].VertData[1].position = new TM64_Geometry.Position();
+            markerGeometry[1].VertData[1].position.x = Convert.ToInt16(0);
+            markerGeometry[1].VertData[1].position.y = Convert.ToInt16(5);
+            markerGeometry[1].VertData[1].position.z = Convert.ToInt16(0);
 
-            markerGeometry[1].vertData[2] = new TM64_Geometry.Vertex();
-            markerGeometry[1].vertData[2].position = new TM64_Geometry.Position();
-            markerGeometry[1].vertData[2].position.x = Convert.ToInt16(0);
-            markerGeometry[1].vertData[2].position.y = Convert.ToInt16(0);
-            markerGeometry[1].vertData[2].position.z = Convert.ToInt16(10);
+            markerGeometry[1].VertData[2] = new TM64_Geometry.Vertex();
+            markerGeometry[1].VertData[2].position = new TM64_Geometry.Position();
+            markerGeometry[1].VertData[2].position.x = Convert.ToInt16(0);
+            markerGeometry[1].VertData[2].position.y = Convert.ToInt16(0);
+            markerGeometry[1].VertData[2].position.z = Convert.ToInt16(10);
 
             treeGeometry[0] = new TM64_Geometry.Face();
 
-            treeGeometry[0].vertData = new TM64_Geometry.Vertex[3];
+            treeGeometry[0].VertData = new TM64_Geometry.Vertex[3];
 
-            treeGeometry[0].vertData[0] = new TM64_Geometry.Vertex();
-            treeGeometry[0].vertData[0].position = new TM64_Geometry.Position();
-            treeGeometry[0].vertData[0].position.x = Convert.ToInt16(-40);
-            treeGeometry[0].vertData[0].position.y = Convert.ToInt16(0);
-            treeGeometry[0].vertData[0].position.z = Convert.ToInt16(0);
+            treeGeometry[0].VertData[0] = new TM64_Geometry.Vertex();
+            treeGeometry[0].VertData[0].position = new TM64_Geometry.Position();
+            treeGeometry[0].VertData[0].position.x = Convert.ToInt16(-40);
+            treeGeometry[0].VertData[0].position.y = Convert.ToInt16(0);
+            treeGeometry[0].VertData[0].position.z = Convert.ToInt16(0);
 
-            treeGeometry[0].vertData[1] = new TM64_Geometry.Vertex();
-            treeGeometry[0].vertData[1].position = new TM64_Geometry.Position();
-            treeGeometry[0].vertData[1].position.x = Convert.ToInt16(40);
-            treeGeometry[0].vertData[1].position.y = Convert.ToInt16(0);
-            treeGeometry[0].vertData[1].position.z = Convert.ToInt16(0);
+            treeGeometry[0].VertData[1] = new TM64_Geometry.Vertex();
+            treeGeometry[0].VertData[1].position = new TM64_Geometry.Position();
+            treeGeometry[0].VertData[1].position.x = Convert.ToInt16(40);
+            treeGeometry[0].VertData[1].position.y = Convert.ToInt16(0);
+            treeGeometry[0].VertData[1].position.z = Convert.ToInt16(0);
 
-            treeGeometry[0].vertData[2] = new TM64_Geometry.Vertex();
-            treeGeometry[0].vertData[2].position = new TM64_Geometry.Position();
-            treeGeometry[0].vertData[2].position.x = Convert.ToInt16(40);
-            treeGeometry[0].vertData[2].position.y = Convert.ToInt16(0);
-            treeGeometry[0].vertData[2].position.z = Convert.ToInt16(80);
+            treeGeometry[0].VertData[2] = new TM64_Geometry.Vertex();
+            treeGeometry[0].VertData[2].position = new TM64_Geometry.Position();
+            treeGeometry[0].VertData[2].position.x = Convert.ToInt16(40);
+            treeGeometry[0].VertData[2].position.y = Convert.ToInt16(0);
+            treeGeometry[0].VertData[2].position.z = Convert.ToInt16(80);
 
 
             treeGeometry[1] = new TM64_Geometry.Face();
-            treeGeometry[1].vertData = new TM64_Geometry.Vertex[3];
+            treeGeometry[1].VertData = new TM64_Geometry.Vertex[3];
 
-            treeGeometry[1].vertData[0] = new TM64_Geometry.Vertex();
-            treeGeometry[1].vertData[0].position = new TM64_Geometry.Position();
-            treeGeometry[1].vertData[0].position.x = Convert.ToInt16(0);
-            treeGeometry[1].vertData[0].position.y = Convert.ToInt16(-40);
-            treeGeometry[1].vertData[0].position.z = Convert.ToInt16(0);
+            treeGeometry[1].VertData[0] = new TM64_Geometry.Vertex();
+            treeGeometry[1].VertData[0].position = new TM64_Geometry.Position();
+            treeGeometry[1].VertData[0].position.x = Convert.ToInt16(0);
+            treeGeometry[1].VertData[0].position.y = Convert.ToInt16(-40);
+            treeGeometry[1].VertData[0].position.z = Convert.ToInt16(0);
 
-            treeGeometry[1].vertData[1] = new TM64_Geometry.Vertex();
-            treeGeometry[1].vertData[1].position = new TM64_Geometry.Position();
-            treeGeometry[1].vertData[1].position.x = Convert.ToInt16(0);
-            treeGeometry[1].vertData[1].position.y = Convert.ToInt16(40);
-            treeGeometry[1].vertData[1].position.z = Convert.ToInt16(0);
+            treeGeometry[1].VertData[1] = new TM64_Geometry.Vertex();
+            treeGeometry[1].VertData[1].position = new TM64_Geometry.Position();
+            treeGeometry[1].VertData[1].position.x = Convert.ToInt16(0);
+            treeGeometry[1].VertData[1].position.y = Convert.ToInt16(40);
+            treeGeometry[1].VertData[1].position.z = Convert.ToInt16(0);
 
-            treeGeometry[1].vertData[2] = new TM64_Geometry.Vertex();
-            treeGeometry[1].vertData[2].position = new TM64_Geometry.Position();
-            treeGeometry[1].vertData[2].position.x = Convert.ToInt16(0);
-            treeGeometry[1].vertData[2].position.y = Convert.ToInt16(40);
-            treeGeometry[1].vertData[2].position.z = Convert.ToInt16(80);
+            treeGeometry[1].VertData[2] = new TM64_Geometry.Vertex();
+            treeGeometry[1].VertData[2].position = new TM64_Geometry.Position();
+            treeGeometry[1].VertData[2].position.x = Convert.ToInt16(0);
+            treeGeometry[1].VertData[2].position.y = Convert.ToInt16(40);
+            treeGeometry[1].VertData[2].position.z = Convert.ToInt16(80);
 
             treeGeometry[2] = new TM64_Geometry.Face();
-            treeGeometry[2].vertData = new TM64_Geometry.Vertex[3];
+            treeGeometry[2].VertData = new TM64_Geometry.Vertex[3];
 
-            treeGeometry[2].vertData[0] = new TM64_Geometry.Vertex();
-            treeGeometry[2].vertData[0].position = new TM64_Geometry.Position();
-            treeGeometry[2].vertData[0].position.x = Convert.ToInt16(-40);
-            treeGeometry[2].vertData[0].position.y = Convert.ToInt16(0);
-            treeGeometry[2].vertData[0].position.z = Convert.ToInt16(0);
+            treeGeometry[2].VertData[0] = new TM64_Geometry.Vertex();
+            treeGeometry[2].VertData[0].position = new TM64_Geometry.Position();
+            treeGeometry[2].VertData[0].position.x = Convert.ToInt16(-40);
+            treeGeometry[2].VertData[0].position.y = Convert.ToInt16(0);
+            treeGeometry[2].VertData[0].position.z = Convert.ToInt16(0);
 
-            treeGeometry[2].vertData[1] = new TM64_Geometry.Vertex();
-            treeGeometry[2].vertData[1].position = new TM64_Geometry.Position();
-            treeGeometry[2].vertData[1].position.x = Convert.ToInt16(40);
-            treeGeometry[2].vertData[1].position.y = Convert.ToInt16(0);
-            treeGeometry[2].vertData[1].position.z = Convert.ToInt16(80);
+            treeGeometry[2].VertData[1] = new TM64_Geometry.Vertex();
+            treeGeometry[2].VertData[1].position = new TM64_Geometry.Position();
+            treeGeometry[2].VertData[1].position.x = Convert.ToInt16(40);
+            treeGeometry[2].VertData[1].position.y = Convert.ToInt16(0);
+            treeGeometry[2].VertData[1].position.z = Convert.ToInt16(80);
 
-            treeGeometry[2].vertData[2] = new TM64_Geometry.Vertex();
-            treeGeometry[2].vertData[2].position = new TM64_Geometry.Position();
-            treeGeometry[2].vertData[2].position.x = Convert.ToInt16(-40);
-            treeGeometry[2].vertData[2].position.y = Convert.ToInt16(0);
-            treeGeometry[2].vertData[2].position.z = Convert.ToInt16(80);
+            treeGeometry[2].VertData[2] = new TM64_Geometry.Vertex();
+            treeGeometry[2].VertData[2].position = new TM64_Geometry.Position();
+            treeGeometry[2].VertData[2].position.x = Convert.ToInt16(-40);
+            treeGeometry[2].VertData[2].position.y = Convert.ToInt16(0);
+            treeGeometry[2].VertData[2].position.z = Convert.ToInt16(80);
 
 
             treeGeometry[3] = new TM64_Geometry.Face();
-            treeGeometry[3].vertData = new TM64_Geometry.Vertex[3];
+            treeGeometry[3].VertData = new TM64_Geometry.Vertex[3];
 
-            treeGeometry[3].vertData[0] = new TM64_Geometry.Vertex();
-            treeGeometry[3].vertData[0].position = new TM64_Geometry.Position();
-            treeGeometry[3].vertData[0].position.x = Convert.ToInt16(0);
-            treeGeometry[3].vertData[0].position.y = Convert.ToInt16(-40);
-            treeGeometry[3].vertData[0].position.z = Convert.ToInt16(0);
+            treeGeometry[3].VertData[0] = new TM64_Geometry.Vertex();
+            treeGeometry[3].VertData[0].position = new TM64_Geometry.Position();
+            treeGeometry[3].VertData[0].position.x = Convert.ToInt16(0);
+            treeGeometry[3].VertData[0].position.y = Convert.ToInt16(-40);
+            treeGeometry[3].VertData[0].position.z = Convert.ToInt16(0);
 
-            treeGeometry[3].vertData[1] = new TM64_Geometry.Vertex();
-            treeGeometry[3].vertData[1].position = new TM64_Geometry.Position();
-            treeGeometry[3].vertData[1].position.x = Convert.ToInt16(0);
-            treeGeometry[3].vertData[1].position.y = Convert.ToInt16(40);
-            treeGeometry[3].vertData[1].position.z = Convert.ToInt16(80);
+            treeGeometry[3].VertData[1] = new TM64_Geometry.Vertex();
+            treeGeometry[3].VertData[1].position = new TM64_Geometry.Position();
+            treeGeometry[3].VertData[1].position.x = Convert.ToInt16(0);
+            treeGeometry[3].VertData[1].position.y = Convert.ToInt16(40);
+            treeGeometry[3].VertData[1].position.z = Convert.ToInt16(80);
 
-            treeGeometry[3].vertData[2] = new TM64_Geometry.Vertex();
-            treeGeometry[3].vertData[2].position = new TM64_Geometry.Position();
-            treeGeometry[3].vertData[2].position.x = Convert.ToInt16(0);
-            treeGeometry[3].vertData[2].position.y = Convert.ToInt16(-40);
-            treeGeometry[3].vertData[2].position.z = Convert.ToInt16(80);
+            treeGeometry[3].VertData[2] = new TM64_Geometry.Vertex();
+            treeGeometry[3].VertData[2].position = new TM64_Geometry.Position();
+            treeGeometry[3].VertData[2].position.x = Convert.ToInt16(0);
+            treeGeometry[3].VertData[2].position.y = Convert.ToInt16(-40);
+            treeGeometry[3].VertData[2].position.z = Convert.ToInt16(80);
 
 
 
             piranhaGeometry[0] = new TM64_Geometry.Face();
 
-            piranhaGeometry[0].vertData = new TM64_Geometry.Vertex[3];
+            piranhaGeometry[0].VertData = new TM64_Geometry.Vertex[3];
 
-            piranhaGeometry[0].vertData[0] = new TM64_Geometry.Vertex();
-            piranhaGeometry[0].vertData[0].position = new TM64_Geometry.Position();
-            piranhaGeometry[0].vertData[0].position.x = Convert.ToInt16(-30);
-            piranhaGeometry[0].vertData[0].position.y = Convert.ToInt16(0);
-            piranhaGeometry[0].vertData[0].position.z = Convert.ToInt16(0);
+            piranhaGeometry[0].VertData[0] = new TM64_Geometry.Vertex();
+            piranhaGeometry[0].VertData[0].position = new TM64_Geometry.Position();
+            piranhaGeometry[0].VertData[0].position.x = Convert.ToInt16(-30);
+            piranhaGeometry[0].VertData[0].position.y = Convert.ToInt16(0);
+            piranhaGeometry[0].VertData[0].position.z = Convert.ToInt16(0);
 
-            piranhaGeometry[0].vertData[1] = new TM64_Geometry.Vertex();
-            piranhaGeometry[0].vertData[1].position = new TM64_Geometry.Position();
-            piranhaGeometry[0].vertData[1].position.x = Convert.ToInt16(30);
-            piranhaGeometry[0].vertData[1].position.y = Convert.ToInt16(0);
-            piranhaGeometry[0].vertData[1].position.z = Convert.ToInt16(0);
+            piranhaGeometry[0].VertData[1] = new TM64_Geometry.Vertex();
+            piranhaGeometry[0].VertData[1].position = new TM64_Geometry.Position();
+            piranhaGeometry[0].VertData[1].position.x = Convert.ToInt16(30);
+            piranhaGeometry[0].VertData[1].position.y = Convert.ToInt16(0);
+            piranhaGeometry[0].VertData[1].position.z = Convert.ToInt16(0);
 
-            piranhaGeometry[0].vertData[2] = new TM64_Geometry.Vertex();
-            piranhaGeometry[0].vertData[2].position = new TM64_Geometry.Position();
-            piranhaGeometry[0].vertData[2].position.x = Convert.ToInt16(30);
-            piranhaGeometry[0].vertData[2].position.y = Convert.ToInt16(0);
-            piranhaGeometry[0].vertData[2].position.z = Convert.ToInt16(60);
+            piranhaGeometry[0].VertData[2] = new TM64_Geometry.Vertex();
+            piranhaGeometry[0].VertData[2].position = new TM64_Geometry.Position();
+            piranhaGeometry[0].VertData[2].position.x = Convert.ToInt16(30);
+            piranhaGeometry[0].VertData[2].position.y = Convert.ToInt16(0);
+            piranhaGeometry[0].VertData[2].position.z = Convert.ToInt16(60);
 
 
             piranhaGeometry[1] = new TM64_Geometry.Face();
-            piranhaGeometry[1].vertData = new TM64_Geometry.Vertex[3];
+            piranhaGeometry[1].VertData = new TM64_Geometry.Vertex[3];
 
-            piranhaGeometry[1].vertData[0] = new TM64_Geometry.Vertex();
-            piranhaGeometry[1].vertData[0].position = new TM64_Geometry.Position();
-            piranhaGeometry[1].vertData[0].position.x = Convert.ToInt16(0);
-            piranhaGeometry[1].vertData[0].position.y = Convert.ToInt16(-30);
-            piranhaGeometry[1].vertData[0].position.z = Convert.ToInt16(0);
+            piranhaGeometry[1].VertData[0] = new TM64_Geometry.Vertex();
+            piranhaGeometry[1].VertData[0].position = new TM64_Geometry.Position();
+            piranhaGeometry[1].VertData[0].position.x = Convert.ToInt16(0);
+            piranhaGeometry[1].VertData[0].position.y = Convert.ToInt16(-30);
+            piranhaGeometry[1].VertData[0].position.z = Convert.ToInt16(0);
 
-            piranhaGeometry[1].vertData[1] = new TM64_Geometry.Vertex();
-            piranhaGeometry[1].vertData[1].position = new TM64_Geometry.Position();
-            piranhaGeometry[1].vertData[1].position.x = Convert.ToInt16(0);
-            piranhaGeometry[1].vertData[1].position.y = Convert.ToInt16(30);
-            piranhaGeometry[1].vertData[1].position.z = Convert.ToInt16(0);
+            piranhaGeometry[1].VertData[1] = new TM64_Geometry.Vertex();
+            piranhaGeometry[1].VertData[1].position = new TM64_Geometry.Position();
+            piranhaGeometry[1].VertData[1].position.x = Convert.ToInt16(0);
+            piranhaGeometry[1].VertData[1].position.y = Convert.ToInt16(30);
+            piranhaGeometry[1].VertData[1].position.z = Convert.ToInt16(0);
 
-            piranhaGeometry[1].vertData[2] = new TM64_Geometry.Vertex();
-            piranhaGeometry[1].vertData[2].position = new TM64_Geometry.Position();
-            piranhaGeometry[1].vertData[2].position.x = Convert.ToInt16(0);
-            piranhaGeometry[1].vertData[2].position.y = Convert.ToInt16(30);
-            piranhaGeometry[1].vertData[2].position.z = Convert.ToInt16(60);
+            piranhaGeometry[1].VertData[2] = new TM64_Geometry.Vertex();
+            piranhaGeometry[1].VertData[2].position = new TM64_Geometry.Position();
+            piranhaGeometry[1].VertData[2].position.x = Convert.ToInt16(0);
+            piranhaGeometry[1].VertData[2].position.y = Convert.ToInt16(30);
+            piranhaGeometry[1].VertData[2].position.z = Convert.ToInt16(60);
 
             piranhaGeometry[2] = new TM64_Geometry.Face();
-            piranhaGeometry[2].vertData = new TM64_Geometry.Vertex[3];
+            piranhaGeometry[2].VertData = new TM64_Geometry.Vertex[3];
 
-            piranhaGeometry[2].vertData[0] = new TM64_Geometry.Vertex();
-            piranhaGeometry[2].vertData[0].position = new TM64_Geometry.Position();
-            piranhaGeometry[2].vertData[0].position.x = Convert.ToInt16(-30);
-            piranhaGeometry[2].vertData[0].position.y = Convert.ToInt16(0);
-            piranhaGeometry[2].vertData[0].position.z = Convert.ToInt16(0);
+            piranhaGeometry[2].VertData[0] = new TM64_Geometry.Vertex();
+            piranhaGeometry[2].VertData[0].position = new TM64_Geometry.Position();
+            piranhaGeometry[2].VertData[0].position.x = Convert.ToInt16(-30);
+            piranhaGeometry[2].VertData[0].position.y = Convert.ToInt16(0);
+            piranhaGeometry[2].VertData[0].position.z = Convert.ToInt16(0);
 
-            piranhaGeometry[2].vertData[1] = new TM64_Geometry.Vertex();
-            piranhaGeometry[2].vertData[1].position = new TM64_Geometry.Position();
-            piranhaGeometry[2].vertData[1].position.x = Convert.ToInt16(30);
-            piranhaGeometry[2].vertData[1].position.y = Convert.ToInt16(0);
-            piranhaGeometry[2].vertData[1].position.z = Convert.ToInt16(60);
+            piranhaGeometry[2].VertData[1] = new TM64_Geometry.Vertex();
+            piranhaGeometry[2].VertData[1].position = new TM64_Geometry.Position();
+            piranhaGeometry[2].VertData[1].position.x = Convert.ToInt16(30);
+            piranhaGeometry[2].VertData[1].position.y = Convert.ToInt16(0);
+            piranhaGeometry[2].VertData[1].position.z = Convert.ToInt16(60);
 
-            piranhaGeometry[2].vertData[2] = new TM64_Geometry.Vertex();
-            piranhaGeometry[2].vertData[2].position = new TM64_Geometry.Position();
-            piranhaGeometry[2].vertData[2].position.x = Convert.ToInt16(-30);
-            piranhaGeometry[2].vertData[2].position.y = Convert.ToInt16(0);
-            piranhaGeometry[2].vertData[2].position.z = Convert.ToInt16(60);
+            piranhaGeometry[2].VertData[2] = new TM64_Geometry.Vertex();
+            piranhaGeometry[2].VertData[2].position = new TM64_Geometry.Position();
+            piranhaGeometry[2].VertData[2].position.x = Convert.ToInt16(-30);
+            piranhaGeometry[2].VertData[2].position.y = Convert.ToInt16(0);
+            piranhaGeometry[2].VertData[2].position.z = Convert.ToInt16(60);
 
 
             piranhaGeometry[3] = new TM64_Geometry.Face();
-            piranhaGeometry[3].vertData = new TM64_Geometry.Vertex[3];
+            piranhaGeometry[3].VertData = new TM64_Geometry.Vertex[3];
 
-            piranhaGeometry[3].vertData[0] = new TM64_Geometry.Vertex();
-            piranhaGeometry[3].vertData[0].position = new TM64_Geometry.Position();
-            piranhaGeometry[3].vertData[0].position.x = Convert.ToInt16(0);
-            piranhaGeometry[3].vertData[0].position.y = Convert.ToInt16(-30);
-            piranhaGeometry[3].vertData[0].position.z = Convert.ToInt16(0);
+            piranhaGeometry[3].VertData[0] = new TM64_Geometry.Vertex();
+            piranhaGeometry[3].VertData[0].position = new TM64_Geometry.Position();
+            piranhaGeometry[3].VertData[0].position.x = Convert.ToInt16(0);
+            piranhaGeometry[3].VertData[0].position.y = Convert.ToInt16(-30);
+            piranhaGeometry[3].VertData[0].position.z = Convert.ToInt16(0);
 
-            piranhaGeometry[3].vertData[1] = new TM64_Geometry.Vertex();
-            piranhaGeometry[3].vertData[1].position = new TM64_Geometry.Position();
-            piranhaGeometry[3].vertData[1].position.x = Convert.ToInt16(0);
-            piranhaGeometry[3].vertData[1].position.y = Convert.ToInt16(30);
-            piranhaGeometry[3].vertData[1].position.z = Convert.ToInt16(60);
+            piranhaGeometry[3].VertData[1] = new TM64_Geometry.Vertex();
+            piranhaGeometry[3].VertData[1].position = new TM64_Geometry.Position();
+            piranhaGeometry[3].VertData[1].position.x = Convert.ToInt16(0);
+            piranhaGeometry[3].VertData[1].position.y = Convert.ToInt16(30);
+            piranhaGeometry[3].VertData[1].position.z = Convert.ToInt16(60);
 
-            piranhaGeometry[3].vertData[2] = new TM64_Geometry.Vertex();
-            piranhaGeometry[3].vertData[2].position = new TM64_Geometry.Position();
-            piranhaGeometry[3].vertData[2].position.x = Convert.ToInt16(0);
-            piranhaGeometry[3].vertData[2].position.y = Convert.ToInt16(-30);
-            piranhaGeometry[3].vertData[2].position.z = Convert.ToInt16(60);
+            piranhaGeometry[3].VertData[2] = new TM64_Geometry.Vertex();
+            piranhaGeometry[3].VertData[2].position = new TM64_Geometry.Position();
+            piranhaGeometry[3].VertData[2].position.x = Convert.ToInt16(0);
+            piranhaGeometry[3].VertData[2].position.y = Convert.ToInt16(-30);
+            piranhaGeometry[3].VertData[2].position.z = Convert.ToInt16(60);
 
 
             itemGeometry[0] = new TM64_Geometry.Face();
 
-            itemGeometry[0].vertData = new TM64_Geometry.Vertex[3];
+            itemGeometry[0].VertData = new TM64_Geometry.Vertex[3];
 
-            itemGeometry[0].vertData[0] = new TM64_Geometry.Vertex();
-            itemGeometry[0].vertData[0].position = new TM64_Geometry.Position();
-            itemGeometry[0].vertData[0].position.x = Convert.ToInt16(-8);
-            itemGeometry[0].vertData[0].position.y = Convert.ToInt16(0);
-            itemGeometry[0].vertData[0].position.z = Convert.ToInt16(0);
+            itemGeometry[0].VertData[0] = new TM64_Geometry.Vertex();
+            itemGeometry[0].VertData[0].position = new TM64_Geometry.Position();
+            itemGeometry[0].VertData[0].position.x = Convert.ToInt16(-8);
+            itemGeometry[0].VertData[0].position.y = Convert.ToInt16(0);
+            itemGeometry[0].VertData[0].position.z = Convert.ToInt16(0);
 
-            itemGeometry[0].vertData[1] = new TM64_Geometry.Vertex();
-            itemGeometry[0].vertData[1].position = new TM64_Geometry.Position();
-            itemGeometry[0].vertData[1].position.x = Convert.ToInt16(8);
-            itemGeometry[0].vertData[1].position.y = Convert.ToInt16(0);
-            itemGeometry[0].vertData[1].position.z = Convert.ToInt16(0);
+            itemGeometry[0].VertData[1] = new TM64_Geometry.Vertex();
+            itemGeometry[0].VertData[1].position = new TM64_Geometry.Position();
+            itemGeometry[0].VertData[1].position.x = Convert.ToInt16(8);
+            itemGeometry[0].VertData[1].position.y = Convert.ToInt16(0);
+            itemGeometry[0].VertData[1].position.z = Convert.ToInt16(0);
 
-            itemGeometry[0].vertData[2] = new TM64_Geometry.Vertex();
-            itemGeometry[0].vertData[2].position = new TM64_Geometry.Position();
-            itemGeometry[0].vertData[2].position.x = Convert.ToInt16(8);
-            itemGeometry[0].vertData[2].position.y = Convert.ToInt16(0);
-            itemGeometry[0].vertData[2].position.z = Convert.ToInt16(16);
+            itemGeometry[0].VertData[2] = new TM64_Geometry.Vertex();
+            itemGeometry[0].VertData[2].position = new TM64_Geometry.Position();
+            itemGeometry[0].VertData[2].position.x = Convert.ToInt16(8);
+            itemGeometry[0].VertData[2].position.y = Convert.ToInt16(0);
+            itemGeometry[0].VertData[2].position.z = Convert.ToInt16(16);
 
 
             itemGeometry[1] = new TM64_Geometry.Face();
-            itemGeometry[1].vertData = new TM64_Geometry.Vertex[3];
+            itemGeometry[1].VertData = new TM64_Geometry.Vertex[3];
 
-            itemGeometry[1].vertData[0] = new TM64_Geometry.Vertex();
-            itemGeometry[1].vertData[0].position = new TM64_Geometry.Position();
-            itemGeometry[1].vertData[0].position.x = Convert.ToInt16(0);
-            itemGeometry[1].vertData[0].position.y = Convert.ToInt16(-8);
-            itemGeometry[1].vertData[0].position.z = Convert.ToInt16(0);
+            itemGeometry[1].VertData[0] = new TM64_Geometry.Vertex();
+            itemGeometry[1].VertData[0].position = new TM64_Geometry.Position();
+            itemGeometry[1].VertData[0].position.x = Convert.ToInt16(0);
+            itemGeometry[1].VertData[0].position.y = Convert.ToInt16(-8);
+            itemGeometry[1].VertData[0].position.z = Convert.ToInt16(0);
 
-            itemGeometry[1].vertData[1] = new TM64_Geometry.Vertex();
-            itemGeometry[1].vertData[1].position = new TM64_Geometry.Position();
-            itemGeometry[1].vertData[1].position.x = Convert.ToInt16(0);
-            itemGeometry[1].vertData[1].position.y = Convert.ToInt16(8);
-            itemGeometry[1].vertData[1].position.z = Convert.ToInt16(0);
+            itemGeometry[1].VertData[1] = new TM64_Geometry.Vertex();
+            itemGeometry[1].VertData[1].position = new TM64_Geometry.Position();
+            itemGeometry[1].VertData[1].position.x = Convert.ToInt16(0);
+            itemGeometry[1].VertData[1].position.y = Convert.ToInt16(8);
+            itemGeometry[1].VertData[1].position.z = Convert.ToInt16(0);
 
-            itemGeometry[1].vertData[2] = new TM64_Geometry.Vertex();
-            itemGeometry[1].vertData[2].position = new TM64_Geometry.Position();
-            itemGeometry[1].vertData[2].position.x = Convert.ToInt16(0);
-            itemGeometry[1].vertData[2].position.y = Convert.ToInt16(8);
-            itemGeometry[1].vertData[2].position.z = Convert.ToInt16(16);
+            itemGeometry[1].VertData[2] = new TM64_Geometry.Vertex();
+            itemGeometry[1].VertData[2].position = new TM64_Geometry.Position();
+            itemGeometry[1].VertData[2].position.x = Convert.ToInt16(0);
+            itemGeometry[1].VertData[2].position.y = Convert.ToInt16(8);
+            itemGeometry[1].VertData[2].position.z = Convert.ToInt16(16);
 
             itemGeometry[2] = new TM64_Geometry.Face();
-            itemGeometry[2].vertData = new TM64_Geometry.Vertex[3];
+            itemGeometry[2].VertData = new TM64_Geometry.Vertex[3];
 
-            itemGeometry[2].vertData[0] = new TM64_Geometry.Vertex();
-            itemGeometry[2].vertData[0].position = new TM64_Geometry.Position();
-            itemGeometry[2].vertData[0].position.x = Convert.ToInt16(-8);
-            itemGeometry[2].vertData[0].position.y = Convert.ToInt16(0);
-            itemGeometry[2].vertData[0].position.z = Convert.ToInt16(0);
+            itemGeometry[2].VertData[0] = new TM64_Geometry.Vertex();
+            itemGeometry[2].VertData[0].position = new TM64_Geometry.Position();
+            itemGeometry[2].VertData[0].position.x = Convert.ToInt16(-8);
+            itemGeometry[2].VertData[0].position.y = Convert.ToInt16(0);
+            itemGeometry[2].VertData[0].position.z = Convert.ToInt16(0);
 
-            itemGeometry[2].vertData[1] = new TM64_Geometry.Vertex();
-            itemGeometry[2].vertData[1].position = new TM64_Geometry.Position();
-            itemGeometry[2].vertData[1].position.x = Convert.ToInt16(8);
-            itemGeometry[2].vertData[1].position.y = Convert.ToInt16(0);
-            itemGeometry[2].vertData[1].position.z = Convert.ToInt16(16);
+            itemGeometry[2].VertData[1] = new TM64_Geometry.Vertex();
+            itemGeometry[2].VertData[1].position = new TM64_Geometry.Position();
+            itemGeometry[2].VertData[1].position.x = Convert.ToInt16(8);
+            itemGeometry[2].VertData[1].position.y = Convert.ToInt16(0);
+            itemGeometry[2].VertData[1].position.z = Convert.ToInt16(16);
 
-            itemGeometry[2].vertData[2] = new TM64_Geometry.Vertex();
-            itemGeometry[2].vertData[2].position = new TM64_Geometry.Position();
-            itemGeometry[2].vertData[2].position.x = Convert.ToInt16(-8);
-            itemGeometry[2].vertData[2].position.y = Convert.ToInt16(0);
-            itemGeometry[2].vertData[2].position.z = Convert.ToInt16(16);
+            itemGeometry[2].VertData[2] = new TM64_Geometry.Vertex();
+            itemGeometry[2].VertData[2].position = new TM64_Geometry.Position();
+            itemGeometry[2].VertData[2].position.x = Convert.ToInt16(-8);
+            itemGeometry[2].VertData[2].position.y = Convert.ToInt16(0);
+            itemGeometry[2].VertData[2].position.z = Convert.ToInt16(16);
 
 
             itemGeometry[3] = new TM64_Geometry.Face();
-            itemGeometry[3].vertData = new TM64_Geometry.Vertex[3];
+            itemGeometry[3].VertData = new TM64_Geometry.Vertex[3];
 
-            itemGeometry[3].vertData[0] = new TM64_Geometry.Vertex();
-            itemGeometry[3].vertData[0].position = new TM64_Geometry.Position();
-            itemGeometry[3].vertData[0].position.x = Convert.ToInt16(0);
-            itemGeometry[3].vertData[0].position.y = Convert.ToInt16(-8);
-            itemGeometry[3].vertData[0].position.z = Convert.ToInt16(0);
+            itemGeometry[3].VertData[0] = new TM64_Geometry.Vertex();
+            itemGeometry[3].VertData[0].position = new TM64_Geometry.Position();
+            itemGeometry[3].VertData[0].position.x = Convert.ToInt16(0);
+            itemGeometry[3].VertData[0].position.y = Convert.ToInt16(-8);
+            itemGeometry[3].VertData[0].position.z = Convert.ToInt16(0);
 
-            itemGeometry[3].vertData[1] = new TM64_Geometry.Vertex();
-            itemGeometry[3].vertData[1].position = new TM64_Geometry.Position();
-            itemGeometry[3].vertData[1].position.x = Convert.ToInt16(0);
-            itemGeometry[3].vertData[1].position.y = Convert.ToInt16(8);
-            itemGeometry[3].vertData[1].position.z = Convert.ToInt16(16);
+            itemGeometry[3].VertData[1] = new TM64_Geometry.Vertex();
+            itemGeometry[3].VertData[1].position = new TM64_Geometry.Position();
+            itemGeometry[3].VertData[1].position.x = Convert.ToInt16(0);
+            itemGeometry[3].VertData[1].position.y = Convert.ToInt16(8);
+            itemGeometry[3].VertData[1].position.z = Convert.ToInt16(16);
 
-            itemGeometry[3].vertData[2] = new TM64_Geometry.Vertex();
-            itemGeometry[3].vertData[2].position = new TM64_Geometry.Position();
-            itemGeometry[3].vertData[2].position.x = Convert.ToInt16(0);
-            itemGeometry[3].vertData[2].position.y = Convert.ToInt16(-8);
-            itemGeometry[3].vertData[2].position.z = Convert.ToInt16(16);
+            itemGeometry[3].VertData[2] = new TM64_Geometry.Vertex();
+            itemGeometry[3].VertData[2].position = new TM64_Geometry.Position();
+            itemGeometry[3].VertData[2].position.x = Convert.ToInt16(0);
+            itemGeometry[3].VertData[2].position.y = Convert.ToInt16(-8);
+            itemGeometry[3].VertData[2].position.z = Convert.ToInt16(16);
 
         }
-        private void colorUpdate()
+        private void ColorUpdate()
         {
+            System.Drawing.Color buttonColor = System.Drawing.Color.FromArgb(0,0,0);
+            int[] colorInt = new int[3];
 
-            int rr = 0;
-            int.TryParse(rtbox.Text, out rr);
-            int gg = 0;
-            int.TryParse(gtbox.Text, out gg);
-            int bb = 0;
-            int.TryParse(btbox.Text, out bb);
-            System.Drawing.Color tbuttoncolor = System.Drawing.Color.FromArgb(rr, gg, bb);
+            colorInt[0] = 0;
+            int.TryParse(SkyRT.Text, out colorInt[0]);
+            colorInt[1] = 0;
+            int.TryParse(SkyGT.Text, out colorInt[1]);
+            colorInt[2] = 0;
+            int.TryParse(SkyBT.Text, out colorInt[2]);
+            buttonColor = System.Drawing.Color.FromArgb(colorInt[0],colorInt[1],colorInt[2]);
+            ColorPickT.BackColor = buttonColor;
 
+            colorInt[0] = 0;
+            int.TryParse(SkyRMT.Text, out colorInt[0]);
+            colorInt[1] = 0;
+            int.TryParse(SkyGMT.Text, out colorInt[1]);
+            colorInt[2] = 0;
+            int.TryParse(SkyBMT.Text, out colorInt[2]);
+            buttonColor = System.Drawing.Color.FromArgb(colorInt[0], colorInt[1], colorInt[2]);
+            ColorPickT.BackColor = buttonColor;
 
+            colorInt[0] = 0;
+            int.TryParse(SkyRMB.Text, out colorInt[0]);
+            colorInt[1] = 0;
+            int.TryParse(SkyGMB.Text, out colorInt[1]);
+            colorInt[2] = 0;
+            int.TryParse(SkyBMB.Text, out colorInt[2]);
+            buttonColor = System.Drawing.Color.FromArgb(colorInt[0], colorInt[1], colorInt[2]);
+            ColorPickT.BackColor = buttonColor;
 
-            rr = 0;
-            int.TryParse(rbbox.Text, out rr);
-            gg = 0;
-            int.TryParse(gbbox.Text, out gg);
-            bb = 0;
-            int.TryParse(bbbox.Text, out bb);
-            System.Drawing.Color bbuttoncolor = System.Drawing.Color.FromArgb(rr, gg, bb);
+            colorInt[0] = 0;
+            int.TryParse(SkyRB.Text, out colorInt[0]);
+            colorInt[1] = 0;
+            int.TryParse(SkyGB.Text, out colorInt[1]);
+            colorInt[2] = 0;
+            int.TryParse(SkyBB.Text, out colorInt[2]);
+            buttonColor = System.Drawing.Color.FromArgb(colorInt[0], colorInt[1], colorInt[2]);
+            ColorPickT.BackColor = buttonColor;
 
-            cptop.BackColor = tbuttoncolor;
-            cpbot.BackColor = bbuttoncolor;
+            
+
+            byte colorValue = 0;
+
+            Byte.TryParse(SkyRT.Text, out colorValue);
+            skyData.TopColor.R = colorValue;
+            Byte.TryParse(SkyGT.Text, out colorValue);
+            skyData.TopColor.G = colorValue;
+            Byte.TryParse(SkyBT.Text, out colorValue);
+            skyData.TopColor.B = colorValue;
+
+            Byte.TryParse(SkyRMT.Text, out colorValue);
+            skyData.TopColor.R = colorValue;
+            Byte.TryParse(SkyGMT.Text, out colorValue);
+            skyData.TopColor.G = colorValue;
+            Byte.TryParse(SkyBMT.Text, out colorValue);
+            skyData.TopColor.B = colorValue;
+
+            Byte.TryParse(SkyRMB.Text, out colorValue);
+            skyData.TopColor.R = colorValue;
+            Byte.TryParse(SkyGMB.Text, out colorValue);
+            skyData.TopColor.G = colorValue;
+            Byte.TryParse(SkyBMB.Text, out colorValue);
+            skyData.TopColor.B = colorValue;
+
+            Byte.TryParse(SkyRT.Text, out colorValue);
+            skyData.TopColor.R = colorValue;
+            Byte.TryParse(SkyGT.Text, out colorValue);
+            skyData.TopColor.G = colorValue;
+            Byte.TryParse(SkyBT.Text, out colorValue);
+            skyData.TopColor.B = colorValue;
 
         }
 
@@ -514,7 +588,7 @@ namespace Tarmac64
 
 
 
-        private void compileModel()
+        private void CompileModel()
         {
 
             int cID = (cupBox.SelectedIndex * 4) + courseBox.SelectedIndex;
@@ -553,12 +627,12 @@ namespace Tarmac64
                     int vertMagic = 0;
 
                     // Game speed multiplier. Default is 2
-                    byte[] gameSpeed = new byte[3];
+                    gameSpeed = new int[4];
 
-                    Byte.TryParse(sp1Box.Text, out gameSpeed[0]);
-                    Byte.TryParse(sp2Box.Text, out gameSpeed[1]);
-                    Byte.TryParse(sp3Box.Text, out gameSpeed[2]);
-
+                    int.TryParse(sp1Box.Text, out gameSpeed[0]);
+                    int.TryParse(sp2Box.Text, out gameSpeed[1]);
+                    int.TryParse(sp3Box.Text, out gameSpeed[2]);
+                    int.TryParse(sp4Box.Text, out gameSpeed[3]);
 
 
                     //Course Music
@@ -699,7 +773,7 @@ namespace Tarmac64
                     string customASM = asmBox.Text;
                     string ghostData = ghostBox.Text;
 
-                    byte[] skyColor = skyBytes;
+                    
 
 
                     Int16[] mapCoords = new Int16[2];
@@ -713,12 +787,23 @@ namespace Tarmac64
 
                     if (levelFormat == 0)
                     {
-                        rom = tm64Geo.compileHotswap(segment4, segment6, segment7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, ghostData, skyColor, songID, gameSpeed, rom, cID, setID);
-                    }
-                    else
-                    {
-                        rom = tm64Geo.compileBattle(segment4, segment6, segment7, segment9, courseName, previewImage, bannerImage, mapImage, mapCoords, customASM, skyColor, songID, gameSpeed, rom, cID, setID);
+                        TM64_Geometry.Course courseData = new TM64_Geometry.Course();
+                        courseData.Segment4 = segment4;
+                        courseData.Segment6 = segment6;
+                        courseData.Segment7 = segment7;
+                        courseData.Segment9 = segment9;
+                        courseData.Credits = courseName;
+                        courseData.PreviewPath = previewImage;
+                        courseData.BannerPath = bannerImage;
+                        courseData.MinimapPath = mapImage;
+                        courseData.MinimapCoords = new Vector2D(mapCoords[0], mapCoords[1]);
+                        courseData.AssmeblyPath = customASM;
+                        courseData.GhostPath = ghostData;
+                        courseData.SkyColors = skyData;
+                        courseData.MusicID = songID;
+                        courseData.GameTempos = gameSpeed;
 
+                        rom = tm64Geo.CompileOverKart(courseData,rom, cID, setID);
                     }
 
 
@@ -755,7 +840,7 @@ namespace Tarmac64
         }
 
 
-        private void loadModel()
+        private void LoadModel()
         {
             MessageBox.Show("Select .FBX File");
             if (fileOpen.ShowDialog() == DialogResult.OK)
@@ -769,7 +854,7 @@ namespace Tarmac64
 
 
 
-                raycastBoolean = false;
+                raycastBoolean = raycastBox.Checked;
                 int modelFormat = 0;  // 
 
                 Scene fbx = new Scene();
@@ -845,14 +930,14 @@ namespace Tarmac64
                             {
                                 masterObjects = tm64Geo.createMaster(fbx, sectionCount, textureArray);
                                 surfaceObjects = tm64Geo.loadCollision(fbx, sectionCount, textureArray, modelFormat);
-                                sectionList = tm64Geo.automateSection(sectionCount, surfaceObjects, masterObjects, fbx, raycastBoolean);
+                                sectionList = tm64Geo.AutomateSection(sectionCount, surfaceObjects, masterObjects, fbx, raycastBoolean);
                                 break;
                             }
                         case 1:
                             {
                                 masterObjects = tm64Geo.loadMaster(ref masterGroups, fbx, textureArray);
                                 surfaceObjects = tm64Geo.loadCollision(fbx, sectionCount, textureArray, modelFormat);
-                                sectionList = tm64Geo.automateSection(sectionCount, surfaceObjects, masterObjects, fbx, raycastBoolean);
+                                sectionList = tm64Geo.AutomateSection(sectionCount, surfaceObjects, masterObjects, fbx, raycastBoolean);
                                 break;
                             }
                         case 2:
@@ -988,15 +1073,15 @@ namespace Tarmac64
 
 
 
-        private void loadBtn_click(object sender, EventArgs e)
+        private void LoadBtn_Click(object sender, EventArgs e)
         {
             if (loaded)
             {
-                compileModel();
+                CompileModel();
             }
             else
             {
-                loadModel();
+                LoadModel();
             }
         }
         private void Matbox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1016,7 +1101,7 @@ namespace Tarmac64
         {
             if (loaded == true)
             {
-                updateSVDisplay();
+                UpdateSVDisplay();
             }
         }
 
@@ -1024,11 +1109,11 @@ namespace Tarmac64
         {
             if (loaded == true)
             {
-                updateSVDisplay();
+                UpdateSVDisplay();
             }
         }
 
-        private void updateSVDisplay()
+        private void UpdateSVDisplay()
         {
             if (!updateBool)
             {
@@ -1207,38 +1292,32 @@ namespace Tarmac64
 
         private void Rtbox_TextChanged(object sender, EventArgs e)
         {
-            Byte.TryParse(rtbox.Text, out skyBytes[0]);
-            colorUpdate();
+            
         }
 
         private void Gtbox_TextChanged(object sender, EventArgs e)
         {
-            Byte.TryParse(gtbox.Text, out skyBytes[1]);
-            colorUpdate();
+            
         }
 
         private void Btbox_TextChanged(object sender, EventArgs e)
         {
-            Byte.TryParse(btbox.Text, out skyBytes[2]);
-            colorUpdate();
+           
         }
 
         private void Rbbox_TextChanged(object sender, EventArgs e)
         {
-            Byte.TryParse(rbbox.Text, out skyBytes[3]);
-            colorUpdate();
+           
         }
 
         private void Gbbox_TextChanged(object sender, EventArgs e)
         {
-            Byte.TryParse(gbbox.Text, out skyBytes[4]);
-            colorUpdate();
+            
         }
 
         private void Bbox_TextChanged(object sender, EventArgs e)
         {
-            Byte.TryParse(bbbox.Text, out skyBytes[5]);
-            colorUpdate();
+            
         }
 
         private void Cptop_Click(object sender, EventArgs e)
@@ -1250,11 +1329,11 @@ namespace Tarmac64
 
 
             int rr = 0;
-            int.TryParse(rtbox.Text, out rr);
+            int.TryParse(SkyRT.Text, out rr);
             int gg = 0;
-            int.TryParse(gtbox.Text, out gg);
+            int.TryParse(SkyGT.Text, out gg);
             int bb = 0;
-            int.TryParse(btbox.Text, out bb);
+            int.TryParse(SkyBT.Text, out bb);
             System.Drawing.Color buttonColor = System.Drawing.Color.FromArgb(rr, gg, bb);
 
             skyDialog.Color = buttonColor;
@@ -1263,11 +1342,11 @@ namespace Tarmac64
             if (skyDialog.ShowDialog() == DialogResult.OK)
             {
                 buttonColor = skyDialog.Color;
-                rtbox.Text = skyDialog.Color.R.ToString();
-                gtbox.Text = skyDialog.Color.G.ToString();
-                btbox.Text = skyDialog.Color.B.ToString();
+                SkyRT.Text = skyDialog.Color.R.ToString();
+                SkyGT.Text = skyDialog.Color.G.ToString();
+                SkyBT.Text = skyDialog.Color.B.ToString();
             }
-            colorUpdate();
+            ColorUpdate();
 
         }
 
@@ -1280,11 +1359,11 @@ namespace Tarmac64
 
 
             int rr = 0;
-            int.TryParse(rbbox.Text, out rr);
+            int.TryParse(SkyRMT.Text, out rr);
             int gg = 0;
-            int.TryParse(gbbox.Text, out gg);
+            int.TryParse(SkyGMT.Text, out gg);
             int bb = 0;
-            int.TryParse(bbbox.Text, out bb);
+            int.TryParse(SkyBMT.Text, out bb);
             System.Drawing.Color buttonColor = System.Drawing.Color.FromArgb(rr, gg, bb);
 
             skyDialog.Color = buttonColor;
@@ -1293,11 +1372,11 @@ namespace Tarmac64
             if (skyDialog.ShowDialog() == DialogResult.OK)
             {
                 buttonColor = skyDialog.Color;
-                rbbox.Text = skyDialog.Color.R.ToString();
-                gbbox.Text = skyDialog.Color.G.ToString();
-                bbbox.Text = skyDialog.Color.B.ToString();
+                SkyRMT.Text = skyDialog.Color.R.ToString();
+                SkyGMT.Text = skyDialog.Color.G.ToString();
+                SkyBMT.Text = skyDialog.Color.B.ToString();
             }
-            colorUpdate();
+            ColorUpdate();
 
         }
 
@@ -1358,36 +1437,21 @@ namespace Tarmac64
 
 
 
-        public byte[] pngtoByteArray(System.Drawing.Image imageIn)
-        {
-            MemoryStream ms = new MemoryStream();
-            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            return ms.ToArray();
-        }
-        public byte[] bmptoByteArray(System.Drawing.Image imageIn)
-        {
-            MemoryStream ms = new MemoryStream();
-            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-            return ms.ToArray();
-        }
-
-
-
-        private void drawFace(TM64_Geometry.Face subFace)
+        private void DrawFace(TM64_Geometry.Face subFace)
         {            
-            foreach (var subVert in subFace.vertData)
+            foreach (var subVert in subFace.VertData)
             {
-                gl.Color(subVert.color.r, subVert.color.g, subVert.color.b, Convert.ToByte(0x255));
+                gl.Color(subVert.color.R, subVert.color.G, subVert.color.B, Convert.ToByte(0x255));
                 gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
             }            
         }
-        private void drawMarker(TM64_Geometry.Face[] subFace, TM64_Paths.Marker pathMarker, float[] colorArray)
+        private void DrawMarker(TM64_Geometry.Face[] subFace, TM64_Paths.Marker pathMarker, float[] colorArray)
         {
             foreach (var face in subFace)
             {
                 if (colorArray.Length > 3)
                 {
-                    foreach (var subVert in face.vertData)
+                    foreach (var subVert in face.VertData)
                     {
                         gl.Color(colorArray[0], colorArray[1], colorArray[2], colorArray[3]);
                         gl.Vertex(subVert.position.x + pathMarker.xval, subVert.position.y + pathMarker.yval, subVert.position.z + pathMarker.zval);
@@ -1395,7 +1459,7 @@ namespace Tarmac64
                 }
                 else
                 {
-                    foreach (var subVert in face.vertData)
+                    foreach (var subVert in face.VertData)
                     {
                         gl.Color(colorArray[0], colorArray[1], colorArray[2], 1.0f);
                         gl.Vertex(subVert.position.x + pathMarker.xval, subVert.position.y + pathMarker.yval, subVert.position.z + pathMarker.zval);
@@ -1404,11 +1468,11 @@ namespace Tarmac64
             }
         }
 
-        private void drawFace(TM64_Geometry.Face subFace, float[] colorArray)
+        private void DrawFace(TM64_Geometry.Face subFace, float[] colorArray)
         {
             if (colorArray.Length > 3)
             {
-                foreach (var subVert in subFace.vertData)
+                foreach (var subVert in subFace.VertData)
                 {
                     gl.Color(colorArray[0], colorArray[1], colorArray[2], colorArray[3]);
                     gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
@@ -1416,7 +1480,7 @@ namespace Tarmac64
             }
             else
             {
-                foreach (var subVert in subFace.vertData)
+                foreach (var subVert in subFace.VertData)
                 {
                     gl.Color(colorArray[0], colorArray[1], colorArray[2], 1.0f);
                     gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
@@ -1509,7 +1573,7 @@ namespace Tarmac64
                                     gl.Begin(OpenGL.GL_TRIANGLES);
                                     foreach (var subFace in masterObjects[subIndex].modelGeometry)
                                     {
-                                        drawFace(subFace, surfaceWhite);
+                                        DrawFace(subFace, surfaceWhite);
                                     }
                                 }
                                 else
@@ -1521,7 +1585,7 @@ namespace Tarmac64
                                         gl.Begin(OpenGL.GL_TRIANGLES);
                                         foreach (var subFace in masterObjects[subIndex].modelGeometry)
                                         {
-                                            drawFace(subFace, masterObjects[subIndex].objectColor);
+                                            DrawFace(subFace, masterObjects[subIndex].objectColor);
                                         }
                                     }
                                     else if (chkWireframe.Checked)
@@ -1531,7 +1595,7 @@ namespace Tarmac64
                                         gl.Begin(OpenGL.GL_TRIANGLES);
                                         foreach (var subFace in masterObjects[subIndex].modelGeometry)
                                         {
-                                            drawFace(subFace, masterObjects[subIndex].objectColor);
+                                            DrawFace(subFace, masterObjects[subIndex].objectColor);
                                         }
 
                                     }
@@ -1547,7 +1611,7 @@ namespace Tarmac64
                                     gl.Begin(OpenGL.GL_TRIANGLES);
                                     foreach (var subFace in masterObjects[subIndex].modelGeometry)
                                     {
-                                        drawFace(subFace, masterObjects[subIndex].objectColor);
+                                        DrawFace(subFace, masterObjects[subIndex].objectColor);
                                     }
                                 }
                                 else if (chkWireframe.Checked)
@@ -1557,7 +1621,7 @@ namespace Tarmac64
                                     gl.Begin(OpenGL.GL_TRIANGLES);
                                     foreach (var subFace in masterObjects[subIndex].modelGeometry)
                                     {
-                                        drawFace(subFace, masterObjects[subIndex].objectColor);
+                                        DrawFace(subFace, masterObjects[subIndex].objectColor);
                                     }
 
                                 }
@@ -1578,7 +1642,7 @@ namespace Tarmac64
                                 {
                                     foreach (var subFace in subObject.modelGeometry)
                                     {
-                                        drawFace(subFace, surfaceRed);
+                                        DrawFace(subFace, surfaceRed);
                                     }
                                 }
                             }
@@ -1591,7 +1655,7 @@ namespace Tarmac64
                         {
                             foreach (var subFace in subObject.modelGeometry)
                             {
-                                drawFace(subFace, subObject.objectColor);
+                                DrawFace(subFace, subObject.objectColor);
                             }
                         }
                         break;
@@ -1602,7 +1666,7 @@ namespace Tarmac64
                         {
                             foreach (var subFace in subObject.modelGeometry)
                             {
-                                drawFace(subFace, subObject.objectColor);
+                                DrawFace(subFace, subObject.objectColor);
                             }
                         }
                         break;
@@ -1616,7 +1680,7 @@ namespace Tarmac64
                     float[] surfaceYellow = GetYellowFlash(flashYellow);
                     foreach (var marker in list.pathmarker)
                     {
-                        drawMarker(markerGeometry, marker, surfaceYellow);
+                        DrawMarker(markerGeometry, marker, surfaceYellow);
                     }
                 }
                 foreach (var list in popData[1].pathList)
@@ -1624,7 +1688,7 @@ namespace Tarmac64
                     float[] surfaceYellow = GetYellowFlash(flashYellow);
                     foreach (var marker in list.pathmarker)
                     {
-                        drawMarker(itemGeometry, marker, surfaceYellow);
+                        DrawMarker(itemGeometry, marker, surfaceYellow);
                     }
                 }
                 foreach (var list in popData[2].pathList)
@@ -1632,7 +1696,7 @@ namespace Tarmac64
                     float[] surfaceYellow = GetYellowFlash(flashYellow);
                     foreach (var marker in list.pathmarker)
                     {
-                        drawMarker(treeGeometry, marker, surfaceYellow);
+                        DrawMarker(treeGeometry, marker, surfaceYellow);
                     }
                 }
                 foreach (var list in popData[3].pathList)
@@ -1640,7 +1704,7 @@ namespace Tarmac64
                     float[] surfaceYellow = GetYellowFlash(flashYellow);
                     foreach (var marker in list.pathmarker)
                     {
-                        drawMarker(piranhaGeometry, marker, surfaceYellow);
+                        DrawMarker(piranhaGeometry, marker, surfaceYellow);
                     }
                 }
             }
@@ -1901,12 +1965,12 @@ namespace Tarmac64
 
         }
 
-        private void openGLControl_Load(object sender, EventArgs e)
+        private void OpenGLControl_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             Tarmac64.OKRetail tarmacAbout = new Tarmac64.OKRetail();
             tarmacAbout.Show();
@@ -1945,7 +2009,7 @@ namespace Tarmac64
                 foreach (var face in masterObjects[currentObject].modelGeometry)
                 {
 
-                    Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin, rayTarget, face.vertData[0], face.vertData[1], face.vertData[2]);
+                    Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin, rayTarget, face.VertData[0], face.VertData[1], face.VertData[2]);
                     if (intersectPoint.X > 0)
                     {
                         if (objectDistance > intersectPoint.X | objectDistance == -1)
@@ -1989,7 +2053,7 @@ namespace Tarmac64
         
 
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void Button1_Click_1(object sender, EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
             if (saveFile.ShowDialog() == DialogResult.OK)
@@ -2001,7 +2065,7 @@ namespace Tarmac64
             }
         }
 
-        private void importBtn_Click(object sender, EventArgs e)
+        private void ImportBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
             if (openFile.ShowDialog() == DialogResult.OK)
@@ -2013,7 +2077,7 @@ namespace Tarmac64
                 if (tempList.Length > 0)
                 {
                     sectionList = tempList;
-                    updateSVDisplay();
+                    UpdateSVDisplay();
 
                 }
                 else
@@ -2090,7 +2154,7 @@ namespace Tarmac64
                 foreach (var face in masterObjects[currentObject].modelGeometry)
                 {
 
-                    Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin, rayTarget, face.vertData[0], face.vertData[1], face.vertData[2]);
+                    Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin, rayTarget, face.VertData[0], face.VertData[1], face.VertData[2]);
                     if (intersectPoint.X > 0)
                     {
                         if (objectDistance > intersectPoint.X | objectDistance == -1)
@@ -2176,6 +2240,12 @@ namespace Tarmac64
                 }
             }
         }
+
+        private void previewBtn_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }
 

@@ -210,6 +210,9 @@
     <EmbeddedResource Include="SegmentExporter.resx">
       <DependentUpon>SegmentExporter.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="app.config" />
     <None Include="Tarmac64.ruleset" />
     <None Include="packages.config" />

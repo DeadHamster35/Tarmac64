@@ -24,6 +24,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>..\OverKart\Tarmac64.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>IDE0044;IDE0017;IDE0059</NoWarn>
+    <WarningsAsErrors>IDE1006</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -82,6 +84,12 @@
   <ItemGroup>
     <Compile Include="BigEndianBinaryReader.cs" />
     <Compile Include="BigEndianBinaryWriter.cs" />
+    <Compile Include="ObjectCompiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ObjectCompiler.Designer.cs">
+      <DependentUpon>ObjectCompiler.cs</DependentUpon>
+    </Compile>
     <Compile Include="PinaColladaBerg.cs" />
     <Compile Include="collada_schema_1_4.cs" />
     <Compile Include="TM64.cs" />
@@ -119,6 +127,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ObjectCompiler.resx">
+      <DependentUpon>ObjectCompiler.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GeometryCompiler.resx">
       <DependentUpon>GeometryCompiler.cs</DependentUpon>
     </EmbeddedResource>

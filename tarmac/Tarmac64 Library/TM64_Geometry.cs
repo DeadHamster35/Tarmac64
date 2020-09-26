@@ -46,7 +46,7 @@ namespace Tarmac64_Geometry
         BinaryWriter binaryWriter = new BinaryWriter(Stream.Null);
 
 
-        
+
 
         public static UInt32[] seg7_romptr = new UInt32[20];
 
@@ -63,9 +63,79 @@ namespace Tarmac64_Geometry
 
 
 
-        /// These are used by the Geometry Builder
-        /// 
 
+
+        public class Course
+        {
+            public byte[] Segment4 { get; set; }
+            public byte[] Segment6 { get; set; }
+            public byte[] Segment7 { get; set; }
+            public byte[] Segment9 { get; set; }
+
+            public string Credits { get; set; }
+            public string PreviewPath { get; set; }
+            public string BannerPath { get; set; }
+            public string MinimapPath { get; set; }
+            public string AssmeblyPath { get; set; }
+            public string GhostPath { get; set; }
+
+            public int[] GameTempos { get; set; }
+            public int[] EchoValues { get; set; }
+            public int MusicID { get; set; }
+
+            public Vector2D MinimapCoords { get; set; }
+            public Sky SkyColors { get; set; }
+
+            public MenuHeader MenuHeaderData { get; set; }
+            public OK64Header OK64HeaderData { get; set; }
+            public CourseHeader HeaderData { get; set; }
+        }
+
+        public class MenuHeader
+        {
+            public int Preview { get; set; }
+            public int Banner { get; set; }            
+        }
+        public class OK64Header
+        {
+            public int Version { get; set; }  //version 4
+            public int Sky { get; set; }
+            public int Credits { get; set; }
+            public int Ghost { get; set; }
+            public int Assembly { get; set; }
+            public int Mods { get; set; }
+            public int Maps { get; set; }
+            public int Objects { get; set; }
+            public byte[] MapX { get; set; }
+            public byte[] MapY { get; set; }
+            public byte[] EchoStart { get; set; }
+            public byte[] EchoStop { get; set; }
+            public byte[] Tempo { get; set; }
+            public int MusicID { get; set; }
+            
+        }
+
+        public class CourseHeader
+        {
+            public UInt32 s6Start { get; set; }
+            public UInt32 s6End { get; set; }
+            public UInt32 s47Start { get; set; }
+            public UInt32 s47End { get; set; }
+            public UInt32 s7Start { get; set; }
+            public UInt32 s9Start { get; set; }
+            public UInt32 s9End { get; set; }
+            public UInt32 VertCount { get; set; }
+            public UInt32 S7Size { get; set; }
+            public UInt32 TexturePointer { get; set; }
+        }
+
+        public class Sky
+        {
+            public OK64Color TopColor { get; set; }
+            public OK64Color MidTopColor { get; set; }
+            public OK64Color MidBotColor { get; set; }
+            public OK64Color BotColor { get; set; }
+        }
 
         public class Header
         {
@@ -75,31 +145,31 @@ namespace Tarmac64_Geometry
             public byte[] s47End { get; set; }
             public byte[] s9Start { get; set; }
             public byte[] s9End { get; set; }
-            public byte[] s47Buffer { get; set; }
-            public byte[] vertCount { get; set; }
-            public byte[] s7Pointer { get; set; }
-            public byte[] s7Size { get; set; }
-            public byte[] texturePointer { get; set; }
-            public byte[] flagPadding { get; set; }
+            public byte[] S47Buffer { get; set; }
+            public byte[] VertCount { get; set; }
+            public byte[] S7Pointer { get; set; }
+            public byte[] S7Size { get; set; }
+            public byte[] TexturePointer { get; set; }
+            public byte[] FlagPadding { get; set; }
         }
 
         public class Face
         {
-            public VertIndex vertIndex { get; set; }
-            public int material { get; set; }
-            public Vertex[] vertData { get; set; }
-            public Vector3D centerPosition { get; set; }
-            public float highX { get; set; }
-            public float highY { get; set; }
-            public float lowX { get; set; }
-            public float lowY { get; set; }
+            public VertIndex VertIndex { get; set; }
+            public int Material { get; set; }
+            public Vertex[] VertData { get; set; }
+            public Vector3D CenterPosition { get; set; }
+            public float HighX { get; set; }
+            public float HighY { get; set; }
+            public float LowX { get; set; }
+            public float LowY { get; set; }
         }
 
         public class VertIndex
         {
-            public int indexA { get; set; }
-            public int indexB { get; set; }
-            public int indexC { get; set; }
+            public int IndexA { get; set; }
+            public int IndexB { get; set; }
+            public int IndexC { get; set; }
 
         }
 
@@ -109,7 +179,7 @@ namespace Tarmac64_Geometry
             public Vector3D position { get; set; }
             public Vector3D target { get; set; }
             public double rotation { get; set; }
-            
+
         }
 
 
@@ -148,7 +218,24 @@ namespace Tarmac64_Geometry
             public int[] subIndexes { get; set; }
             public string groupName { get; set; }
             public int sectionID { get; set; }
-                        
+
+        }
+
+
+        public class OK64Animation
+        {
+            
+        }
+            
+
+            
+
+        public class OK64CourseObject
+        {
+            public int Radius { get; set; }
+            public OK64F3DObject[] Geometry { get; set; }
+            
+
         }
 
         public class OK64F3DObject
@@ -184,16 +271,16 @@ namespace Tarmac64_Geometry
         public class Vertex
         {
             public Position position { get; set; }
-            public Color color { get; set; }
+            public OK64Color color { get; set; }
             
         }
 
-        public class Color
+        public class OK64Color
         {
-            public Byte r { get; set; }
-            public Byte g { get; set; }
-            public Byte b { get; set; }
-            public Byte a { get; set; }
+            public Byte R { get; set; }
+            public Byte G { get; set; }
+            public Byte B { get; set; }
+            public Byte A { get; set; }
         }
 
         public class Position
@@ -206,6 +293,18 @@ namespace Tarmac64_Geometry
             public Int16 t { get; set; }
             public float u { get; set; }
             public float v { get; set; }
+
+        }
+
+        public class ObjectPosition
+        {
+
+            public float X { get; set; }
+            public float Y { get; set; }
+            public float Z { get; set; }
+            public float AngleX { get; set; }
+            public float AngleY { get; set; }
+            public float AngleZ { get; set; }
 
         }
 
@@ -257,23 +356,23 @@ namespace Tarmac64_Geometry
                 courseHeader[i].s9End = binaryReader.ReadBytes(4);
                 Array.Reverse(courseHeader[i].s9End);
 
-                courseHeader[i].s47Buffer = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s47Buffer);
+                courseHeader[i].S47Buffer = binaryReader.ReadBytes(4);
+                Array.Reverse(courseHeader[i].S47Buffer);
 
-                courseHeader[i].vertCount = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].vertCount);
+                courseHeader[i].VertCount = binaryReader.ReadBytes(4);
+                Array.Reverse(courseHeader[i].VertCount);
 
-                courseHeader[i].s7Pointer = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s7Pointer);
+                courseHeader[i].S7Pointer = binaryReader.ReadBytes(4);
+                Array.Reverse(courseHeader[i].S7Pointer);
 
-                courseHeader[i].s7Size = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s7Size);
+                courseHeader[i].S7Size = binaryReader.ReadBytes(4);
+                Array.Reverse(courseHeader[i].S7Size);
 
-                courseHeader[i].texturePointer = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].texturePointer);
+                courseHeader[i].TexturePointer = binaryReader.ReadBytes(4);
+                Array.Reverse(courseHeader[i].TexturePointer);
 
-                courseHeader[i].flagPadding = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].flagPadding);
+                courseHeader[i].FlagPadding = binaryReader.ReadBytes(4);
+                Array.Reverse(courseHeader[i].FlagPadding);
 
             }
 
@@ -467,9 +566,9 @@ namespace Tarmac64_Geometry
 
         }
 
-        public byte[] compileHotswap(byte[] useg4, byte[] useg6, byte[] useg7, byte[] seg9, string courseName, string previewImage, string bannerImage, string mapImage, Int16[] mapCoords, string customASM, string ghostData, byte[] skyColor, byte songID, byte[] gameSpeed, byte[] fileData, int cID, int setID)
+        public byte[] CompileOverKart(Course courseData, byte[] fileData, int cID, int setID)
         {
-
+            //HOTSWAP
 
             ///This takes precompiled segments and inserts them into the ROM file. It also updates the course header table to reflect
             /// the new data sizes. This allows for proper loading of the course so long as the segments are properly setup. All segment
@@ -482,9 +581,9 @@ namespace Tarmac64_Geometry
             /// then it cannot fit in the existing space without overwriting other course data. 
             /// 
 
-            byte[] seg6 = compressMIO0(useg6);
-            byte[] seg4 = compressMIO0(useg4);
-            byte[] seg7 = compress_seg7(useg7);
+            byte[] seg6 = compressMIO0(courseData.Segment6);
+            byte[] seg4 = compressMIO0(courseData.Segment4);
+            byte[] seg7 = compress_seg7(courseData.Segment7);
 
 
             byte[] flip = new byte[0];
@@ -495,15 +594,6 @@ namespace Tarmac64_Geometry
             binaryWriter = new BinaryWriter(memoryStream);
             binaryReader = new BinaryReader(memoryStream);
 
-            UInt32 seg6start = 0;
-            UInt32 seg6end = 0;
-            UInt32 seg4start = 0;
-            UInt32 seg7end = 0;
-            UInt32 seg9start = 0;
-            UInt32 seg9end = 0;
-            UInt32 seg7start = 0;
-            UInt32 seg7rsp = 0;
-
 
 
 
@@ -511,26 +601,8 @@ namespace Tarmac64_Geometry
 
             int addressAlign = 0;
 
-            int previewOffset = 0;
-            int bannerOffset = 0;
-            int mapOffset = 0;
-            int coordOffset = 0;
-            int nameOffset = 0;
-            int ghostOffset = 0;
-            int skyOffset = 0;
-
-            int previewEnd = 0;
-            int bannerEnd = 0;
-            int mapEnd = 0;
-            int coordEnd = 0;
-            int nameEnd = 0;
-            int ghostEnd = 0;
-            int skyEnd = 0;
 
 
-
-            int asmOffset = 0;
-            int asmEnd = 0;
 
             binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
 
@@ -549,17 +621,118 @@ namespace Tarmac64_Geometry
             //
 
 
+            courseData.MenuHeaderData = new MenuHeader();
 
-
-
-
-
-            //Internal Name
-            if (courseName.Length > 0)
+            //Course Preview Texture
+            if (courseData.PreviewPath.Length > 0)
             {
-                nameOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
+                byte[] imageData = null;
+                byte[] paletteData = null;
+                Bitmap bitmapData = new Bitmap(courseData.PreviewPath);
+                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
+                byte[] compressedData = compressMIO0(imageData);
 
-                binaryWriter.Write(courseName);   //using a length-defined as opposed to null terminated setup.
+
+                courseData.MenuHeaderData.Preview = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(compressedData);
+
+
+
+
+                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+                if (addressAlign == 4)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+            }
+            //
+
+
+
+            //Write Course Banner Texture
+            if (courseData.BannerPath.Length > 0)
+            {
+                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
+                byte[] imageData = null;
+                byte[] paletteData = null;
+                Bitmap bitmapData = new Bitmap(courseData.BannerPath);
+                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
+                byte[] compressedData = compressMIO0(imageData);
+
+
+                courseData.MenuHeaderData.Banner = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(compressedData);
+
+
+
+                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+                if (addressAlign == 4)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+            }
+            //
+
+
+
+
+
+            //begin writing header info
+
+            courseData.OK64HeaderData = new OK64Header();
+            courseData.OK64HeaderData.Version = 4;
+
+            //add sky colors
+
+
+            courseData.OK64HeaderData.Sky = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.TopColor.R);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.TopColor.G);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.TopColor.B);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidTopColor.R);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidTopColor.G);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidBotColor.B);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidBotColor.R);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidBotColor.G);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidBotColor.B);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.BotColor.R);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.BotColor.G);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.BotColor.B);
+
+
+
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            //Credits
+            if (courseData.Credits.Length > 0)
+            {
+                courseData.OK64HeaderData.Credits = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+                binaryWriter.Write(courseData.Credits);   //using a length-defined as opposed to null terminated setup.
                                         //easier to program for writing, easier to program for reading. 
                 
 
@@ -570,47 +743,16 @@ namespace Tarmac64_Geometry
                 {
                     binaryWriter.Write(Convert.ToByte(0x00));
                 }
-                nameEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
             }
             //
 
 
             //Staff Ghost
-            if (ghostData.Length > 0)
+            if (courseData.GhostPath.Length > 0)
             {
-                ghostOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-                binaryWriter.Write(courseName);   //using a length-defined as opposed to null terminated setup.
-                                        //easier to program for writing, easier to program for reading. 
-                
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-                ghostEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            }
-            //
-
-
-            //Write Course Map Texture
-            if (mapImage.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(mapImage);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                mapOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(compressedData);
-                
-
+                courseData.OK64HeaderData.Ghost = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                byte[] ghostData = File.ReadAllBytes(courseData.GhostPath);
+                binaryWriter.Write(ghostData);  
 
 
                 addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
@@ -620,85 +762,21 @@ namespace Tarmac64_Geometry
                 {
                     binaryWriter.Write(Convert.ToByte(0x00));
                 }
-                mapEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
             }
             //
-            //map coords
-
-            coordOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-            flip = BitConverter.GetBytes(mapCoords[0]);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-            flip = BitConverter.GetBytes(mapCoords[1]);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-            
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            coordEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-            //
-
-
-
-
-            //add sky colors
-
-
-            skyOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[0]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[1]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[2]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[3]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[4]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[5]);
-
-            
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            skyEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            //
-
-
-
-
-
-
 
 
 
             //custom ASM
-            if (customASM.Length > 0)
+            if (courseData.AssmeblyPath.Length > 0)
             {
 
 
-                byte[] asmSequence = File.ReadAllBytes(customASM);
+                byte[] asmSequence = File.ReadAllBytes(courseData.AssmeblyPath);
 
-                asmOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                courseData.OK64HeaderData.Assembly = Convert.ToInt32(binaryWriter.BaseStream.Position);
                 binaryWriter.Write(asmSequence);
-                
+
 
 
 
@@ -710,30 +788,24 @@ namespace Tarmac64_Geometry
                 {
                     binaryWriter.Write(Convert.ToByte(0x00));
                 }
-                asmEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
             }
-            //
+            //MOD INFO
+            courseData.OK64HeaderData.Mods = Convert.ToInt32(binaryWriter.BaseStream.Position);
 
-
-
-
-
-
-
-            //Course Preview Texture
-            if (previewImage.Length > 0)
+            //Write Course Map Texture
+            if (courseData.MinimapPath.Length > 0)
             {
                 N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
                 byte[] imageData = null;
                 byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(previewImage);
+                Bitmap bitmapData = new Bitmap(courseData.MinimapPath);
                 N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
                 byte[] compressedData = compressMIO0(imageData);
 
 
-                previewOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                courseData.OK64HeaderData.Maps = Convert.ToInt32(binaryWriter.BaseStream.Position);
                 binaryWriter.Write(compressedData);
-                
+
 
 
 
@@ -744,45 +816,56 @@ namespace Tarmac64_Geometry
                 {
                     binaryWriter.Write(Convert.ToByte(0x00));
                 }
-                previewEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
             }
+
+            //OBJECTS
+            courseData.OK64HeaderData.Objects = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+
+            //
+            //map coords
+
+            
+
+            flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MinimapCoords.X));
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.MapX = flip;
+
+            flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MinimapCoords.Y));
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.MapY = flip;
+
+
+
             //
 
+            //echo
 
 
-            //Write Course Banner Texture
-            if (bannerImage.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(bannerImage);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
+            flip = BitConverter.GetBytes(courseData.EchoValues[0]);
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.EchoStart = flip;
+
+            flip = BitConverter.GetBytes(courseData.EchoValues[1]);
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.EchoStop = flip;
 
 
-                bannerOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(compressedData);
-                
+            courseData.OK64HeaderData.Tempo = new byte[4];
+            courseData.OK64HeaderData.Tempo[0] = Convert.ToByte(courseData.GameTempos[0]);
+            courseData.OK64HeaderData.Tempo[1] = Convert.ToByte(courseData.GameTempos[1]);
+            courseData.OK64HeaderData.Tempo[2] = Convert.ToByte(courseData.GameTempos[2]);
+            courseData.OK64HeaderData.Tempo[3] = Convert.ToByte(courseData.GameTempos[3]);
 
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-                bannerEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            }
-            //
+            courseData.OK64HeaderData.MusicID = courseData.MusicID;
 
 
 
 
+            courseData.HeaderData = new CourseHeader();
             // Segment 6
 
-            seg6start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            courseData.HeaderData.s6Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
 
 
             binaryWriter.Write(seg6, 0, seg6.Length);
@@ -794,14 +877,14 @@ namespace Tarmac64_Geometry
             {
                 binaryWriter.Write(Convert.ToByte(0x00));
             }
-            seg6end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            courseData.HeaderData.s6End = Convert.ToUInt32(binaryWriter.BaseStream.Position);
             //
 
 
             // Segment 9
-            seg9start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            courseData.HeaderData.s9Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
 
-            binaryWriter.Write(seg9, 0, seg9.Length);
+            binaryWriter.Write(courseData.Segment9, 0, courseData.Segment9.Length);
 
             addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
             if (addressAlign == 4)
@@ -810,14 +893,14 @@ namespace Tarmac64_Geometry
             {
                 binaryWriter.Write(Convert.ToByte(0x00));
             }
-            seg9end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            courseData.HeaderData.s9End = Convert.ToUInt32(binaryWriter.BaseStream.Position);
             //
 
 
 
 
             // Segment 4/7
-            seg4start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            courseData.HeaderData.s47Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
 
             binaryWriter.Write(seg4, 0, seg4.Length);
 
@@ -830,8 +913,7 @@ namespace Tarmac64_Geometry
                 binaryWriter.Write(Convert.ToByte(0x00));
             }
 
-            seg7start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-
+            courseData.HeaderData.s7Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
             binaryWriter.Write(seg7, 0, seg7.Length);
 
 
@@ -842,8 +924,9 @@ namespace Tarmac64_Geometry
             {
                 binaryWriter.Write(Convert.ToByte(0x00));
             }
-            seg7end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            seg7rsp = Convert.ToUInt32(0x0F000000 | (seg7start - seg4start));
+            UInt32 seg7end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            UInt32 seg7RSP = Convert.ToUInt32(0x0F000000 | (courseData.HeaderData.s7Start - courseData.HeaderData.s47Start));
+
             //
 
 
@@ -853,49 +936,49 @@ namespace Tarmac64_Geometry
 
             // Flip Endian on Course Header offsets.
 
-            flip = BitConverter.GetBytes(seg6start);
+            flip = BitConverter.GetBytes(courseData.HeaderData.s6Start);
             Array.Reverse(flip);
-            seg6start = BitConverter.ToUInt32(flip, 0);
+            courseData.HeaderData.s6Start = BitConverter.ToUInt32(flip, 0);
 
-            flip = BitConverter.GetBytes(seg6end);
+            flip = BitConverter.GetBytes(courseData.HeaderData.s6End);
             Array.Reverse(flip);
-            seg6end = BitConverter.ToUInt32(flip, 0);
+            courseData.HeaderData.s6End = BitConverter.ToUInt32(flip, 0);
 
-            flip = BitConverter.GetBytes(seg4start);
+            flip = BitConverter.GetBytes(courseData.HeaderData.s47Start);
             Array.Reverse(flip);
-            seg4start = BitConverter.ToUInt32(flip, 0);
+            courseData.HeaderData.s47Start = BitConverter.ToUInt32(flip, 0);
 
-            flip = BitConverter.GetBytes(seg7end);
+            flip = BitConverter.GetBytes(courseData.HeaderData.s47End);
             Array.Reverse(flip);
-            seg7end = BitConverter.ToUInt32(flip, 0);
+            courseData.HeaderData.s47End = BitConverter.ToUInt32(flip, 0);
 
-            flip = BitConverter.GetBytes(seg9start);
+            flip = BitConverter.GetBytes(courseData.HeaderData.s9Start);
             Array.Reverse(flip);
-            seg9start = BitConverter.ToUInt32(flip, 0);
+            courseData.HeaderData.s9Start = BitConverter.ToUInt32(flip, 0);
 
-            flip = BitConverter.GetBytes(seg9end);
+            flip = BitConverter.GetBytes(courseData.HeaderData.s9End);
             Array.Reverse(flip);
-            seg9end = BitConverter.ToUInt32(flip, 0);
+            courseData.HeaderData.s9End = BitConverter.ToUInt32(flip, 0);
 
-            flip = BitConverter.GetBytes(seg7rsp);
+            flip = BitConverter.GetBytes(seg7RSP);
             Array.Reverse(flip);
-            seg7rsp = BitConverter.ToUInt32(flip, 0);
+            seg7RSP = BitConverter.ToUInt32(flip, 0);
             //
 
 
             //calculate # verts
 
-            UInt32 vertcount = Convert.ToUInt32(useg4.Length / 14);
-            flip = BitConverter.GetBytes(vertcount);
+            courseData.HeaderData.VertCount = Convert.ToUInt32(courseData.Segment4.Length / 14);
+            flip = BitConverter.GetBytes(courseData.HeaderData.VertCount);
             Array.Reverse(flip);
-            vertcount = BitConverter.ToUInt32(flip, 0);
+            courseData.HeaderData.VertCount = BitConverter.ToUInt32(flip, 0);
             //
 
 
 
             //seg7 size
 
-            UInt32 seg7size = Convert.ToUInt32(useg7.Length);
+            UInt32 seg7size = Convert.ToUInt32(courseData.Segment7.Length);
             flip = BitConverter.GetBytes(seg7size);
             Array.Reverse(flip);
             seg7size = BitConverter.ToUInt32(flip, 0);
@@ -909,104 +992,92 @@ namespace Tarmac64_Geometry
 
 
 
-            binaryWriter.BaseStream.Seek(0xBFDA80 + (setID * 0x7D0) + (cID * 0x64), SeekOrigin.Begin);
-
-
-
-
-            //Internal Course Names
-            
-            flip = BitConverter.GetBytes(nameOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(nameEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-            //Write staff ghost offset
-            flip = BitConverter.GetBytes(ghostOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(ghostEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-            //Speed and Song
-            //WRITTEN DIRECTLY TO HEADER.
-
-            binaryWriter.Write(songID);
-            binaryWriter.Write(gameSpeed[0]);
-            binaryWriter.Write(gameSpeed[1]);
-            binaryWriter.Write(gameSpeed[2]);
-            //
-
-
-
-            //Write course minimap offset
-            
-            flip = BitConverter.GetBytes(mapOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(mapEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-            //Write course minimap positions
-
-            flip = BitConverter.GetBytes(coordOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(coordEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-            //Write sky color offset
-
-            flip = BitConverter.GetBytes(skyOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(skyEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-            //Write ASM offset
-
-            flip = BitConverter.GetBytes(asmOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(asmEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-            //OK64 Course Header Table 
             
 
-            binaryWriter.Write(seg6start);
-            binaryWriter.Write(seg6end);
-            binaryWriter.Write(seg4start);
-            binaryWriter.Write(seg7end);
-            binaryWriter.Write(seg9start);
-            binaryWriter.Write(seg9end);
+            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+            if (addressAlign == 4)
+                addressAlign = 0;
+
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            uint headerOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+
+
+
+            // Version 4
+
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Version);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            //menuheader
+
+            flip = BitConverter.GetBytes(courseData.MenuHeaderData.Preview);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.MenuHeaderData.Banner);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+
+            //ok64header
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Sky);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Credits);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Ghost);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Assembly);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Mods);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Maps);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Objects);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            binaryWriter.Write(courseData.OK64HeaderData.MapX);
+            binaryWriter.Write(courseData.OK64HeaderData.MapY);
+            binaryWriter.Write(courseData.OK64HeaderData.EchoStart);
+            binaryWriter.Write(courseData.OK64HeaderData.EchoStop);
+            binaryWriter.Write(courseData.OK64HeaderData.Tempo[0]);
+            binaryWriter.Write(courseData.OK64HeaderData.Tempo[1]);
+            binaryWriter.Write(courseData.OK64HeaderData.Tempo[2]);
+            binaryWriter.Write(courseData.OK64HeaderData.Tempo[3]);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.MusicID);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+
+
+            //courseheader
+            
+
+            binaryWriter.Write(courseData.HeaderData.s6Start);
+            binaryWriter.Write(courseData.HeaderData.s6End);
+            binaryWriter.Write(courseData.HeaderData.s47Start);
+            binaryWriter.Write(courseData.HeaderData.s47End);
+            binaryWriter.Write(courseData.HeaderData.s9Start);
+            binaryWriter.Write(courseData.HeaderData.s9End);
 
             flip = BitConverter.GetBytes(0x0F000000);
             Array.Reverse(flip);
             binaryWriter.Write(flip);
 
-            binaryWriter.Write(vertcount);
+            binaryWriter.Write(courseData.HeaderData.VertCount);
 
-            binaryWriter.Write(seg7rsp);
+            binaryWriter.Write(seg7RSP);
 
 
             binaryWriter.Write(seg7size);
@@ -1027,34 +1098,6 @@ namespace Tarmac64_Geometry
 
 
 
-            binaryWriter.BaseStream.Seek(0xBFF9C0 + (setID * 0x140) + (cID * 0x10), SeekOrigin.Begin);
-
-
-
-            //Write preview image offset
-
-            flip = BitConverter.GetBytes(previewOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(previewEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-            //Write banner image offset
-
-            flip = BitConverter.GetBytes(bannerOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(bannerEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
 
 
 
@@ -1062,621 +1105,6 @@ namespace Tarmac64_Geometry
             return newROM;
 
         }
-
-        public byte[] compileBattle(byte[] useg4, byte[] useg6, byte[] useg7, byte[] seg9, string courseName, string previewImage, string bannerImage, string mapImage, Int16[] mapCoords, string customASM, byte[] skyColor, byte songID, byte[] gameSpeed, byte[] fileData, int cID, int setID)
-        {
-
-            /*
-            And then the shrill, whining voice began, "Oh, bless his heart, his
-            dear little Majesty needn't mind about the White Lady — that's what
-            we call her — being dead. The Worshipful Master Doctor is only
-            making game of a poor old woman like me when he says that. Sweet
-            Mastery Doctor, learned Master Doctor, who ever heard of a witch that
-            really died? You can always get them back."
-            "Call her up," said the grey voice. "We are all ready. Draw the circle.
-            Prepare the blue fire..."
-            */
-
-            bool blueFire = true; //needed for any black magic sorcery.
-
-            byte[] seg6 = compressMIO0(useg6);
-            byte[] seg4 = compressMIO0(useg4);
-            byte[] seg7 = compress_seg7(useg7);
-
-
-            byte[] flip = new byte[0];
-
-            TM64_Geometry mk = new TM64_Geometry();
-            memoryStream = new MemoryStream();
-            memoryStream.Write(fileData, 0, fileData.Length);
-            binaryWriter = new BinaryWriter(memoryStream);
-            binaryReader = new BinaryReader(memoryStream);
-
-            UInt32 seg6start = 0;
-            UInt32 seg6end = 0;
-            UInt32 seg4start = 0;
-            UInt32 seg7end = 0;
-            UInt32 seg9start = 0;
-            UInt32 seg9end = 0;
-            UInt32 seg7start = 0;
-            UInt32 seg7rsp = 0;
-
-
-
-
-
-
-            int addressAlign = 0;
-
-            int previewOffset = 0;
-            int bannerOffset = 0;
-            int mapOffset = 0;
-            int coordOffset = 0;
-            int nameOffset = 0;
-            int spawnOffset = 0;
-            int skyOffset = 0;
-
-            int previewEnd = 0;
-            int bannerEnd = 0;
-            int mapEnd = 0;
-            int coordEnd = 0;
-            int nameEnd = 0;
-            int spawnEnd = 0;
-            int skyEnd = 0;
-
-
-
-            int asmOffset = 0;
-            int asmEnd = 0;
-
-            binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
-
-
-
-            //allignment
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-
-            //
-
-
-
-
-
-
-
-            //Internal Name
-            if (courseName.Length > 0)
-            {
-                nameOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-                binaryWriter.Write(courseName);   //using a length-defined as opposed to null terminated setup.
-                                                  //easier to program for writing, easier to program for reading. 
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-                nameEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            }
-            //
-
-
-
-
-            //Write Course Map Texture
-            if (mapImage.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(mapImage);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                mapOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(compressedData);
-
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-                mapEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            }
-            //
-            //map coords
-
-            coordOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-            flip = BitConverter.GetBytes(mapCoords[0]);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-            flip = BitConverter.GetBytes(mapCoords[1]);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            coordEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-            //
-
-
-
-
-            //add sky colors
-
-
-            skyOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[0]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[1]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[2]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[3]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[4]);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(skyColor[5]);
-
-
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            skyEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            //
-
-
-            //add spawnpoints
-
-            /*
-            spawnOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            for (int currentPoint = 0; currentPoint < 4; currentPoint++)
-            {
-                binaryWriter.Write(Convert.ToInt16(spawnPoints[currentPoint].x));
-                binaryWriter.Write(Convert.ToInt16(spawnPoints[currentPoint].y));
-                binaryWriter.Write(Convert.ToInt16(spawnPoints[currentPoint].z));
-            }
-            */
-            spawnOffset = 0;
-
-
-
-
-
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            spawnEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            //
-
-
-
-
-
-
-            //custom ASM
-            if (customASM.Length > 0)
-            {
-
-
-                byte[] asmSequence = File.ReadAllBytes(customASM);
-
-                asmOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(asmSequence);
-
-
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-                asmEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            }
-            //
-
-
-
-
-
-
-
-            //Course Preview Texture
-            if (previewImage.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(previewImage);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                previewOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(compressedData);
-
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-                previewEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            }
-            //
-
-
-
-            //Write Course Banner Texture
-            if (bannerImage.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(bannerImage);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                bannerOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(compressedData);
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-                bannerEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            }
-            //
-
-
-
-
-            // Segment 6
-
-            seg6start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-
-
-            binaryWriter.Write(seg6, 0, seg6.Length);
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            seg6end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            //
-
-
-            // Segment 9
-            seg9start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-
-            binaryWriter.Write(seg9, 0, seg9.Length);
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            seg9end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            //
-
-
-
-
-            // Segment 4/7
-            seg4start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-
-            binaryWriter.Write(seg4, 0, seg4.Length);
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-
-            seg7start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-
-            binaryWriter.Write(seg7, 0, seg7.Length);
-
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            seg7end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            seg7rsp = Convert.ToUInt32(0x0F000000 | (seg7start - seg4start));
-            //
-
-
-
-
-
-
-            // Flip Endian on Course Header offsets.
-
-            flip = BitConverter.GetBytes(seg6start);
-            Array.Reverse(flip);
-            seg6start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg6end);
-            Array.Reverse(flip);
-            seg6end = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg4start);
-            Array.Reverse(flip);
-            seg4start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg7end);
-            Array.Reverse(flip);
-            seg7end = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg9start);
-            Array.Reverse(flip);
-            seg9start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg9end);
-            Array.Reverse(flip);
-            seg9end = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg7rsp);
-            Array.Reverse(flip);
-            seg7rsp = BitConverter.ToUInt32(flip, 0);
-            //
-
-
-            //calculate # verts
-
-            UInt32 vertcount = Convert.ToUInt32(useg4.Length / 14);
-            flip = BitConverter.GetBytes(vertcount);
-            Array.Reverse(flip);
-            vertcount = BitConverter.ToUInt32(flip, 0);
-            //
-
-
-
-            //seg7 size
-
-            UInt32 seg7size = Convert.ToUInt32(useg7.Length);
-            flip = BitConverter.GetBytes(seg7size);
-            Array.Reverse(flip);
-            seg7size = BitConverter.ToUInt32(flip, 0);
-            //
-
-
-            /// After Calculating the offsets and values above we now write them to the empty space near the end of the ROM.
-
-
-
-
-
-
-            binaryWriter.BaseStream.Seek(0xBFDA80 + (setID * 0x7D0) + (cID * 0x64), SeekOrigin.Begin);
-
-
-
-
-            //Internal Course Names
-
-            flip = BitConverter.GetBytes(nameOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(nameEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-            /*
-            //Write staff ghost offset
-            flip = BitConverter.GetBytes(ghostOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(ghostEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-            */
-
-            //Write spawn point offset
-            flip = BitConverter.GetBytes(spawnOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(spawnEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-
-            //Speed and Song
-            //WRITTEN DIRECTLY TO HEADER.
-
-            binaryWriter.Write(songID);
-            binaryWriter.Write(gameSpeed[0]);
-            binaryWriter.Write(gameSpeed[1]);
-            binaryWriter.Write(gameSpeed[2]);
-            //
-
-
-
-            //Write course minimap offset
-
-            flip = BitConverter.GetBytes(mapOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(mapEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-            //Write course minimap positions
-
-            flip = BitConverter.GetBytes(coordOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(coordEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-            //Write sky color offset
-
-            flip = BitConverter.GetBytes(skyOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(skyEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-            //Write ASM offset
-
-            flip = BitConverter.GetBytes(asmOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(asmEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-            //OK64 Course Header Table 
-
-
-            binaryWriter.Write(seg6start);
-            binaryWriter.Write(seg6end);
-            binaryWriter.Write(seg4start);
-            binaryWriter.Write(seg7end);
-            binaryWriter.Write(seg9start);
-            binaryWriter.Write(seg9end);
-
-            flip = BitConverter.GetBytes(0x0F000000);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-            binaryWriter.Write(vertcount);
-
-            binaryWriter.Write(seg7rsp);
-
-
-            binaryWriter.Write(seg7size);
-
-            flip = BitConverter.GetBytes(0x09000000);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-            flip = BitConverter.GetBytes(0x00000000);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-
-
-
-
-
-            binaryWriter.BaseStream.Seek(0xBFF9C0 + (setID * 0x140) + (cID * 0x10), SeekOrigin.Begin);
-
-
-
-            //Write preview image offset
-
-            flip = BitConverter.GetBytes(previewOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(previewEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-            //Write banner image offset
-
-            flip = BitConverter.GetBytes(bannerOffset);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(bannerEnd);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-
-
-
-            byte[] newROM = memoryStream.ToArray();
-            return newROM;
-
-        }
-
 
         public string[] DumpVerts(byte[] vertBytes)
         {
@@ -1865,9 +1293,9 @@ namespace Tarmac64_Geometry
             Header[] courseHeader = loadHeader(fileData);
 
             int s4Start = BitConverter.ToInt32(courseHeader[cID].s47Start, 0);
-            int s7Start = BitConverter.ToInt32(courseHeader[cID].s7Pointer, 0);
+            int s7Start = BitConverter.ToInt32(courseHeader[cID].S7Pointer, 0);
 
-            byte[] seg4 = new byte[(BitConverter.ToInt32(courseHeader[cID].s7Pointer, 0) - BitConverter.ToInt32(courseHeader[cID].s47Start, 0))];
+            byte[] seg4 = new byte[(BitConverter.ToInt32(courseHeader[cID].S7Pointer, 0) - BitConverter.ToInt32(courseHeader[cID].s47Start, 0))];
 
 
             Buffer.BlockCopy(fileData, s4Start, seg4, 0, s7Start - s4Start);
@@ -1904,7 +1332,7 @@ namespace Tarmac64_Geometry
             int textureOffset = new int();
             int compressSize = new int();
 
-            binaryReader.BaseStream.Position = (BitConverter.ToInt32(courseHeader[cID].texturePointer, 0) - 0x09000000);
+            binaryReader.BaseStream.Position = (BitConverter.ToInt32(courseHeader[cID].TexturePointer, 0) - 0x09000000);
 
             for (int i = 0; binaryReader.BaseStream.Position < binaryReader.BaseStream.Length; i++)
             {
@@ -1981,7 +1409,7 @@ namespace Tarmac64_Geometry
             Header[] courseHeaders = loadHeader(fileData);
 
             int s4Start = BitConverter.ToInt32(courseHeaders[cID].s47Start, 0);
-            int s7Start = BitConverter.ToInt32(courseHeaders[cID].s7Pointer, 0);
+            int s7Start = BitConverter.ToInt32(courseHeaders[cID].S7Pointer, 0);
             int s7End = BitConverter.ToInt32(courseHeaders[cID].s47End, 0);
 
 
@@ -5542,7 +4970,7 @@ namespace Tarmac64_Geometry
                     }
                     else
                     {
-                        
+                        /*
                         while (!(File.Exists(textureArray[materialIndex].texturePath)))
                         {
                             MessageBox.Show(textureArray[materialIndex].texturePath + " not found, browse to file!");
@@ -5562,7 +4990,7 @@ namespace Tarmac64_Geometry
                                 break;
                             }
                         }
-                        
+                        */
 
                         textureArray[materialIndex].textureHeight = 32;
                         textureArray[materialIndex].textureWidth = 32;
@@ -5648,65 +5076,65 @@ namespace Tarmac64_Geometry
                     List<int> l_zValues = new List<int>();
 
                     newObject.modelGeometry[currentFace] = new Face();
-                    newObject.modelGeometry[currentFace].vertData = new Vertex[3];
+                    newObject.modelGeometry[currentFace].VertData = new Vertex[3];
 
                     for (int currentVert = 0; currentVert < 3; currentVert++)
                     {
-                        newObject.modelGeometry[currentFace].vertIndex = new VertIndex();
-                        newObject.modelGeometry[currentFace].vertIndex.indexA = Convert.ToInt16(childPoly.Indices[0]);
-                        newObject.modelGeometry[currentFace].vertIndex.indexB = Convert.ToInt16(childPoly.Indices[1]);
-                        newObject.modelGeometry[currentFace].vertIndex.indexC = Convert.ToInt16(childPoly.Indices[2]);
+                        newObject.modelGeometry[currentFace].VertIndex = new VertIndex();
+                        newObject.modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
+                        newObject.modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);
+                        newObject.modelGeometry[currentFace].VertIndex.IndexC = Convert.ToInt16(childPoly.Indices[2]);
 
-                        newObject.modelGeometry[currentFace].vertData[currentVert] = new Vertex();
-                        newObject.modelGeometry[currentFace].vertData[currentVert].position = new Position();
-                        newObject.modelGeometry[currentFace].vertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
-                        newObject.modelGeometry[currentFace].vertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
-                        newObject.modelGeometry[currentFace].vertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
-
-
-
-                        xValues.Add(newObject.modelGeometry[currentFace].vertData[currentVert].position.x);
-                        yValues.Add(newObject.modelGeometry[currentFace].vertData[currentVert].position.y);
-
-                        l_xValues.Add(newObject.modelGeometry[currentFace].vertData[currentVert].position.x);
-                        l_yValues.Add(newObject.modelGeometry[currentFace].vertData[currentVert].position.y);
-                        l_zValues.Add(newObject.modelGeometry[currentFace].vertData[currentVert].position.z);
+                        newObject.modelGeometry[currentFace].VertData[currentVert] = new Vertex();
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position = new Position();
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
 
 
 
-                        if (newObject.modelGeometry[currentFace].vertData[currentVert].position.x > newObject.modelGeometry[currentFace].highX)
+                        xValues.Add(newObject.modelGeometry[currentFace].VertData[currentVert].position.x);
+                        yValues.Add(newObject.modelGeometry[currentFace].VertData[currentVert].position.y);
+
+                        l_xValues.Add(newObject.modelGeometry[currentFace].VertData[currentVert].position.x);
+                        l_yValues.Add(newObject.modelGeometry[currentFace].VertData[currentVert].position.y);
+                        l_zValues.Add(newObject.modelGeometry[currentFace].VertData[currentVert].position.z);
+
+
+
+                        if (newObject.modelGeometry[currentFace].VertData[currentVert].position.x > newObject.modelGeometry[currentFace].HighX)
                         {
-                            newObject.modelGeometry[currentFace].highX = newObject.modelGeometry[currentFace].vertData[currentVert].position.x;
+                            newObject.modelGeometry[currentFace].HighX = newObject.modelGeometry[currentFace].VertData[currentVert].position.x;
                         }
-                        if (newObject.modelGeometry[currentFace].vertData[currentVert].position.x < newObject.modelGeometry[currentFace].lowX)
+                        if (newObject.modelGeometry[currentFace].VertData[currentVert].position.x < newObject.modelGeometry[currentFace].LowX)
                         {
-                            newObject.modelGeometry[currentFace].lowX = newObject.modelGeometry[currentFace].vertData[currentVert].position.x;
+                            newObject.modelGeometry[currentFace].LowX = newObject.modelGeometry[currentFace].VertData[currentVert].position.x;
                         }
-                        if (newObject.modelGeometry[currentFace].vertData[currentVert].position.y > newObject.modelGeometry[currentFace].highY)
+                        if (newObject.modelGeometry[currentFace].VertData[currentVert].position.y > newObject.modelGeometry[currentFace].HighY)
                         {
-                            newObject.modelGeometry[currentFace].highY = newObject.modelGeometry[currentFace].vertData[currentVert].position.y;
+                            newObject.modelGeometry[currentFace].HighY = newObject.modelGeometry[currentFace].VertData[currentVert].position.y;
                         }
-                        if (newObject.modelGeometry[currentFace].vertData[currentVert].position.y < newObject.modelGeometry[currentFace].lowY)
+                        if (newObject.modelGeometry[currentFace].VertData[currentVert].position.y < newObject.modelGeometry[currentFace].LowY)
                         {
-                            newObject.modelGeometry[currentFace].lowY = newObject.modelGeometry[currentFace].vertData[currentVert].position.y;
+                            newObject.modelGeometry[currentFace].LowY = newObject.modelGeometry[currentFace].VertData[currentVert].position.y;
                         }
 
 
-                        newObject.modelGeometry[currentFace].vertData[currentVert].color = new Color();
-                        newObject.modelGeometry[currentFace].vertData[currentVert].color = new Color();
+                        newObject.modelGeometry[currentFace].VertData[currentVert].color = new OK64Color();
+                        newObject.modelGeometry[currentFace].VertData[currentVert].color = new OK64Color();
                         if (fbx.Meshes[childMesh].VertexColorChannels[0].Count > 0)
                         {
-                            newObject.modelGeometry[currentFace].vertData[currentVert].color.r = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
-                            newObject.modelGeometry[currentFace].vertData[currentVert].color.g = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
-                            newObject.modelGeometry[currentFace].vertData[currentVert].color.b = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
+                            newObject.modelGeometry[currentFace].VertData[currentVert].color.R = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
+                            newObject.modelGeometry[currentFace].VertData[currentVert].color.G = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
+                            newObject.modelGeometry[currentFace].VertData[currentVert].color.B = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
                         }
                         else
                         {
-                            newObject.modelGeometry[currentFace].vertData[currentVert].color.r = 252;
-                            newObject.modelGeometry[currentFace].vertData[currentVert].color.g = 252;
-                            newObject.modelGeometry[currentFace].vertData[currentVert].color.b = 252;
+                            newObject.modelGeometry[currentFace].VertData[currentVert].color.R = 252;
+                            newObject.modelGeometry[currentFace].VertData[currentVert].color.G = 252;
+                            newObject.modelGeometry[currentFace].VertData[currentVert].color.B = 252;
                         }
-                        newObject.modelGeometry[currentFace].vertData[currentVert].color.a = 0;
+                        newObject.modelGeometry[currentFace].VertData[currentVert].color.A = 0;
                     }
 
 
@@ -5716,7 +5144,7 @@ namespace Tarmac64_Geometry
                     float centerY = (l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3;
                     float centerZ = (l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3;
 
-                    newObject.modelGeometry[currentFace].centerPosition = new Vector3D(centerX, centerY, centerZ);
+                    newObject.modelGeometry[currentFace].CenterPosition = new Vector3D(centerX, centerY, centerZ);
 
 
 
@@ -5827,8 +5255,8 @@ namespace Tarmac64_Geometry
                     {
                         MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + fbx.Meshes[childMesh].Name);
                     }
-                    newObject.modelGeometry[currentFace].vertData[0].position.s = Convert.ToInt16(s_coord);
-                    newObject.modelGeometry[currentFace].vertData[0].position.t = Convert.ToInt16(t_coord);
+                    newObject.modelGeometry[currentFace].VertData[0].position.s = Convert.ToInt16(s_coord);
+                    newObject.modelGeometry[currentFace].VertData[0].position.t = Convert.ToInt16(t_coord);
 
 
 
@@ -5841,8 +5269,8 @@ namespace Tarmac64_Geometry
                         MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + fbx.Meshes[childMesh].Name);
                     }
 
-                    newObject.modelGeometry[currentFace].vertData[1].position.s = Convert.ToInt16(s_coord);
-                    newObject.modelGeometry[currentFace].vertData[1].position.t = Convert.ToInt16(t_coord);
+                    newObject.modelGeometry[currentFace].VertData[1].position.s = Convert.ToInt16(s_coord);
+                    newObject.modelGeometry[currentFace].VertData[1].position.t = Convert.ToInt16(t_coord);
 
 
                     //
@@ -5860,8 +5288,8 @@ namespace Tarmac64_Geometry
                     }
 
 
-                    newObject.modelGeometry[currentFace].vertData[2].position.s = Convert.ToInt16(s_coord);
-                    newObject.modelGeometry[currentFace].vertData[2].position.t = Convert.ToInt16(t_coord);
+                    newObject.modelGeometry[currentFace].VertData[2].position.s = Convert.ToInt16(s_coord);
+                    newObject.modelGeometry[currentFace].VertData[2].position.t = Convert.ToInt16(t_coord);
 
 
                     currentFace++;
@@ -6030,12 +5458,12 @@ namespace Tarmac64_Geometry
 
 
                             masterObjects[currentObject].modelGeometry[currentFace] = new Face();
-                            masterObjects[currentObject].modelGeometry[currentFace].vertData = new Vertex[3];
+                            masterObjects[currentObject].modelGeometry[currentFace].VertData = new Vertex[3];
 
-                            masterObjects[currentObject].modelGeometry[currentFace].highX = -99999999;
-                            masterObjects[currentObject].modelGeometry[currentFace].highY = -99999999;
-                            masterObjects[currentObject].modelGeometry[currentFace].lowX = 99999999;
-                            masterObjects[currentObject].modelGeometry[currentFace].lowX = 99999999;
+                            masterObjects[currentObject].modelGeometry[currentFace].HighX = -99999999;
+                            masterObjects[currentObject].modelGeometry[currentFace].HighY = -99999999;
+                            masterObjects[currentObject].modelGeometry[currentFace].LowX = 99999999;
+                            masterObjects[currentObject].modelGeometry[currentFace].LowX = 99999999;
 
                             if (childPoly.IndexCount != 3)
                             {
@@ -6050,60 +5478,60 @@ namespace Tarmac64_Geometry
                                 
                                 for (int currentVert = 0; currentVert < 3; currentVert++)
                                 {
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertIndex = new VertIndex();
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertIndex.indexA = Convert.ToInt16(childPoly.Indices[0]);
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertIndex.indexB = Convert.ToInt16(childPoly.Indices[1]);
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertIndex.indexC = Convert.ToInt16(childPoly.Indices[2]);
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertIndex = new VertIndex();
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertIndex.IndexC = Convert.ToInt16(childPoly.Indices[2]);
 
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert] = new Vertex();
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position = new Position();
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
-
-
-
-
-                                    xValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x);
-                                    yValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y);
-
-                                    l_xValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x);
-                                    l_yValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y);
-                                    l_zValues.Add(masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.z);
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert] = new Vertex();
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position = new Position();
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
 
 
 
-                                    if (masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x > masterObjects[currentObject].modelGeometry[currentFace].highX)
+
+                                    xValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x);
+                                    yValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y);
+
+                                    l_xValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x);
+                                    l_yValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y);
+                                    l_zValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.z);
+
+
+
+                                    if (masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x > masterObjects[currentObject].modelGeometry[currentFace].HighX)
                                     {
-                                        masterObjects[currentObject].modelGeometry[currentFace].highX = masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x;
+                                        masterObjects[currentObject].modelGeometry[currentFace].HighX = masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x;
                                     }
-                                    if (masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x < masterObjects[currentObject].modelGeometry[currentFace].lowX)
+                                    if (masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x < masterObjects[currentObject].modelGeometry[currentFace].LowX)
                                     {
-                                        masterObjects[currentObject].modelGeometry[currentFace].lowX = masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.x;
+                                        masterObjects[currentObject].modelGeometry[currentFace].LowX = masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x;
                                     }
-                                    if (masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y > masterObjects[currentObject].modelGeometry[currentFace].highY)
+                                    if (masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y > masterObjects[currentObject].modelGeometry[currentFace].HighY)
                                     {
-                                        masterObjects[currentObject].modelGeometry[currentFace].highY = masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y;
+                                        masterObjects[currentObject].modelGeometry[currentFace].HighY = masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y;
                                     }
-                                    if (masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y < masterObjects[currentObject].modelGeometry[currentFace].lowY)
+                                    if (masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y < masterObjects[currentObject].modelGeometry[currentFace].LowY)
                                     {
-                                        masterObjects[currentObject].modelGeometry[currentFace].lowY = masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].position.y;
+                                        masterObjects[currentObject].modelGeometry[currentFace].LowY = masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y;
                                     }
 
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color = new Color();
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color = new OK64Color();
                                     if (fbx.Meshes[childMesh].VertexColorChannels[0].Count > 0)
                                     {
-                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.r = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
-                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.g = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
-                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.b = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
+                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.R = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
+                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.G = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
+                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.B = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
                                     }
                                     else
                                     {
-                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.r = 252;
-                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.g = 252;
-                                        masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.b = 252;
+                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.R = 252;
+                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.G = 252;
+                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.B = 252;
                                     }
-                                    masterObjects[currentObject].modelGeometry[currentFace].vertData[currentVert].color.a = 0;
+                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.A = 0;
                                 }
 
 
@@ -6111,7 +5539,7 @@ namespace Tarmac64_Geometry
                                 float centerY = (l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3;
                                 float centerZ = (l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3;
                                 
-                                masterObjects[currentObject].modelGeometry[currentFace].centerPosition = new Vector3D(centerX, centerY, centerZ);
+                                masterObjects[currentObject].modelGeometry[currentFace].CenterPosition = new Vector3D(centerX, centerY, centerZ);
 
 
 
@@ -6219,8 +5647,8 @@ namespace Tarmac64_Geometry
                                 {
                                     MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + masterObjects[currentObject].objectName);
                                 }
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[0].position.s = Convert.ToInt16(s_coord);
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[0].position.t = Convert.ToInt16(t_coord);
+                                masterObjects[currentObject].modelGeometry[currentFace].VertData[0].position.s = Convert.ToInt16(s_coord);
+                                masterObjects[currentObject].modelGeometry[currentFace].VertData[0].position.t = Convert.ToInt16(t_coord);
 
 
 
@@ -6233,8 +5661,8 @@ namespace Tarmac64_Geometry
                                     MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + masterObjects[currentObject].objectName);
                                 }
 
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[1].position.s = Convert.ToInt16(s_coord);
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[1].position.t = Convert.ToInt16(t_coord);
+                                masterObjects[currentObject].modelGeometry[currentFace].VertData[1].position.s = Convert.ToInt16(s_coord);
+                                masterObjects[currentObject].modelGeometry[currentFace].VertData[1].position.t = Convert.ToInt16(t_coord);
 
 
                                 //
@@ -6252,8 +5680,8 @@ namespace Tarmac64_Geometry
                                 }
 
 
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[2].position.s = Convert.ToInt16(s_coord);
-                                masterObjects[currentObject].modelGeometry[currentFace].vertData[2].position.t = Convert.ToInt16(t_coord);
+                                masterObjects[currentObject].modelGeometry[currentFace].VertData[2].position.s = Convert.ToInt16(s_coord);
+                                masterObjects[currentObject].modelGeometry[currentFace].VertData[2].position.t = Convert.ToInt16(t_coord);
 
                             }
                             currentFace++;
@@ -6423,7 +5851,7 @@ namespace Tarmac64_Geometry
 
 
                             surfaceObjects[totalIndex].modelGeometry[currentFace] = new Face();
-                            surfaceObjects[totalIndex].modelGeometry[currentFace].vertData = new Vertex[3];
+                            surfaceObjects[totalIndex].modelGeometry[currentFace].VertData = new Vertex[3];
                             if (childPoly.IndexCount != 3)
                             {
                                 MessageBox.Show("FATAL ERROR- OBJECT -" + surfaceNode.Children[currentsubObject].Name + " - has invalid geometry");
@@ -6433,42 +5861,42 @@ namespace Tarmac64_Geometry
                                 for (int currentVert = 0; currentVert < 3; currentVert++)
                                 {
 
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex = new VertIndex();
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex.indexA = Convert.ToInt16(childPoly.Indices[0]);
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex.indexB = Convert.ToInt16(childPoly.Indices[1]);
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertIndex.indexC = Convert.ToInt16(childPoly.Indices[2]);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertIndex = new VertIndex();
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertIndex.IndexC = Convert.ToInt16(childPoly.Indices[2]);
 
 
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert] = new Vertex();
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position = new Position();
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
-
-
-
-                                    l_xValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.x);
-                                    l_yValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.y);
-                                    l_zValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].position.z);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert] = new Vertex();
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position = new Position();
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
 
 
 
+                                    l_xValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.x);
+                                    l_yValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.y);
+                                    l_zValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.z);
 
 
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color = new Color();
+
+
+
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color = new OK64Color();
                                     if (fbx.Meshes[childMesh].VertexColorChannels[0].Count > 0)
                                     {
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.r = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.g = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.b = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.R = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.G = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.B = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
                                     }
                                     else
                                     {
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.r = 252;
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.g = 252;
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.b = 252;
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.R = 252;
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.G = 252;
+                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.B = 252;
                                     }
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[currentVert].color.a = 0;
+                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.A = 0;
                                 }
 
 
@@ -6476,7 +5904,7 @@ namespace Tarmac64_Geometry
                                 float centerY = (l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3;
                                 float centerZ = (l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3;
 
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].centerPosition = new Vector3D(centerX, centerY, centerZ);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].CenterPosition = new Vector3D(centerX, centerY, centerZ);
 
                                 //UV coords
 
@@ -6582,8 +6010,8 @@ namespace Tarmac64_Geometry
                                 {
                                     MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
                                 }
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[0].position.s = Convert.ToInt16(s_coord);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[0].position.t = Convert.ToInt16(t_coord);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[0].position.s = Convert.ToInt16(s_coord);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[0].position.t = Convert.ToInt16(t_coord);
 
 
 
@@ -6596,8 +6024,8 @@ namespace Tarmac64_Geometry
                                     MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
                                 }
 
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[1].position.s = Convert.ToInt16(s_coord);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[1].position.t = Convert.ToInt16(t_coord);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[1].position.s = Convert.ToInt16(s_coord);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[1].position.t = Convert.ToInt16(t_coord);
 
 
                                 //
@@ -6615,8 +6043,8 @@ namespace Tarmac64_Geometry
                                 }
 
 
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[2].position.s = Convert.ToInt16(s_coord);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].vertData[2].position.t = Convert.ToInt16(t_coord);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[2].position.s = Convert.ToInt16(s_coord);
+                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[2].position.t = Convert.ToInt16(t_coord);
 
                             }
                             currentFace++;
@@ -6827,7 +6255,7 @@ namespace Tarmac64_Geometry
         }
 
 
-        public OK64SectionList[] automateSection(int sectionCount, OK64F3DObject[] surfaceObjects, OK64F3DObject[] masterObjects, Assimp.Scene fbx, bool raycastBoolean)
+        public OK64SectionList[] AutomateSection(int sectionCount, OK64F3DObject[] surfaceObjects, OK64F3DObject[] masterObjects, Assimp.Scene fbx, bool raycastBoolean)
         {
             OK64SectionList[] sectionList = new OK64SectionList[sectionCount];
 
@@ -6856,7 +6284,7 @@ namespace Tarmac64_Geometry
                         {
                             for (int currentFace = 0; currentFace < surfaceObjects[currentObject].modelGeometry.Length; currentFace++)
                             {
-                                Vector3D raycastOrigin = surfaceObjects[currentObject].modelGeometry[currentFace].centerPosition;
+                                Vector3D raycastOrigin = surfaceObjects[currentObject].modelGeometry[currentFace].CenterPosition;
 
                                 switch (currentView)
                                 {
@@ -7051,9 +6479,9 @@ namespace Tarmac64_Geometry
                                                     {
                                                         case 0:
                                                             {
-                                                                if (searchFace.highY > raycastOrigin.Y)
+                                                                if (searchFace.HighY > raycastOrigin.Y)
                                                                 {
-                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.vertData[0], searchFace.vertData[1], searchFace.vertData[2]);
+                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                                                     if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
                                                                     {
@@ -7064,9 +6492,9 @@ namespace Tarmac64_Geometry
                                                             }
                                                         case 1:
                                                             {
-                                                                if (searchFace.highX > raycastOrigin.X)
+                                                                if (searchFace.HighX > raycastOrigin.X)
                                                                 {
-                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.vertData[0], searchFace.vertData[1], searchFace.vertData[2]);
+                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                                                     if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
                                                                     {
@@ -7077,9 +6505,9 @@ namespace Tarmac64_Geometry
                                                             }
                                                         case 2:
                                                             {
-                                                                if (searchFace.lowY < raycastOrigin.Y)
+                                                                if (searchFace.LowY < raycastOrigin.Y)
                                                                 {
-                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.vertData[0], searchFace.vertData[1], searchFace.vertData[2]);
+                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                                                     if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
                                                                     {
@@ -7090,9 +6518,9 @@ namespace Tarmac64_Geometry
                                                             }
                                                         case 3:
                                                             {
-                                                                if (searchFace.lowX < raycastOrigin.X)
+                                                                if (searchFace.LowX < raycastOrigin.X)
                                                                 {
-                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.vertData[0], searchFace.vertData[1], searchFace.vertData[2]);
+                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                                                     if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
                                                                     {
@@ -7423,24 +6851,24 @@ namespace Tarmac64_Geometry
                             {
                                 for (int v = 0; v < 3; v++)
                                 {
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.x));
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.x));
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.z));
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.z));
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[f + faceIndex].vertData[v].position.y));
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[f + faceIndex].VertData[v].position.y));
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
 
 
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.s));
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.s));
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.t));
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.t));
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
 
@@ -7489,9 +6917,9 @@ namespace Tarmac64_Geometry
                                         case 0:
                                         default:
                                             {
-                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].vertData[v].color.r);
-                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].vertData[v].color.g);
-                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].vertData[v].color.b);
+                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
+                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
+                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
                                                 seg4w.Write(Convert.ToByte(0));
                                                 break;
                                             }
@@ -7553,24 +6981,24 @@ namespace Tarmac64_Geometry
 
                             for (int v = 0; v < 3; v++)
                             {
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.x));
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.x));
                                 Array.Reverse(byteArray);
                                 seg4w.Write(byteArray);
 
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.z));
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.z));
                                 Array.Reverse(byteArray);
                                 seg4w.Write(byteArray);
 
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[faceIndex].vertData[v].position.y));
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[faceIndex].VertData[v].position.y));
                                 Array.Reverse(byteArray);
                                 seg4w.Write(byteArray);
 
 
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.s));
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.s));
                                 Array.Reverse(byteArray);
                                 seg4w.Write(byteArray);
 
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.t));
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.t));
                                 Array.Reverse(byteArray);
                                 seg4w.Write(byteArray);
 
@@ -7620,9 +7048,9 @@ namespace Tarmac64_Geometry
                                     case 0:
                                     default:
                                         {
-                                            seg4w.Write(cObj.modelGeometry[faceIndex].vertData[v].color.r);
-                                            seg4w.Write(cObj.modelGeometry[faceIndex].vertData[v].color.g);
-                                            seg4w.Write(cObj.modelGeometry[faceIndex].vertData[v].color.b);
+                                            seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
+                                            seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
+                                            seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
                                             seg4w.Write(Convert.ToByte(0));
                                             break;
                                         }
@@ -8198,31 +7626,31 @@ namespace Tarmac64_Geometry
                             {
                                 for (int v = 0; v < 3; v++)
                                 {
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.x));
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.x));
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.z));
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.z));
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[f + faceIndex].vertData[v].position.y));
-                                    Array.Reverse(byteArray);
-                                    seg4w.Write(byteArray);
-
-
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.s));
-                                    Array.Reverse(byteArray);
-                                    seg4w.Write(byteArray);
-
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].vertData[v].position.t));
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[f + faceIndex].VertData[v].position.y));
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
 
 
-                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].vertData[v].color.r);
-                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].vertData[v].color.g);
-                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].vertData[v].color.b);
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.s));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.t));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
                                     seg4w.Write(Convert.ToByte(0));
                                 }
                             }
@@ -8279,31 +7707,31 @@ namespace Tarmac64_Geometry
 
                             for (int v = 0; v < 3; v++)
                             {
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.x));
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.x));
                                 Array.Reverse(byteArray);
                                 seg4w.Write(byteArray);
 
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.z));
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.z));
                                 Array.Reverse(byteArray);
                                 seg4w.Write(byteArray);
 
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[faceIndex].vertData[v].position.y));
-                                Array.Reverse(byteArray);
-                                seg4w.Write(byteArray);
-
-
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.s));
-                                Array.Reverse(byteArray);
-                                seg4w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].vertData[v].position.t));
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[faceIndex].VertData[v].position.y));
                                 Array.Reverse(byteArray);
                                 seg4w.Write(byteArray);
 
 
-                                seg4w.Write(cObj.modelGeometry[faceIndex].vertData[v].color.r);
-                                seg4w.Write(cObj.modelGeometry[faceIndex].vertData[v].color.g);
-                                seg4w.Write(cObj.modelGeometry[faceIndex].vertData[v].color.b);
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.s));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.t));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+
+                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
+                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
+                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
                                 seg4w.Write(Convert.ToByte(0));
                             }
 
