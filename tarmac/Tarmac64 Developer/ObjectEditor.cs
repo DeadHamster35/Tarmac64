@@ -13,8 +13,6 @@ using System.Text;
 using System.Collections;
 using PeepsCompress;
 using Tarmac64_Library;
-using Tarmac64_Geometry;
-using Tarmac64_Paths;
 
 namespace Tarmac64
 {
@@ -146,9 +144,9 @@ namespace Tarmac64
         MemoryStream vs = new MemoryStream();
         BinaryReader vr = new BinaryReader(Stream.Null);
 
-
-        TM64_Geometry mk = new TM64_Geometry();
-        TM64_Paths mkPath = new TM64_Paths();
+        TM64 Tarmac = new TM64();
+        TM64_Geometry TarmacGeometry = new TM64_Geometry();
+        TM64_Paths TarmacPath = new TM64_Paths();
 
         string filePath = "";
         string savePath = "";
@@ -203,7 +201,7 @@ namespace Tarmac64
             cID = coursebox.SelectedIndex;
 
             byte[] seg6 = dump_segment_6();
-            seg6 = mk.decompressMIO0(seg6);
+            seg6 = Tarmac.DecompressMIO0(seg6);
             
 
             bs = new MemoryStream(seg6);

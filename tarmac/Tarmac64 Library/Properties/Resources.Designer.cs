@@ -61,6 +61,16 @@ namespace Tarmac64_Library.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] NONE_475 {
+            get {
+                object obj = ResourceManager.GetObject("NONE_475", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap ok64 {
@@ -86,6 +96,26 @@ namespace Tarmac64_Library.Properties {
         public static byte[] popResources {
             get {
                 object obj = ResourceManager.GetObject("popResources", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Tree1 {
+            get {
+                object obj = ResourceManager.GetObject("Tree1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] ZONE {
+            get {
+                object obj = ResourceManager.GetObject("ZONE", resourceCulture);
                 return ((byte[])(obj));
             }
         }

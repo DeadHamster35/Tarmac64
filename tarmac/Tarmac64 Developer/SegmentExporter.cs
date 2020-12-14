@@ -12,7 +12,7 @@ using System.Drawing;
 using System.Text;
 using System.Collections;
 using System.Windows.Media.Imaging;
-using Tarmac64_Geometry;
+using Tarmac64_Library;
 
 
 
@@ -41,7 +41,8 @@ namespace Tarmac64
 
         bool debugmode = false;
 
-        TM64_Geometry mk = new TM64_Geometry();
+        TM64 Tarmac = new TM64();
+        TM64_Geometry TarmacGeometry = new TM64_Geometry();
 
         TM64_Geometry.Vertex[] vertCache = new TM64_Geometry.Vertex[32];
 
@@ -147,7 +148,7 @@ namespace Tarmac64
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
 
-                byte[] vertByte = mk.decompressMIO0(compressedFile);
+                byte[] vertByte = Tarmac.DecompressMIO0(compressedFile);
                 
                 // we do a sloppy copy and don't convert the verts to their 16byte "proper" form.
 
@@ -713,7 +714,7 @@ namespace Tarmac64
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
 
-                byte[] Verts = mk.decompressMIO0(compressedFile);
+                byte[] Verts = Tarmac.DecompressMIO0(compressedFile);
                 
 
                 // we do a sloppy copy and don't convert the verts to their 16byte "proper" form.
@@ -771,7 +772,7 @@ namespace Tarmac64
                 byte[] compressedFile = new byte[romBytes.Length - targetOffset];
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
-                byte[] seg6 = mk.decompressMIO0(compressedFile);
+                byte[] seg6 = Tarmac.DecompressMIO0(compressedFile);
                 
 
 
@@ -794,8 +795,8 @@ namespace Tarmac64
                 cID = coursebox.SelectedIndex;
                 savePath = vertSave.FileName;
                 byte[] ROM = File.ReadAllBytes(filePath);
-                byte[] useg7 = mk.dumpseg7(cID, ROM);
-                byte[] seg7 = mk.decompress_seg7(useg7);
+                byte[] useg7 = Tarmac.Dumpseg7(cID, ROM);
+                byte[] seg7 = Tarmac.Decompress_seg7(useg7);
 
                 File.WriteAllBytes(savePath, seg7);
                 MessageBox.Show("Finished");
@@ -821,7 +822,7 @@ namespace Tarmac64
                 byte[] compressedFile = new byte[romBytes.Length - targetOffset];
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
-                byte[] seg4 = mk.decompressMIO0(compressedFile);
+                byte[] seg4 = Tarmac.DecompressMIO0(compressedFile);
                 
 
                 fs = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -850,7 +851,7 @@ namespace Tarmac64
                 byte[] compressedFile = new byte[romBytes.Length - targetOffset];
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
-                byte[] seg6 = mk.decompressMIO0(compressedFile);
+                byte[] seg6 = Tarmac.DecompressMIO0(compressedFile);
                 
 
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
@@ -861,7 +862,7 @@ namespace Tarmac64
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
 
-                byte[] decompressedVerts = mk.decompressMIO0(compressedFile);
+                byte[] decompressedVerts = Tarmac.DecompressMIO0(compressedFile);
                 List<byte> vertList = decompressedVerts.ToList();
                 List<byte> insert = new List<byte> { 0x00, 0x00 };
                 int vertcount = (vertList.Count / 14);
@@ -873,8 +874,8 @@ namespace Tarmac64
                 byte[] seg4 = vertList.ToArray();
 
                 byte[] ROM = File.ReadAllBytes(filePath);
-                byte[] seg7 = mk.dumpseg7(cID, ROM);
-                byte[] useg7 = mk.decompress_seg7(seg7);
+                byte[] seg7 = Tarmac.Dumpseg7(cID, ROM);
+                byte[] useg7 = Tarmac.Decompress_seg7(seg7);
 
 
 
@@ -898,7 +899,7 @@ namespace Tarmac64
                 //DEBUG
                 int displayOffset = 0;
                 //DEBUG
-
+                int texClass = 0;
 
                 for (bool breakBool = false; breakBool == false; )
                 {
@@ -944,21 +945,21 @@ namespace Tarmac64
 
                             if (commandbyte == 0x04)
                             {
-                                output = mk.F3DEX_Model(out vertCache,commandbyte, seg6, seg4, vaddress, current_offset + 1, vertCache);
+                                output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, seg6, seg4, vaddress, current_offset + 1, vertCache, texClass);
                                 vaddress = Convert.ToInt32(output);
                                 output = "";
                             }
                             if (commandbyte == 0xB1)
                             {
-                                //output = mk.translate_F3D(commandbyte, seg6r, vr, vaddress);
+                                //output = TarmacGeometry.translate_F3D(commandbyte, seg6r, vr, vaddress);
                             }
                             if (commandbyte == 0xBF)
                             {
-                                //output = mk.translate_F3D(commandbyte, seg6r, vr, vaddress);
+                                //output = TarmacGeometry.translate_F3D(commandbyte, seg6r, vr, vaddress);
                             }
                             if (commandbyte == 0x06)
                             {
-                                output = mk.F3DEX_Model(out vertCache,commandbyte, seg6, seg4, vaddress, current_offset + 1, vertCache);
+                                output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, seg6, seg4, vaddress, current_offset + 1, vertCache, texClass);
 
                                 StringReader sread = new StringReader(output);
 
@@ -989,7 +990,7 @@ namespace Tarmac64
 
                                         if (recursivecommand == 0x04)
                                         {
-                                            output = mk.F3DEX_Model(out vertCache, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache);
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache, texClass);
                                             vaddress = Convert.ToInt32(output);
                                             output = "";
                                         }
@@ -999,11 +1000,11 @@ namespace Tarmac64
                                         }
                                         if (recursivecommand == 0xB1)
                                         {
-                                            output = mk.F3DEX_Model(out vertCache, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache);
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache, texClass);
                                         }
                                         if (recursivecommand == 0xBF)
                                         {
-                                            output = mk.F3DEX_Model(out vertCache, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache);
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache, texClass);
                                         }
                                         if (recursivecommand == 0xB8)
                                         {
@@ -1030,7 +1031,7 @@ namespace Tarmac64
 
                                         if (recursivecommand == 0x04)
                                         {
-                                            output = mk.F3DEX_Model(out vertCache, recursivecommand, useg7, seg4, vaddress, caddress + 1, vertCache);
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, useg7, seg4, vaddress, caddress + 1, vertCache, texClass);
                                             vaddress = Convert.ToInt32(output);
                                             // MessageBox.Show("Vert Update-" + vaddress.ToString());
                                             output = "";
@@ -1041,11 +1042,11 @@ namespace Tarmac64
                                         }
                                         if (recursivecommand == 0xB1)
                                         {
-                                            output = mk.F3DEX_Model(out vertCache, recursivecommand, useg7, seg4, vaddress, caddress + 1, vertCache);
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, useg7, seg4, vaddress, caddress + 1, vertCache, texClass);
                                         }
                                         if (recursivecommand == 0xBF)
                                         {
-                                            output = mk.F3DEX_Model(out vertCache, recursivecommand, useg7, seg4, vaddress, caddress + 1, vertCache);
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, useg7, seg4, vaddress, caddress + 1, vertCache, texClass);
                                         }
                                         if (recursivecommand == 0xB8)
                                         {
@@ -1122,7 +1123,7 @@ namespace Tarmac64
                 byte[] compressedFile = new byte[romBytes.Length - targetOffset];
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
-                byte[] seg6 = mk.decompressMIO0(compressedFile);
+                byte[] seg6 = Tarmac.DecompressMIO0(compressedFile);
 
 
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
@@ -1133,7 +1134,7 @@ namespace Tarmac64
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
 
-                byte[] decompressedVerts = mk.decompressMIO0(compressedFile);
+                byte[] decompressedVerts = Tarmac.DecompressMIO0(compressedFile);
                 List<byte> vertList = decompressedVerts.ToList();
                 List<byte> insert = new List<byte> { 0x00, 0x00 };
                 int vertcount = (vertList.Count / 14);
@@ -1145,8 +1146,8 @@ namespace Tarmac64
                 byte[] seg4 = vertList.ToArray();
 
                 byte[] ROM = File.ReadAllBytes(filePath);
-                byte[] useg7 = mk.dumpseg7(cID, ROM);
-                byte[] seg7 = mk.decompress_seg7(useg7);
+                byte[] useg7 = Tarmac.Dumpseg7(cID, ROM);
+                byte[] seg7 = Tarmac.Decompress_seg7(useg7);
 
 
 
@@ -1169,7 +1170,7 @@ namespace Tarmac64
                 int displayOffset = 0;
                 //DEBUG
 
-
+                int texClass = 0;
                 while(displayOffset < seg7r.BaseStream.Length)
                 {
                     
@@ -1193,19 +1194,23 @@ namespace Tarmac64
 
                     if (commandbyte == 0x04)
                     {
-                        output = mk.F3DEX_Model(out vertCache, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache);
+                        output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache, texClass);
                         vaddress = Convert.ToInt32(output);
                         output = "";
                     }
                     if (commandbyte == 0xB1)
                     {
-                        output = mk.F3DEX_Model(out vertCache, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache);
-                    }
+                        output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache, texClass);
+                    }                    
                     if (commandbyte == 0xBF)
                     {
-                        output = mk.F3DEX_Model(out vertCache, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache);
+                        output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache, texClass);
                     }
-                            
+                    if (commandbyte == 0xF5)
+                    {
+                        output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache, texClass, false);
+                    }
+
 
 
 
@@ -1345,7 +1350,7 @@ namespace Tarmac64
 
 
 
-                byte[] asm = mk.dump_ASM(filePath);
+                byte[] asm = Tarmac.Dump_ASM(filePath);
 
                 File.WriteAllBytes(savePath, asm);
                 MessageBox.Show("Finished");
@@ -1360,7 +1365,7 @@ namespace Tarmac64
                 savePath = vertSave.FileName;
 
 
-                mk.translate_ASM(savePath, filePath);
+                Tarmac.TranslateASM(savePath, filePath);
 
                 MessageBox.Show("Finished");
                 CloseStreams();
@@ -1390,7 +1395,7 @@ namespace Tarmac64
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
 
-                byte[] decompressedverts = mk.decompressMIO0(compressedFile);
+                byte[] decompressedverts = Tarmac.DecompressMIO0(compressedFile);
                 byte[] seg6 = decompressedverts.ToArray();
 
                 seg7_addr = (seg7_ptr[cID] - seg47_buf[cID]) + seg4_addr[cID];
@@ -1404,7 +1409,7 @@ namespace Tarmac64
                 compressedFile = new byte[romBytes.Length - targetOffset];
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
-                decompressedverts = mk.decompressMIO0(compressedFile);
+                decompressedverts = Tarmac.DecompressMIO0(compressedFile);
                 List<byte> vertList = decompressedverts.ToList();
                 List<byte> insert = new List<byte> { 0x00, 0x00 };
                 int vertcount = (vertList.Count / 14);
@@ -1416,10 +1421,10 @@ namespace Tarmac64
                 byte[] seg4 = vertList.ToArray();
 
                 byte[] ROM = File.ReadAllBytes(filePath);
-                byte[] useg7 = mk.dumpseg7(cID, ROM);
-                byte[] seg7 = mk.decompress_seg7(useg7);
+                byte[] useg7 = Tarmac.Dumpseg7(cID, ROM);
+                byte[] seg7 = Tarmac.Decompress_seg7(useg7);
 
-
+                int texClass = 0;
 
                 MemoryStream seg7m = new MemoryStream(seg7);
                 MemoryStream seg6m = new MemoryStream(seg6);
@@ -1582,7 +1587,7 @@ namespace Tarmac64
                                 //MessageBox.Show(recursivecommand.ToString("X"));
                                 if (recursivecommand == 0x04)
                                 {
-                                    output = mk.F3DEX_Model(out vertCache, recursivecommand, seg6, seg4, vaddress, caddress + 1,vertCache);
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg6, seg4, vaddress, caddress + 1,vertCache, texClass);
                                     vaddress = Convert.ToInt32(output);
                                     output = "";
                                 }
@@ -1592,11 +1597,11 @@ namespace Tarmac64
                                 }
                                 if (recursivecommand == 0xB1)
                                 {
-                                    output = mk.F3DEX_Model(out vertCache, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache);
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache, texClass);
                                 }
                                 if (recursivecommand == 0xBF)
                                 {
-                                    output = mk.F3DEX_Model(out vertCache, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache);
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache, texClass);
                                 }
                                 if (recursivecommand == 0xB8)
                                 {
@@ -1623,7 +1628,7 @@ namespace Tarmac64
 
                                 if (recursivecommand == 0x04)
                                 {
-                                    output = mk.F3DEX_Model(out vertCache, recursivecommand, seg7, seg4, vaddress, caddress + 1,vertCache);
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg7, seg4, vaddress, caddress + 1,vertCache, texClass);
                                     vaddress = Convert.ToInt32(output);
                                     // MessageBox.Show("Vert Update-" + vaddress.ToString());
                                     output = "";
@@ -1634,11 +1639,11 @@ namespace Tarmac64
                                 }
                                 if (recursivecommand == 0xB1)
                                 {
-                                    output = mk.F3DEX_Model(out vertCache, recursivecommand, seg7, seg4, vaddress, caddress + 1, vertCache);
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg7, seg4, vaddress, caddress + 1, vertCache, texClass);
                                 }
                                 if (recursivecommand == 0xBF)
                                 {
-                                    output = mk.F3DEX_Model(out vertCache, recursivecommand, seg7, seg4, vaddress, caddress + 1, vertCache);
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg7, seg4, vaddress, caddress + 1, vertCache, texClass);
                                 }
                                 if (recursivecommand == 0xB8)
                                 {
@@ -1691,7 +1696,7 @@ namespace Tarmac64
                 {
                     savePath = vertSave.FileName;
                     MessageBox.Show(savePath);
-                    byte[] seg7 = mk.compress_seg7(compressedfile);
+                    byte[] seg7 = Tarmac.compress_seg7(compressedfile);
 
                     File.WriteAllBytes(savePath, seg7);
                     MessageBox.Show("Finished");
@@ -1718,7 +1723,7 @@ namespace Tarmac64
                 {
                     string savePath = vertSave.FileName;
                     byte[] inputFile = File.ReadAllBytes(vertOpen.FileName);
-                    byte[] output = mk.compressMIO0(inputFile);
+                    byte[] output = Tarmac.CompressMIO0(inputFile);
                     File.WriteAllBytes(savePath, output);
                     MessageBox.Show("Finished");
                     CloseStreams();
@@ -1733,7 +1738,7 @@ namespace Tarmac64
                 string outputDir = textSave.SelectedPath;
                 
                 cID = coursebox.SelectedIndex;
-                mk.DumpTextures(cID,outputDir,filePath);
+                Tarmac.DumpTextures(cID,outputDir,filePath);
             }
             
         }
@@ -1745,7 +1750,7 @@ namespace Tarmac64
                 cID = coursebox.SelectedIndex;
                 savePath = vertSave.FileName;
                 byte[] ROM = File.ReadAllBytes(filePath);
-                byte[] seg5 = mk.dumpseg5(cID, ROM);
+                byte[] seg5 = Tarmac.Dumpseg5(cID, ROM);
 
 
                 File.WriteAllBytes(savePath, seg5);

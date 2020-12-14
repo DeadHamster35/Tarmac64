@@ -1,5 +1,4 @@
-﻿using PeepsCompress;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,10 +10,9 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Numerics;
 using Tarmac64_Library;
-using Tarmac64_Geometry;
 using Assimp;
 
-namespace Tarmac64_Paths
+namespace Tarmac64_Library
 {
     public class TM64_Paths
     {
@@ -188,14 +186,14 @@ namespace Tarmac64_Paths
             string[] reader = File.ReadAllLines(popFile);
             string[] positions = new string[3];
 
-            int[] markerCount = new int[4];
+            int[] markerCount = new int[5];
 
 
 
 
             int currentLine = 0;
 
-            for (int group = 0; group < 4; group++)
+            for (int group = 0; group < 5; group++)
             {
                 pathgroup.Add(new Pathgroup());
                 List<Pathlist> tempList = new List<Pathlist>();
@@ -204,98 +202,100 @@ namespace Tarmac64_Paths
 
                 tempList.Add(new Pathlist());
                 tempList[0].pathmarker = new List<Marker>();
-
-                string pathType = reader[currentLine];
-                currentLine++;
-
-                markerCount[group] = Int32.Parse(reader[currentLine]);
-                currentLine++;
-
-
-                for (int marker = 0; marker < markerCount[group]; marker++)
+                if (currentLine < reader.Length)
                 {
-                    tempList[0].pathmarker.Add(new Marker());
-
-
-                    // input format
-
-                    //[xposition,yposition,zposition]
-                    //flag
-
-                    // Flag for Path should correlate with section.
-                    // Flag for objects will almost always be 0. Unsure of effect. 
-
-                    string lineRead = reader[currentLine].Substring(1, (reader[currentLine].Length - 2));
-                    // This strips the brackets from the first line
-
-                    string[] markerPosition = lineRead.Split(',');
-                    // This creates an array containing the marker positions as strings.
-
+                    string pathType = reader[currentLine];
                     currentLine++;
-                    // Advance forward in the file.
 
-                    tempList[0].pathmarker[marker].xval = Convert.ToInt32(Single.Parse(markerPosition[0]));
-                    tempList[0].pathmarker[marker].yval = Convert.ToInt32(Single.Parse(markerPosition[1]));
-                    tempList[0].pathmarker[marker].zval = Convert.ToInt32(Single.Parse(markerPosition[2]));
-
-                    //maintain Z/Y axis, we flip it only when writing to the ROM.
-                    tempList[0].pathmarker[marker].flag = Convert.ToInt32(reader[currentLine]);
-                    //Read the next line, convert to int. This is the accompanying Flag for the marker. 
-
-
+                    markerCount[group] = Int32.Parse(reader[currentLine]);
                     currentLine++;
-                    // Advance forward in the file.
-
-                    float[] pointA = new float[3];
-                    pointA[0] = Convert.ToSingle(tempList[0].pathmarker[marker].xval);
-                    pointA[1] = Convert.ToSingle(tempList[0].pathmarker[marker].yval);
-                    pointA[2] = Convert.ToSingle(tempList[0].pathmarker[marker].zval + 15);
-
-                    float[] pointB = new float[3];
-                    pointB[0] = Convert.ToSingle(tempList[0].pathmarker[marker].xval);
-                    pointB[1] = Convert.ToSingle(tempList[0].pathmarker[marker].yval);
-                    pointB[2] = Convert.ToSingle(tempList[0].pathmarker[marker].zval - 5);
 
 
-                    //custom Path Flag routine
-                    //uses surfaceObjects and raycasts to determine appropriate surface section.
-                    Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
-                    Vector3D rayTarget = new Vector3D(Convert.ToSingle(pointB[0]), Convert.ToSingle(pointB[1]), Convert.ToSingle(pointB[2] * -1));
-
-                    
-                    float objectDistance = -1;
-                    TM64_Geometry tmGeo = new TM64_Geometry();
-                    int objectID = -1;
-                    for (int currentObject = 0; (currentObject < surfaceObjects.Length); currentObject++)
+                    for (int marker = 0; marker < markerCount[group]; marker++)
                     {
+                        tempList[0].pathmarker.Add(new Marker());
 
-                        foreach (var face in surfaceObjects[currentObject].modelGeometry)
+
+                        // input format
+
+                        //[xposition,yposition,zposition]
+                        //flag
+
+                        // Flag for Path should correlate with section.
+                        // Flag for objects will almost always be 0. Unsure of effect. 
+
+                        string lineRead = reader[currentLine].Substring(1, (reader[currentLine].Length - 2));
+                        // This strips the brackets from the first line
+
+                        string[] markerPosition = lineRead.Split(',');
+                        // This creates an array containing the marker positions as strings.
+
+                        currentLine++;
+                        // Advance forward in the file.
+
+                        tempList[0].pathmarker[marker].xval = Convert.ToInt32(Single.Parse(markerPosition[0]));
+                        tempList[0].pathmarker[marker].yval = Convert.ToInt32(Single.Parse(markerPosition[1]));
+                        tempList[0].pathmarker[marker].zval = Convert.ToInt32(Single.Parse(markerPosition[2]));
+
+                        //maintain Z/Y axis, we flip it only when writing to the ROM.
+                        tempList[0].pathmarker[marker].flag = Convert.ToInt32(reader[currentLine]);
+                        //Read the next line, convert to int. This is the accompanying Flag for the marker. 
+
+
+                        currentLine++;
+                        // Advance forward in the file.
+
+                        float[] pointA = new float[3];
+                        pointA[0] = Convert.ToSingle(tempList[0].pathmarker[marker].xval);
+                        pointA[1] = Convert.ToSingle(tempList[0].pathmarker[marker].yval);
+                        pointA[2] = Convert.ToSingle(tempList[0].pathmarker[marker].zval + 15);
+
+                        float[] pointB = new float[3];
+                        pointB[0] = Convert.ToSingle(tempList[0].pathmarker[marker].xval);
+                        pointB[1] = Convert.ToSingle(tempList[0].pathmarker[marker].yval);
+                        pointB[2] = Convert.ToSingle(tempList[0].pathmarker[marker].zval - 5);
+
+
+                        //custom Path Flag routine
+                        //uses surfaceObjects and raycasts to determine appropriate surface section.
+                        Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
+                        Vector3D rayTarget = new Vector3D(Convert.ToSingle(pointB[0]), Convert.ToSingle(pointB[1]), Convert.ToSingle(pointB[2] * -1));
+
+
+                        float objectDistance = -1;
+                        TM64_Geometry tmGeo = new TM64_Geometry();
+                        int objectID = -1;
+                        for (int currentObject = 0; (currentObject < surfaceObjects.Length); currentObject++)
                         {
 
-                            Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin,  rayTarget, face.VertData[0], face.VertData[1], face.VertData[2]);
-                            if (intersectPoint.X > 0)
+                            foreach (var face in surfaceObjects[currentObject].modelGeometry)
                             {
-                                if (objectDistance > intersectPoint.X | objectDistance == -1)
+
+                                Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin, rayTarget, face.VertData[0], face.VertData[1], face.VertData[2]);
+                                if (intersectPoint.X > 0)
                                 {
-                                    objectDistance = intersectPoint.X;
-                                    objectID = currentObject;
+                                    if (objectDistance > intersectPoint.X | objectDistance == -1)
+                                    {
+                                        objectDistance = intersectPoint.X;
+                                        objectID = currentObject;
+                                    }
                                 }
                             }
-                        }                    
-                    }
-                    if (objectID > 0)
-                    {
-                        tempList[0].pathmarker[marker].flag = Convert.ToInt32(surfaceObjects[objectID].surfaceID);
-                    }
-                    else
-                    {
-                        if (marker > 0)
+                        }
+                        if (objectID > 0)
                         {
-                            tempList[0].pathmarker[marker].flag = tempList[0].pathmarker[marker - 1].flag;
+                            tempList[0].pathmarker[marker].flag = Convert.ToInt32(surfaceObjects[objectID].surfaceID);
                         }
                         else
                         {
-                            tempList[0].pathmarker[marker].flag = 1;
+                            if (marker > 0)
+                            {
+                                tempList[0].pathmarker[marker].flag = tempList[0].pathmarker[marker - 1].flag;
+                            }
+                            else
+                            {
+                                tempList[0].pathmarker[marker].flag = 1;
+                            }
                         }
                     }
                 }
@@ -316,14 +316,14 @@ namespace Tarmac64_Paths
             string[] reader = File.ReadAllLines(popFile);
             string[] positions = new string[3];
 
-            int[] markerCount = new int[4];
+            int[] markerCount = new int[5];
 
 
 
 
             int currentLine = 0;
 
-            for (int group = 0; group < 4; group++)
+            for (int group = 0; group < 5; group++)
             {
                 pathgroup.Add(new Pathgroup());
                 List<Pathlist> tempList = new List<Pathlist>();
@@ -523,9 +523,9 @@ namespace Tarmac64_Paths
             binaryReader = new BinaryReader(memoryStream);
 
             int groupCount = pathgroup.Length;
-            if (groupCount == 4)
+            if (groupCount == 5)
             {
-                int[] paddingLength = new int[4] { 800, 64, 64, 64 };
+                int[] paddingLength = new int[5] { 800, 64, 64, 64, 8 };
 
                 for (int currentGroup = 0; currentGroup < groupCount; currentGroup++)
                 {
@@ -611,7 +611,7 @@ namespace Tarmac64_Paths
             }
             else
             {
-                MessageBox.Show("ERROR - MORE THAN 4 POP GROUPS");
+                MessageBox.Show("ERROR - NOT 5 POP GROUPS");
             }
             byte[] popBytes = memoryStream.ToArray();
             return popBytes;

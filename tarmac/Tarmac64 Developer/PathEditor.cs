@@ -13,8 +13,6 @@ using System.Text;
 using System.Collections;
 using PeepsCompress;
 using Tarmac64_Library;
-using Tarmac64_Geometry;
-using Tarmac64_Paths;
 
 namespace Tarmac64
 {
@@ -43,7 +41,7 @@ namespace Tarmac64
 
 
 
-        List<Offset> MKOffsets = new List<Offset>();
+        List<Offset> TarmacGeometryOffsets = new List<Offset>();
 
         TM64_Paths.Pathgroup[] coursePaths = new TM64_Paths.Pathgroup[20];
 
@@ -63,9 +61,9 @@ namespace Tarmac64
         BinaryWriter binaryWriter = new BinaryWriter(Stream.Null);
         BinaryReader binaryReader = new BinaryReader(Stream.Null);
 
-
-        TM64_Geometry mk = new TM64_Geometry();
-        TM64_Paths mkPath = new TM64_Paths();
+        TM64 Tarmac = new TM64();
+        TM64_Geometry TarmacGeometry = new TM64_Geometry();
+        TM64_Paths TarmacPath = new TM64_Paths();
 
         string filePath = "";
 
@@ -99,13 +97,13 @@ namespace Tarmac64
 
 
 
-            int[] markerCount = mkPath.loadmarkerCount(cID, fileData);
-            int[] markerOffset = mkPath.loadmarkerOffsets(cID, fileData);
+            int[] markerCount = TarmacPath.loadmarkerCount(cID, fileData);
+            int[] markerOffset = TarmacPath.loadmarkerOffsets(cID, fileData);
 
 
 
-            byte[] seg6 = mk.dumpseg6(cID, fileData);
-            seg6 = mk.decompressMIO0(seg6);
+            byte[] seg6 = Tarmac.Dumpseg6(cID, fileData);
+            seg6 = Tarmac.DecompressMIO0(seg6);
             
 
             memoryStream = new MemoryStream(seg6);
@@ -353,7 +351,7 @@ namespace Tarmac64
                 
                 string savePath = fileSave.FileName;
 
-                byte[] outputFile = mkPath.savePOP(coursePaths);
+                byte[] outputFile = TarmacPath.savePOP(coursePaths);
 
                 File.WriteAllBytes(savePath, outputFile);
 
@@ -447,8 +445,8 @@ namespace Tarmac64
             {
                 string popPath = fileOpen.FileName;
 
-                TM64_Paths.Pathgroup[] importPath = mkPath.loadPOP(popPath);
-                byte[] popData = mkPath.popMarkers(popPath);
+                TM64_Paths.Pathgroup[] importPath = TarmacPath.loadPOP(popPath);
+                byte[] popData = TarmacPath.popMarkers(popPath);
 
 
 
@@ -456,8 +454,8 @@ namespace Tarmac64
 
                 byte[] fileData = File.ReadAllBytes(filePath);
 
-                byte[] seg6 = mk.dumpseg6(cID, fileData);
-                seg6 = mk.decompressMIO0(seg6);
+                byte[] seg6 = Tarmac.Dumpseg6(cID, fileData);
+                seg6 = Tarmac.DecompressMIO0(seg6);
 
 
                 memoryStream = new MemoryStream();
@@ -485,7 +483,7 @@ namespace Tarmac64
 
                 segmentOffset[0] = fileData.Length;
 
-                byte[] compressedSegment6 = mk.compressMIO0(seg6);
+                byte[] compressedSegment6 = Tarmac.CompressMIO0(seg6);
 
                 binaryWriter.Write(compressedSegment6);
 
@@ -505,8 +503,8 @@ namespace Tarmac64
                 segmentOffset[1] = fileData.Length;
 
 
-                fileData = mkPath.savemarkerCount(cID, fileData, markerCount);
-                fileData = mkPath.savemarkerOffsets(cID, fileData, popOffset);
+                fileData = TarmacPath.savemarkerCount(cID, fileData, markerCount);
+                fileData = TarmacPath.savemarkerOffsets(cID, fileData, popOffset);
 
 
                 memoryStream = new MemoryStream(fileData);

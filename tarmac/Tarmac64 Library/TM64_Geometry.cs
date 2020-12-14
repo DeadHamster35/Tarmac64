@@ -1,5 +1,4 @@
-﻿using PeepsCompress;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,14 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Numerics;
-
-
-//custom libraries
-
 using Assimp;  //for handling model data
 using Texture64;  //for handling texture data
-
-
 using Cereal64.Microcodes.F3DEX.DataElements;
 using Cereal64.Common.DataElements;
 using Cereal64.Common.Rom;
@@ -27,13 +20,15 @@ using System.Security.Permissions;
 using SharpDX;
 using System.Windows;
 using Tarmac64;
+using Tarmac64_Library;
+
 using System.Windows.Media;
 
-namespace Tarmac64_Geometry
+namespace Tarmac64_Library
 {
     public class TM64_Geometry
     {
-
+        
         /// These are various functions for decompressing and handling the segment data for Mario Kart 64.
 
         string[] viewString = new string[4] { "North", "East", "South", "West" };
@@ -41,12 +36,8 @@ namespace Tarmac64_Geometry
         public static int newint = 4;
         Random rValue = new Random();
 
-        MemoryStream memoryStream = new MemoryStream();
-        BinaryReader binaryReader = new BinaryReader(Stream.Null);
-        BinaryWriter binaryWriter = new BinaryWriter(Stream.Null);
-
-
-
+        TM64 Tarmac = new TM64();
+        TM64_Paths TarmacPath = new TM64_Paths();
 
         public static UInt32[] seg7_romptr = new UInt32[20];
 
@@ -65,93 +56,7 @@ namespace Tarmac64_Geometry
 
 
 
-        public class Course
-        {
-            public byte[] Segment4 { get; set; }
-            public byte[] Segment6 { get; set; }
-            public byte[] Segment7 { get; set; }
-            public byte[] Segment9 { get; set; }
-
-            public string Credits { get; set; }
-            public string PreviewPath { get; set; }
-            public string BannerPath { get; set; }
-            public string MinimapPath { get; set; }
-            public string AssmeblyPath { get; set; }
-            public string GhostPath { get; set; }
-
-            public int[] GameTempos { get; set; }
-            public int[] EchoValues { get; set; }
-            public int MusicID { get; set; }
-
-            public Vector2D MinimapCoords { get; set; }
-            public Sky SkyColors { get; set; }
-
-            public MenuHeader MenuHeaderData { get; set; }
-            public OK64Header OK64HeaderData { get; set; }
-            public CourseHeader HeaderData { get; set; }
-        }
-
-        public class MenuHeader
-        {
-            public int Preview { get; set; }
-            public int Banner { get; set; }            
-        }
-        public class OK64Header
-        {
-            public int Version { get; set; }  //version 4
-            public int Sky { get; set; }
-            public int Credits { get; set; }
-            public int Ghost { get; set; }
-            public int Assembly { get; set; }
-            public int Mods { get; set; }
-            public int Maps { get; set; }
-            public int Objects { get; set; }
-            public byte[] MapX { get; set; }
-            public byte[] MapY { get; set; }
-            public byte[] EchoStart { get; set; }
-            public byte[] EchoStop { get; set; }
-            public byte[] Tempo { get; set; }
-            public int MusicID { get; set; }
-            
-        }
-
-        public class CourseHeader
-        {
-            public UInt32 s6Start { get; set; }
-            public UInt32 s6End { get; set; }
-            public UInt32 s47Start { get; set; }
-            public UInt32 s47End { get; set; }
-            public UInt32 s7Start { get; set; }
-            public UInt32 s9Start { get; set; }
-            public UInt32 s9End { get; set; }
-            public UInt32 VertCount { get; set; }
-            public UInt32 S7Size { get; set; }
-            public UInt32 TexturePointer { get; set; }
-        }
-
-        public class Sky
-        {
-            public OK64Color TopColor { get; set; }
-            public OK64Color MidTopColor { get; set; }
-            public OK64Color MidBotColor { get; set; }
-            public OK64Color BotColor { get; set; }
-        }
-
-        public class Header
-        {
-            public byte[] s6Start { get; set; }
-            public byte[] s6End { get; set; }
-            public byte[] s47Start { get; set; }
-            public byte[] s47End { get; set; }
-            public byte[] s9Start { get; set; }
-            public byte[] s9End { get; set; }
-            public byte[] S47Buffer { get; set; }
-            public byte[] VertCount { get; set; }
-            public byte[] S7Pointer { get; set; }
-            public byte[] S7Size { get; set; }
-            public byte[] TexturePointer { get; set; }
-            public byte[] FlagPadding { get; set; }
-        }
+        
 
         public class Face
         {
@@ -173,16 +78,27 @@ namespace Tarmac64_Geometry
 
         }
 
-
-        public class TMCamera
+        public class OK64JRSet
         {
-            public Vector3D position { get; set; }
-            public Vector3D target { get; set; }
-            public double rotation { get; set; }
-
+            public OK64JRBlock[] BlockObject { get; set; }
+            public TM64_Paths.Pathgroup PathGroup { get; set; }
         }
 
+        public class OK64JRSpace
+        {
+            public int BlockID { get; set; }
+            public int XIndex { get; set; }
+            public int YIndex { get; set; }
+            public int ZIndex { get; set; }
+        }
 
+        public class OK64JRBlock
+        {
+            public string BlockName { get; set; }
+            public OK64F3DObject[] ObjectList { get; set; }
+            public OK64F3DObject[] SurfaceList { get; set; }
+            public TM64_Paths.Pathlist[] PathList { get; set; }
+        }
 
 
         public class OK64SectionList
@@ -255,7 +171,9 @@ namespace Tarmac64_Geometry
             public float[] objectColor { get; set; }
             public int surfaceProperty { get; set; }
             public PathfindingObject pathfindingObject { get; set; }
-            
+
+
+
         }
         public class PathfindingObject
         {
@@ -291,6 +209,8 @@ namespace Tarmac64_Geometry
             public Int16 z { get; set; }
             public Int16 s { get; set; }
             public Int16 t { get; set; }
+            public float sBase { get; set; }
+            public float tBase { get; set; }
             public float u { get; set; }
             public float v { get; set; }
 
@@ -324,3567 +244,8 @@ namespace Tarmac64_Geometry
         ///
 
 
-        public Header[] loadHeader(byte[] fileData)
-        {
-            
 
-            Header[] courseHeader = new Header[20];
 
-            memoryStream = new MemoryStream(fileData);
-            binaryReader = new BinaryReader(memoryStream);
-
-            binaryReader.BaseStream.Seek(0x122390, SeekOrigin.Begin);
-            for (int i = 0; i < 20; i++)
-            {
-                courseHeader[i] = new Header();
-
-                courseHeader[i].s6Start = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s6Start);
-
-                courseHeader[i].s6End = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s6End);
-
-                courseHeader[i].s47Start = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s47Start);
-
-                courseHeader[i].s47End = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s47End);
-
-                courseHeader[i].s9Start = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s9Start);
-
-                courseHeader[i].s9End = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s9End);
-
-                courseHeader[i].S47Buffer = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].S47Buffer);
-
-                courseHeader[i].VertCount = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].VertCount);
-
-                courseHeader[i].S7Pointer = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].S7Pointer);
-
-                courseHeader[i].S7Size = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].S7Size);
-
-                courseHeader[i].TexturePointer = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].TexturePointer);
-
-                courseHeader[i].FlagPadding = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].FlagPadding);
-
-            }
-
-
-            return courseHeader;
-        }
-
-
-
-
-        public byte[] compileSegment(byte[] seg4, byte[] seg6, byte[] seg7, byte[] seg9, byte[] fileData, int cID)
-        {
-
-
-            ///This takes precompiled segments and inserts them into the ROM file. It also updates the course header table to reflect
-            /// the new data sizes. This allows for proper loading of the course so long as the segments are properly setup. All segment
-            /// data should be precompressed where applicable, this assumes that segment 4 and segment 6 are MIO0 compressed and that
-            /// Segment 7 has had it's special compression ran. Segment 9 has no compression. fileData is the ROM file as a byte array, and CID
-            /// is the ID of the course we're looking to replace based on it's location in the course header table. 
-
-
-            /// This writes all segments to the end of the file for simplicity. If data was larger than original (which it almost always will be for custom courses)
-            /// then it cannot fit in the existing space without overwriting other course data. 
-
-            TM64_Geometry mk = new TM64_Geometry();
-            memoryStream = new MemoryStream();
-            binaryWriter = new BinaryWriter(memoryStream);
-            binaryReader = new BinaryReader(memoryStream);
-            binaryWriter.Write(fileData, 0, fileData.Length);
-            binaryWriter.BaseStream.Position = 0;
-
-            UInt32 seg6start = 0;
-            UInt32 seg6end = 0;
-            UInt32 seg4start = 0;
-            UInt32 seg7end = 0;
-            UInt32 seg9start = 0;
-            UInt32 seg9end = 0;
-            UInt32 seg7start = 0;
-            UInt32 seg7rsp = 0;
-
-
-            int addressAlign = 0;
-
-
-
-            binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-
-            byte[] compseg6 = compressMIO0(seg6);
-            seg6start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(compseg6, 0, compseg6.Length);
-            seg6end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            ///
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-
-            seg9start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(seg9, 0, seg9.Length);
-            seg9end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            ///
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            byte[] compseg4 = compressMIO0(seg4);
-            seg4start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(compseg4, 0, compseg4.Length);
-            ///
-
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-
-            byte[] compseg7 = compress_seg7(seg7);
-            seg7start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(compseg7, 0, compseg7.Length);
-            seg7end = Convert.ToUInt32(binaryWriter.BaseStream.Position);           
-            seg7rsp = Convert.ToUInt32(0x0F000000 | (seg7start - seg4start));
-
-
-            ///
-
-            byte[] flip = new byte[4];
-
-            flip = BitConverter.GetBytes(seg6start);
-            Array.Reverse(flip);
-            seg6start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg6end);
-            Array.Reverse(flip);
-            seg6end = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg4start);
-            Array.Reverse(flip);
-            seg4start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg7end);
-            Array.Reverse(flip);
-            seg7end = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg9start);
-            Array.Reverse(flip);
-            seg9start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg9end);
-            Array.Reverse(flip);
-            seg9end = BitConverter.ToUInt32(flip, 0);
-
-
-
-
-            flip = BitConverter.GetBytes(seg7rsp);
-            Array.Reverse(flip);
-            seg7rsp = BitConverter.ToUInt32(flip, 0);
-
-
-            ///calculate # verts
-
-            UInt32 vertcount = Convert.ToUInt32(seg4.Length / 14);
-
-            flip = BitConverter.GetBytes(vertcount);
-            Array.Reverse(flip);
-            vertcount = BitConverter.ToUInt32(flip, 0);
-            ///MessageBox.Show(vertbyte.Count.ToString() + "--" + vertcount.ToString());
-
-
-            ///seg7 size
-
-            UInt32 seg7size = Convert.ToUInt32(seg7.Length);
-
-
-            ///MessageBox.Show(seg7size.ToString());
-
-            flip = BitConverter.GetBytes(seg7size);
-            Array.Reverse(flip);
-            seg7size = BitConverter.ToUInt32(flip, 0);
-
-            ///MessageBox.Show(seg7size.ToString());
-
-
-            binaryWriter.BaseStream.Seek(0x122390 + (cID * 48), SeekOrigin.Begin);
-
-            binaryWriter.Write(seg6start);
-            binaryWriter.Write(seg6end);
-            binaryWriter.Write(seg4start);
-            binaryWriter.Write(seg7end);
-            binaryWriter.Write(seg9start);
-            binaryWriter.Write(seg9end);
-
-            binaryWriter.BaseStream.Seek(4, SeekOrigin.Current);
-
-
-
-            binaryWriter.Write(vertcount);
-
-
-            binaryWriter.Write(seg7rsp);
-
-
-
-            binaryWriter.Write(seg7size);
-
-            byte[] newROM = memoryStream.ToArray();
-            return newROM;
-
-        }
-
-        public byte[] CompileOverKart(Course courseData, byte[] fileData, int cID, int setID)
-        {
-            //HOTSWAP
-
-            ///This takes precompiled segments and inserts them into the ROM file. It also updates the course header table to reflect
-            /// the new data sizes. This allows for proper loading of the course so long as the segments are properly setup. All segment
-            /// data should be precompressed where applicable, this assumes that segment 4 and segment 6 are MIO0 compressed and that
-            /// Segment 7 has had it's special compression ran. Segment 9 has no compression. fileData is the ROM file as a byte array, and CID
-            /// is the ID of the course we're looking to replace based on it's location in the course header table. 
-
-
-            /// This writes all segments to the end of the file for simplicity. If data was larger than original (which it almost always will be for custom courses)
-            /// then it cannot fit in the existing space without overwriting other course data. 
-            /// 
-
-            byte[] seg6 = compressMIO0(courseData.Segment6);
-            byte[] seg4 = compressMIO0(courseData.Segment4);
-            byte[] seg7 = compress_seg7(courseData.Segment7);
-
-
-            byte[] flip = new byte[0];
-
-            TM64_Geometry mk = new TM64_Geometry();
-            memoryStream = new MemoryStream();
-            memoryStream.Write(fileData, 0, fileData.Length);
-            binaryWriter = new BinaryWriter(memoryStream);
-            binaryReader = new BinaryReader(memoryStream);
-
-
-
-
-
-
-            int addressAlign = 0;
-
-
-
-
-            binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
-
-
-
-            //allignment
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-
-            //
-
-
-            courseData.MenuHeaderData = new MenuHeader();
-
-            //Course Preview Texture
-            if (courseData.PreviewPath.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(courseData.PreviewPath);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                courseData.MenuHeaderData.Preview = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(compressedData);
-
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-
-
-
-            //Write Course Banner Texture
-            if (courseData.BannerPath.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(courseData.BannerPath);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                courseData.MenuHeaderData.Banner = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(compressedData);
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-
-
-
-
-
-            //begin writing header info
-
-            courseData.OK64HeaderData = new OK64Header();
-            courseData.OK64HeaderData.Version = 4;
-
-            //add sky colors
-
-
-            courseData.OK64HeaderData.Sky = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.TopColor.R);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.TopColor.G);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.TopColor.B);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidTopColor.R);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidTopColor.G);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidBotColor.B);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidBotColor.R);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidBotColor.G);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidBotColor.B);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.BotColor.R);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.BotColor.G);
-            binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.BotColor.B);
-
-
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-
-            //Credits
-            if (courseData.Credits.Length > 0)
-            {
-                courseData.OK64HeaderData.Credits = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-                binaryWriter.Write(courseData.Credits);   //using a length-defined as opposed to null terminated setup.
-                                        //easier to program for writing, easier to program for reading. 
-                
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-
-
-            //Staff Ghost
-            if (courseData.GhostPath.Length > 0)
-            {
-                courseData.OK64HeaderData.Ghost = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                byte[] ghostData = File.ReadAllBytes(courseData.GhostPath);
-                binaryWriter.Write(ghostData);  
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-            }
-            //
-
-
-
-            //custom ASM
-            if (courseData.AssmeblyPath.Length > 0)
-            {
-
-
-                byte[] asmSequence = File.ReadAllBytes(courseData.AssmeblyPath);
-
-                courseData.OK64HeaderData.Assembly = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(asmSequence);
-
-
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-            }
-            //MOD INFO
-            courseData.OK64HeaderData.Mods = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-            //Write Course Map Texture
-            if (courseData.MinimapPath.Length > 0)
-            {
-                N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
-                byte[] imageData = null;
-                byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(courseData.MinimapPath);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                byte[] compressedData = compressMIO0(imageData);
-
-
-                courseData.OK64HeaderData.Maps = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(compressedData);
-
-
-
-
-                addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-                if (addressAlign == 4)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-            }
-
-            //OBJECTS
-            courseData.OK64HeaderData.Objects = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-
-            //
-            //map coords
-
-            
-
-            flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MinimapCoords.X));
-            Array.Reverse(flip);
-            courseData.OK64HeaderData.MapX = flip;
-
-            flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MinimapCoords.Y));
-            Array.Reverse(flip);
-            courseData.OK64HeaderData.MapY = flip;
-
-
-
-            //
-
-            //echo
-
-
-            flip = BitConverter.GetBytes(courseData.EchoValues[0]);
-            Array.Reverse(flip);
-            courseData.OK64HeaderData.EchoStart = flip;
-
-            flip = BitConverter.GetBytes(courseData.EchoValues[1]);
-            Array.Reverse(flip);
-            courseData.OK64HeaderData.EchoStop = flip;
-
-
-            courseData.OK64HeaderData.Tempo = new byte[4];
-            courseData.OK64HeaderData.Tempo[0] = Convert.ToByte(courseData.GameTempos[0]);
-            courseData.OK64HeaderData.Tempo[1] = Convert.ToByte(courseData.GameTempos[1]);
-            courseData.OK64HeaderData.Tempo[2] = Convert.ToByte(courseData.GameTempos[2]);
-            courseData.OK64HeaderData.Tempo[3] = Convert.ToByte(courseData.GameTempos[3]);
-
-            courseData.OK64HeaderData.MusicID = courseData.MusicID;
-
-
-
-
-            courseData.HeaderData = new CourseHeader();
-            // Segment 6
-
-            courseData.HeaderData.s6Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-
-
-            binaryWriter.Write(seg6, 0, seg6.Length);
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            courseData.HeaderData.s6End = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            //
-
-
-            // Segment 9
-            courseData.HeaderData.s9Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-
-            binaryWriter.Write(courseData.Segment9, 0, courseData.Segment9.Length);
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            courseData.HeaderData.s9End = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            //
-
-
-
-
-            // Segment 4/7
-            courseData.HeaderData.s47Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-
-            binaryWriter.Write(seg4, 0, seg4.Length);
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-
-            courseData.HeaderData.s7Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(seg7, 0, seg7.Length);
-
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-            UInt32 seg7end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            UInt32 seg7RSP = Convert.ToUInt32(0x0F000000 | (courseData.HeaderData.s7Start - courseData.HeaderData.s47Start));
-
-            //
-
-
-
-
-
-
-            // Flip Endian on Course Header offsets.
-
-            flip = BitConverter.GetBytes(courseData.HeaderData.s6Start);
-            Array.Reverse(flip);
-            courseData.HeaderData.s6Start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(courseData.HeaderData.s6End);
-            Array.Reverse(flip);
-            courseData.HeaderData.s6End = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(courseData.HeaderData.s47Start);
-            Array.Reverse(flip);
-            courseData.HeaderData.s47Start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(courseData.HeaderData.s47End);
-            Array.Reverse(flip);
-            courseData.HeaderData.s47End = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(courseData.HeaderData.s9Start);
-            Array.Reverse(flip);
-            courseData.HeaderData.s9Start = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(courseData.HeaderData.s9End);
-            Array.Reverse(flip);
-            courseData.HeaderData.s9End = BitConverter.ToUInt32(flip, 0);
-
-            flip = BitConverter.GetBytes(seg7RSP);
-            Array.Reverse(flip);
-            seg7RSP = BitConverter.ToUInt32(flip, 0);
-            //
-
-
-            //calculate # verts
-
-            courseData.HeaderData.VertCount = Convert.ToUInt32(courseData.Segment4.Length / 14);
-            flip = BitConverter.GetBytes(courseData.HeaderData.VertCount);
-            Array.Reverse(flip);
-            courseData.HeaderData.VertCount = BitConverter.ToUInt32(flip, 0);
-            //
-
-
-
-            //seg7 size
-
-            UInt32 seg7size = Convert.ToUInt32(courseData.Segment7.Length);
-            flip = BitConverter.GetBytes(seg7size);
-            Array.Reverse(flip);
-            seg7size = BitConverter.ToUInt32(flip, 0);
-            //
-
-
-            /// After Calculating the offsets and values above we now write them to the empty space near the end of the ROM.
-
-
-
-
-
-
-            
-
-            addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
-            if (addressAlign == 4)
-                addressAlign = 0;
-
-            for (int align = 0; align < addressAlign; align++)
-            {
-                binaryWriter.Write(Convert.ToByte(0x00));
-            }
-
-            uint headerOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-
-
-
-            // Version 4
-
-            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Version);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-            //menuheader
-
-            flip = BitConverter.GetBytes(courseData.MenuHeaderData.Preview);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(courseData.MenuHeaderData.Banner);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-            //ok64header
-            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Sky);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Credits);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Ghost);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Assembly);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Mods);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Maps);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Objects);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            binaryWriter.Write(courseData.OK64HeaderData.MapX);
-            binaryWriter.Write(courseData.OK64HeaderData.MapY);
-            binaryWriter.Write(courseData.OK64HeaderData.EchoStart);
-            binaryWriter.Write(courseData.OK64HeaderData.EchoStop);
-            binaryWriter.Write(courseData.OK64HeaderData.Tempo[0]);
-            binaryWriter.Write(courseData.OK64HeaderData.Tempo[1]);
-            binaryWriter.Write(courseData.OK64HeaderData.Tempo[2]);
-            binaryWriter.Write(courseData.OK64HeaderData.Tempo[3]);
-            flip = BitConverter.GetBytes(courseData.OK64HeaderData.MusicID);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-            //courseheader
-            
-
-            binaryWriter.Write(courseData.HeaderData.s6Start);
-            binaryWriter.Write(courseData.HeaderData.s6End);
-            binaryWriter.Write(courseData.HeaderData.s47Start);
-            binaryWriter.Write(courseData.HeaderData.s47End);
-            binaryWriter.Write(courseData.HeaderData.s9Start);
-            binaryWriter.Write(courseData.HeaderData.s9End);
-
-            flip = BitConverter.GetBytes(0x0F000000);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-            binaryWriter.Write(courseData.HeaderData.VertCount);
-
-            binaryWriter.Write(seg7RSP);
-
-
-            binaryWriter.Write(seg7size);
-
-            flip = BitConverter.GetBytes(0x09000000);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-
-            flip = BitConverter.GetBytes(0x00000000);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
-            //
-
-
-
-
-
-
-
-
-
-
-
-            byte[] newROM = memoryStream.ToArray();
-            return newROM;
-
-        }
-
-        public string[] DumpVerts(byte[] vertBytes)
-        {
-
-
-            bool vertEnd = true;
-
-            int vertcount = vertBytes.Length / 14;
-
-            string[] output = new string[vertcount];
-
-            int xcor = new int();
-            int ycor = new int();
-            int zcor = new int();
-            int scor = new int();
-            int tcor = new int();
-
-
-            MemoryStream ds = new MemoryStream(vertBytes);
-            BinaryReader dr = new BinaryReader(ds);
-            {
-                dr.BaseStream.Position = 0;
-                for (int i = 0; vertEnd; i++)
-                {
-                    byte[] flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    xcor = BitConverter.ToInt16(flip2, 0); //x   <-- this really is the X axis. No tricks.
-
-                    flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    zcor = BitConverter.ToInt16(flip2, 0); //z    <-- this is actually the Y axis, but the game (like early 3D) treats the Y axis as height
-
-                    flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    ycor = BitConverter.ToInt16(flip2, 0); //y    <-- this is actually the Z axis, but the game (like early 3D) treats the Z axis as depth
-
-                    flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    scor = BitConverter.ToInt16(flip2, 0); //S
-
-                    flip2 = dr.ReadBytes(2);
-                    Array.Reverse(flip2);
-                    tcor = BitConverter.ToInt16(flip2, 0); //T
-
-                    byte rcol = dr.ReadByte();
-                    byte gcol = dr.ReadByte();
-                    byte bcol = dr.ReadByte();
-                    byte acol = dr.ReadByte();
-
-                    output[i] = "[" + xcor.ToString() + "," + zcor.ToString() + "," + ycor.ToString() + "]";
-
-                    if (dr.BaseStream.Position >= dr.BaseStream.Length)
-                    {
-                        vertEnd = false;
-                    }
-                }
-
-                return output;
-            }
-
-        }
-
-
-
-        public void DumpTextures(int cID, string outputDir, string filePath)
-        {
-
-
-            
-
-            byte[] fileData = File.ReadAllBytes(filePath);
-
-
-            Header[] courseHeaders = loadHeader(fileData);
-
-            int s9Start = BitConverter.ToInt32(courseHeaders[cID].s9Start, 0);
-            int s9End = BitConverter.ToInt32(courseHeaders[cID].s9Start, 0);
-
-            byte[] seg9 = new byte[(s9End - s9Start)];
-
-            Buffer.BlockCopy(fileData, s9Start, seg9, 0, (s9End - s9Start));
-
-
-
-            string[] coursename = { "Mario Raceway", "Choco Mountain", "Bowser's Castle", "Banshee Boardwalk", "Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway", "Luigi's Turnpike", "Moo Moo Farm", "Toad's Turnpike", "Kalimari Desert", "Sherbet Land", "Rainbow Road", "Wario Stadium", "Block Fort", "Skyscraper", "Double Decker", "DK's Jungle Parkway", "Big Donut" };
-
-
-            memoryStream = new MemoryStream(seg9);
-
-            binaryWriter = new BinaryWriter(memoryStream);
-            binaryReader = new BinaryReader(memoryStream);
-            
-            for (int i = 0; binaryReader.BaseStream.Position < binaryReader.BaseStream.Length; i++)
-            {
-                flip4 = binaryReader.ReadBytes(4);
-                Array.Reverse(flip4);
-                int textureOffset = BitConverter.ToInt32(flip4, 0);
-
-                flip4 = binaryReader.ReadBytes(4);
-                Array.Reverse(flip4);
-                int compressSize = BitConverter.ToInt32(flip4, 0);
-
-
-
-                if (textureOffset != 0)
-                {
-                    textureOffset = (textureOffset & 0xFFFFFF) + 0x641F70;
-
-                    byte[] textureFile = new byte[compressSize];
-
-                    Array.Copy(fileData, textureOffset, textureFile, 0, compressSize);
-
-                    byte[] decompressedTexture = decompressMIO0(textureFile);
-                    byte[] voidBytes = new byte[0];
-
-                    int width = 0;
-                    int height = 0;
-                     
-
-                    if (decompressedTexture.Length == 0x800)
-                    {
-                        width = 32;
-                        height = 32;
-
-                        Bitmap exportBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                        Graphics graphicsBitmap = Graphics.FromImage(exportBitmap);
-                        N64Graphics.RenderTexture(graphicsBitmap, decompressedTexture, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
-
-                        string texturePath = Path.Combine(outputDir, coursename[cID] + i.ToString() + ".png");
-
-                        exportBitmap.Save(texturePath, ImageFormat.Png);
-
-                          
-                    }
-                    else
-                    {
-                        width = 32;
-                        height = 64;
-
-                        Bitmap exportBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                        Graphics graphicsBitmap = Graphics.FromImage(exportBitmap);
-                        N64Graphics.RenderTexture(graphicsBitmap, decompressedTexture, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
-
-                        string texturePath = Path.Combine(outputDir, coursename[cID] + i.ToString() + ".32x64.png");
-
-                        exportBitmap.Save(texturePath, ImageFormat.Png);
-
-                        width = 64;
-                        height = 32;
-
-                        exportBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                        graphicsBitmap = Graphics.FromImage(exportBitmap);
-                        N64Graphics.RenderTexture(graphicsBitmap, decompressedTexture, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
-
-                        texturePath = Path.Combine(outputDir, coursename[cID] + i.ToString() + ".64x32.png");
-
-                        exportBitmap.Save(texturePath, ImageFormat.Png);
-                    }
-                   
-
-
-                }
-                else
-                {
-                    binaryReader.BaseStream.Seek(binaryReader.BaseStream.Length, SeekOrigin.Begin);
-                }
-            }
-            MessageBox.Show("Finished");
-
-
-            
-
-
-        }
-
-
-
-
-
-
-
-
-        public byte[] dumpseg4(int cID, byte[] fileData)
-        {
-
-            Header[] courseHeader = loadHeader(fileData);
-
-            int s4Start = BitConverter.ToInt32(courseHeader[cID].s47Start, 0);
-            int s7Start = BitConverter.ToInt32(courseHeader[cID].S7Pointer, 0);
-
-            byte[] seg4 = new byte[(BitConverter.ToInt32(courseHeader[cID].S7Pointer, 0) - BitConverter.ToInt32(courseHeader[cID].s47Start, 0))];
-
-
-            Buffer.BlockCopy(fileData, s4Start, seg4, 0, s7Start - s4Start);
-
-            return seg4;
-        }
-
-        public byte[] dumpseg5(int cID, byte[] fileData)
-        {
-
-            Header[] courseHeader = loadHeader(fileData);
-
-            
-
-            List<int> offsets = new List<int>();
-
-
-            int segment9Start = BitConverter.ToInt32(courseHeader[cID].s9Start, 0);
-            int segment9End = BitConverter.ToInt32(courseHeader[cID].s9End, 0);
-
-
-
-            byte[] seg9 = new byte[(segment9End - segment9Start)];
-            List<byte> segment5 = new List<byte>();
-
-            Buffer.BlockCopy(fileData, segment9Start, seg9, 0, segment9End - segment9Start);
-
-            TM64_Geometry mk = new TM64_Geometry();
-
-            memoryStream = new MemoryStream(seg9);
-            binaryWriter = new BinaryWriter(memoryStream);
-            binaryReader = new BinaryReader(memoryStream);
-            
-            int textureOffset = new int();
-            int compressSize = new int();
-
-            binaryReader.BaseStream.Position = (BitConverter.ToInt32(courseHeader[cID].TexturePointer, 0) - 0x09000000);
-
-            for (int i = 0; binaryReader.BaseStream.Position < binaryReader.BaseStream.Length; i++)
-            {
-                flip4 = binaryReader.ReadBytes(4);
-                Array.Reverse(flip4);
-                textureOffset = BitConverter.ToInt32(flip4, 0);
-
-                flip4 = binaryReader.ReadBytes(4);
-                Array.Reverse(flip4);
-                compressSize = BitConverter.ToInt32(flip4, 0);
-
-
-
-                if (textureOffset != 0)
-                {
-                    textureOffset = (textureOffset & 0xFFFFFF) + 0x641F70;
-
-                    byte[] textureFile = new byte[compressSize];
-
-                    Array.Copy(fileData, textureOffset, textureFile, 0, compressSize);
-
-                    byte[] decompressedTexture = decompressMIO0(textureFile);
-                    offsets.Add(segment5.Count);
-                    segment5.AddRange(decompressedTexture);
-                    binaryReader.BaseStream.Seek(8, SeekOrigin.Current);
-                }
-                else
-                {
-                    binaryReader.BaseStream.Seek(binaryReader.BaseStream.Length, SeekOrigin.Begin);
-                }
-            }
-
-            for (int x = 0; x < offsets.Count; x++)
-            {
-
-                byte[] flip2 = BitConverter.GetBytes(x + 1);
-                Array.Reverse(flip2);
-                segment5.AddRange(flip2);
-
-                flip2 = BitConverter.GetBytes(offsets[x]);
-                Array.Reverse(flip2);
-                segment5.AddRange(flip2);
-
-            }
-            byte[] seg5 = segment5.ToArray();
-
-
-
-            return seg5;
-        }
-
-
-
-
-        public byte[] dumpseg6(int cID, byte[] fileData)
-        {
-
-            Header[] courseHeader = loadHeader(fileData);
-
-            int s6Start = BitConverter.ToInt32(courseHeader[cID].s6Start, 0);
-            int s6End = BitConverter.ToInt32(courseHeader[cID].s6End, 0);
-
-            byte[] seg6 = new byte[s6End - s6Start];
-
-
-            Buffer.BlockCopy(fileData, s6Start, seg6, 0, s6End - s6Start);
-
-            return seg6;
-        }
-
-        public byte[] dumpseg7(int cID, byte[] fileData)
-        {
-
-            Header[] courseHeaders = loadHeader(fileData);
-
-            int s4Start = BitConverter.ToInt32(courseHeaders[cID].s47Start, 0);
-            int s7Start = BitConverter.ToInt32(courseHeaders[cID].S7Pointer, 0);
-            int s7End = BitConverter.ToInt32(courseHeaders[cID].s47End, 0);
-
-
-
-            s7Start = s4Start + s7Start - 0x0F000000;
-            byte[] seg7 = new byte[s7End - s7Start];
-
-
-            Buffer.BlockCopy(fileData, s7Start, seg7, 0, s7End - s7Start);
-
-            return seg7;
-        }
-
-        public byte[] dumpseg9(int cID, byte[] fileData)
-        {
-
-            Header[] courseHeaders = loadHeader(fileData);
-
-            int s9Start = BitConverter.ToInt32(courseHeaders[cID].s9Start, 0);
-            int s9End = BitConverter.ToInt32(courseHeaders[cID].s9End, 0);
-
-
-            byte[] seg9 = new byte[s9End - s9Start];
-
-
-            Buffer.BlockCopy(fileData, s9Start, seg9, 0, s9End - s9Start);
-
-            return seg9;
-        }
-
-        public byte[] dump_ASM(string filePath)
-        {
-
-            /// This is specfically designed for Mario Kart 64 USA 1.0 ROM. It should dump to binary the majority of it's ASM commands.
-            /// It uses a list provided by MiB to find the ASM sections, there could be plenty of code I'm missing
-
-            byte[] fileData = File.ReadAllBytes(filePath);
-            byte[] asm = new byte[1081936];
-
-            byte[] buffer = new byte[1];
-            buffer[0] = 0xFF;
-
-
-            Buffer.BlockCopy(fileData, 4096, asm, 0, 887664);
-
-            for (int i = 0; i < 8; i++)
-            {
-                Buffer.BlockCopy(buffer, 0, asm, 887664 + i, 1);
-            }
-
-            Buffer.BlockCopy(fileData, 1013008, asm, 887672, 174224);
-
-            for (int i = 0; i < 8; i++)
-            {
-                Buffer.BlockCopy(buffer, 0, asm, 1061896 + i, 1);
-            }
-
-            Buffer.BlockCopy(fileData, 1193536, asm, 1061904, 20032);
-            return asm;
-
-        }
-
-        public void translate_ASM(string savePath, string filePath)
-        {
-
-            /// This is specfically designed for Mario Kart 64 USA 1.0 ROM. It should convert to plaintext the majority of it's ASM commands.            
-            /// Also, there are a few ASM commands that MK64 uses that I currently haven't defined yet. 
-
-
-            byte[] asm = File.ReadAllBytes(filePath);
-
-            MemoryStream asmm = new MemoryStream(asm);
-            BinaryReader asmr = new BinaryReader(asmm);
-            string output = "";
-            byte[] asmbytes = new byte[4];
-            int compare = new int();
-            byte commandbyte = new byte();
-            bool unknown = false;
-            asmr.BaseStream.Seek(0, SeekOrigin.Begin);
-
-            bool debug_bool = false;
-
-            Int16 rt = new Int16();
-            Int16 rs = new Int16();
-            Int16 rd = new Int16();
-            Int16 sa = new Int16();
-
-
-
-
-            byte[] immbyte = new byte[2];
-
-
-
-
-            int[] current_offset = new int[] { 0x1000, 0xF7510, 0x123640 };
-
-            int[] dataLength = new int[] { 0xD8B70, 0x2A890, 0x4E40 };
-
-            for (int loop = 0; loop < 3; loop++)
-            {
-                for (int i = 0; i < dataLength[loop]; i += 4)
-                {
-
-
-                    asmr.BaseStream.Seek(current_offset[loop], SeekOrigin.Begin);
-                    asmbytes = asmr.ReadBytes(4);
-
-                    commandbyte = asmbytes[0];
-
-                    debug_bool = false;  ///set FALSE to ONLY print debug commands
-
-                    unknown = true;
-                    String CommandBinary = Convert.ToString(commandbyte, 2).PadLeft(8, '0');
-                    compare = Convert.ToInt16(CommandBinary.Substring(0, 6), 2);
-                    ///MessageBox.Show("Command "+compare.ToString()+"- 0x "+BitConverter.ToString(asmbytes).Replace("-", " "));
-                    if (compare == 1)
-                    {
-                        Array.Copy(asmbytes, 0, flip4, 0, 4);
-                        Array.Reverse(flip4);
-                        int Value = BitConverter.ToInt32(flip4, 0);
-                        String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-                        if (rt == 0)
-                        {
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BLTZ} Branch on Less than Zero - If the value at register " + rs.ToString() + " is < 0 then Branch within the 256MB region at 0x" + Value.ToString("X");
-
-                        }
-                        if (rt == 1)
-                        {
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BGEZ} Branch on Greater than or Equal to Zero - If the value at register " + rs.ToString() + " is >= 0 then Branch within the 256MB region at 0x" + Value.ToString("X");
-
-                        }
-                        if (rt == 2)
-                        {
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BLTZL} Branch on Less than Zero Likely - If the value at register " + rs.ToString() + " is < 0 then Branch within the 256MB region at 0x" + Value.ToString("X");
-
-                        }
-                        if (rt == 3)
-                        {
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BGEZL} Branch on Greater than or Equal to Zero Likely - If the value at register " + rs.ToString() + " is >= 0 then Branch within the 256MB region at 0x" + Value.ToString("X");
-
-                        }
-                        if (rt == 16)
-                        {
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BLTZAL} Branch on Less than or Equal to Zero And Link- If the value at register " + rs.ToString() + " is  < 0 then Branch within the 256MB region at 0x" + Value.ToString("X") + " and return address";
-
-                        }
-                        if (rt == 17)
-                        {
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BGEZAL} Branch on Greater than or Equal to Zero And Link- If the value at register " + rs.ToString() + " is >= 0 then Branch within the 256MB region at 0x" + Value.ToString("X") + " and return address";
-
-                        }
-                        if (rt == 18)
-                        {
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BLTZALL} Branch on Less than or Equal to Zero And Link Likely- If the value at register " + rs.ToString() + " is < 0 then Branch within the 256MB region at 0x" + Value.ToString("X") + " and return address";
-
-                        }
-                        if (rt == 19)
-                        {
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BGEZALL} Branch on Greater than or Equal to Zero And Link Likely- If the value at register " + rs.ToString() + " is >= 0 then Branch within the 256MB region at 0x" + Value.ToString("X") + " and return address";
-
-                        }
-
-
-
-
-
-
-
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 2)
-                    {
-                        Array.Copy(asmbytes, 0, flip4, 0, 4);
-                        Array.Reverse(flip4);
-                        int Value = BitConverter.ToInt32(flip4, 0);
-                        String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
-
-
-                        Value = Convert.ToInt32(Binary.Substring(6, 26), 2);
-
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{J} Jump - Branch within the 256MB region at 0x" + Value.ToString("X");
-
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 3)
-                    {
-                        Array.Copy(asmbytes, 0, flip4, 0, 4);
-                        Array.Reverse(flip4);
-                        int Value = BitConverter.ToInt32(flip4, 0);
-                        String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
-
-
-                        Value = Convert.ToInt32(Binary.Substring(6, 26), 2);
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{JAL} Jump and Link - Procedure Call within the 256MB region at 0x" + Value.ToString("X");
-
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 4)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BEQ} Branch on Equal - If the values are equal at register " + rs.ToString() + " and at register " + rt.ToString() + "then branch to 0x" + BitConverter.ToString(immbyte).Replace("-", "");
-
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 5)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-                        debug_bool = true;
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BNE} Branch on Not Equal - If the values are not equal at register " + rs.ToString() + " and at register " + rt.ToString() + "then branch to 0x" + BitConverter.ToString(immbyte).Replace("-", "");
-
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 8)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{ADDI} ADD Immediate Signed Word - Add the Signed value 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the Signed value at register " + rs.ToString() + " and write it to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 9)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-                        debug_bool = true;
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{ADDIU} ADD Immediate Unsigned Word - Add the Unsigned value 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the Unsigned value at register " + rs.ToString() + " and write it to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 10)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SLTI} Set on Less Than Immediate - Set a 0/1 True/False value at register " + rt.ToString() + " if the Signed value at register " + rs.ToString() + " is less than the Signed value " + BitConverter.ToString(immbyte).Replace("-", "");
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 11)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SLTIU} Set on Less Than Immediate Unsigned - Set a 0/1 True/False value at register " + rt.ToString() + " if the Unsigned value at register " + rs.ToString() + " is less than the Unsigned value " + BitConverter.ToString(immbyte).Replace("-", "");
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 12)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{ANDI} AND Immediate- Perform a Bitwise Logical AND for the value at register " + rs.ToString() + " and the value " + BitConverter.ToString(immbyte).Replace("-", "") + " and write it to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 13)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{ORI} OR Immediate- Perform a Bitwise Logical OR for the value at register " + rs.ToString() + " and the value " + BitConverter.ToString(immbyte).Replace("-", "") + " and write it to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 14)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{XORI} XOR Immediate- Perform a Bitwise Logical XOR for the value at register " + rs.ToString() + " and the value " + BitConverter.ToString(immbyte).Replace("-", "") + " and write it to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-
-                    if (compare == 15)
-                    {
-
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        ///MessageBox.Show(rt.ToString());
-
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-                        debug_bool = true;
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LUI} Load Upper Immediate - at register " + rt.ToString() + " load value 0x" + BitConverter.ToString(immbyte).Replace("-", "");
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 20)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BEQL} Branch on Equal Likely- If the values are equal at register " + rs.ToString() + " and at register " + rt.ToString() + "then branch to 0x" + BitConverter.ToString(immbyte).Replace("-", "");
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 21)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BNEL} Branch on NOT Equal Likely- If the values are not equal at register " + rs.ToString() + " and at register " + rt.ToString() + "then branch to 0x" + BitConverter.ToString(immbyte).Replace("-", "");
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 22)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BLEZL} Branch on Less Than or Equal to 0 Likely- If the value at register " + rs.ToString() + " is less than or equal to 0 then branch to 0x" + BitConverter.ToString(immbyte).Replace("-", "");
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 23)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{BLEZL} Branch on Greater Than or Equal to 0 Likely- If the value at register " + rs.ToString() + " is greater than or equal to 0 then branch to 0x" + BitConverter.ToString(immbyte).Replace("-", "");
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 24)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-                        ///Oh, behave.
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{DADDI} Doubleword ADD Immediate- Add the value at register " + rs.ToString() + " to the value 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " and write it to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 25)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{DADDIU} Doubleword ADD Unsigned Immediate- Add the value at register " + rs.ToString() + " to the value 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " and write it to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 26)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LDL} Load Doubleword Left- Reads the value at register " + rs.ToString() + " and sets the Most-Significant bytes to the value of ( 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " and writes it to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 27)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LDL} Load Doubleword Right- Reads the value at register " + rs.ToString() + " and sets the Least-Significant bytes to the value of ( 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " and writes it to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 32)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-                        debug_bool = true;
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LB} Load Byte- Adds the value of 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " to form the address to a signed byte that is written to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 33)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LH} Load Halfword- Adds the value of 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " to form the address to a signed Halfword that is written to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 34)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LWL} Load World Left- Adds the value of 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " to form the address to a signed word whose Most-Significant bytes are added to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 35)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LW} Load Word- Adds the value of 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " to form the address to a signed word that is loaded to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 36)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LBU} Load Unsigned Byte- Adds the value of 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " to form the address to an unsigned byte that is written to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 37)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LHU} Load Halfword- Adds the value of 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " to form the address to an unsigned Halfword that is written to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 38)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LWLU} Load World Left- Adds the value of 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " to form the address to an unsigned word whose Most-Significant bytes are added to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 39)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{LWU} Load Word- Adds the value of 0x" + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " to form the address to an unsigned word that is loaded to register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 40)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SB} Store Byte- Creates a Memory Address by adding " + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " and writes the byte at register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 41)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SH} Store HalfWord- Creates a Memory Address by adding " + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " and writes the halfword at register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 42)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SWL} Store Word Left- Creates a Memory Address by adding " + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " and writes the Most Significant bytes from the word at register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 43)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SW} Store Word- Creates a Memory Address by adding " + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " and writes the word at register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 44)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SDL} Store Doubleword Left- Creates a Memory Address by adding " + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " and writes the Most-Significant bytes of the Doubleword at register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 45)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SDR} Store Doubleword Right- Creates a Memory Address by adding " + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " and writes the Least-Significant bytes of the Doubleword at register " + rt.ToString();
-                        ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 46)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SWR} Store Word Right- Creates a Memory Address by adding " + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " and writes the Least Significant bytes from the word at register " + rt.ToString();                    ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-                    if (compare == 61)
-                    {
-                        Array.Copy(asmbytes, 0, flip2, 0, 2);
-                        Array.Reverse(flip2);
-                        valuesign16 = BitConverter.ToInt16(flip2, 0);
-                        String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-
-                        rs = Convert.ToInt16(Binary.Substring(6, 5), 2);   ///base?
-                        rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                        Array.Copy(asmbytes, 2, immbyte, 0, 2);
-
-
-
-
-
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SDC1} Store Doubleword from Float- Creates a Memory Address by adding " + BitConverter.ToString(immbyte).Replace("-", "") + " to the base at register " + rs.ToString() + " and writes the doubleword located at register " + rt.ToString();                    ///MessageBox.Show(output);
-                        unknown = false;
-                    }
-
-
-                    if (compare == 0xFF)
-                    {
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "-BREAK-";
-                        unknown = false;
-                    }
-
-
-
-                    /// If commandbyte is 0x00, there is a secondary commandbyte at the far end
-                    if (compare == 0x00)
-                    {
-                        commandbyte = asmbytes[3];
-                        CommandBinary = Convert.ToString(commandbyte, 2).PadLeft(8, '0');
-                        compare = Convert.ToInt16(CommandBinary.Substring(2, 6), 2);
-
-                        ///MessageBox.Show(commandbyte.ToString() + "-" + compare.ToString() + "---" + BitConverter.ToString(asmbytes).Replace("-", " "));
-                        if (compare == 0)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-                            sa = Convert.ToInt16(Binary.Substring(21, 5), 2);
-
-                            if (rt != 0 || rd != 0 || sa != 0)  /// If all values are 0 then the hex string was [00 00 00 00] and can be skipped.
-                            {
-
-
-                                output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SLL} Shift Word Left Logical - Left-Shift the word at register " + rt.ToString() + " by " + sa.ToString() + " and write it to register " + rd.ToString();
-                                ///MessageBox.Show(output);
-                            }
-                            else
-                            {
-
-                                output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "[00 00 00 00]";
-                            }
-                        }
-                        if (compare == 2)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-                            sa = Convert.ToInt16(Binary.Substring(21, 5), 2);
-
-                            if (rt != 0 || rd != 0 || sa != 0)  /// If all values are 0 then the hex string was [00 00 00 00] and can be skipped.
-                            {
-
-
-                                output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SRL} Shift Word Right Logical - Left-Shift the word at register " + rt.ToString() + " by " + sa.ToString() + " and write it to register " + rd.ToString();
-                                ///MessageBox.Show(output);
-                            }
-                        }
-                        if (compare == 3)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-                            sa = Convert.ToInt16(Binary.Substring(21, 5), 2);
-
-                            if (rt != 0 || rd != 0 || sa != 0)  /// If all values are 0 then the hex string was [00 00 00 00] and can be skipped.
-                            {
-
-
-                                output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SRL} Shift Word Right Arithmetic - Left-Shift the word at register " + rt.ToString() + " by " + sa.ToString() + " and write it to register " + rd.ToString();
-                                ///MessageBox.Show(output);
-                            }
-                        }
-                        if (compare == 7)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-                            if (rt != 0 || rd != 0 || sa != 0)  /// If all values are 0 then the hex string was [00 00 00 00] and can be skipped.
-                            {
-
-
-                                output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SRL} Shift Word Right Arithmetic - Left-Shift the word at register " + rt.ToString() + " by the amount at register " + rs.ToString() + " and write it to register " + rd.ToString();
-                                ///MessageBox.Show(output);
-                            }
-                        }
-                        if (compare == 8)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip2, 0, 2);
-                            Array.Reverse(flip2);
-                            valuesign16 = BitConverter.ToInt16(flip2, 0);
-                            String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-
-
-
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{JR} Jump Register - Jump to Address in Register " + rs.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 16)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 2, flip2, 0, 2);
-                            Array.Reverse(flip2);
-                            valuesign16 = BitConverter.ToInt16(flip2, 0);
-                            String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-                            rd = Convert.ToInt16(Binary.Substring(0, 5), 2);
-
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{MFHI} Move From HI Register - Move the special HI register to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 18)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 2, flip2, 0, 2);
-                            Array.Reverse(flip2);
-                            valuesign16 = BitConverter.ToInt16(flip2, 0);
-                            String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-                            rd = Convert.ToInt16(Binary.Substring(0, 5), 2);
-
-
-
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{MFLO} Move From LO Register - Move the special HI register to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 24)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 2, flip2, 0, 2);
-                            Array.Reverse(flip2);
-                            valuesign16 = BitConverter.ToInt16(flip2, 0);
-                            String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{MULT} Multiply Word- Multiply Signed 32 Bit Integers at  register " + rs.ToString() + " and register " + rt.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 26)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 2, flip2, 0, 2);
-                            Array.Reverse(flip2);
-                            valuesign16 = BitConverter.ToInt16(flip2, 0);
-                            String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{DIV} Divide Word- Divide Signed 32 Bit Integer at register " + rs.ToString() + " by register " + rt.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 27)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 2, flip2, 0, 2);
-                            Array.Reverse(flip2);
-                            valuesign16 = BitConverter.ToInt16(flip2, 0);
-                            String Binary = Convert.ToString(valuesign16, 2).PadLeft(16, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{DIV} Divide Word- Divide Unsigned 32 Bit Integer at register " + rs.ToString() + " by register " + rt.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 32)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{ADD} Add Word- Add the Signed Word at register " + rs.ToString() + " to register " + rt.ToString() + " and write it to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 33)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{ADDU} Add Word- Add the Unsigned Word at register " + rs.ToString() + " to register " + rt.ToString() + " and write it to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 34)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SUB} Subtract Word- Subtract the Signed Word at register " + rt.ToString() + " from the Word at register " + rt.ToString() + " and write it to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 35)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SUBU} Subtract Word- Subtract the Unsigned Word at register " + rt.ToString() + " from the Word at register " + rt.ToString() + " and write it to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 36)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{AND} AND- Perform a Bitwise Logical AND for the value at register " + rs.ToString() + " and the value at register " + rt.ToString() + " and write it to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 37)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{OR} OR- Perform a Bitwise Logical OR for the value at register " + rs.ToString() + " and the value at register " + rt.ToString() + " and write it to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 37)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{OR} OR- Perform a Bitwise Logical OR for the value at register " + rs.ToString() + " and the value at register " + rt.ToString() + " and write it to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 38)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{XOR} XOR- Perform a Bitwise Logical XOR for the value at register " + rs.ToString() + " and the value at register " + rt.ToString() + " and write it to register " + rd.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 42)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SLT} Set on Less Than- Set a 0/1 True/False value at register " + rd.ToString() + " if the Signed value at register " + rs.ToString() + " is less than the Signed value at register " + rt.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                        if (compare == 43)
-                        {
-                            unknown = false;
-
-                            Array.Copy(asmbytes, 0, flip4, 0, 4);
-                            Array.Reverse(flip4);
-                            int value32 = BitConverter.ToInt32(flip4, 0);
-                            String Binary = Convert.ToString(value32, 2).PadLeft(32, '0');
-
-                            rs = Convert.ToInt16(Binary.Substring(6, 5), 2);
-                            rt = Convert.ToInt16(Binary.Substring(11, 5), 2);
-                            rd = Convert.ToInt16(Binary.Substring(16, 5), 2);
-
-
-
-
-
-
-                            output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "{SLTU} Set on Less Than- Set a 0/1 True/False value at register " + rd.ToString() + " if the Unsigned value at register " + rs.ToString() + " is less than the Unsigned value at register " + rt.ToString();
-                            ///MessageBox.Show(output);
-                        }
-                    }
-
-
-
-                    if (unknown)
-                    {
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "";
-                        ///MessageBox.Show("-Unknown Command 0x" + compare.ToString("X").PadLeft(2, '0') + "-  @0x" + current_offset.ToString("X").PadLeft(2, '0'));
-                        output = "  || [" + BitConverter.ToString(asmbytes).Replace("-", " ") + "]  ||  " + "-Unknown Command -" + compare.ToString() + "-  @0x" + current_offset[loop].ToString("X").PadLeft(2, '0');
-                    }
-
-                    current_offset[loop] += 4;
-                    asmr.BaseStream.Seek(current_offset[loop], SeekOrigin.Begin);
-
-
-                    if (debug_bool)
-                    {
-
-
-
-                        output = "0x" + (asmr.BaseStream.Position - 4).ToString("X").PadLeft(8, '0') + output;
-
-                        if (output != "")
-                        {
-                            System.IO.File.AppendAllText(savePath, output + Environment.NewLine);
-                        }
-                    }
-                    else
-                    {
-                        
-                    }
-                }
-            }
-
-
-
-
-
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public byte[] decompressMIO0(byte[] inputFile)
-        {
-            byte[] outputFile = Cereal64.Common.Utils.Encoding.MIO0.Decode(inputFile);
-            return outputFile;
-        }
-
-        public byte[] compressMIO0(byte[] inputFile)
-        {
-            byte[] outputFile = Cereal64.Common.Utils.Encoding.MIO0.Encode(inputFile);
-            return outputFile;
-        }
-
-
-
-        //fake MIO0 compression.
-
-        public byte[] fakeCompress (byte[] inputFile)
-        {
-            
-            MemoryStream outputStream = new MemoryStream();
-
-            BinaryReader outputReader = new BinaryReader(outputStream);
-            BinaryWriter outputWriter = new BinaryWriter(outputStream);
-
-            byte[] byteArray = new byte[0];
-
-            int uncompressedOffset = (inputFile.Length / 8);
-
-            int addressAlign = 8 - (Convert.ToInt32(uncompressedOffset) % 8);
-            if (addressAlign == 8)
-                addressAlign = 0;
-
-            uncompressedOffset = uncompressedOffset + addressAlign;
-
-
-            //start fake compression
-
-            byteArray = BitConverter.GetBytes(0x4D494F30);
-            Array.Reverse(byteArray);
-            outputWriter.Write(byteArray);
-
-            byteArray = BitConverter.GetBytes(inputFile.Length);
-            Array.Reverse(byteArray);
-            outputWriter.Write(byteArray);
-
-            byteArray = BitConverter.GetBytes(0x00000000);
-            Array.Reverse(byteArray);
-            outputWriter.Write(byteArray);
-
-            byteArray = BitConverter.GetBytes(uncompressedOffset + 20); // 16 bytes for header size, 4 bytes padding.
-            Array.Reverse(byteArray);
-            outputWriter.Write(byteArray);
-
-            
-
-            for (int x = 0; x < uncompressedOffset; x++)
-            {
-                outputWriter.Write(Convert.ToByte(0xFF));
-            }
-
-
-            //padding
-            outputWriter.Write(0xFFFFFFFF);
-
-
-
-            outputWriter.Write(inputFile);
-
-            //finished fake compression
-
-
-            byte[] returnByte = outputStream.ToArray();
-            return returnByte;
-
-
-        }
-
-
-
-
-
-
-
-        public byte[] decompress_seg7(byte[] useg7)
-        {
-
-            /// This will decompress Segment 7's compressed display lists to regular F3DEX commands.
-            /// This is used exclusively by Mario Kart 64's Segment 7.
-
-            int indexA = 0;
-            int indexB = 0;
-            int indexC = 0;
-
-
-
-
-
-
-
-
-
-
-
-            MemoryStream romm = new MemoryStream(useg7);
-            BinaryReader mainseg = new BinaryReader(romm);
-            MemoryStream seg7m = new MemoryStream();
-            BinaryWriter seg7w = new BinaryWriter(seg7m);
-
-            seg7w.BaseStream.Seek(0, SeekOrigin.Begin);
-
-            byte commandbyte = new byte();
-            byte[] byte29 = new byte[2];
-
-
-
-            mainseg.BaseStream.Seek(0, SeekOrigin.Begin);
-
-
-            byte[] voffset = new byte[2];
-
-            bool DispEnd = true;
-
-            for (int i = 0; DispEnd; i++)
-            {
-
-                if (mainseg.BaseStream.Position == mainseg.BaseStream.Length)
-                {
-                    DispEnd = false;
-                }
-                else
-                {
-                    commandbyte = mainseg.ReadByte();
-
-
-
-
-                    if (i > 2415)
-                    {
-                        ///MessageBox.Show(i.ToString()+"-Execute Order 0x" + commandbyte.ToString("X"));
-                    }
-                    if (commandbyte == 0xFF)
-                    {
-
-
-                        DispEnd = false;
-                    }
-
-                    if (commandbyte >= 0x00 && commandbyte <= 0x14)
-                    {
-
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBC000002));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x80000040));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03860010));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | (commandbyte * 0x18) + 8));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03880010));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | commandbyte * 0x18));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x15)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFC121824));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFF33FFFF));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-
-                    }
-                    if (commandbyte == 0x16)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFC127E24));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFFFFF3F9));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x17)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFCFFFFFF));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFFFE793C));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x18)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB900031D));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00552078));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x19)
-                    {
-                        ///
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB900031D));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00553078));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if ((commandbyte >= 0x1A && commandbyte <= 0x1F) | commandbyte == 0x2C)
-                    {
-
-                        UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
-                        UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
-                        UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
-                        UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
-                        byte[] Param = new byte[2];
-
-                        Param[0] = mainseg.ReadByte();
-                        Param[1] = mainseg.ReadByte();
-
-
-                        if (commandbyte == 0x2C)
-                        {
-                            ImgType = ImgTypes[6];
-                            ImgFlag1 = STheight[6];
-                            ImgFlag2 = STwidth[6];
-                            ImgFlag3 = 0x100;
-                        }
-                        else
-                        {
-                            ImgType = ImgTypes[commandbyte - 0x1A];
-                            ImgFlag1 = STheight[commandbyte - 0x1A];
-                            ImgFlag2 = STwidth[commandbyte - 0x1A];
-                            ImgFlag3 = 0;
-                        }
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xE8000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((((Param[1] & 0xF) << 0x12) | (((Param[1] & 0xF0) >> 4) << 0xE)) | ((Param[0] & 0xF) << 8)) | (((Param[0] & 0xF0) >> 4) << 4))));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xF2000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((ImgFlag2 - 1) << 0xE) | ((ImgFlag1 - 1) << 2))));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte >= 0x20 && commandbyte <= 0x25)
-                    {
-                        UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
-                        UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
-                        UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
-                        UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
-                        byte[] Param = new byte[3];
-
-                        Param[0] = mainseg.ReadByte();
-                        Param[1] = mainseg.ReadByte();
-                        Param[2] = mainseg.ReadByte();
-
-
-                        ImgType = ImgTypes[commandbyte - 0x20];
-                        ImgFlag1 = STheight[commandbyte - 0x20];
-                        ImgFlag2 = STwidth[commandbyte - 0x20];
-                        ImgFlag3 = 0;
-
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((ImgType | 0xFD000000) | 0x100000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((Param[0] << 0xB) + 0x05000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xE8000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((ImgType << 0x15) | 0xF5000000) | 0x100000) | (Param[2] & 0xF)));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((Param[2] & 0xF0) >> 4) << 0x18)));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xE6000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-
-                        ImgSize = (ImgFlag2 * ImgFlag1) - 1;
-                        if (ImgSize > 0x7FF) ImgSize = 0x7FF;
-
-                        UInt32 Unknown2x = new UInt32();
-
-                        Unknown2x = 1;
-                        Unknown2x = (ImgFlag2 << 1) >> 3; ///purpose of this value is unknown
-
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xF3000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((Unknown2x + 0x7FF) / Unknown2x) | (((Param[2] & 0xF0) >> 4) << 0x18)) | (ImgSize << 0xC)));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-
-                    }
-                    if (commandbyte == 0x26)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBB000001));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFFFFFFFF));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x27)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBB000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00010001));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x28)
-                    {
-                        //flip4 = mainseg.ReadBytes(2);
-                        //Array.Reverse(flip4);
-                        uint address = mainseg.ReadUInt16();
-
-
-                        int lvertCount = mainseg.ReadByte() & 0x3F;
-                        int lvertIndex = mainseg.ReadByte() & 0x3F;
-
-
-
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | (lvertIndex * 2) << 16 | (lvertCount << 10) + (16 * (lvertCount) - 1)));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | address * 16));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x29)
-                    {
-                        value16 = mainseg.ReadUInt16();
-                        indexA = (value16 >> 10) & 0x1F;
-                        indexB = (value16 >> 5) & 0x1F;
-                        indexC = value16 & 0x1F;
-
-
-
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBF000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x2A)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB8000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x2B)
-                    {
-                        value16 = mainseg.ReadUInt16();
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x06000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((0x07000000 | (value16 * 8))));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x2D)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBE000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00000140));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x2E)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D002E));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D002E));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x2F)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D002F));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D002F));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x30)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D0030));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D0030));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte >= 0x33 && commandbyte <= 0x52)
-                    {
-                        
-                        value16 = mainseg.ReadUInt16();
-                        
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | (((commandbyte - 0x32) * 0x410) - 1)));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | (value16 * 16)));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x53)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFCFFFFFF));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFFFCF279));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-
-                    if (commandbyte == 0x54)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB900031D));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00442D58));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x55)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB900031D));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00404DD8));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x56)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB7000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00002000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x57)
-                    {
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB6000000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00002000));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                    }
-                    if (commandbyte == 0x58)
-                    {
-
-                        value16 = mainseg.ReadUInt16();
-                        indexA = (value16 >> 10) & 0x1F;
-                        indexB = (value16 >> 5) & 0x1F;
-                        indexC = value16 & 0x1F;
-
-
-
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB1000000 | (indexC << 17) | (indexB << 9) | indexA << 1));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-                        value16 = mainseg.ReadUInt16();
-                        indexA = (value16 >> 10) & 0x1F;
-                        indexB = (value16 >> 5) & 0x1F;
-                        indexC = value16 & 0x1F;
-
-                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
-                        Array.Reverse(flip4);
-                        seg7w.Write(flip4);
-
-                    }
-                    if (i > 2415)
-                    {
-                        ///MessageBox.Show(i.ToString() + "-Finished Order 0x" + commandbyte.ToString("X"));
-                    }
-                }
-            }
-
-            byte[] seg7 = seg7m.ToArray();
-
-            return (seg7);
-
-
-
-
-
-        }
-
-        public byte[] compress_seg7(byte[] segment7)
-        {
-
-            /// This will compress compatible F3DEX commands into a compressed Segment 7.
-            /// This is used exclusively by Mario Kart 64's Segment 7.
-            /// No, I don't know how this works. Don't ask me how it works.
-            /// I have no fucking clue how I wrote this. If you find out, let me know!
-
-
-
-            ///You may ask yourself, "What is that beautiful house?"
-            ///You may ask yourself, "Where does that highway go to?"
-            ///And you may ask yourself, "Am I right? Am I wrong?"
-            ///And you may say to yourself, "My God! What have I done?"
-
-
-
-
-
-
-
-            int indexA = 0;
-            int indexB = 0;
-            int indexC = 0;
-
-
-
-
-
-
-
-
-
-
-
-            MemoryStream romm = new MemoryStream(segment7);
-            BinaryReader mainseg = new BinaryReader(romm);
-            MemoryStream seg7m = new MemoryStream();
-            BinaryWriter seg7w = new BinaryWriter(seg7m);
-
-            seg7w.BaseStream.Seek(0, SeekOrigin.Begin);
-
-
-
-            string commandbyte = "";  ///keeping the same name from above decompress process
-            byte[] byte29 = new byte[2];
-            string compar = "";
-            byte F3Dbyte = new byte();
-            byte[] parambyte = new byte[2];
-
-
-
-
-
-
-            byte[] voffset = new byte[2];
-
-            byte compressbyte = new byte();
-
-            mainseg.BaseStream.Position = 0;
-
-            for (int i = 0; (mainseg.BaseStream.Position < mainseg.BaseStream.Length); i++)
-            {
-
-                F3Dbyte = mainseg.ReadByte();
-                commandbyte = F3Dbyte.ToString("x").PadLeft(2, '0').ToUpper();
-
-                ///MessageBox.Show(F3Dbyte.ToString("x").PadLeft(2,'0').ToUpper() + "--" + mainseg.BaseStream.Position.ToString()); ;
-
-
-
-
-                if (commandbyte == "BC")
-                {
-
-
-                    MessageBox.Show("Unsupported Command -BC-");
-                    ///0x00 -- 0x14
-
-                    ///curently unsupported, ??not featured in stock MK64 racing tracks?? Can't find in multiple courses.
-
-
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBC000002));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x80000040));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03860010));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | (commandbyte * 0x18) + 8));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03880010));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | commandbyte * 0x18));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-
-
-                }
-                if (commandbyte == "FC")
-                {
-
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "1218")
-                    {
-                        compressbyte = 0x15;
-                    }
-                    if (compar == "127E")
-                    {
-                        compressbyte = 0x16;
-                    }
-                    if (compar == "FFFF")
-                    {
-                        compressbyte = 0x17;
-                    }
-
-                    mainseg.BaseStream.Seek(5, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-
-                }
-                if (commandbyte == "B9")
-                {
-
-
-                    mainseg.BaseStream.Seek(5, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "2078")
-                    {
-                        compressbyte = 0x18;
-                    }
-                    if (compar == "3078")
-                    {
-                        compressbyte = 0x19;
-                    }
-                    seg7w.Write(compressbyte);
-
-                }
-                if (commandbyte == "E8")
-                {
-                    /// 000000 00000000
-                    ///0x1A -> 0x1F + 0x2C
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-
-
-
-
-
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-
-                    byte[] Param = new byte[2];
-
-
-                    ///don't ask me I don't know
-                    ///don't ask me I don't know
-                    byte[] parameters = mainseg.ReadBytes(4);
-                    Array.Reverse(parameters);
-                    value32 = BitConverter.ToUInt32(parameters, 0);
-                    uint opint = new uint();
-                    opint = value32 >> 14;
-
-                    Param[0] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
-
-                    opint = value32 >> 4;
-
-                    Param[1] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
-
-                    Array.Reverse(Param);
-
-                    mainseg.BaseStream.Seek(4, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                    ///MessageBox.Show(compar);
-                    if (compar == "F51011000007C07C")
-                    {
-                        compressbyte = 0x2C;
-                    }
-                    if (compar == "F51010000007C07C")
-                    {
-
-                        compressbyte = 0x1A;
-                    }
-                    if (compar == "F5102000000FC07C")
-                    {
-
-                        compressbyte = 0x1B;
-                    }
-                    if (compar == "F51010000007C0FC")
-                    {
-                        compressbyte = 0x1C;
-                    }
-                    if (compar == "F57010000007C07C")
-                    {
-                        compressbyte = 0x1D;
-                    }
-                    if (compar == "F5702000000FC07C")
-                    {
-                        compressbyte = 0x1E;
-                    }
-                    if (compar == "F57010000007C0FC")
-                    {
-                        compressbyte = 0x1F;
-                    }
-                    ///MessageBox.Show(BitConverter.ToString(Param));
-                    seg7w.Write(compressbyte);
-                    seg7w.Write(Param);
-                    ///don't ask me I don't know
-                    ///don't ask me I don't know
-                }
-                if (commandbyte == "FD")
-                {
-
-
-                    ///0x20  ->  0x25
-
-
-                    mainseg.BaseStream.Seek(1, SeekOrigin.Current);
-
-
-                    byte[] Param = new byte[3];
-
-
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-
-                    byte[] parambytes = mainseg.ReadBytes(4);
-                    Array.Reverse(parambytes);
-                    value32 = BitConverter.ToUInt32(parambytes, 0);
-
-
-                    Param[0] = Convert.ToByte((value32 - 0x05000000) >> 11);
-                    Param[1] = 0x00;
-                    Param[2] = 0x70;
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-                    ///MessageBox.Show(value32.ToString("x")+"--"+Param[0].ToString("x"));
-                    mainseg.BaseStream.Seek(28, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-
-
-
-
-                    if (compar == "0000073FF100")
-                    {
-
-                        compressbyte = 0x20;
-                    }
-                    if (compar == "0000077FF080")
-                    {
-
-                        compressbyte = 0x21;
-                    }
-                    if (compar == "0000077FF100")
-                    {
-                        compressbyte = 0x22;
-                    }
-                    if (compar == "0003073FF100")
-                    {
-                        compressbyte = 0x23;
-                    }
-                    if (compar == "0003077FF080")
-                    {
-                        compressbyte = 0x24;
-                    }
-                    if (compar == "0003077FF100")
-                    {
-                        compressbyte = 0x25;
-                    }
-
-                    seg7w.Write(compressbyte);
-                    seg7w.Write(Param);
-
-
-                }
-                if (commandbyte == "BB")
-                {
-
-                    ///0x26 000001  FFFFFFFF
-                    ///0x27    00010001
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "0001")
-                    {
-                        compressbyte = 0x27;
-                    }
-                    if (compar == "FFFF")
-                    {
-                        compressbyte = 0x26;
-                    }
-                    seg7w.Write(compressbyte);
-
-                    mainseg.BaseStream.Seek(2, SeekOrigin.Current);
-
-
-
-
-                }
-
-                if (commandbyte == "BF")
-                {
-
-
-
-                    compressbyte = 0x29;
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(4, SeekOrigin.Current);
-
-                    indexC = mainseg.ReadByte();
-                    indexB = mainseg.ReadByte();
-                    indexA = mainseg.ReadByte();
-
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
-
-
-                    flip4 = BitConverter.GetBytes(Convert.ToUInt16((indexC) | (indexB << 5) | indexA << 10));
-
-
-                    seg7w.Write(flip4);
-                }
-                if (commandbyte == "B8")
-                {
-
-                    ///0x2A
-                    compressbyte = 0x2A;
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-
-                }
-                if (commandbyte == "06")
-                {
-
-                    ///0x2B
-                    compressbyte = 0x2B;
-
-
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-
-                    byte[] parambytes = mainseg.ReadBytes(4);
-                    Array.Reverse(parambytes);
-                    value32 = BitConverter.ToUInt32(parambytes, 0);
-
-                    value32 = value32 & 0x00FFFFFF;
-
-
-
-                    seg7w.Write(compressbyte);
-                    seg7w.Write(Convert.ToUInt16(value32 / 8));
-                }
-                if (commandbyte == "BE")
-                {
-
-                    ///0x2D
-                    compressbyte = 0x2D;
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-                }
-                if (commandbyte == "D0")
-                {
-
-
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "002E")
-                    {
-                        compressbyte = 0x2E;
-                    }
-                    if (compar == "002F")
-                    {
-                        compressbyte = 0x2F;
-                    }
-                    if (compar == "0030")
-                    {
-                        compressbyte = 0x30;
-                    }
-
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(8, SeekOrigin.Current);
-                }
-                if (commandbyte == "04")
-                {
-
-                    ///0x33->0x52
-                    mainseg.BaseStream.Seek(1, SeekOrigin.Current);
-                    byte[] Param = mainseg.ReadBytes(2);
-                    Array.Reverse(Param);
-                    value16 = BitConverter.ToUInt16(Param, 0);
-
-                    compressbyte = Convert.ToByte(((value16 + 1) / 0x410) + 0x32);
-                    seg7w.Write(compressbyte);
-
-                    byte[] parambytes = mainseg.ReadBytes(4);
-                    Array.Reverse(parambytes);
-                    value32 = BitConverter.ToUInt32(parambytes, 0);
-                    value32 = (value32 - 0x04000000) / 16;
-
-                    value16 = Convert.ToUInt16(value32);
-                    seg7w.Write(value16);
-                }
-
-                if (commandbyte == "FC")
-                {
-
-                    ///0x53
-                    compressbyte = 0x53;
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-                }
-
-                if (commandbyte == "B9")
-                {
-
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "0044")
-                    {
-                        compressbyte = 0x54;
-                    }
-                    if (compar == "0040")
-                    {
-                        compressbyte = 0x55;
-                    }
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(2, SeekOrigin.Current);
-
-
-
-
-                }
-                if (commandbyte == "B7")
-                {
-
-                    ///0x56
-                    compressbyte = 0x56;
-                    mainseg.BaseStream.Seek(15, SeekOrigin.Current);
-
-                    seg7w.Write(compressbyte);
-                }
-                if (commandbyte == "B6")
-                {
-
-                    ///0x57
-                    compressbyte = 0x57;
-                    mainseg.BaseStream.Seek(15, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-                }
-                if (commandbyte == "B1")
-                {
-
-                    ///0x58
-                    compressbyte = 0x58;
-                    seg7w.Write(compressbyte);
-
-
-                    indexC = mainseg.ReadByte();
-                    indexB = mainseg.ReadByte();
-                    indexA = mainseg.ReadByte();
-
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
-
-
-                    flip4 = BitConverter.GetBytes(Convert.ToUInt16((indexC) | (indexB << 5) | indexA << 10));
-
-
-                    seg7w.Write(flip4);
-
-
-                    ///twice for second set of verts
-                    ///have to move the reader forward by 1 position first
-
-                    mainseg.BaseStream.Seek(1, SeekOrigin.Current);
-
-                    indexC = mainseg.ReadByte();
-                    indexB = mainseg.ReadByte();
-                    indexA = mainseg.ReadByte();
-
-
-
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
-
-                    if (Math.Abs(indexA - indexB) > 31 || Math.Abs(indexB - indexC) > 31 || Math.Abs(indexC - indexB) > 31)
-                    {
-                        ///MessageBox.Show("Vert Cache Error-" +Environment.NewLine+ "Face Composed from vertices outside 32 vert cache. Cannot create face. OverKart64 will now crash.");
-                    }
-
-                    flip4 = BitConverter.GetBytes(Convert.ToUInt16((indexC) | (indexB << 5) | indexA << 10));
-
-
-                    seg7w.Write(flip4);
-
-
-
-
-
-                }
-
-            }
-
-
-            flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFF000000));
-            Array.Reverse(flip4);
-            seg7w.Write(flip4);
-            flip4 = BitConverter.GetBytes(Convert.ToUInt32(0));
-            Array.Reverse(flip4);
-            seg7w.Write(flip4);
-
-            seg7w.Write(flip4);
-
-            seg7w.Write(flip4);
-
-            ///fin
-
-            byte[] seg7 = seg7m.ToArray();
-            return (seg7);
-
-
-
-
-
-        }
 
         public int GetMax(int first, int second)
         {
@@ -3896,559 +257,12 @@ namespace Tarmac64_Geometry
             return first < second ? first : second; /// It will take care of all the 3 scenarios
         }
 
-        public byte[] compress_seg7(string filePath)
-        {
-
-            /// This will compress compatible F3DEX commands into a compressed Segment 7.
-            /// This is used exclusively by Mario Kart 64's Segment 7.
-            /// No, I don't know how this works. Don't ask me how it works.
-            /// I have no fucking clue how I wrote this. If you find out, let me know!
-
-
-
-            ///You may ask yourself, "What is that beautiful house?"
-            ///You may ask yourself, "Where does that highway go to?"
-            ///And you may ask yourself, "Am I right? Am I wrong?"
-            ///And you may say to yourself, "My God! What have I done?"
-
-
-
-
-
-
-
-            int indexA = 0;
-            int indexB = 0;
-            int indexC = 0;
-
-
-
-
-
-
-
-
-            byte[] ROM = File.ReadAllBytes(filePath);
-
-
-
-
-            MemoryStream romm = new MemoryStream(ROM);
-            BinaryReader mainseg = new BinaryReader(romm);
-            MemoryStream seg7m = new MemoryStream();
-            BinaryWriter seg7w = new BinaryWriter(seg7m);
-
-            seg7w.BaseStream.Seek(0, SeekOrigin.Begin);
-
-
-            string commandbyte = "";  ///keeping the same name from above decompress process
-            byte[] byte29 = new byte[2];
-            string compar = "";
-            byte F3Dbyte = new byte();
-            byte[] parambyte = new byte[2];
-
-
-
-
-
-
-            byte[] voffset = new byte[2];
-
-            byte compressbyte = new byte();
-
-            mainseg.BaseStream.Position = 0;
-
-            for (int i = 0; (mainseg.BaseStream.Position < mainseg.BaseStream.Length); i++)
-            {
-
-                F3Dbyte = mainseg.ReadByte();
-                commandbyte = F3Dbyte.ToString("x").PadLeft(2, '0').ToUpper();
-
-                ///MessageBox.Show(F3Dbyte.ToString("x").PadLeft(2,'0').ToUpper() + "--" + mainseg.BaseStream.Position.ToString()); ;
-
-
-
-
-                if (commandbyte == "BC")
-                {
-
-
-                    MessageBox.Show("Unsupported Command -BC-");
-                    ///0x00 -- 0x14
-
-                    ///curently unsupported, ??not featured in stock MK64 racing tracks?? Can't find in multiple courses.
-
-
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBC000002));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x80000040));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03860010));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | (commandbyte * 0x18) + 8));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03880010));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | commandbyte * 0x18));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-
-
-                }
-                if (commandbyte == "FC")
-                {
-
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "1218")
-                    {
-                        compressbyte = 0x15;
-                    }
-                    if (compar == "127E")
-                    {
-                        compressbyte = 0x16;
-                    }
-                    if (compar == "FFFF")
-                    {
-                        compressbyte = 0x17;
-                    }
-
-                    mainseg.BaseStream.Seek(5, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-
-                }
-                if (commandbyte == "B9")
-                {
-
-
-                    mainseg.BaseStream.Seek(5, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "2078")
-                    {
-                        compressbyte = 0x18;
-                    }
-                    if (compar == "3078")
-                    {
-                        compressbyte = 0x19;
-                    }
-                    seg7w.Write(compressbyte);
-
-                }
-                if (commandbyte == "E8")
-                {
-                    /// 000000 00000000
-                    ///0x1A -> 0x1F + 0x2C
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-
-
-
-
-
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-
-                    byte[] Param = new byte[2];
-
-
-                    ///don't ask me I don't know
-                    ///don't ask me I don't know
-                    byte[] parameters = mainseg.ReadBytes(4);
-                    Array.Reverse(parameters);
-                    value32 = BitConverter.ToUInt32(parameters, 0);
-                    uint opint = new uint();
-                    opint = value32 >> 14;
-
-                    Param[0] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
-
-                    opint = value32 >> 4;
-
-                    Param[1] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
-
-                    Array.Reverse(Param);
-
-                    mainseg.BaseStream.Seek(4, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                    ///MessageBox.Show(compar);
-                    if (compar == "F51011000007C07C")
-                    {
-                        compressbyte = 0x2C;
-                    }
-                    if (compar == "F51010000007C07C")
-                    {
-
-                        compressbyte = 0x1A;
-                    }
-                    if (compar == "F5102000000FC07C")
-                    {
-
-                        compressbyte = 0x1B;
-                    }
-                    if (compar == "F51010000007C0FC")
-                    {
-                        compressbyte = 0x1C;
-                    }
-                    if (compar == "F57010000007C07C")
-                    {
-                        compressbyte = 0x1D;
-                    }
-                    if (compar == "F5702000000FC07C")
-                    {
-                        compressbyte = 0x1E;
-                    }
-                    if (compar == "F57010000007C0FC")
-                    {
-                        compressbyte = 0x1F;
-                    }
-                    ///MessageBox.Show(BitConverter.ToString(Param));
-                    seg7w.Write(compressbyte);
-                    seg7w.Write(Param);
-                    ///don't ask me I don't know
-                    ///don't ask me I don't know
-                }
-                if (commandbyte == "FD")
-                {
-
-
-                    ///0x20  ->  0x25
-
-
-                    mainseg.BaseStream.Seek(1, SeekOrigin.Current);
-
-
-                    byte[] Param = new byte[3];
-
-
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-
-                    byte[] parambytes = mainseg.ReadBytes(4);
-                    Array.Reverse(parambytes);
-                    value32 = BitConverter.ToUInt32(parambytes, 0);
-
-
-                    Param[0] = Convert.ToByte((value32 - 0x05000000) >> 11);
-                    Param[1] = 0x00;
-                    Param[2] = 0x70;
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-                    ///MessageBox.Show(value32.ToString("x")+"--"+Param[0].ToString("x"));
-                    mainseg.BaseStream.Seek(28, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-
-
-
-
-                    if (compar == "0000073FF100")
-                    {
-
-                        compressbyte = 0x20;
-                    }
-                    if (compar == "0000077FF080")
-                    {
-
-                        compressbyte = 0x21;
-                    }
-                    if (compar == "0000077FF100")
-                    {
-                        compressbyte = 0x22;
-                    }
-                    if (compar == "0003073FF100")
-                    {
-                        compressbyte = 0x23;
-                    }
-                    if (compar == "0003077FF080")
-                    {
-                        compressbyte = 0x24;
-                    }
-                    if (compar == "0003077FF100")
-                    {
-                        compressbyte = 0x25;
-                    }
-
-                    seg7w.Write(compressbyte);
-                    seg7w.Write(Param);
-
-
-                }
-                if (commandbyte == "BB")
-                {
-
-                    ///0x26 000001  FFFFFFFF
-                    ///0x27    00010001
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "0001")
-                    {
-                        compressbyte = 0x27;
-                    }
-                    if (compar == "FFFF")
-                    {
-                        compressbyte = 0x26;
-                    }
-                    seg7w.Write(compressbyte);
-
-                    mainseg.BaseStream.Seek(2, SeekOrigin.Current);
-
-
-
-
-                }
-
-                if (commandbyte == "BF")
-                {
-
-
-
-                    compressbyte = 0x29;
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(4, SeekOrigin.Current);
-
-                    indexC = mainseg.ReadByte();
-                    indexB = mainseg.ReadByte();
-                    indexA = mainseg.ReadByte();
-
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
-
-
-                    flip4 = BitConverter.GetBytes(Convert.ToUInt16((indexC) | (indexB << 5) | indexA << 10));
-
-
-                    seg7w.Write(flip4);
-                }
-                if (commandbyte == "B8")
-                {
-
-                    ///0x2A
-                    compressbyte = 0x2A;
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-
-                }
-                if (commandbyte == "06")
-                {
-
-                    ///0x2B
-                    compressbyte = 0x2B;
-
-
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-
-                    byte[] parambytes = mainseg.ReadBytes(4);
-                    Array.Reverse(parambytes);
-                    value32 = BitConverter.ToUInt32(parambytes, 0);
-
-                    value32 = value32 & 0x00FFFFFF;
-
-
-
-                    seg7w.Write(compressbyte);
-                    seg7w.Write(Convert.ToUInt16(value32 / 8));
-                }
-                if (commandbyte == "BE")
-                {
-
-                    ///0x2D
-                    compressbyte = 0x2D;
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-                }
-                if (commandbyte == "D0")
-                {
-
-
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "002E")
-                    {
-                        compressbyte = 0x2E;
-                    }
-                    if (compar == "002F")
-                    {
-                        compressbyte = 0x2F;
-                    }
-                    if (compar == "0030")
-                    {
-                        compressbyte = 0x30;
-                    }
-
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(8, SeekOrigin.Current);
-                }
-                if (commandbyte == "04")
-                {
-
-                    ///0x33->0x52
-                    mainseg.BaseStream.Seek(1, SeekOrigin.Current);
-                    byte[] Param = mainseg.ReadBytes(2);
-                    Array.Reverse(Param);
-                    value16 = BitConverter.ToUInt16(Param, 0);
-
-                    compressbyte = Convert.ToByte(((value16 + 1) / 0x410) + 0x32);
-                    seg7w.Write(compressbyte);
-
-                    byte[] parambytes = mainseg.ReadBytes(4);
-                    Array.Reverse(parambytes);
-                    value32 = BitConverter.ToUInt32(parambytes, 0);
-                    value32 = (value32 - 0x04000000) / 16;
-
-                    value16 = Convert.ToUInt16(value32);
-                    seg7w.Write(value16);
-                }
-
-                if (commandbyte == "FC")
-                {
-
-                    ///0x53
-                    compressbyte = 0x53;
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-                }
-
-                if (commandbyte == "B9")
-                {
-
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "0044")
-                    {
-                        compressbyte = 0x54;
-                    }
-                    if (compar == "0040")
-                    {
-                        compressbyte = 0x55;
-                    }
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(2, SeekOrigin.Current);
-
-
-
-
-                }
-                if (commandbyte == "B7")
-                {
-
-                    ///0x56
-                    compressbyte = 0x56;
-                    mainseg.BaseStream.Seek(15, SeekOrigin.Current);
-
-                    seg7w.Write(compressbyte);
-                }
-                if (commandbyte == "B6")
-                {
-
-                    ///0x57
-                    compressbyte = 0x57;
-                    mainseg.BaseStream.Seek(15, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-                }
-                if (commandbyte == "B1")
-                {
-
-                    ///0x58
-                    compressbyte = 0x58;
-                    seg7w.Write(compressbyte);
-
-
-                    indexC = mainseg.ReadByte();
-                    indexB = mainseg.ReadByte();
-                    indexA = mainseg.ReadByte();
-
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
-
-
-                    flip4 = BitConverter.GetBytes(Convert.ToUInt16((indexC) | (indexB << 5) | indexA << 10));
-
-
-                    seg7w.Write(flip4);
-
-
-                    ///twice for second set of verts
-                    ///have to move the reader forward by 1 position first
-
-                    mainseg.BaseStream.Seek(1, SeekOrigin.Current);
-
-                    indexC = mainseg.ReadByte();
-                    indexB = mainseg.ReadByte();
-                    indexA = mainseg.ReadByte();
-
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
-
-                    flip4 = BitConverter.GetBytes(Convert.ToUInt16((indexC) | (indexB << 5) | indexA << 10));
-
-
-                    seg7w.Write(flip4);
-
-
-
-
-
-                }
-
-            }
-
-
-            flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFF000000));
-            Array.Reverse(flip4);
-            seg7w.Write(flip4);
-            flip4 = BitConverter.GetBytes(Convert.ToUInt32(0));
-            Array.Reverse(flip4);
-            seg7w.Write(flip4);
-
-            seg7w.Write(flip4);
-
-            seg7w.Write(flip4);
-
-            ///fin
-
-
-            MessageBox.Show("Compressed");
-            byte[] seg7 = seg7m.ToArray();
-            return (seg7);
-
-
-
-
-
-        }
-
 
         private const double Epsilon = 0.000001d;
 
         public Vector3D testIntersect(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC)
         {
+            
             Vector3D vert0, vert1, vert2;
 
             vert0.X = vertA.position.x;
@@ -4503,6 +317,65 @@ namespace Tarmac64_Geometry
             return new Vector3D((float)t, (float)u, (float)v);
         }
 
+
+        public Vector3D testIntersect(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, int[] ZoneIndex)
+        {
+
+            Vector3D vert0, vert1, vert2;
+
+            vert0.X = vertA.position.x + (ZoneIndex[0] * 500);
+            vert0.Y = vertA.position.y + (ZoneIndex[1] * 500);
+            vert0.Z = vertA.position.z + (ZoneIndex[2] * 250);
+
+            vert1.X = vertB.position.x + (ZoneIndex[0] * 500);
+            vert1.Y = vertB.position.y + (ZoneIndex[1] * 500);
+            vert1.Z = vertB.position.z + (ZoneIndex[2] * 250);
+
+            vert2.X = vertC.position.x + (ZoneIndex[0] * 500);
+            vert2.Y = vertC.position.y + (ZoneIndex[1] * 500);
+            vert2.Z = vertC.position.z + (ZoneIndex[2] * 250);
+
+            var edge1 = vert1 - vert0;
+            var edge2 = vert2 - vert0;
+
+            var pvec = Cross(rayDirection, edge2);
+
+            var det = Dot(edge1, pvec);
+
+            if (det > -Epsilon && det < Epsilon)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var invDet = 1d / det;
+
+            var tvec = rayOrigin - vert0;
+
+            var u = Dot(tvec, pvec) * invDet;
+
+            if (u < 0 || u > 1)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var qvec = Cross(tvec, edge1);
+
+            var v = Dot(rayDirection, qvec) * invDet;
+
+            if (v < 0 || u + v > 1)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var t = Dot(edge2, qvec) * invDet;
+
+            return new Vector3D((float)t, (float)u, (float)v);
+        }
+
+
         private static double Dot(Vector3D v1, Vector3D v2)
         {
             return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
@@ -4525,7 +398,7 @@ namespace Tarmac64_Geometry
         }
 
 
-        public string F3DEX_Model(out Vertex[] vertOutput, byte commandbyte, byte[] segment, byte[] seg4, int vertoffset, int segmentoffset, Vertex[] vertCache)
+        public string F3DEX_Model(out Vertex[] vertOutput, out int outClass, byte commandbyte, byte[] segment, byte[] seg4, int vertoffset, int segmentoffset, Vertex[] vertCache, int texClass, bool returnBad = true)
         {
             //  new code
             /// segment is the segment that contained the F3DEX command. for Mario Kart 64 it will most likely be Seg6 or Seg7.
@@ -4564,13 +437,13 @@ namespace Tarmac64_Geometry
             int[] xval = new int[3];
             int[] yval = new int[3];
             int[] zval = new int[3];
-            int[] sval = new int[3];
-            int[] tval = new int[3];
-
+            float[] uval = new float[3];
+            float[] vval = new float[3];
+            float[] height = new float[] { 32, 32, 64 };
+            float[] width = new float[] { 32, 64, 32 };
 
             mainsegr.BaseStream.Position = segmentoffset;
 
-            int texclass = new int();
 
             string outputstring = "";
 
@@ -4602,34 +475,29 @@ namespace Tarmac64_Geometry
                     /// outputs the 3 vert indexes as well as the vertoffset and offset into the segment that called this command.
 
 
-                    ///
-                    bool breakError = false;
 
                     xval[0] = vertCache[indexA].position.x;
                     zval[0] = vertCache[indexA].position.y;
                     yval[0] = vertCache[indexA].position.z * -1;
+                    uval[0] = Convert.ToSingle(vertCache[indexA].position.s / 32.0 / width[texClass]);
+                    vval[0] = Convert.ToSingle(vertCache[indexA].position.t / -32.0 / height[texClass]);
+
 
                     xval[1] = vertCache[indexB].position.x;
                     zval[1] = vertCache[indexB].position.y;
                     yval[1] = vertCache[indexB].position.z * -1;
+                    uval[1] = Convert.ToSingle(vertCache[indexB].position.s / 32.0 / width[texClass]);
+                    vval[1] = Convert.ToSingle(vertCache[indexB].position.t / -32.0 / height[texClass]);
 
                     xval[2] = vertCache[indexC].position.x;
                     zval[2] = vertCache[indexC].position.y;
                     yval[2] = vertCache[indexC].position.z * -1;
+                    uval[2] = Convert.ToSingle(vertCache[indexC].position.s / 32.0 / width[texClass]);
+                    vval[2] = Convert.ToSingle(vertCache[indexC].position.t / -32.0 / height[texClass]);
 
-                    if ((xval[0] == 0 & yval[0] == 0 & zval[0] == 0) | (xval[1] == 0 & yval[1] == 0 & zval[1] == 0) | (xval[2] == 0 & yval[2] == 0 & zval[2] == 0))
-                    {
-                        breakError = true;
-                    }
-
-
-                    if (!breakError)
-                    {
-                        ///outputstring = outputstring + "vertbox = mesh vertices:#([" + xval[0].ToString() + ",(" + (yval[0]).ToString() + ")," + zval[0].ToString() + "],[" + xval[1].ToString() + ",(" + (yval[1]).ToString() + ")," + zval[1].ToString() + "],[" + xval[2].ToString() + ",(" + (yval[2]).ToString() + ")," + zval[2].ToString() + "]) faces:#([1,2,3]) MaterialIDS:#(1) " + Environment.NewLine;
-                        outputstring = outputstring + xval[0].ToString() + "," + yval[0].ToString() + "," + zval[0].ToString() + ";" + xval[1].ToString() + "," + yval[1].ToString() + "," + zval[1].ToString() + ";" + xval[2].ToString() + "," + yval[2].ToString() + "," + zval[2].ToString() + "," + Environment.NewLine;
-                        ///
-                        
-                    }
+                    ///outputstring = outputstring + "vertbox = mesh vertices:#([" + xval[0].ToString() + ",(" + (yval[0]).ToString() + ")," + zval[0].ToString() + "],[" + xval[1].ToString() + ",(" + (yval[1]).ToString() + ")," + zval[1].ToString() + "],[" + xval[2].ToString() + ",(" + (yval[2]).ToString() + ")," + zval[2].ToString() + "]) faces:#([1,2,3]) MaterialIDS:#(1) " + Environment.NewLine;
+                    outputstring = outputstring + xval[0].ToString() + "," + yval[0].ToString() + "," + zval[0].ToString() + ";" + xval[1].ToString() + "," + yval[1].ToString() + "," + zval[1].ToString() + ";" + xval[2].ToString() + "," + yval[2].ToString() + "," + zval[2].ToString() + "," + Environment.NewLine;
+                    outputstring = outputstring + uval[0].ToString() + "," + vval[0].ToString() + ";" + uval[1].ToString() + "," + vval[1].ToString() + ";" + uval[2].ToString() + "," + vval[2].ToString() + Environment.NewLine;
                     if (i == 0)
                     {
                         mainsegr.BaseStream.Seek(1, SeekOrigin.Current);
@@ -4644,7 +512,6 @@ namespace Tarmac64_Geometry
                 ///Returns Vert Positions of 3 Verts that make 1 triangle.
 
 
-                bool breakError = false;
                 mainsegr.BaseStream.Seek(4, SeekOrigin.Current);
 
 
@@ -4659,34 +526,29 @@ namespace Tarmac64_Geometry
                 ///outputstring = outputstring + indexA.ToString() + "-" + indexB.ToString() + "-" + indexC.ToString() + "-" + vertoffset.ToString() + "-" + mainsegr.BaseStream.Position.ToString() + Environment.NewLine;
                 ////// outputs the 3 vert indexes as well as the vertoffset and offset into the segment that called this command.
 
-
-
                 xval[0] = vertCache[indexA].position.x;
                 zval[0] = vertCache[indexA].position.y;
                 yval[0] = vertCache[indexA].position.z * -1;
+                uval[0] = Convert.ToSingle(vertCache[indexA].position.s / 32.0 / width[texClass]);
+                vval[0] = Convert.ToSingle(vertCache[indexA].position.t / -32.0 / height[texClass]);
+
 
                 xval[1] = vertCache[indexB].position.x;
                 zval[1] = vertCache[indexB].position.y;
                 yval[1] = vertCache[indexB].position.z * -1;
+                uval[1] = Convert.ToSingle(vertCache[indexB].position.s / 32.0 / width[texClass]);
+                vval[1] = Convert.ToSingle(vertCache[indexB].position.t / -32.0 / height[texClass]);
 
                 xval[2] = vertCache[indexC].position.x;
                 zval[2] = vertCache[indexC].position.y;
                 yval[2] = vertCache[indexC].position.z * -1;
+                uval[2] = Convert.ToSingle(vertCache[indexC].position.s / 32.0 / width[texClass]);
+                vval[2] = Convert.ToSingle(vertCache[indexC].position.t / -32.0 / height[texClass]);
 
-                if ((xval[0] == 0 & yval[0] == 0 & zval[0] == 0) | (xval[1] == 0 & yval[1] == 0 & zval[1] == 0) | (xval[2] == 0 & yval[2] == 0 & zval[2] == 0))
-                {
-                    breakError = true;
-                }
-
-
-                if (!breakError)
-                {
-
-                    ///outputstring = outputstring + "vertbox = mesh vertices:#([" + xval[0].ToString() + ",(" + (yval[0]).ToString() + ")," + zval[0].ToString() + "],[" + xval[1].ToString() + ",(" + (yval[1]).ToString() + ")," + zval[1].ToString() + "],[" + xval[2].ToString() + ",(" + (yval[2]).ToString() + ")," + zval[2].ToString() + "]) faces:#([1,2,3]) MaterialIDS:#(1) " + Environment.NewLine;
-                    outputstring = outputstring + xval[0].ToString() + "," + yval[0].ToString() + "," + zval[0].ToString() + ";" + xval[1].ToString() + "," + yval[1].ToString() + "," + zval[1].ToString() + ";" + xval[2].ToString() + "," + yval[2].ToString() + "," + zval[2].ToString() + "," + Environment.NewLine;
-                    ///
-                    
-                }
+                ///outputstring = outputstring + "vertbox = mesh vertices:#([" + xval[0].ToString() + ",(" + (yval[0]).ToString() + ")," + zval[0].ToString() + "],[" + xval[1].ToString() + ",(" + (yval[1]).ToString() + ")," + zval[1].ToString() + "],[" + xval[2].ToString() + ",(" + (yval[2]).ToString() + ")," + zval[2].ToString() + "]) faces:#([1,2,3]) MaterialIDS:#(1) " + Environment.NewLine;
+                outputstring = outputstring + xval[0].ToString() + "," + yval[0].ToString() + "," + zval[0].ToString() + ";" + xval[1].ToString() + "," + yval[1].ToString() + "," + zval[1].ToString() + ";" + xval[2].ToString() + "," + yval[2].ToString() + "," + zval[2].ToString() + "," + Environment.NewLine;
+                outputstring = outputstring + uval[0].ToString() + "," + vval[0].ToString() + ";" + uval[1].ToString() + "," + vval[1].ToString() + ";" + uval[2].ToString() + "," + vval[2].ToString() + Environment.NewLine;
+                ///
 
 
 
@@ -4740,39 +602,39 @@ namespace Tarmac64_Geometry
                 ///MessageBox.Show(compar);
                 if (compar == "F51011000007C07C")
                 {
-                    texclass = 6;
+                    texClass = 6;
                     ///MessageBox.Show("6");
                 }
                 if (compar == "F51010000007C07C")
                 {
 
-                    texclass = 0;
+                    texClass = 0;
                     ///MessageBox.Show("0");
                 }
                 if (compar == "F5102000000FC07C")
                 {
 
-                    texclass = 1;
+                    texClass = 1;
                     ///MessageBox.Show("1");
                 }
                 if (compar == "F51010000007C0FC")
                 {
-                    texclass = 2;
+                    texClass = 2;
                     ///MessageBox.Show("2");
                 }
                 if (compar == "F57010000007C07C")
                 {
-                    texclass = 3;
+                    texClass = 3;
                     ///MessageBox.Show("3");
                 }
                 if (compar == "F5702000000FC07C")
                 {
-                    texclass = 4;
+                    texClass = 4;
                     ///MessageBox.Show("4");
                 }
                 if (compar == "F57010000007C0FC")
                 {
-                    texclass = 5;
+                    texClass = 5;
                     ///MessageBox.Show("5");
                 }
 
@@ -4800,7 +662,15 @@ namespace Tarmac64_Geometry
                     ///MessageBox.Show("D00D00- 0x" + fdbyte.ToString("X")+"---"+mainsegr.BaseStream.Position.ToString());
                 }
 
-                outputstring = location.ToString("X") + Environment.NewLine + texclass.ToString();
+                if ((returnBad) | (location != 0xD00D00))
+                {
+                    outputstring = "NEWMATERIAL" + Environment.NewLine + location.ToString("X") + Environment.NewLine;
+                }
+                else
+                {
+                    outputstring = "";
+                }
+
 
                 ///MessageBox.Show(outputstring);
 
@@ -4849,7 +719,25 @@ namespace Tarmac64_Geometry
                         flip2 = seg4r.ReadBytes(2);
                         Array.Reverse(flip2);
                         vertCache[vertIndex + currentVert].position.z = BitConverter.ToInt16(flip2, 0);
-                        seg4r.BaseStream.Seek(0xA, SeekOrigin.Current);
+
+                        
+
+                        flip2 = seg4r.ReadBytes(2);
+                        Array.Reverse(flip2);
+                        vertCache[vertIndex + currentVert].position.s = BitConverter.ToInt16(flip2, 0);
+
+                        flip2 = seg4r.ReadBytes(2);
+                        Array.Reverse(flip2);
+                        vertCache[vertIndex + currentVert].position.t = BitConverter.ToInt16(flip2, 0);
+
+
+                        seg4r.BaseStream.Seek(0x2, SeekOrigin.Current);
+
+                        vertCache[vertIndex + currentVert].color.R = seg4r.ReadByte();
+                        vertCache[vertIndex + currentVert].color.G = seg4r.ReadByte();
+                        vertCache[vertIndex + currentVert].color.B = seg4r.ReadByte();
+                        vertCache[vertIndex + currentVert].color.A = seg4r.ReadByte();
+
                     }
 
 
@@ -4863,7 +751,7 @@ namespace Tarmac64_Geometry
                     {
                         outputstring = location.ToString();
                         //MessageBox.Show("WARNING D35-01 :: VERTS LOADED FROM OUTSIDE SEGMENT 4"+Environment.NewLine+mainsegr.BaseStream.Position.ToString("X"));
-                        MessageBox.Show(outputstring + "-" + mainsegr.BaseStream.Position.ToString());
+                        //MessageBox.Show(outputstring + "-" + mainsegr.BaseStream.Position.ToString());
                     }
 
                 }
@@ -4909,40 +797,12 @@ namespace Tarmac64_Geometry
             }
 
 
-
+            outClass = texClass;
             vertOutput = vertCache;
             return outputstring;
 
         }
 
-        string CheckFilePath(string inputPath, string basePath)
-        {
-            string outputString = "";
-            string[] pathStrings = inputPath.Split('\\');
-            if (pathStrings[0] == "..")
-            {
-                string[] baseStrings = basePath.Split('\\');
-
-                for (int currentString = 0; currentString < pathStrings.Length; currentString++)
-                {
-                    if (pathStrings[currentString] == "..")
-                    {
-                        pathStrings[currentString] = baseStrings[currentString + 1];
-                    }
-                }
-
-                outputString = Path.Combine(pathStrings);
-                outputString = baseStrings[0] + Path.DirectorySeparatorChar + outputString;
-                
-            }
-            else
-            {
-                outputString = inputPath;
-            }
-
-
-            return outputString;
-        }
 
         public OK64Texture[] loadTextures(Assimp.Scene fbx, string filePath)
         {
@@ -4958,9 +818,11 @@ namespace Tarmac64_Geometry
                     textureArray[materialIndex].texturePath = fbx.Materials[materialIndex].TextureDiffuse.FilePath;
                     textureArray[materialIndex].textureName = Path.GetFileName(textureArray[materialIndex].texturePath);
                     textureArray[materialIndex].textureFormat = 0;
+                    string mainDirectory = Path.GetDirectoryName(filePath);
+                    textureArray[materialIndex].texturePath = Path.Combine(mainDirectory, textureArray[materialIndex].texturePath);
+                    textureArray[materialIndex].texturePath = Path.GetFullPath(textureArray[materialIndex].texturePath);
 
-                    textureArray[materialIndex].texturePath = CheckFilePath(textureArray[materialIndex].texturePath, filePath);
-                    
+
                     if (File.Exists(textureArray[materialIndex].texturePath))
                     {
                         textureArray[materialIndex].textureBitmap = Image.FromFile(textureArray[materialIndex].texturePath);
@@ -4970,7 +832,7 @@ namespace Tarmac64_Geometry
                     }
                     else
                     {
-                        /*
+                        
                         while (!(File.Exists(textureArray[materialIndex].texturePath)))
                         {
                             MessageBox.Show(textureArray[materialIndex].texturePath + " not found, browse to file!");
@@ -4990,7 +852,7 @@ namespace Tarmac64_Geometry
                                 break;
                             }
                         }
-                        */
+                        
 
                         textureArray[materialIndex].textureHeight = 32;
                         textureArray[materialIndex].textureWidth = 32;
@@ -5025,7 +887,7 @@ namespace Tarmac64_Geometry
                     .Select(x => x.OrgStr);
         }
 
-        public OK64F3DObject createObject (Assimp.Scene fbx, Assimp.Node objectNode, OK64Texture[] textureArray)
+        public OK64F3DObject createObject (Assimp.Scene fbx, Assimp.Node objectNode)
         {
             OK64F3DObject newObject = new OK64F3DObject();
 
@@ -5036,15 +898,17 @@ namespace Tarmac64_Geometry
             newObject.objectColor[2] = rValue.NextFloat(0.3f, 1);
             newObject.objectName = objectNode.Name;
             newObject.meshID = objectNode.MeshIndices.ToArray();
-            newObject.materialID = fbx.Meshes[newObject.meshID[0]].MaterialIndex;
-
-            int vertCount = 0;
-            int faceCount = 0;
 
             if (newObject.meshID.Length == 0)
             {
                 MessageBox.Show("Empty Course Object! -" + newObject.objectName);
             }
+            newObject.materialID = fbx.Meshes[newObject.meshID[0]].MaterialIndex;
+
+            int vertCount = 0;
+            int faceCount = 0;
+
+            
 
 
 
@@ -5078,13 +942,13 @@ namespace Tarmac64_Geometry
                     newObject.modelGeometry[currentFace] = new Face();
                     newObject.modelGeometry[currentFace].VertData = new Vertex[3];
 
-                    for (int currentVert = 0; currentVert < 3; currentVert++)
-                    {
-                        newObject.modelGeometry[currentFace].VertIndex = new VertIndex();
-                        newObject.modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
-                        newObject.modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);
-                        newObject.modelGeometry[currentFace].VertIndex.IndexC = Convert.ToInt16(childPoly.Indices[2]);
+                    newObject.modelGeometry[currentFace].VertIndex = new VertIndex();
+                    newObject.modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
+                    newObject.modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);
+                    newObject.modelGeometry[currentFace].VertIndex.IndexC = Convert.ToInt16(childPoly.Indices[2]);
 
+                    for (int currentVert = 0; currentVert < 3; currentVert++)
+                    { 
                         newObject.modelGeometry[currentFace].VertData[currentVert] = new Vertex();
                         newObject.modelGeometry[currentFace].VertData[currentVert].position = new Position();
                         newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
@@ -5121,7 +985,6 @@ namespace Tarmac64_Geometry
 
 
                         newObject.modelGeometry[currentFace].VertData[currentVert].color = new OK64Color();
-                        newObject.modelGeometry[currentFace].VertData[currentVert].color = new OK64Color();
                         if (fbx.Meshes[childMesh].VertexColorChannels[0].Count > 0)
                         {
                             newObject.modelGeometry[currentFace].VertData[currentVert].color.R = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
@@ -5136,8 +999,6 @@ namespace Tarmac64_Geometry
                         }
                         newObject.modelGeometry[currentFace].VertData[currentVert].color.A = 0;
                     }
-
-
 
 
                     float centerX = (l_xValues[0] + l_xValues[1] + l_xValues[2]) / 3;
@@ -5167,7 +1028,7 @@ namespace Tarmac64_Geometry
                     float[] v_offset = { 0, 0, 0 };
 
 
-
+                    
 
                     u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][0]);
                     v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][1]);
@@ -5242,55 +1103,19 @@ namespace Tarmac64_Geometry
 
 
                     //
-
-                    int s_coord = 0;
-                    int t_coord = 0;
                     int materialID = fbx.Meshes[childMesh].MaterialIndex;
 
-                    s_coord = Convert.ToInt32(u_offset[0] * STwidth[textureArray[materialID].textureClass] * 32);
-                    t_coord = Convert.ToInt32(v_offset[0] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                    if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
+                    for (int currentVert = 0; currentVert < 3; currentVert++)
                     {
-                        MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + fbx.Meshes[childMesh].Name);
-                    }
-                    newObject.modelGeometry[currentFace].VertData[0].position.s = Convert.ToInt16(s_coord);
-                    newObject.modelGeometry[currentFace].VertData[0].position.t = Convert.ToInt16(t_coord);
-
-
-
-                    s_coord = Convert.ToInt32(u_offset[1] * STwidth[textureArray[materialID].textureClass] * 32);
-                    t_coord = Convert.ToInt32(v_offset[1] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                    if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                    {
-                        MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + fbx.Meshes[childMesh].Name);
-                    }
-
-                    newObject.modelGeometry[currentFace].VertData[1].position.s = Convert.ToInt16(s_coord);
-                    newObject.modelGeometry[currentFace].VertData[1].position.t = Convert.ToInt16(t_coord);
-
-
-                    //
-
-
-                    s_coord = Convert.ToInt32(u_offset[2] * STwidth[textureArray[materialID].textureClass] * 32);
-                    t_coord = Convert.ToInt32(v_offset[2] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-
-                    if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                    {
-                        MessageBox.Show("FATAL ERROR! " + u_offset[2].ToString() + "-" + v_offset[2].ToString() + " UV 2 Out of Range for Object - " + fbx.Meshes[childMesh].Name);
-
+                        
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.sBase = u_offset[currentVert] * 32;
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.tBase = v_offset[currentVert] * -32;
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.u = u_offset[currentVert];
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.v = v_offset[currentVert] * -1;
                     }
 
 
-                    newObject.modelGeometry[currentFace].VertData[2].position.s = Convert.ToInt16(s_coord);
-                    newObject.modelGeometry[currentFace].VertData[2].position.t = Convert.ToInt16(t_coord);
-
+                    
 
                     currentFace++;
 
@@ -5333,7 +1158,62 @@ namespace Tarmac64_Geometry
             }
             return newObject;
         }
-         
+
+
+        public bool CheckST(OK64F3DObject Object, OK64Texture textureObject)
+        {
+            bool CheckError = false;
+            foreach (var Mesh in Object.modelGeometry)
+            {
+                foreach (var Vert in Mesh.VertData)
+                {
+                    
+                    if (Vert.position.sBase * textureObject.textureWidth > 32768 | Vert.position.sBase * textureObject.textureWidth < -32768)
+                    {
+                        CheckError = true;
+                    }
+                    else
+                    {
+                        if (Vert.position.tBase * textureObject.textureHeight > 32768 | Vert.position.tBase * textureObject.textureHeight < -32768)
+                        {
+                            CheckError = true;
+                        }
+                    }
+                }
+            }
+            return CheckError;
+        }
+
+        OK64F3DObject[] GroupSort(OK64F3DObject[] masterObjects, OK64F3DGroup[] groupArray)
+        {
+            List<OK64F3DObject> groupObjects = new List<OK64F3DObject>();
+            List<OK64F3DObject> ungroupedObjects = new List<OK64F3DObject>();
+            List<int> listedObjects = new List<int>();
+
+            for (int currentGroup = 0; currentGroup < groupArray.Length; currentGroup++)
+            {
+                for (int currentChild = 0; currentChild < groupArray[currentGroup].subIndexes.Length; currentChild++)
+                {
+                    groupObjects.Add(masterObjects[groupArray[currentGroup].subIndexes[currentChild]]);
+                    listedObjects.Add(groupArray[currentGroup].subIndexes[currentChild]);
+
+                }
+            }
+            for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
+            {
+                if (listedObjects.IndexOf(currentMaster) == -1)
+                {
+                    ungroupedObjects.Add(masterObjects[currentMaster]);
+
+                }
+            }
+
+            List<OK64F3DObject> masterList = new List<OK64F3DObject>();
+            masterList.AddRange(groupObjects);
+            masterList.AddRange(ungroupedObjects);
+            return masterList.ToArray();
+        }
+
         public OK64F3DObject[] loadMaster(ref OK64F3DGroup[] groupArray, Assimp.Scene fbx, OK64Texture[] textureArray)
         {
             
@@ -5357,13 +1237,13 @@ namespace Tarmac64_Geometry
                     for (int currentGrandchild = 0; currentGrandchild < grandparentCount; currentGrandchild++)
                     {
                         groupList[groupCount].subIndexes[currentGrandchild] = masterCount;
-                        masterList.Add(createObject(fbx, groupParent.Children[currentGrandchild], textureArray));
+                        masterList.Add(createObject(fbx, groupParent.Children[currentGrandchild]));
                         masterCount++;
                     }
                 }
                 else
                 {
-                    masterList.Add(createObject(fbx, masterNode.Children[currentChild], textureArray));
+                    masterList.Add(createObject(fbx, masterNode.Children[currentChild]));
                     masterCount++;
                 }
             }
@@ -5373,38 +1253,27 @@ namespace Tarmac64_Geometry
             return masterObjects;
         }
 
-        OK64F3DObject[] GroupSort (OK64F3DObject[] masterObjects, OK64F3DGroup[] groupArray)
-        {
-            List<OK64F3DObject> groupObjects = new List<OK64F3DObject>();
-            List<OK64F3DObject> ungroupedObjects = new List<OK64F3DObject>();
-            List<int> listedObjects = new List<int>();
-            
-            for (int currentGroup = 0; currentGroup < groupArray.Length; currentGroup++)
-            {
-                for (int currentChild = 0; currentChild < groupArray[currentGroup].subIndexes.Length; currentChild++)
-                {
-                    groupObjects.Add(masterObjects[groupArray[currentGroup].subIndexes[currentChild]]);
-                    listedObjects.Add(groupArray[currentGroup].subIndexes[currentChild]);
-                    
-                }
-            }
-            for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
-            {
-                if (listedObjects.IndexOf(currentMaster) == -1)
-                {
-                    ungroupedObjects.Add(masterObjects[currentMaster]);
-                    
-                }
-            }
 
-            List<OK64F3DObject> masterList = new List<OK64F3DObject>();
-            masterList.AddRange(groupObjects);
-            masterList.AddRange(ungroupedObjects);
-            return masterList.ToArray();
+
+        public OK64F3DObject[] createObjects(Assimp.Scene fbx)
+        {
+            List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
+            int currentObject = 0;
+            var BaseNode = fbx.RootNode.FindNode("Master Objects");
+
+            for (int childObject = 0; childObject < BaseNode.Children.Count; childObject++)
+            {
+                masterObjects.Add(createObject(fbx, BaseNode.Children[childObject]));
+                childObject++;
+            }
+            List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
+            OK64F3DObject[] outputObjects = NaturalSort(masterObjects).ToArray();
+            return outputObjects;
         }
 
 
-        public OK64F3DObject[] createMaster(Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray)
+
+        public OK64F3DObject[] createMaster(Assimp.Scene fbx, int sectionCount)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0;
@@ -5414,331 +1283,10 @@ namespace Tarmac64_Geometry
                 
                 for (int childObject = 0; childObject < surfaceNode.Children.Count; childObject++)
                 {
-                    masterObjects.Add(new OK64F3DObject());
-
-                    masterObjects[currentObject].objectColor = new float[3];
-                    masterObjects[currentObject].objectColor[0] = rValue.NextFloat(0.3f, 1);
-                    masterObjects[currentObject].objectColor[1] = rValue.NextFloat(0.3f, 1);
-                    masterObjects[currentObject].objectColor[2] = rValue.NextFloat(0.3f, 1);
-
-                    
-
-                    masterObjects[currentObject].objectName = surfaceNode.Children[childObject].Name;
-                    masterObjects[currentObject].meshID = surfaceNode.Children[childObject].MeshIndices.ToArray();
-                    masterObjects[currentObject].materialID = fbx.Meshes[masterObjects[currentObject].meshID[0]].MaterialIndex;
-                    int vertCount = 0;
-                    int faceCount = 0;
-
-                    if (masterObjects[currentObject].meshID.Length == 0)
-                    {
-                        MessageBox.Show("Empty Course Object! -" + masterObjects[currentObject].objectName);
-                    }
-
-                    foreach (var childMesh in surfaceNode.Children[childObject].MeshIndices)
-                    {
-
-                        vertCount = vertCount + fbx.Meshes[childMesh].VertexCount;
-                        faceCount = faceCount + fbx.Meshes[childMesh].FaceCount;
-
-                    }
-                    masterObjects[currentObject].vertCount = vertCount;
-                    masterObjects[currentObject].faceCount = faceCount;
-                    masterObjects[currentObject].modelGeometry = new Face[faceCount];
-                    
-                    int currentFace = 0;
-
-
-                    List<int> xValues = new List<int>();
-                    List<int> yValues = new List<int>();
-
-                    foreach (var childMesh in surfaceNode.Children[childObject].MeshIndices)
-                    {
-                        foreach (var childPoly in fbx.Meshes[childMesh].Faces)
-                        {
-
-
-                            masterObjects[currentObject].modelGeometry[currentFace] = new Face();
-                            masterObjects[currentObject].modelGeometry[currentFace].VertData = new Vertex[3];
-
-                            masterObjects[currentObject].modelGeometry[currentFace].HighX = -99999999;
-                            masterObjects[currentObject].modelGeometry[currentFace].HighY = -99999999;
-                            masterObjects[currentObject].modelGeometry[currentFace].LowX = 99999999;
-                            masterObjects[currentObject].modelGeometry[currentFace].LowX = 99999999;
-
-                            if (childPoly.IndexCount != 3)
-                            {
-                                MessageBox.Show("FATAL ERROR- OBJECT -" + surfaceNode.Children[childObject].Name + " - has invalid geometry");
-                            }
-                            else
-                            {
-                                List<int> l_xValues = new List<int>();
-                                List<int> l_yValues = new List<int>();
-                                List<int> l_zValues = new List<int>();
-
-                                
-                                for (int currentVert = 0; currentVert < 3; currentVert++)
-                                {
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertIndex = new VertIndex();
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertIndex.IndexC = Convert.ToInt16(childPoly.Indices[2]);
-
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert] = new Vertex();
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position = new Position();
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
-
-
-
-
-                                    xValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x);
-                                    yValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y);
-
-                                    l_xValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x);
-                                    l_yValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y);
-                                    l_zValues.Add(masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.z);
-
-
-
-                                    if (masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x > masterObjects[currentObject].modelGeometry[currentFace].HighX)
-                                    {
-                                        masterObjects[currentObject].modelGeometry[currentFace].HighX = masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x;
-                                    }
-                                    if (masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x < masterObjects[currentObject].modelGeometry[currentFace].LowX)
-                                    {
-                                        masterObjects[currentObject].modelGeometry[currentFace].LowX = masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.x;
-                                    }
-                                    if (masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y > masterObjects[currentObject].modelGeometry[currentFace].HighY)
-                                    {
-                                        masterObjects[currentObject].modelGeometry[currentFace].HighY = masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y;
-                                    }
-                                    if (masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y < masterObjects[currentObject].modelGeometry[currentFace].LowY)
-                                    {
-                                        masterObjects[currentObject].modelGeometry[currentFace].LowY = masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].position.y;
-                                    }
-
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color = new OK64Color();
-                                    if (fbx.Meshes[childMesh].VertexColorChannels[0].Count > 0)
-                                    {
-                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.R = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
-                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.G = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
-                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.B = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
-                                    }
-                                    else
-                                    {
-                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.R = 252;
-                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.G = 252;
-                                        masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.B = 252;
-                                    }
-                                    masterObjects[currentObject].modelGeometry[currentFace].VertData[currentVert].color.A = 0;
-                                }
-
-
-                                float centerX = (l_xValues[0] + l_xValues[1] + l_xValues[2]) / 3;
-                                float centerY = (l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3;
-                                float centerZ = (l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3;
-                                
-                                masterObjects[currentObject].modelGeometry[currentFace].CenterPosition = new Vector3D(centerX, centerY, centerZ);
-
-
-
-                                //UV coords
-
-
-                                UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
-                                UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
-
-
-                                //
-                                //
-                                float u_base = 0;
-                                float v_base = 0;
-
-                                float[] u_shift = { 0, 0, 0 };
-                                float[] v_shift = { 0, 0, 0 };
-                                float[] u_offset = { 0, 0, 0 };
-                                float[] v_offset = { 0, 0, 0 };
-
-
-                                u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][0]);
-                                v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][1]);
-
-                                u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][0]);
-                                v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][1]);
-
-                                u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][0]);
-                                v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][1]);
-
-                                // So we check the absolute values to find which is the least distance from the origin.
-                                // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
-                                // When we actually store the value we do not use an absolute and maintain the positive/negative sign of the value.
-
-                                if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[1]))
-                                {
-                                    if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[2]))
-                                    {
-                                        u_base = u_offset[0];
-                                        v_base = v_offset[0];
-                                    }
-                                    else
-                                    {
-                                        u_base = u_offset[2];
-                                        v_base = v_offset[2];
-                                    }
-                                }
-                                else
-                                {
-                                    if (Math.Abs(u_offset[1]) < Math.Abs(u_offset[2]))
-                                    {
-                                        u_base = u_offset[1];
-                                        v_base = v_offset[1];
-                                    }
-                                    else
-                                    {
-                                        u_base = u_offset[2];
-                                        v_base = v_offset[2];
-                                    }
-                                }
-
-
-
-                                // Set the shift values for each u/v offset
-                                u_shift[0] = u_offset[0] - u_base;
-                                u_shift[1] = u_offset[1] - u_base;
-                                u_shift[2] = u_offset[2] - u_base;
-
-                                v_shift[0] = v_offset[0] - v_base;
-                                v_shift[1] = v_offset[1] - v_base;
-                                v_shift[2] = v_offset[2] - v_base;
-
-
-                                //Now apply a modulus operation to get the u/v_base as a decimal only, removing the whole value and any inherited tiling.
-
-                                u_base = u_base % 1.0f;
-                                v_base = v_base % 1.0f;
-
-                                // And now add the offsets to the base to get each vert's actual U/V coordinate, before converting to ST.
-
-
-
-                                u_offset[0] = u_base + u_shift[0];
-                                u_offset[1] = u_base + u_shift[1];
-                                u_offset[2] = u_base + u_shift[2];
-
-                                v_offset[0] = v_base + v_shift[0];
-                                v_offset[1] = v_base + v_shift[1];
-                                v_offset[2] = v_base + v_shift[2];
-
-                                // and now apply the calculation to make them into ST coords for Mario Kart.
-
-
-                                //
-
-                                int s_coord = 0;
-                                int t_coord = 0;
-                                int materialID = fbx.Meshes[childMesh].MaterialIndex;
-
-                                s_coord = Convert.ToInt32(u_offset[0] * STwidth[textureArray[materialID].textureClass] * 32);
-                                t_coord = Convert.ToInt32(v_offset[0] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                                {
-                                    MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + masterObjects[currentObject].objectName);
-                                }
-                                masterObjects[currentObject].modelGeometry[currentFace].VertData[0].position.s = Convert.ToInt16(s_coord);
-                                masterObjects[currentObject].modelGeometry[currentFace].VertData[0].position.t = Convert.ToInt16(t_coord);
-
-
-
-                                s_coord = Convert.ToInt32(u_offset[1] * STwidth[textureArray[materialID].textureClass] * 32);
-                                t_coord = Convert.ToInt32(v_offset[1] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                                {
-                                    MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + masterObjects[currentObject].objectName);
-                                }
-
-                                masterObjects[currentObject].modelGeometry[currentFace].VertData[1].position.s = Convert.ToInt16(s_coord);
-                                masterObjects[currentObject].modelGeometry[currentFace].VertData[1].position.t = Convert.ToInt16(t_coord);
-
-
-                                //
-
-
-                                s_coord = Convert.ToInt32(u_offset[2] * STwidth[textureArray[materialID].textureClass] * 32);
-                                t_coord = Convert.ToInt32(v_offset[2] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-
-                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                                {
-                                    MessageBox.Show("FATAL ERROR! " + u_offset[2].ToString() + "-" + v_offset[2].ToString() + " UV 2 Out of Range for Object - " + masterObjects[currentObject].objectName);
-
-                                }
-
-
-                                masterObjects[currentObject].modelGeometry[currentFace].VertData[2].position.s = Convert.ToInt16(s_coord);
-                                masterObjects[currentObject].modelGeometry[currentFace].VertData[2].position.t = Convert.ToInt16(t_coord);
-
-                            }
-                            currentFace++;
-
-                        }
-
-
-
-                    }
-
-
-
-
-
-                    int[] localMax = new int[4];
-                    localMax[0] = -9999999;
-                    localMax[1] = 9999999;
-                    localMax[2] = -9999999;
-                    localMax[3] = 9999999;
-
-                    for (int currentValue = 0; currentValue < xValues.Count; currentValue++)
-                    {
-                        if (xValues[currentValue] > localMax[0])
-                        {
-                            localMax[0] = xValues[currentValue];
-                        }
-                        if (xValues[currentValue] < localMax[1])
-                        {
-                            localMax[1] = xValues[currentValue];
-                        }
-                        if (yValues[currentValue] > localMax[2])
-                        {
-                            localMax[2] = yValues[currentValue];
-                        }
-                        if (yValues[currentValue] < localMax[3])
-                        {
-                            localMax[3] = yValues[currentValue];
-                        }
-                    }
-
-                    masterObjects[currentObject].pathfindingObject = new PathfindingObject();
-                    masterObjects[currentObject].pathfindingObject.highX = localMax[0];
-                    masterObjects[currentObject].pathfindingObject.lowX = localMax[1];
-                    masterObjects[currentObject].pathfindingObject.highY = localMax[2];
-                    masterObjects[currentObject].pathfindingObject.lowY = localMax[3];
-                    
-
-
-
-
-
+                    masterObjects.Add(createObject(fbx,surfaceNode.Children[childObject]));
                     currentObject++;
-
                 }
                 List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
-
-              
             }
 
             OK64F3DObject[] outputObjects = NaturalSort(masterObjects).ToArray();
@@ -5748,8 +1296,8 @@ namespace Tarmac64_Geometry
 
 
 
-        public OK64F3DObject[] loadCollision (Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray, int simpleFormat)
-        {   
+        public OK64F3DObject[] loadCollision (Assimp.Scene fbx, int sectionCount, int simpleFormat)
+         {   
             int totalIndexCount = 0;
             int totalIndex = 0;
             var surfaceNode = fbx.RootNode;
@@ -5774,289 +1322,12 @@ namespace Tarmac64_Geometry
                 totalIndexCount = totalIndexCount + surfaceNode.Children.Count;
                 for (int currentsubObject = 0; currentsubObject < subobjectCount; currentsubObject++)
                 {
-                    surfaceObjects.Add(new OK64F3DObject());
-
-                    surfaceObjects[totalIndex].objectColor = new float[3];
-                    surfaceObjects[totalIndex].objectColor[0] = colorValues[0];
-                    surfaceObjects[totalIndex].objectColor[1] = colorValues[1];
-                    surfaceObjects[totalIndex].objectColor[2] = colorValues[2];
-
-
-                    surfaceObjects[totalIndex].objectName = surfaceNode.Children[currentsubObject].Name;
-                    int vertCount = 0;
-                    int faceCount = 0;
-                    foreach (var childMesh in surfaceNode.Children[currentsubObject].MeshIndices)
-                    {
-
-                        vertCount = vertCount + fbx.Meshes[childMesh].VertexCount;
-                        faceCount = faceCount + fbx.Meshes[childMesh].FaceCount;
-
-                    }
-
-                    surfaceObjects[totalIndex].faceCount = faceCount;
-                    surfaceObjects[totalIndex].vertCount = vertCount;
-                    surfaceObjects[totalIndex].meshID = surfaceNode.Children[currentsubObject].MeshIndices.ToArray();
-
-                    if (surfaceObjects[totalIndex].meshID.Length == 0)
-                    {
-                        MessageBox.Show("Empty Surface Object! -" + surfaceObjects[totalIndex].objectName);
-                    }
-
-                    surfaceObjects[totalIndex].surfaceID = currentSection + 1;
-
-                    string[] nameSplit = surfaceObjects[totalIndex].objectName.Split('_');
-
-                    surfaceObjects[totalIndex].surfaceMaterial = Convert.ToInt32(nameSplit[0]);
-                    surfaceObjects[totalIndex].pathfindingObject = new PathfindingObject();
-                    if (surfaceObjects[totalIndex].surfaceMaterial > 100 & surfaceObjects[totalIndex].surfaceMaterial < 200)
-                    {
-
-                        
-                        surfaceObjects[totalIndex].pathfindingObject.surfaceBoolean = false;
-                        if (surfaceObjects[totalIndex].surfaceMaterial > 117)
-                        {
-                            surfaceObjects[totalIndex].surfaceMaterial = surfaceObjects[totalIndex].surfaceMaterial + 100;
-                        }
-                        else
-                        {
-                            surfaceObjects[totalIndex].surfaceMaterial = surfaceObjects[totalIndex].surfaceMaterial - 100;
-                        }
-                    }
-                    else
-                    {
-                        surfaceObjects[totalIndex].pathfindingObject.surfaceBoolean = true;
-                    }
-
-
-
-
-                    surfaceObjects[totalIndex].materialID = fbx.Meshes[surfaceObjects[totalIndex].meshID[0]].MaterialIndex;
-                    surfaceObjects[totalIndex].flagA = false;
-                    surfaceObjects[totalIndex].flagB = false;
-                    surfaceObjects[totalIndex].flagC = false;
-                    surfaceObjects[totalIndex].surfaceProperty = 0;
-
-                    int currentFace = 0;
-
-                    surfaceObjects[totalIndex].modelGeometry = new Face[faceCount];
-
-
-                    foreach (var childMesh in surfaceNode.Children[currentsubObject].MeshIndices)
-                    {
-                        foreach (var childPoly in fbx.Meshes[childMesh].Faces)
-                        {
-                            List<int> l_xValues = new List<int>();
-                            List<int> l_yValues = new List<int>();
-                            List<int> l_zValues = new List<int>();
-
-
-                            surfaceObjects[totalIndex].modelGeometry[currentFace] = new Face();
-                            surfaceObjects[totalIndex].modelGeometry[currentFace].VertData = new Vertex[3];
-                            if (childPoly.IndexCount != 3)
-                            {
-                                MessageBox.Show("FATAL ERROR- OBJECT -" + surfaceNode.Children[currentsubObject].Name + " - has invalid geometry");
-                            }
-                            else
-                            {
-                                for (int currentVert = 0; currentVert < 3; currentVert++)
-                                {
-
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertIndex = new VertIndex();
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertIndex.IndexC = Convert.ToInt16(childPoly.Indices[2]);
-
-
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert] = new Vertex();
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position = new Position();
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
-
-
-
-                                    l_xValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.x);
-                                    l_yValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.y);
-                                    l_zValues.Add(surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].position.z);
-
-
-
-
-
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color = new OK64Color();
-                                    if (fbx.Meshes[childMesh].VertexColorChannels[0].Count > 0)
-                                    {
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.R = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].R * 255));
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.G = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].G * 255));
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.B = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].B * 255));
-                                    }
-                                    else
-                                    {
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.R = 252;
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.G = 252;
-                                        surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.B = 252;
-                                    }
-                                    surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[currentVert].color.A = 0;
-                                }
-
-
-                                float centerX = (l_xValues[0] + l_xValues[1] + l_xValues[2]) / 3;
-                                float centerY = (l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3;
-                                float centerZ = (l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3;
-
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].CenterPosition = new Vector3D(centerX, centerY, centerZ);
-
-                                //UV coords
-
-
-                                UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
-                                UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
-
-
-                                //
-                                //
-                                float u_base = 0;
-                                float v_base = 0;
-
-                                float[] u_shift = { 0, 0, 0 };
-                                float[] v_shift = { 0, 0, 0 };
-                                float[] u_offset = { 0, 0, 0 };
-                                float[] v_offset = { 0, 0, 0 };
-
-
-                                u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][0]);
-                                v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][1]);
-
-                                u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][0]);
-                                v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][1]);
-
-                                u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][0]);
-                                v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][1]);
-
-                                // So we check the absolute values to find which is the least distance from the origin.
-                                // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
-                                // When we actually store the value we do not use an absolute and maintain the positive/negative sign of the value.
-
-                                if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[1]))
-                                {
-                                    if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[2]))
-                                    {
-                                        u_base = u_offset[0];
-                                        v_base = v_offset[0];
-                                    }
-                                    else
-                                    {
-                                        u_base = u_offset[2];
-                                        v_base = v_offset[2];
-                                    }
-                                }
-                                else
-                                {
-                                    if (Math.Abs(u_offset[1]) < Math.Abs(u_offset[2]))
-                                    {
-                                        u_base = u_offset[1];
-                                        v_base = v_offset[1];
-                                    }
-                                    else
-                                    {
-                                        u_base = u_offset[2];
-                                        v_base = v_offset[2];
-                                    }
-                                }
-
-
-
-                                // Set the shift values for each u/v offset
-                                u_shift[0] = u_offset[0] - u_base;
-                                u_shift[1] = u_offset[1] - u_base;
-                                u_shift[2] = u_offset[2] - u_base;
-
-                                v_shift[0] = v_offset[0] - v_base;
-                                v_shift[1] = v_offset[1] - v_base;
-                                v_shift[2] = v_offset[2] - v_base;
-
-
-                                //Now apply a modulus operation to get the u/v_base as a decimal only, removing the whole value and any inherited tiling.
-
-                                u_base = u_base % 1.0f;
-                                v_base = v_base % 1.0f;
-
-                                // And now add the offsets to the base to get each vert's actual U/V coordinate, before converting to ST.
-
-
-
-                                u_offset[0] = u_base + u_shift[0];
-                                u_offset[1] = u_base + u_shift[1];
-                                u_offset[2] = u_base + u_shift[2];
-
-                                v_offset[0] = v_base + v_shift[0];
-                                v_offset[1] = v_base + v_shift[1];
-                                v_offset[2] = v_base + v_shift[2];
-
-                                // and now apply the calculation to make them into ST coords for Mario Kart.
-
-
-                                //
-
-                                int s_coord = 0;
-                                int t_coord = 0;
-                                int materialID = fbx.Meshes[childMesh].MaterialIndex;
-
-                                s_coord = Convert.ToInt32(u_offset[0] * STwidth[textureArray[materialID].textureClass] * 32);
-                                t_coord = Convert.ToInt32(v_offset[0] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                                {
-                                    MessageBox.Show("FATAL ERROR! " + u_offset[0].ToString() + "-" + v_offset[0].ToString() + " - UV 0 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
-                                }
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[0].position.s = Convert.ToInt16(s_coord);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[0].position.t = Convert.ToInt16(t_coord);
-
-
-
-                                s_coord = Convert.ToInt32(u_offset[1] * STwidth[textureArray[materialID].textureClass] * 32);
-                                t_coord = Convert.ToInt32(v_offset[1] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                                {
-                                    MessageBox.Show("FATAL ERROR! " + u_offset[1].ToString() + "-" + v_offset[1].ToString() + " UV 1 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
-                                }
-
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[1].position.s = Convert.ToInt16(s_coord);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[1].position.t = Convert.ToInt16(t_coord);
-
-
-                                //
-
-
-                                s_coord = Convert.ToInt32(u_offset[2] * STwidth[textureArray[materialID].textureClass] * 32);
-                                t_coord = Convert.ToInt32(v_offset[2] * STheight[textureArray[materialID].textureClass] * -32);
-
-
-
-                                if (s_coord > 32767 || s_coord < -32768 || t_coord > 32767 || t_coord < -32768)
-                                {
-                                    MessageBox.Show("FATAL ERROR! " + u_offset[2].ToString() + "-" + v_offset[2].ToString() + " UV 2 Out of Range for Object - " + surfaceObjects[totalIndex].objectName);
-
-                                }
-
-
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[2].position.s = Convert.ToInt16(s_coord);
-                                surfaceObjects[totalIndex].modelGeometry[currentFace].VertData[2].position.t = Convert.ToInt16(t_coord);
-
-                            }
-                            currentFace++;
-
-                        }
-
-
-
-                    }
-
-
-
+                    surfaceObjects.Add(createObject(fbx,surfaceNode.Children[currentsubObject]));
+                    int currentObject = surfaceObjects.Count - 1;
+                    surfaceObjects[currentObject].surfaceID = currentSection + 1;
+                    string[] surfaceID = surfaceObjects[currentObject].objectName.Split('_');
+                    surfaceObjects[currentObject].surfaceMaterial = Convert.ToInt32(surfaceID[0]);
+                    surfaceObjects[currentObject].materialID = 1;
                     totalIndex++;
                 }
             }
@@ -6254,8 +1525,39 @@ namespace Tarmac64_Geometry
             return sectionList;
         }
 
+        public PathfindingObject[] SurfaceBounds(OK64F3DObject[] surfaceObjects, int sectionCount)
+        {
+            PathfindingObject[] surfaceBoundaries = new PathfindingObject[sectionCount];
 
-        public OK64SectionList[] AutomateSection(int sectionCount, OK64F3DObject[] surfaceObjects, OK64F3DObject[] masterObjects, Assimp.Scene fbx, bool raycastBoolean)
+            for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+            {
+                surfaceBoundaries[currentSection] = new PathfindingObject();
+                surfaceBoundaries[currentSection].highX = -9999999;
+                surfaceBoundaries[currentSection].highY = -9999999;
+                surfaceBoundaries[currentSection].lowX = 9999999;
+                surfaceBoundaries[currentSection].lowY = 9999999;
+            }
+                
+            for (int currentObject = 0; currentObject < surfaceObjects.Length; currentObject++)
+            {
+                var thisObject = surfaceObjects[currentObject];
+                var thisBoundary = surfaceBoundaries[thisObject.surfaceID -1];
+
+                if (thisBoundary.highX < thisObject.pathfindingObject.highX)
+                    thisBoundary.highX = thisObject.pathfindingObject.highX;
+                if (thisBoundary.highY < thisObject.pathfindingObject.highY)
+                    thisBoundary.highY = thisObject.pathfindingObject.highY;
+                if (thisBoundary.lowX > thisObject.pathfindingObject.lowX)
+                    thisBoundary.lowX = thisObject.pathfindingObject.lowX;
+                if (thisBoundary.lowY > thisObject.pathfindingObject.lowY)
+                    thisBoundary.lowY = thisObject.pathfindingObject.lowY;
+
+            }
+
+            return surfaceBoundaries;
+        }
+
+        public OK64SectionList[] AutomateSection(int sectionCount, OK64F3DObject[] surfaceObjects, OK64F3DObject[] masterObjects, PathfindingObject[] surfaceBoundaries, Assimp.Scene fbx, int raycastBoolean)
         {
             OK64SectionList[] sectionList = new OK64SectionList[sectionCount];
 
@@ -6263,312 +1565,79 @@ namespace Tarmac64_Geometry
             List<int> searchList = new List<int>();
 
 
+            //DEBUG
+            //sectionCount = 1;
+            //DEBUG
+
             for (int currentSection = 0; currentSection < sectionCount; currentSection++)
             {
                 sectionList[currentSection] = new OK64SectionList();
                 sectionList[currentSection].viewList = new OK64ViewList[4];
+
+
+
+
+
 
                 for (int currentView = 0; currentView < 4; currentView++)
                 {
                     sectionList[currentSection].viewList[currentView] = new OK64ViewList();
                     List<int> tempList = new List<int>();
 
-                    
 
+                    searchList = new List<int>();
 
-
-
-                    for (int currentObject = 0; currentObject < surfaceObjects.Length; currentObject++)
+                    for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
                     {
-                        if (surfaceObjects[currentObject].surfaceID == (currentSection + 1) & surfaceObjects[currentObject].pathfindingObject.surfaceBoolean)
+                        switch (currentView)
                         {
-                            for (int currentFace = 0; currentFace < surfaceObjects[currentObject].modelGeometry.Length; currentFace++)
-                            {
-                                Vector3D raycastOrigin = surfaceObjects[currentObject].modelGeometry[currentFace].CenterPosition;
-
-                                switch (currentView)
+                            case 0:
                                 {
-                                    case 0:
-                                        {
-                                            raycastOrigin.Y -= 10;
-                                            break;
-                                        }
-                                    case 1:
-                                        {
-                                            raycastOrigin.X -= 10;
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            raycastOrigin.Y += 10;
-                                            break;
-                                        }
-                                    case 3:
-                                        {
-                                            raycastOrigin.X += 10;
-                                            break;
-                                        }
-                                }
-
-
-
-
-                                raycastOrigin.Z += 8;
-                                int screenWidth = 180;
-                                int screenHeight = 160;
-                                int resolution = 3;
-                                int rayDepth = 30000;
-                                
-
-                                searchList = new List<int>();
-
-                                for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
-                                {
-                                    switch (currentView)
+                                    if (masterObjects[currentMaster].pathfindingObject.highY >= surfaceBoundaries[currentSection].lowY- 10)
                                     {
-                                        case 0:
-                                            {
-                                                if (masterObjects[currentMaster].pathfindingObject.highY >= raycastOrigin.Y)
-                                                {
-                                                    searchList.Add(currentMaster);
-                                                    string tempString = masterObjects[currentMaster].objectName;
-                                                }
-                                                else
-                                                {
-                                                    string tempString = masterObjects[currentMaster].objectName;
-                                                }
-                                                break;
-                                            }
-                                        case 1:
-                                            {
-                                                if (masterObjects[currentMaster].pathfindingObject.highX >= raycastOrigin.X)
-                                                {
-                                                    searchList.Add(currentMaster);
-                                                    string tempString = masterObjects[currentMaster].objectName;
-                                                    if (tempString == "11_part56")
-                                                        tempString = masterObjects[currentMaster].objectName; ;
-                                                }
-                                                else
-                                                {
-                                                    string tempString = masterObjects[currentMaster].objectName;
-                                                    if (tempString == "11_part56")
-                                                        tempString = masterObjects[currentMaster].objectName; ;
-                                                }
-                                                break;
-                                            }
-                                        case 2:
-                                            {
-                                                if (masterObjects[currentMaster].pathfindingObject.lowY <= raycastOrigin.Y)
-                                                {
-                                                    searchList.Add(currentMaster);
-                                                }
-                                                break;
-                                            }
-                                        case 3:
-                                            {
-                                                if (masterObjects[currentMaster].pathfindingObject.lowX <= raycastOrigin.X)
-                                                {
-                                                    searchList.Add(currentMaster);
-                                                    string tempString = masterObjects[currentMaster].objectName;
-                                                    if (tempString == "11_part56")
-                                                        tempString = surfaceObjects[currentObject].objectName; ;
-                                                }
-                                                else
-                                                {
-                                                    string tempString = masterObjects[currentMaster].objectName;
-                                                    if (tempString == "11_part56")
-                                                        tempString = surfaceObjects[currentObject].objectName; ;
-                                                }
-                                                break;
-                                            }
+                                        searchList.Add(currentMaster);
                                     }
+                                    break;
                                 }
-
-
-                                int[] searchObjects = searchList.ToArray();
-
-
-                                if (raycastBoolean)
+                            case 1:
                                 {
-                                    for (int vPixel = 0; vPixel < screenHeight;)
+                                    if (masterObjects[currentMaster].pathfindingObject.highX >= surfaceBoundaries[currentSection].lowX - 10)
                                     {
-                                        int arcWidth = vPixel * 5 + 1;
-                                        int horizontalPass = 0;
-                                        if ((screenWidth / arcWidth) < resolution)
-                                        {
-                                            horizontalPass = resolution;
-                                        }
-                                        else
-                                        {
-                                            horizontalPass = (screenWidth / arcWidth);
-                                        }
-
-
-
-                                        for (int hPixel = 0; hPixel < screenWidth;)
-                                        {
-
-                                            Vector3D raycastVector = new Vector3D();
-                                            switch (currentView)
-                                            {
-                                                case 0:
-                                                    {
-                                                        float hAngle = Convert.ToSingle(hPixel * (Math.PI / 180));
-                                                        float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
-
-                                                        raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
-                                                        raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
-                                                        raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
-
-                                                        break;
-                                                    }
-                                                case 1:
-                                                    {
-                                                        float hAngle = Convert.ToSingle((hPixel + 90) * (Math.PI / 180));
-                                                        float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
-                                                        raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
-                                                        raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
-                                                        raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
-                                                        break;
-                                                    }
-                                                case 2:
-                                                    {
-                                                        float hAngle = Convert.ToSingle((hPixel + 180) * (Math.PI / 180));
-                                                        float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
-                                                        raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
-                                                        raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
-                                                        raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
-                                                        break;
-                                                    }
-                                                case 3:
-                                                    {
-                                                        int tempH = hPixel + 270;
-                                                        if (tempH > 360)
-                                                            tempH -= 360;
-
-                                                        float hAngle = Convert.ToSingle((tempH) * (Math.PI / 180));
-                                                        float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
-                                                        raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
-                                                        raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
-                                                        raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
-                                                        break;
-                                                    }
-
-
-                                            }
-
-
-                                            int closestMaster = 0;
-                                            int closestDistance = 0;
-                                            int masterIndex = 0;
-
-
-
-
-
-
-
-                                            for (int currentSearch = 0; currentSearch < searchObjects.Length; currentSearch++)
-                                            {
-                                                foreach (var searchFace in masterObjects[searchObjects[currentSearch]].modelGeometry)
-                                                {
-
-
-
-                                                    switch (currentView)
-                                                    {
-                                                        case 0:
-                                                            {
-                                                                if (searchFace.HighY > raycastOrigin.Y)
-                                                                {
-                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
-
-                                                                    if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
-                                                                    {
-                                                                        closestMaster = searchObjects[currentSearch];
-                                                                    }
-                                                                }
-                                                                break;
-                                                            }
-                                                        case 1:
-                                                            {
-                                                                if (searchFace.HighX > raycastOrigin.X)
-                                                                {
-                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
-
-                                                                    if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
-                                                                    {
-                                                                        closestMaster = searchObjects[currentSearch];
-                                                                    }
-                                                                }
-                                                                break;
-                                                            }
-                                                        case 2:
-                                                            {
-                                                                if (searchFace.LowY < raycastOrigin.Y)
-                                                                {
-                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
-
-                                                                    if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
-                                                                    {
-                                                                        closestMaster = searchObjects[currentSearch];
-                                                                    }
-                                                                }
-                                                                break;
-                                                            }
-                                                        case 3:
-                                                            {
-                                                                if (searchFace.LowX < raycastOrigin.X)
-                                                                {
-                                                                    Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
-
-                                                                    if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
-                                                                    {
-                                                                        closestMaster = searchObjects[currentSearch];
-                                                                    }
-                                                                }
-                                                                break;
-                                                            }
-                                                    }
-                                                }
-                                            }
-
-                                            masterIndex = Array.IndexOf(tempList.ToArray(), closestMaster);
-                                            if (masterIndex == -1)
-                                            {
-                                                tempList.Add(closestMaster);
-                                            }
-
-
-
-                                            hPixel = hPixel + horizontalPass;
-                                        }
-                                        vPixel = vPixel + resolution;
+                                        searchList.Add(currentMaster);
                                     }
-
+                                    break;
                                 }
-                                else
+                            case 2:
                                 {
-
-                                    foreach (var currentIndex in searchList)
+                                    if (masterObjects[currentMaster].pathfindingObject.lowY <= surfaceBoundaries[currentSection].highY + 10)
                                     {
-                                        int masterIndex = Array.IndexOf(tempList.ToArray(), currentIndex);
-                                        if (masterIndex == -1)
-                                        {
-                                            tempList.Add(currentIndex);
-                                        }
-
-
+                                        searchList.Add(currentMaster);
                                     }
+                                    break;
                                 }
-                            }
-
+                            case 3:
+                                {
+                                    if (masterObjects[currentMaster].pathfindingObject.lowX <= surfaceBoundaries[currentSection].highX + 10)
+                                    {
+                                        searchList.Add(currentMaster);
+                                    }
+                                    break;
+                                }
                         }
-
                     }
 
-                    sectionList[currentSection].viewList[currentView].objectList = tempList.ToArray();
-                    
+
+                    if (raycastBoolean > 0)
+                    {
+                        List<int> raycastList = new List<int>();
+
+                        raycastList = RayTest(currentSection, searchList, surfaceObjects, masterObjects);
+                        sectionList[currentSection].viewList[currentView].objectList = raycastList.ToArray();
+                    }
+                    else
+                    {
+                        sectionList[currentSection].viewList[currentView].objectList = searchList.ToArray();
+                    }
                 }
 
             }
@@ -6577,11 +1646,233 @@ namespace Tarmac64_Geometry
             return sectionList;
         }
 
-        public byte[] writeTextures(byte[] rom, OK64Texture[] textureObject)
+
+        public List<int> RayTest (int resolution, int currentView, List<int> raycastList, List<int> searchList, Vector3D raycastOrigin, OK64F3DObject[] masterObjects)
         {
-            memoryStream = new MemoryStream();
-            binaryReader = new BinaryReader(memoryStream);
-            binaryWriter = new BinaryWriter(memoryStream);
+            int screenWidth = 180;
+            int screenHeight = 160;
+            int rayDepth = 30000;
+            List<int> tempList = raycastList;
+
+
+            int closestMaster = 0;
+            float closestDistance = 0;
+            int masterIndex = 0;
+
+            for (int vPixel = 0; vPixel < screenHeight;)
+            {
+
+
+                for (int hPixel = 0; hPixel < screenWidth;)
+                {
+
+                    Vector3D raycastVector = new Vector3D();
+                    float hAngle = new float();
+                    int tempV = vPixel - 90;
+                    if (tempV < 0)
+                        tempV += 360;
+                    float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
+                    
+                    switch (currentView)
+                    {
+                        case 0:
+                            {
+                                int tempH = hPixel - 90;
+                                if (tempH < 0)
+                                    tempH += 360;
+                                hAngle = Convert.ToSingle((tempH) * (Math.PI / 180));
+                                break;
+                            }
+                        case 1:
+                            {
+                                hAngle = Convert.ToSingle(hPixel * (Math.PI / 180));
+                                break;
+                            }
+                        case 2:
+                            {
+                                hAngle = Convert.ToSingle((hPixel + 90) * (Math.PI / 180));                                
+                                break;
+                            }
+                        case 3:
+                            {
+                                int tempH = hPixel + 180;
+                                if (tempH >= 360)
+                                    tempH -= 360;
+
+                                hAngle = Convert.ToSingle((tempH) * (Math.PI / 180));                             
+                                break;
+                            }
+                    }
+
+                    raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
+                    raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
+                    raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
+
+                    for (int currentSearch = 0; currentSearch < searchList.Count; currentSearch++)
+                    {
+
+                        foreach (var searchFace in masterObjects[searchList[currentSearch]].modelGeometry)
+                        {
+                            switch (currentView)
+                            {
+                                case 0:
+                                    {
+                                        if (masterObjects[currentSearch].pathfindingObject.highY > raycastOrigin.Y)
+                                        {
+                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+
+                                            if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
+                                            {
+                                                closestDistance = intersectionPoint.X;
+                                                closestMaster = currentSearch;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        if (masterObjects[currentSearch].pathfindingObject.highX > raycastOrigin.X)
+                                        {
+                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+
+                                            if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
+                                            {
+                                                closestDistance = intersectionPoint.X;
+                                                closestMaster = currentSearch;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        if (masterObjects[currentSearch].pathfindingObject.lowY < raycastOrigin.Y)
+                                        {
+                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+
+                                            if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
+                                            {
+                                                closestDistance = intersectionPoint.X;
+                                                closestMaster = currentSearch;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        if (masterObjects[currentSearch].pathfindingObject.lowX < raycastOrigin.X)
+                                        {
+                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+
+                                            if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
+                                            {
+                                                closestDistance = intersectionPoint.X;
+                                                closestMaster = currentSearch;
+                                            }
+                                        }
+                                        break;
+                                    }
+                            }
+                        }
+                    }
+
+                    masterIndex = Array.IndexOf(tempList.ToArray(), closestMaster);
+                    if (masterIndex == -1)
+                    {
+                        tempList.Add(closestMaster);
+                    }
+                    hPixel = hPixel + resolution;
+                }
+                vPixel = vPixel + resolution;
+            }
+            return tempList;            
+        }
+
+        public List<int> RayTest(int currentSection, List<int> searchList, OK64F3DObject[] surfaceObjects, OK64F3DObject[] masterObjects)
+        {
+            int screenWidth = 180;
+            int screenHeight = 160;
+            int rayDepth = 30000;
+            List<int> tempList = new List<int>();
+            Vector3D raycastOrigin = new Vector3D();
+            Vector3D raycastVector = new Vector3D();
+
+            List<int> checkList = searchList;
+            int closestMaster = 0;
+            
+            int masterIndex = 0;
+
+
+            for (int currentObject = 0; currentObject < surfaceObjects.Length; currentObject++)
+            {
+                if (surfaceObjects[currentObject].surfaceID == (currentSection + 1) & surfaceObjects[currentObject].pathfindingObject.surfaceBoolean)
+                {
+                    for (int currentFace = 0; currentFace < surfaceObjects[currentObject].modelGeometry.Length; currentFace++)
+                    {
+                        
+                        raycastOrigin = surfaceObjects[currentObject].modelGeometry[currentFace].CenterPosition;
+                            
+                        raycastOrigin.Z += 5;
+
+
+
+                        for (int currentSearch = 0; (currentSearch < searchList.Count); currentSearch++)
+                        {
+                            foreach (var targetFace in masterObjects[searchList[currentSearch]].modelGeometry)
+                            {
+                                raycastVector = targetFace.CenterPosition;
+
+
+                                Vector3D targetPoint = testIntersect(raycastOrigin, raycastVector, targetFace.VertData[0], targetFace.VertData[1], targetFace.VertData[2]);
+
+
+
+                                if (Math.Abs(targetPoint.X) > 0)
+                                {
+                                    float targetDistance = Math.Abs(targetPoint.X);
+
+                                    closestMaster = searchList[currentSearch];
+                                    for (int currentCheck = 0; currentCheck < checkList.Count; currentCheck++)
+                                    {
+                                        foreach (var searchFace in masterObjects[checkList[currentCheck]].modelGeometry)
+                                        {
+                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+
+                                            if (Math.Abs(intersectionPoint.X) > 0)
+                                            {
+                                                if (Math.Abs(intersectionPoint.X) < targetDistance)
+                                                {
+                                                    closestMaster = checkList[currentCheck];
+                                                    targetDistance = Math.Abs(intersectionPoint.X);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            
+
+                        }
+                        masterIndex = Array.IndexOf(tempList.ToArray(), closestMaster);
+                        if (masterIndex == -1)
+                        {
+                            tempList.Add(closestMaster);
+                            searchList.Remove(closestMaster);
+                        }
+                        
+                    }
+                }
+            }
+            return tempList;
+        }
+
+
+        public byte[] writeRawTextures(byte[] rom, OK64Texture[] textureObject, int DataLength)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
             int segment5Position = 0;
 
@@ -6599,7 +1890,75 @@ namespace Tarmac64_Geometry
                     byte[] paletteData = null;
                     Bitmap bitmapData = new Bitmap(textureObject[currentTexture].texturePath);
                     N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].textureFormat], bitmapData);
-                    byte[] compressedTexture = compressMIO0(imageData);
+                    
+
+
+                    // finish setting texture parameters based on new texture and compressed data.
+
+                    textureObject[currentTexture].compressedSize = imageData.Length;
+                    textureObject[currentTexture].fileSize = imageData.Length;
+                    textureObject[currentTexture].segmentPosition = segment5Position;  // we need this to build out F3DEX commands later. 
+                    segment5Position = segment5Position + textureObject[currentTexture].fileSize;
+
+
+                    //adjust the MIO0 offset to an 8-byte address as required for N64.
+                    binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
+                    int addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
+                    if (addressAlign == 4)
+                        addressAlign = 0;
+
+
+                    for (int align = 0; align < addressAlign; align++)
+                    {
+                        binaryWriter.Write(Convert.ToByte(0x00));
+                    }
+
+
+
+                    // write compressed MIO0 texture to end of ROM.
+
+                    textureObject[currentTexture].romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
+                    binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
+                    binaryWriter.Write(imageData);
+                }
+            }
+
+            binaryWriter.Write(Convert.ToInt32(0));
+            binaryWriter.Write(Convert.ToInt32(0));
+            binaryWriter.Write(Convert.ToInt32(0));
+            binaryWriter.Write(Convert.ToInt32(0));
+
+
+            byte[] romOut = memoryStream.ToArray();
+            return romOut;
+
+
+        }
+
+
+        public byte[] writeTextures(byte[] rom, OK64Texture[] textureObject)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+            int segment5Position = 0;
+
+
+            binaryWriter.Write(rom);
+            int textureCount = (textureObject.Length);
+            for (int currentTexture = 0; currentTexture < textureCount; currentTexture++)
+            {
+                if (textureObject[currentTexture].texturePath != null)
+                {
+                    // Establish codec and convert texture. Compress converted texture data via MIO0 compression
+
+                    N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
+                    byte[] imageData = null;
+                    byte[] paletteData = null;
+                    Bitmap bitmapData = new Bitmap(textureObject[currentTexture].texturePath);
+                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].textureFormat], bitmapData);
+                    byte[] compressedTexture = Tarmac.CompressMIO0(imageData);
 
 
                     // finish setting texture parameters based on new texture and compressed data.
@@ -6647,9 +2006,9 @@ namespace Tarmac64_Geometry
 
         public byte[] compiletextureTable(OK64Texture[] textureObject)
         {
-            memoryStream = new MemoryStream();
-            binaryReader = new BinaryReader(memoryStream);
-            binaryWriter = new BinaryWriter(memoryStream);
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
             byte[] byteArray = new byte[0];
 
@@ -6701,11 +2060,12 @@ namespace Tarmac64_Geometry
         }
 
 
-        public void compileF3DObject(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic)
+        public void compileF3DObject(ref int outMagic, ref byte[] DataOut, byte[] ModelData, OK64F3DObject[] MasterObjects, OK64Texture[] TextureObjects, int vertMagic, int SegmentID)
         {
 
 
-
+            //this function is used to create model data with vert data stored inside the same segment.
+            //this is for "custom models" and is not intended for Mario Kart 64's traditional format.
 
             List<string> object_name = new List<string>();
 
@@ -6722,7 +2082,8 @@ namespace Tarmac64_Geometry
             byte[] heightex = { 5, 5, 6, 5, 5, 6, 5 };
             byte[] widthex = { 5, 6, 5, 5, 6, 5, 5 };
 
-
+            byte[] SegmentByte = BitConverter.GetBytes(SegmentID);
+            Array.Reverse(SegmentByte);
 
             int relativeZero = vertMagic;
             int relativeIndex = 0;
@@ -6737,28 +2098,7 @@ namespace Tarmac64_Geometry
             BinaryReader seg4r = new BinaryReader(seg4m);
             BinaryWriter seg4w = new BinaryWriter(seg4m);
 
-            //prewrite existing Segment 4 data. 
-            seg4w.Write(segment4);
-
-            //prewrite existing Segment 7 data, OR, prefix Segment 7 with a 0xB8 Command. 
-            if (segment7.Length > 0)
-            {
-                seg7w.Write(segment7);
-            }
-            else
-            {
-                //Prep Segment 7 for any hardcoded display lists
-
-                byteArray = BitConverter.GetBytes(0xB8000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0x00000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-            }
-
-            foreach (var cObj in courseObject)
+            foreach (var cObj in MasterObjects)
             {
                 cObj.meshPosition = new int[cObj.meshID.Length];
                 for (int subIndex = 0; subIndex < cObj.meshID.Length; subIndex++)
@@ -6767,84 +2107,22 @@ namespace Tarmac64_Geometry
 
 
 
-                    
+
                     int facecount = cObj.modelGeometry.Length;
 
 
                     int materialID = new int();
 
                     materialID = cObj.materialID;
-
-                    ///Ok so now that we've loaded the raw model data, let's start writing some F3DEX. God have mercy.
-
-                    cObj.meshPosition[subIndex] = Convert.ToInt32(seg7m.Position);
-
-                    ///load the first set of verts from the relativeZero position;
-
-                    byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-
-                    byteArray = BitConverter.GetBytes(0x04000000 | (relativeZero) * 16);  ///from segment 4 at offset relativeZero
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-
                     int indexA;
                     int indexB;
                     int indexC;
-                    
+
 
                     for (int faceIndex = 0; faceIndex < facecount;)
                     {
-
-
-
                         if (faceIndex + 2 <= facecount)
                         {
-
-
-                            /// draw 2 triangles, check for additional verts in both.
-                            if (relativeIndex >= 26)
-                            {
-                                relativeZero += relativeIndex;
-                                relativeIndex = 0;
-
-                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
-                                Array.Reverse(byteArray);
-                                seg7w.Write(byteArray);
-
-
-                                byteArray = BitConverter.GetBytes(0x04000000 | ((relativeZero) * 16));  ///from segment 4 at offset relativeZero
-                                Array.Reverse(byteArray);
-                                seg7w.Write(byteArray);
-
-
-                            }
-
-
-
-                            ///end vert check
-
-
-
-
-                            indexA = relativeIndex;
-                            indexB = relativeIndex + 2;
-                            indexC = relativeIndex + 1;
-
-                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xB1000000 | (indexC << 17) | (indexB << 9) | indexA << 1));
-                            Array.Reverse(byteArray);
-                            seg7w.Write(byteArray);
-
-                            indexA = relativeIndex + 3;
-                            indexB = relativeIndex + 5;
-                            indexC = relativeIndex + 4;
-
-                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
-                            Array.Reverse(byteArray);
-                            seg7w.Write(byteArray);
 
 
                             for (int f = 0; f < 2; f++)
@@ -6862,6 +2140,19 @@ namespace Tarmac64_Geometry
                                     byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[f + faceIndex].VertData[v].position.y));
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
+
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(0));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+                                    if (CheckST(cObj, TextureObjects[cObj.materialID]))
+                                    {
+                                        MessageBox.Show("Fatal UV Error " + cObj.objectName);
+                                    }
+                                    cObj.modelGeometry[f + faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.sBase * TextureObjects[cObj.materialID].textureWidth);
+                                    cObj.modelGeometry[f + faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.tBase * TextureObjects[cObj.materialID].textureHeight);
+
 
 
                                     byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.s));
@@ -6936,48 +2227,12 @@ namespace Tarmac64_Geometry
                         }
                         else
                         {
-                            
-                            if (relativeIndex >= 26)
-                            {
-                                relativeZero += relativeIndex;
-                                relativeIndex = 0;
-
-                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
-                                Array.Reverse(byteArray);
-                                seg7w.Write(byteArray);
-
-
-                                byteArray = BitConverter.GetBytes(0x04000000 | ((relativeZero) * 16));  ///from segment 4 at offset relativeZero
-                                Array.Reverse(byteArray);
-                                seg7w.Write(byteArray);
-
-                                
-                            }
-
-
-
-
-
-
-                            ///end vert check
-                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xBF000000));
-                            Array.Reverse(byteArray);
-                            seg7w.Write(byteArray);
-
-                            indexA = relativeIndex;
-                            indexB = relativeIndex + 2;
-                            indexC = relativeIndex + 1;
-
-
-                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
-                            Array.Reverse(byteArray);
-                            seg7w.Write(byteArray);
 
 
                             //create the vert array for the current face, write it to Segment 4. 
-                            
 
-                            
+
+
 
                             for (int v = 0; v < 3; v++)
                             {
@@ -6992,6 +2247,19 @@ namespace Tarmac64_Geometry
                                 byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[faceIndex].VertData[v].position.y));
                                 Array.Reverse(byteArray);
                                 seg4w.Write(byteArray);
+
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(0));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+                                if (CheckST(cObj, TextureObjects[cObj.materialID]))
+                                {
+                                    MessageBox.Show("Fatal UV Error " + cObj.objectName);
+                                }
+                                cObj.modelGeometry[faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.sBase * TextureObjects[cObj.materialID].textureWidth);
+                                cObj.modelGeometry[faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.tBase * TextureObjects[cObj.materialID].textureHeight);
+
 
 
                                 byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.s));
@@ -7059,7 +2327,7 @@ namespace Tarmac64_Geometry
 
                             }
 
-                                faceIndex++;
+                            faceIndex++;
                             relativeIndex += 3;
 
                         }
@@ -7070,22 +2338,160 @@ namespace Tarmac64_Geometry
 
 
 
+                    relativeZero += relativeIndex * 16;
+                    relativeIndex = 0;
+                }
 
 
-                    if (textureObject[cObj.materialID].textureTransparent == true)
+
+
+
+            }
+
+            int newMagic = relativeZero;
+            relativeZero = vertMagic;
+
+            foreach (var cObj in MasterObjects)
+            {
+                cObj.meshPosition = new int[cObj.meshID.Length];
+                for (int subIndex = 0; subIndex < cObj.meshID.Length; subIndex++)
+                {
+
+
+
+
+
+                    int facecount = cObj.modelGeometry.Length;
+
+
+                    int materialID = new int();
+
+                    materialID = cObj.materialID;
+
+                    ///Ok so now that we've loaded the raw model data, let's start writing some F3DEX. God have mercy.
+
+                    cObj.meshPosition[subIndex] = Convert.ToInt32(seg7m.Position + newMagic);
+
+                    ///load the first set of verts from the relativeZero position;
+
+                    byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+
+                    byteArray = BitConverter.GetBytes(Convert.ToUInt32(BitConverter.ToUInt32(SegmentByte,0) | (relativeZero)));  ///from segment 4 at offset relativeZero
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+
+                    int indexA;
+                    int indexB;
+                    int indexC;
+
+
+                    for (int faceIndex = 0; faceIndex < facecount;)
                     {
-                        //B900031D00552078
-                        //disable transparency.
-                        byteArray = BitConverter.GetBytes(0xB900031D);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
 
-                        byteArray = BitConverter.GetBytes(0x00552078);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
+
+
+                        if (faceIndex + 2 <= facecount)
+                        {
+                            /// draw 2 triangles, check for additional verts in both.
+                            if (relativeIndex >= 26)
+                            {
+                                relativeZero += relativeIndex * 16;
+                                relativeIndex = 0;
+
+                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                                byteArray = BitConverter.GetBytes(Convert.ToUInt32(BitConverter.ToUInt32(SegmentByte, 0) | ((relativeZero))));  ///from segment 4 at offset relativeZero
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                            }
+
+
+
+                            ///end vert check
+
+
+
+
+                            indexA = relativeIndex;
+                            indexB = relativeIndex + 2;
+                            indexC = relativeIndex + 1;
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xB1000000 | (indexC << 17) | (indexB << 9) | indexA << 1));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+                            indexA = relativeIndex + 3;
+                            indexB = relativeIndex + 5;
+                            indexC = relativeIndex + 4;
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+
+
+                            faceIndex += 2;
+                            relativeIndex += 6;
+
+                        }
+                        else
+                        {
+
+                            if (relativeIndex >= 26)
+                            {
+                                relativeZero += relativeIndex * 16;
+                                relativeIndex = 0;
+
+                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                                byteArray = BitConverter.GetBytes(Convert.ToUInt32(BitConverter.ToUInt32(SegmentByte, 0) | ((relativeZero))));  ///from segment 4 at offset relativeZero
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                            }
+
+                            
+
+
+
+                            ///end vert check
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xBF000000));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+                            indexA = relativeIndex;
+                            indexB = relativeIndex + 2;
+                            indexC = relativeIndex + 1;
+
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+
+                            //create the vert array for the current face, write it to Segment 4. 
+
+                            faceIndex++;
+                            relativeIndex += 3;
+
+                        }
+
+
 
                     }
-
 
                     byteArray = BitConverter.GetBytes(0xB8000000);
                     Array.Reverse(byteArray);
@@ -7095,7 +2501,8 @@ namespace Tarmac64_Geometry
                     Array.Reverse(byteArray);
                     seg7w.Write(byteArray);
 
-                    relativeZero += relativeIndex;
+
+                    relativeZero += relativeIndex * 16;
                     relativeIndex = 0;
                 }
 
@@ -7104,20 +2511,27 @@ namespace Tarmac64_Geometry
 
 
             }
-            
-            outseg4 = seg4m.ToArray();
-            outseg7 = seg7m.ToArray();
 
-            outMagic = relativeZero;
+            byte[] outseg4 = seg4m.ToArray();
+            byte[] outseg7 = seg7m.ToArray();
+
+            MemoryStream outStream = new MemoryStream();
+            BinaryWriter outWriter = new BinaryWriter(outStream);
+            outWriter.Write(ModelData);
+            outWriter.Write(outseg4);
+            outWriter.Write(outseg7);
+            DataOut = outStream.ToArray();
+
+            outMagic = DataOut.Length;
         }
 
-
-
-        public void compileTextureObject(ref byte[] outseg7, byte[] segment7, OK64Texture[] textureObject, int vertMagic)
+        public void compileF3DObject(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic)
         {
 
 
 
+
+            List<string> object_name = new List<string>();
 
 
 
@@ -7147,6 +2561,9 @@ namespace Tarmac64_Geometry
             BinaryReader seg4r = new BinaryReader(seg4m);
             BinaryWriter seg4w = new BinaryWriter(seg4m);
 
+            //prewrite existing Segment 4 data. 
+            seg4w.Write(segment4);
+
             //prewrite existing Segment 7 data, OR, prefix Segment 7 with a 0xB8 Command. 
             if (segment7.Length > 0)
             {
@@ -7165,13 +2582,418 @@ namespace Tarmac64_Geometry
                 seg7w.Write(byteArray);
             }
 
+            foreach (var cObj in courseObject)
+            {
+                cObj.meshPosition = new int[cObj.meshID.Length];
+                for (int subIndex = 0; subIndex < cObj.meshID.Length; subIndex++)
+                {
+
+
+
+
+
+                    int facecount = cObj.modelGeometry.Length;
+
+
+                    int materialID = new int();
+
+                    materialID = cObj.materialID;
+
+                    ///Ok so now that we've loaded the raw model data, let's start writing some F3DEX. God have mercy.
+
+                    cObj.meshPosition[subIndex] = Convert.ToInt32(seg7m.Position);
+
+
+                    byteArray = BitConverter.GetBytes(0xBB000001);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xFFFFFFFF);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+
+                    ImgType = ImgTypes[textureObject[cObj.materialID].textureClass];
+                    ImgFlag1 = STheight[textureObject[cObj.materialID].textureClass];
+                    ImgFlag2 = STwidth[textureObject[cObj.materialID].textureClass];
+                    if (textureObject[cObj.materialID].textureClass == 6)
+                    {
+                        ImgFlag3 = 0x100;
+                    }
+                    else
+                    {
+                        ImgFlag3 = 0x00;
+                    }
+
+
+
+                    byteArray = BitConverter.GetBytes(0xE8000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+
+
+                    byteArray = BitConverter.GetBytes((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(Convert.ToInt32(((heightex[textureObject[materialID].textureClass] & 0xF) << 0x12) | (((heightex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 0xE) | ((widthex[textureObject[materialID].textureClass] & 0xF) << 8) | (((widthex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 4)));
+
+                    //IDK why but this makes it into what it's supposed to be. 
+                    byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
+                    //IDK why but this makes it into what it's supposed to be. 
+
+
+
+                    Array.Reverse(byteArray);
+
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xF2000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes((((ImgFlag2 - 1) << 0xE) | ((ImgFlag1 - 1) << 2)));
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xFD100000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x05000000 | textureObject[materialID].segmentPosition);  //told you we would need this later. you didn't believe me </3 :'(
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xE8000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    ///F5100000 07000000 E6000000 00000000 F3000000 073FF100
+
+                    byteArray = BitConverter.GetBytes(0xF5100000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x07000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xE6000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0xF3000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    if (textureObject[materialID].textureClass == 0)
+                    {
+                        byteArray = BitConverter.GetBytes(0x073FF100);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+                    }
+                    else if (textureObject[materialID].textureClass == 1)
+                    {
+                        byteArray = BitConverter.GetBytes(0x077FF080);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+
+                    }
+                    else if (textureObject[materialID].textureClass == 2)
+                    {
+                        byteArray = BitConverter.GetBytes(0x077FF100);
+                        Array.Reverse(byteArray);
+                        seg7w.Write(byteArray);
+                    }
+
+
+
+                    ///load the first set of verts from the relativeZero position;
+
+                    byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+
+                    byteArray = BitConverter.GetBytes(0x04000000 | (relativeZero) * 16);  ///from segment 4 at offset relativeZero
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+
+                    int indexA;
+                    int indexB;
+                    int indexC;
+
+
+                    for (int faceIndex = 0; faceIndex < facecount;)
+                    {
+
+
+
+                        if (faceIndex + 2 <= facecount)
+                        {
+
+
+                            /// draw 2 triangles, check for additional verts in both.
+                            if (relativeIndex >= 26)
+                            {
+                                relativeZero += relativeIndex;
+                                relativeIndex = 0;
+
+                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                                byteArray = BitConverter.GetBytes(0x04000000 | ((relativeZero) * 16));  ///from segment 4 at offset relativeZero
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                            }
+
+
+
+                            ///end vert check
+
+
+
+
+                            indexA = relativeIndex;
+                            indexB = relativeIndex + 2;
+                            indexC = relativeIndex + 1;
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xB1000000 | (indexC << 17) | (indexB << 9) | indexA << 1));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+                            indexA = relativeIndex + 3;
+                            indexB = relativeIndex + 5;
+                            indexC = relativeIndex + 4;
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+
+                            for (int f = 0; f < 2; f++)
+                            {
+                                for (int v = 0; v < 3; v++)
+                                {
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.x));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.z));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[f + faceIndex].VertData[v].position.y));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+
+
+                                    
+                                    cObj.modelGeometry[f + faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.sBase * textureObject[cObj.materialID].textureWidth);
+                                    cObj.modelGeometry[f + faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.tBase * textureObject[cObj.materialID].textureHeight);
+
+                                    
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.s));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.t));
+                                    Array.Reverse(byteArray);
+                                    seg4w.Write(byteArray);
+
+
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
+                                    seg4w.Write(Convert.ToByte(0));
+                                }
+                            }
+
+
+                            faceIndex += 2;
+                            relativeIndex += 6;
+
+                        }
+                        else
+                        {
+
+                            if (relativeIndex >= 26)
+                            {
+                                relativeZero += relativeIndex;
+                                relativeIndex = 0;
+
+                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                                byteArray = BitConverter.GetBytes(0x04000000 | ((relativeZero) * 16));  ///from segment 4 at offset relativeZero
+                                Array.Reverse(byteArray);
+                                seg7w.Write(byteArray);
+
+
+                            }
+
+
+
+
+
+
+                            ///end vert check
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xBF000000));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+                            indexA = relativeIndex;
+                            indexB = relativeIndex + 2;
+                            indexC = relativeIndex + 1;
+
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
+                            Array.Reverse(byteArray);
+                            seg7w.Write(byteArray);
+
+
+                            //create the vert array for the current face, write it to Segment 4. 
+
+
+
+
+                            for (int v = 0; v < 3; v++)
+                            {
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.x));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.z));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[faceIndex].VertData[v].position.y));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+
+
+                                if (CheckST(cObj, textureObject[cObj.materialID]))
+                                {
+                                    MessageBox.Show("Fatal UV Error " + cObj.objectName);
+                                }
+                                cObj.modelGeometry[faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.sBase * textureObject[cObj.materialID].textureWidth);
+                                cObj.modelGeometry[faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.tBase * textureObject[cObj.materialID].textureHeight);
+
+
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.s));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.t));
+                                Array.Reverse(byteArray);
+                                seg4w.Write(byteArray);
+
+
+                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
+                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
+                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
+                                seg4w.Write(Convert.ToByte(0));
+                            }
+
+                            faceIndex++;
+                            relativeIndex += 3;
+
+                        }
+
+
+
+                    }
+
+
+                    byteArray = BitConverter.GetBytes(0xB8000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+
+                    relativeZero += relativeIndex;
+                    relativeIndex = 0;
+                }
+
+
+
+
+
+            }
+
+            outseg4 = seg4m.ToArray();
+            outseg7 = seg7m.ToArray();
+
+            outMagic = relativeZero;
+        }
+
+        public void compileTextureObject(ref int outMagic, ref byte[] outseg7, byte[] segment7, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5)
+        {
+            byte[] byteArray = new byte[0];
+
+
+            UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
+            UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
+            UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
+            UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 }; ///texture sizes...
+            byte[] heightex = { 5, 5, 6, 5, 5, 6, 5 };
+            byte[] widthex = { 5, 6, 5, 5, 6, 5, 5 };
+
+            byte[] SegmentByte = BitConverter.GetBytes(SegmentID);
+            Array.Reverse(SegmentByte);
+
+            int relativeZero = vertMagic;
+            int relativeIndex = 0;
+
+
+            MemoryStream seg7m = new MemoryStream();
+            BinaryReader seg7r = new BinaryReader(seg7m);
+            BinaryWriter seg7w = new BinaryWriter(seg7m);
+
+
+            MemoryStream seg4m = new MemoryStream();
+            BinaryReader seg4r = new BinaryReader(seg4m);
+            BinaryWriter seg4w = new BinaryWriter(seg4m);
+
+            //prewrite existing Segment 7 data, OR, prefix Segment 7 with a 0xB8 Command. 
+            if (segment7.Length > 0)
+            {
+                seg7w.Write(segment7);
+            }
+
             for( int materialID = 0; materialID < textureObject.Length; materialID++)
             {
                 textureObject[materialID].f3dexPosition = new int[2];
 
                 ///Ok so now that we've loaded the raw model data, let's start writing some F3DEX. God have mercy.
 
-                textureObject[materialID].f3dexPosition[0] = Convert.ToInt32(seg7m.Position);
+                textureObject[materialID].f3dexPosition[0] = Convert.ToInt32(seg7m.Position) + vertMagic;
 
 
                 byteArray = BitConverter.GetBytes(0xBB000001);
@@ -7183,19 +3005,7 @@ namespace Tarmac64_Geometry
                 seg7w.Write(byteArray);
 
 
-                if (textureObject[materialID].textureTransparent == true)
-                {
-                    //B900031D00553078
-
-                    byteArray = BitConverter.GetBytes(0xB900031D);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x00553078);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                }
+                
 
 
                 ImgType = ImgTypes[textureObject[materialID].textureClass];
@@ -7250,7 +3060,7 @@ namespace Tarmac64_Geometry
                 Array.Reverse(byteArray);
                 seg7w.Write(byteArray);
 
-                byteArray = BitConverter.GetBytes(0x05000000 | textureObject[materialID].segmentPosition);  //told you we would need this later. you didn't believe me </3 :'(
+                byteArray = BitConverter.GetBytes(Convert.ToUInt32(BitConverter.ToUInt32(SegmentByte, 0) | textureObject[materialID].segmentPosition));  //told you we would need this later. you didn't believe me </3 :'(
                 Array.Reverse(byteArray);
                 seg7w.Write(byteArray);
 
@@ -7305,24 +3115,21 @@ namespace Tarmac64_Geometry
                 }
 
 
-                if (textureObject[materialID].textureTransparent == true)
-                {
-                    textureObject[materialID].f3dexPosition[1] = Convert.ToInt32(seg7w.BaseStream.Position);
-                    //B900031D00552078
-                    //disable transparency.
-                    byteArray = BitConverter.GetBytes(0xB900031D);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
+                byteArray = BitConverter.GetBytes(0xB8000000);
+                Array.Reverse(byteArray);
+                seg7w.Write(byteArray);
 
-                    byteArray = BitConverter.GetBytes(0x00552078);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
+                byteArray = BitConverter.GetBytes(0x00000000);
+                Array.Reverse(byteArray);
+                seg7w.Write(byteArray);
 
-                }
+
+
                 relativeZero += relativeIndex;
                 relativeIndex = 0;
             }
             outseg7 = seg7m.ToArray();
+            outMagic = Convert.ToInt32(outseg7.Length) + vertMagic;
         }
 
 
@@ -7431,19 +3238,6 @@ namespace Tarmac64_Geometry
                     Array.Reverse(byteArray);
                     seg7w.Write(byteArray);
 
-                    if (textureObject[cObj.materialID].textureTransparent == true)
-                    {
-                        //B900031D00553078
-
-                        byteArray = BitConverter.GetBytes(0xB900031D);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-
-                        byteArray = BitConverter.GetBytes(0x00553078);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-
-                    }
 
 
                     ImgType = ImgTypes[textureObject[cObj.materialID].textureClass];
@@ -7745,24 +3539,6 @@ namespace Tarmac64_Geometry
                     }
 
 
-
-
-
-                    if (textureObject[cObj.materialID].textureTransparent == true)
-                    {
-                        //B900031D00552078
-                        //disable transparency.
-                        byteArray = BitConverter.GetBytes(0xB900031D);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-
-                        byteArray = BitConverter.GetBytes(0x00552078);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-
-                    }
-
-
                     byteArray = BitConverter.GetBytes(0xB8000000);
                     Array.Reverse(byteArray);
                     seg7w.Write(byteArray);
@@ -7806,6 +3582,117 @@ namespace Tarmac64_Geometry
         }
 
 
+        public byte[] compileObjectList(ref int outMagic, Assimp.Scene fbx, byte[] OutputData, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int SegmentID)
+        {
+            //this function will create display lists for each of the section views based on the OK64F3DObject array.
+            //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
+            // were stored into courseObject[index].meshPosition[] for this process.
+
+
+            //magic is the offset of the data preceding this in the segment based on the current organization method,
+
+
+            byte[] SegmentByte = BitConverter.GetBytes(SegmentID);
+            Array.Reverse(SegmentByte);
+
+            MemoryStream seg6m = new MemoryStream();
+            BinaryReader seg6r = new BinaryReader(seg6m);
+            BinaryWriter seg6w = new BinaryWriter(seg6m);
+
+            seg6w.Write(OutputData);
+
+            //BB00000107C007C0B900031D00552078FCFFFFFFFFFCF87C
+            byte[] byteArray = new byte[0];
+
+            byteArray = BitConverter.GetBytes(0xBB000001);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x07C007C0);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xB900031D);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00552078);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xFCFFFFFF);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xFFFCF87C);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
+
+            //00552078
+
+
+            for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+            {
+                bool textureWritten = false;
+                for (int currentObject = 0; currentObject < courseObject.Length; currentObject++)
+                {
+                    if (courseObject[currentObject].materialID == currentTexture)
+                    {
+                        if (!textureWritten)
+                        {
+                            byteArray = BitConverter.GetBytes(0x06000000);
+                            Array.Reverse(byteArray);
+                            seg6w.Write(byteArray);
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(textureObject[currentTexture].f3dexPosition[0] | BitConverter.ToUInt32(SegmentByte,0)));
+                            Array.Reverse(byteArray);
+                            seg6w.Write(byteArray);
+                            textureWritten = true;
+                        }
+                        for (int subObject = 0; subObject < courseObject[currentObject].meshPosition.Length; subObject++)
+                        {
+                            byteArray = BitConverter.GetBytes(0x06000000);
+                            Array.Reverse(byteArray);
+                            seg6w.Write(byteArray);
+
+                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(courseObject[currentObject].meshPosition[subObject] | BitConverter.ToUInt32(SegmentByte,0)));
+                            Array.Reverse(byteArray);
+                            seg6w.Write(byteArray);
+                        }
+                    }
+                }
+
+                if (textureWritten)
+                {
+                    if (textureObject[currentTexture].textureTransparent)
+                    {
+                        
+                        byteArray = BitConverter.GetBytes(0xB900031D);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(0x00552078);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+
+                        
+                    }
+                }
+            }
+
+            byteArray = BitConverter.GetBytes(0xB8000000);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
+
+            outMagic = seg6m.ToArray().Length;
+            return seg6m.ToArray();
+            
+        }
+
 
         public byte[] compileF3DList(ref OK64SectionList[] sectionOut, Assimp.Scene fbx, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, OK64Texture[] textureObject)
         {
@@ -7832,57 +3719,122 @@ namespace Tarmac64_Geometry
                     int objectCount = sectionList[currentSection].viewList[currentView].objectList.Length;
                     sectionList[currentSection].viewList[currentView].segmentPosition = Convert.ToInt32(seg6m.Position);
 
+                    bool textureWritten = false;
+                    bool transparentWritten = false;
                     for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
                     {
-                        bool textureWritten = false;
-                        for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                        textureWritten = false;
+                        if (textureObject[currentTexture].textureTransparent)
                         {
 
-                            int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
-                            if (courseObject[objectIndex].materialID == currentTexture)
+                            if (!transparentWritten)
                             {
-                                if (!textureWritten)
-                                {
-                                    byteArray = BitConverter.GetBytes(0x06000000);
-                                    Array.Reverse(byteArray);
-                                    seg6w.Write(byteArray);
+                                transparentWritten = true;
+                                //B900031D00552078
+                                //enable transparency.
+                                byteArray = BitConverter.GetBytes(0xB900031D);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
-                                    Array.Reverse(byteArray);
-                                    seg6w.Write(byteArray);
-                                }
-                                for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
-                                {
-                                    byteArray = BitConverter.GetBytes(0x06000000);
-                                    Array.Reverse(byteArray);
-                                    seg6w.Write(byteArray);
+                                byteArray = BitConverter.GetBytes(0x00553078);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
-                                    Array.Reverse(byteArray);
-                                    seg6w.Write(byteArray);
+                            }
+
+                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                            {
+
+                                int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
+                                if (courseObject[objectIndex].materialID == currentTexture)
+                                {
+                                    if (!textureWritten)
+                                    {
+                                        byteArray = BitConverter.GetBytes(0x06000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+
+                                        byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+                                        textureWritten = true;
+                                    }
+                                    for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                    {
+                                        byteArray = BitConverter.GetBytes(0x06000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+
+                                        byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+                                    }
                                 }
                             }
                         }
 
-                        if (textureWritten & textureObject[currentTexture].textureTransparent)
-                        {
-                            byteArray = BitConverter.GetBytes(0x06000000);
-                            Array.Reverse(byteArray);
-                            seg6w.Write(byteArray);
+                    }
 
-                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[1] | 0x07000000);
-                            Array.Reverse(byteArray);
-                            seg6w.Write(byteArray);
-                        }
 
-                        byteArray = BitConverter.GetBytes(0xB8000000);
+                    if (transparentWritten)
+                    {
+                        byteArray = BitConverter.GetBytes(0xB900031D);
                         Array.Reverse(byteArray);
                         seg6w.Write(byteArray);
 
-                        byteArray = BitConverter.GetBytes(0x00000000);
+                        byteArray = BitConverter.GetBytes(0x00552078);
                         Array.Reverse(byteArray);
                         seg6w.Write(byteArray);
                     }
+
+                    
+                    for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+                    {
+                        textureWritten = false;
+
+                        if (!textureObject[currentTexture].textureTransparent)
+                        {
+                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                            {
+                                
+                                int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
+
+                                if (courseObject[objectIndex].materialID == currentTexture)
+                                {
+                                    if (!textureWritten)
+                                    {
+                                        byteArray = BitConverter.GetBytes(0x06000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+
+                                        byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+                                        textureWritten = true;
+                                    }
+                                    for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                    {
+                                        byteArray = BitConverter.GetBytes(0x06000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+
+                                        byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+                    byteArray = BitConverter.GetBytes(0xB8000000);
+                    Array.Reverse(byteArray);
+                    seg6w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg6w.Write(byteArray);
                 }
             }
             sectionOut = sectionList;
@@ -7970,6 +3922,53 @@ namespace Tarmac64_Geometry
             byte[] seg6 = seg6m.ToArray();
             return seg6;
         }
+
+
+        public int GetModelFormat(Scene fbx)
+        {
+            int modelFormat;
+            Assimp.Node masterNode = fbx.RootNode.FindNode("Course Master Objects");
+            if (masterNode == null)
+            {
+                modelFormat = 0;
+            }
+            else
+            {
+                Assimp.Node searchNode = fbx.RootNode.FindNode("Section 1 North");
+                if (searchNode == null)
+                {
+                    modelFormat = 1;
+                }
+                else
+                {
+                    modelFormat = 2;
+                }
+            }
+            return modelFormat;
+        }
+
+        public int GetSectionCount(Scene fbx)
+        {
+            Assimp.Node pathNode = fbx.RootNode.FindNode("Course Paths");
+
+            int sectionCount = 0;
+            for (int searchSection = 1; ; searchSection++)
+            {
+                Assimp.Node searchNode = fbx.RootNode.FindNode("Section " + searchSection.ToString());
+                if (searchNode != null)
+                {
+                    sectionCount++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return sectionCount;
+        }
+
+
+
     }
 
 }

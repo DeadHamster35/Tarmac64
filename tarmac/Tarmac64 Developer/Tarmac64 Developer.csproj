@@ -131,6 +131,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BigEndianBinaryReader.cs" />
+    <Compile Include="BigEndianBinaryWriter.cs" />
+    <Compile Include="RacerEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RacerEditor.Designer.cs">
+      <DependentUpon>RacerEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="renderDebug.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -181,6 +189,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="RacerEditor.resx">
+      <DependentUpon>RacerEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="renderDebug.resx">
       <DependentUpon>renderDebug.cs</DependentUpon>
     </EmbeddedResource>

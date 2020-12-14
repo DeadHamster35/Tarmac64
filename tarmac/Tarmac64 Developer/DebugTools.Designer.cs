@@ -44,6 +44,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.imgbox2 = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.OutputBox = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button9 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
@@ -71,6 +72,9 @@
             this.searchBox = new System.Windows.Forms.TextBox();
             this.search = new System.Windows.Forms.Button();
             this.button16 = new System.Windows.Forms.Button();
+            this.button17 = new System.Windows.Forms.Button();
+            this.button18 = new System.Windows.Forms.Button();
+            this.button19 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -122,7 +126,7 @@
             // 
             // andbtn
             // 
-            this.andbtn.Location = new System.Drawing.Point(9, 129);
+            this.andbtn.Location = new System.Drawing.Point(9, 150);
             this.andbtn.Name = "andbtn";
             this.andbtn.Size = new System.Drawing.Size(75, 23);
             this.andbtn.TabIndex = 6;
@@ -132,7 +136,7 @@
             // 
             // logicbox
             // 
-            this.logicbox.Location = new System.Drawing.Point(90, 145);
+            this.logicbox.Location = new System.Drawing.Point(90, 166);
             this.logicbox.Name = "logicbox";
             this.logicbox.Size = new System.Drawing.Size(88, 20);
             this.logicbox.TabIndex = 5;
@@ -172,7 +176,7 @@
             // 
             // orbtn
             // 
-            this.orbtn.Location = new System.Drawing.Point(9, 158);
+            this.orbtn.Location = new System.Drawing.Point(9, 179);
             this.orbtn.Name = "orbtn";
             this.orbtn.Size = new System.Drawing.Size(75, 23);
             this.orbtn.TabIndex = 36;
@@ -207,6 +211,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.OutputBox);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.leftshiftbtn);
             this.groupBox1.Controls.Add(this.input);
@@ -222,8 +227,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Bitwise Ops";
             // 
+            // OutputBox
+            // 
+            this.OutputBox.Location = new System.Drawing.Point(9, 115);
+            this.OutputBox.Name = "OutputBox";
+            this.OutputBox.Size = new System.Drawing.Size(115, 20);
+            this.OutputBox.TabIndex = 37;
+            // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.button19);
             this.groupBox2.Controls.Add(this.button9);
             this.groupBox2.Controls.Add(this.button8);
             this.groupBox2.Controls.Add(this.button7);
@@ -305,7 +318,6 @@
             this.button6.TabIndex = 47;
             this.button6.Text = "Pina Collada";
             this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.Button6_Click);
             // 
             // pitbox
             // 
@@ -487,11 +499,43 @@
             this.button16.UseVisualStyleBackColor = true;
             this.button16.Click += new System.EventHandler(this.button16_Click);
             // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(102, 316);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(75, 23);
+            this.button17.TabIndex = 59;
+            this.button17.Text = "secret castle";
+            this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
+            // 
+            // button18
+            // 
+            this.button18.Location = new System.Drawing.Point(227, 316);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(75, 23);
+            this.button18.TabIndex = 60;
+            this.button18.Text = "find FF";
+            this.button18.UseVisualStyleBackColor = true;
+            this.button18.Click += new System.EventHandler(this.button18_Click);
+            // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(227, 163);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(75, 23);
+            this.button19.TabIndex = 53;
+            this.button19.Text = "Compress";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.button19_Click);
+            // 
             // DebugTools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(713, 353);
+            this.Controls.Add(this.button18);
+            this.Controls.Add(this.button17);
             this.Controls.Add(this.button16);
             this.Controls.Add(this.searchBox);
             this.Controls.Add(this.button15);
@@ -563,5 +607,9 @@
         private System.Windows.Forms.TextBox searchBox;
         private System.Windows.Forms.Button search;
         private System.Windows.Forms.Button button16;
+        private System.Windows.Forms.TextBox OutputBox;
+        private System.Windows.Forms.Button button17;
+        private System.Windows.Forms.Button button18;
+        private System.Windows.Forms.Button button19;
     }
 }

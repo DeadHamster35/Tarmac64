@@ -39,6 +39,7 @@
             this.debuggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notForRetailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -146,7 +147,8 @@
             // 
             this.compilerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.textureListsToolStripMenuItem1,
-            this.courseImporterToolStripMenuItem});
+            this.courseImporterToolStripMenuItem,
+            this.modelCompilerToolStripMenuItem});
             this.compilerToolStripMenuItem.Name = "compilerToolStripMenuItem";
             this.compilerToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.compilerToolStripMenuItem.Text = "Compilers";
@@ -187,6 +189,13 @@
             this.debugTestToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.debugTestToolStripMenuItem.Text = "DebugTest";
             this.debugTestToolStripMenuItem.Click += new System.EventHandler(this.debugTestToolStripMenuItem_Click);
+            // 
+            // modelCompilerToolStripMenuItem
+            // 
+            this.modelCompilerToolStripMenuItem.Name = "modelCompilerToolStripMenuItem";
+            this.modelCompilerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.modelCompilerToolStripMenuItem.Text = "Model Compiler";
+            this.modelCompilerToolStripMenuItem.Click += new System.EventHandler(this.modelCompilerToolStripMenuItem_Click);
             // 
             // TarmacAbout
             // 
@@ -229,5 +238,6 @@
         private System.Windows.Forms.ToolStripMenuItem notForRetailToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem racerEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem debugTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modelCompilerToolStripMenuItem;
     }
 }

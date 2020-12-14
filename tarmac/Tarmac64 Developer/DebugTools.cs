@@ -11,9 +11,7 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Numerics;
 using Tarmac64;
-using Tarmac64_Geometry;
 using Tarmac64_Library;
-using Collada141;
 
 
 //custom libraries
@@ -30,16 +28,35 @@ using System.Text.RegularExpressions;
 using System.Security.Permissions;
 using SharpDX;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace Tarmac64
 {
     public partial class DebugTools : Form
+    { 
 
 
+        public DebugTools()
+        {
+            InitializeComponent();
+        }
+        string[] items = { "Mario Raceway", "Choco Mountain", "Bowser's Castle", "Banshee Boardwalk", "Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway", "Luigi's Turnpike", "Moo Moo Farm", "Toad's Turnpike", "Kalimari Desert", "Sherbet Land", "Rainbow Road", "Wario Stadium", "Block Fort", "Skyscraper", "Double Decker", "DK's Jungle Parkway", "Big Donut" };
+        int[] raceOrder = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18 };
 
-
-    {
-
+        public static UInt32[] seg6_addr = new UInt32[20];      //(0x00) ROM address at which segment 6 file begins
+        public static UInt32[] seg6_end = new UInt32[20];       //(0x04) ROM address at which segment 6 file ends
+        public static UInt32[] seg4_addr = new UInt32[20];      //(0x08) ROM address at which segment 4 file begins
+        public static UInt32[] seg7_end = new UInt32[20];       //(0x0C) ROM address at which segment 7 (not 4) file ends
+        public static UInt32[] seg9_addr = new UInt32[20];      //(0x10) ROM address at which segment 9 file begins
+        public static UInt32[] seg9_end = new UInt32[20];       //(0x14) ROM address at which segment 9 file ends
+        public static UInt32[] seg47_buf = new UInt32[20];      //(0x18) RSP address of compressed segments 4 and 7
+        public static UInt32[] numVtxs = new UInt32[20];        //(0x1C) number of vertices in the vertex file
+        public static UInt32[] seg7_ptr = new UInt32[20];       //(0x20) RSP address at which segment 7 data begins
+        public static UInt32[] seg7_size = new UInt32[20];      //(0x24) Size of segment 7 data after decompression, minus 8 bytes for some reason
+        public static UInt32[] texture_addr = new UInt32[20];   //(0x28) RSP address of texture list
+        public static UInt16[] flag = new UInt16[20];           //(0x2C) Unknown
+        public static UInt16[] unused = new UInt16[20];         //(0x2E) Padding
+        public static UInt32[] seg7_romptr = new UInt32[20];
         string outputstring = "";
 
         int opint = new int();
@@ -50,26 +67,22 @@ namespace Tarmac64
         
         Int32 value32 = new Int32();
 
-        TM64 tarmac64 = new TM64();
+        TM64 Tarmac = new TM64();
         TM64_Geometry.Vertex[] vertCache = new TM64_Geometry.Vertex[32];
 
         OpenFileDialog fileOpen = new OpenFileDialog();
         SaveFileDialog fileSave = new SaveFileDialog();
 
-        public DebugTools()
-        {
-            InitializeComponent();
-        }
 
         private void Leftshift_Click(object sender, EventArgs e)
         {
-            leftshift(input.Text);
+            OutputBox.Text = leftshift(input.Text);
         }
 
 
         private void Rightshiftbtn_Click(object sender, EventArgs e)
         {
-            rightshift(input.Text);
+            OutputBox.Text = rightshift(input.Text);
         }
 
 
@@ -114,10 +127,10 @@ namespace Tarmac64
 
 
 
-        private void leftshift(string inputstring)
+        private string leftshift(string inputstring)
         {
 
-
+            string output = "";
             if (inputstring.Length == 8)
             {
                 value32 = Convert.ToInt32(inputstring,16);
@@ -126,7 +139,7 @@ namespace Tarmac64
                 value32 = Convert.ToInt32(opint);
                 byte32 = BitConverter.GetBytes(value32);
                 Array.Reverse(byte32);
-                MessageBox.Show(BitConverter.ToString(byte32).Replace("-", "") + "  " + opint.ToString("X") + Environment.NewLine + Convert.ToString(Convert.ToInt32(BitConverter.ToString(byte32).Replace("-", ""), 16), 2).PadLeft(32, '0'));
+                output= (BitConverter.ToString(byte32).Replace("-", ""));
 
             }
             else if (inputstring.Length == 4)
@@ -136,15 +149,15 @@ namespace Tarmac64
                 value16 = Convert.ToInt16(opint);
                 byte16 = BitConverter.GetBytes(value16);
                 Array.Reverse(byte16);
-                MessageBox.Show(BitConverter.ToString(byte16).Replace("-", "") + "  " + opint.ToString("X") + Environment.NewLine + Convert.ToString(Convert.ToInt32(BitConverter.ToString(byte16).Replace("-", ""), 16), 2).PadLeft(16, '0'));
+                output= (BitConverter.ToString(byte16).Replace("-", ""));
             }
 
-
+            return output;
         }
 
-        private void rightshift(string inputstring)
+        private string rightshift(string inputstring)
         {
-
+            string output = "";
             if (inputstring.Length == 8)
             {
                 value32 = Convert.ToInt32(inputstring,16);           
@@ -154,7 +167,7 @@ namespace Tarmac64
                 //MessageBox.Show(value32.ToString("x"));
                 byte32 = BitConverter.GetBytes(value32);
                 Array.Reverse(byte32);
-                MessageBox.Show(BitConverter.ToString(byte32).Replace("-", "") + "  " + opint.ToString("X") + Environment.NewLine + Convert.ToString(Convert.ToInt32(BitConverter.ToString(byte32).Replace("-", ""), 16), 2).PadLeft(32, '0'));
+                output = (BitConverter.ToString(byte16).Replace("-", ""));
 
             }
             else if (inputstring.Length == 4)
@@ -164,8 +177,9 @@ namespace Tarmac64
                 value16 = Convert.ToInt16(opint);
                 byte16 = BitConverter.GetBytes(value16);
                 Array.Reverse(byte16);
-                MessageBox.Show(BitConverter.ToString(byte16).Replace("-", "") + "  " + opint.ToString("X") + Environment.NewLine + Convert.ToString(Convert.ToInt32(BitConverter.ToString(byte16).Replace("-", ""), 16), 2).PadLeft(16, '0'));
+                output = (BitConverter.ToString(byte16).Replace("-", ""));
             }
+            return output;
         }
 
         private void Custom_Click(object sender, EventArgs e)
@@ -198,7 +212,7 @@ namespace Tarmac64
 
         private void export_Click(object sender, EventArgs e)
         {
-            TM64_Geometry mk = new TM64_Geometry();
+            TM64 Tarmac = new TM64();
             
             int targetOffset = 0;
             int.TryParse(offsetbox.Text, out targetOffset);
@@ -206,7 +220,7 @@ namespace Tarmac64
             {
                 byte[] inputFile = File.ReadAllBytes(fileOpen.FileName);
 
-                byte[] decompressedFile =mk.decompressMIO0(inputFile);
+                byte[] decompressedFile =Tarmac.DecompressMIO0(inputFile);
                 
 
                 if (fileSave.ShowDialog() == DialogResult.OK)
@@ -419,40 +433,20 @@ namespace Tarmac64
 
 
 
-
-
-        private void Button6_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog fileOpen = new OpenFileDialog();
-            if (fileOpen.ShowDialog() == DialogResult.OK)
-            {
-                var pina = COLLADA.Load(fileOpen.FileName);
-                int x = 35;
-                x = x * 2;
-                x = x / 2;
-                x = 4;
-                
-
-
-            }
-            
-
-        }
-
         private void Button7_Click(object sender, EventArgs e)
         {
-            TM64_Geometry mk = new TM64_Geometry();
+            TM64_Geometry Tarmac = new TM64_Geometry();
             int x1 = Convert.ToInt32(n1.Text);
             int x2 = Convert.ToInt32(n2.Text);
-            MessageBox.Show(mk.GetMax(x1, x2).ToString());
+            MessageBox.Show(Tarmac.GetMax(x1, x2).ToString());
         }
 
         private void Button8_Click(object sender, EventArgs e)
         {
-            TM64_Geometry mk = new TM64_Geometry();
+            TM64_Geometry Tarmac = new TM64_Geometry();
             int x1 = Convert.ToInt32(n1.Text);
             int x2 = Convert.ToInt32(n2.Text);
-            MessageBox.Show(mk.GetMin(x1, x2).ToString());
+            MessageBox.Show(Tarmac.GetMin(x1, x2).ToString());
         }
 
         private void Button9_Click(object sender, EventArgs e)
@@ -490,6 +484,239 @@ namespace Tarmac64
         {
             int targetOffset = new int();
             targetOffset = int.Parse(f3dBox.Text, NumberStyles.HexNumber);
+
+
+            int vaddress = new int();
+
+
+            byte commandbyte = new byte();
+            byte[] byte29 = new byte[2];
+
+            string output = "";
+            byte[] voffset = new byte[2];
+
+            //DEBUG
+            //targetOffset = 0;
+            //DEBUG
+
+            int texClass = 0;
+            int current_offset = 0;
+            TM64_Geometry TarmacGeometry = new TM64_Geometry();
+
+            if (fileOpen.ShowDialog() == DialogResult.OK)
+            {
+                if (fileSave.ShowDialog() == DialogResult.OK)
+                {
+                    string savePath = fileSave.FileName;
+                    byte[] segment = File.ReadAllBytes(fileOpen.FileName);
+
+                    MemoryStream seg7m = new MemoryStream(segment);
+                    MemoryStream seg4m = new MemoryStream(segment);
+                    BinaryReader seg7r = new BinaryReader(seg7m);
+                    BinaryReader seg4r = new BinaryReader(seg4m);
+                    MemoryStream seg6m = new MemoryStream(segment);
+                    BinaryReader seg6r = new BinaryReader(seg6m);
+
+
+                    for (int currentVert = 0; currentVert < 32; currentVert++)
+                    {
+                        vertCache[currentVert] = new TM64_Geometry.Vertex();
+                        vertCache[currentVert].position = new TM64_Geometry.Position();
+                        vertCache[currentVert].color = new TM64_Geometry.OK64Color();
+                    }
+
+                    for (bool breakBool = false; breakBool == false;)
+                    {
+                        seg6r.BaseStream.Seek(targetOffset, SeekOrigin.Begin);
+                        byte[] rsp_add = seg6r.ReadBytes(4);
+                        Array.Reverse(rsp_add);
+                        int Value = BitConverter.ToInt32(rsp_add, 0);
+                        if (Value != 0)
+                        {
+                            String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
+                            int segid = Convert.ToByte(Binary.Substring(0, 8), 2);
+                            //MessageBox.Show(segid.ToString() + " " + seg6r.BaseStream.Position.ToString());
+                            current_offset = Convert.ToInt32(Binary.Substring(8, 24), 2);
+
+                            for (bool subBreak = false; subBreak == false & current_offset < seg6r.BaseStream.Length;)
+                            {
+
+                                seg6r.BaseStream.Seek(current_offset, SeekOrigin.Begin);
+                                commandbyte = seg6r.ReadByte();
+
+                                output = "";
+
+                                //MessageBox.Show("-Execute Order 0x" + commandbyte.ToString("X")+"--"+current_offset.ToString());
+
+                                if (commandbyte == 0x00)
+                                {
+                                    //End F3DEX Display Lists....probably? lol
+                                    //subBreak = true;
+                                }
+                                if (commandbyte == 0xB8)
+                                {
+                                    output = "ENDSECTION" + Environment.NewLine + Environment.NewLine + Environment.NewLine;
+                                    subBreak = true;
+                                }
+
+
+                                //Special Conditional
+                                if (commandbyte == 0xE4)
+                                {
+                                    current_offset += 4;
+                                }
+                                //Special Conditional
+
+                                if (commandbyte == 0x04)
+                                {
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, segment, segment, vaddress, current_offset + 1, vertCache, texClass);
+                                    vaddress = Convert.ToInt32(output);
+                                    output = "";
+                                }
+                                if (commandbyte == 0xB1)
+                                {
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, segment, segment, vaddress, current_offset + 1, vertCache, texClass);
+                                }
+                                if (commandbyte == 0xBF)
+                                {
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, segment, segment, vaddress, current_offset + 1, vertCache, texClass);
+                                }
+                                if (commandbyte == 0x06)
+                                {
+                                    output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, segment, segment, vaddress, current_offset + 1, vertCache, texClass);
+
+                                    StringReader sread = new StringReader(output);
+
+
+
+
+                                    segid = Convert.ToInt32(sread.ReadLine());
+                                    int caddress = Convert.ToInt32(sread.ReadLine());
+                                    System.IO.File.AppendAllText(savePath, "NEWOBJECT" + Environment.NewLine); ;
+                                    System.IO.File.AppendAllText(savePath, "Command Address 0x" + current_offset.ToString("X") + Environment.NewLine); ;
+                                    System.IO.File.AppendAllText(savePath, "Segment 0" + segid.ToString() + "00" + caddress.ToString("X") + Environment.NewLine);
+
+
+                                    //MessageBox.Show(segid.ToString() + "-" + caddress.ToString());
+
+                                    output = "";
+                                    byte recursivecommand = new byte();
+
+
+
+                                    for (int n = 0; n < 1;)
+                                    {
+                                        if (segid == 6)
+                                        {
+
+                                            seg6r.BaseStream.Seek(caddress, SeekOrigin.Begin);
+                                            recursivecommand = seg6r.ReadByte();
+
+                                            if (recursivecommand == 0x04)
+                                            {
+                                                output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, segment, segment, vaddress, caddress + 1, vertCache, texClass);
+                                                vaddress = Convert.ToInt32(output);
+                                                output = "";
+                                            }
+                                            if (recursivecommand == 0xE4)
+                                            {
+                                                caddress += 4;
+                                            }
+                                            if (recursivecommand == 0xB1)
+                                            {
+                                                output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, segment, segment, vaddress, caddress + 1, vertCache, texClass);
+                                            }
+                                            if (recursivecommand == 0xBF)
+                                            {
+                                                output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, segment, segment, vaddress, caddress + 1, vertCache, texClass);
+                                            }
+                                            if (recursivecommand == 0xB8)
+                                            {
+                                                output = "";
+
+                                                System.IO.File.AppendAllText(savePath, "ENDOBJECT" + Environment.NewLine);
+                                                System.IO.File.AppendAllText(savePath, "Segment 0" + segid.ToString() + "00" + caddress.ToString("X") + Environment.NewLine);
+                                                System.IO.File.AppendAllText(savePath, Environment.NewLine);
+
+                                                n = 2;
+                                            }
+                                            if (output != "")
+                                            {
+                                                System.IO.File.AppendAllText(savePath, output);
+                                            }
+                                        }
+
+                                        if (segid == 7)
+                                        {
+                                            seg7r.BaseStream.Seek(caddress, SeekOrigin.Begin);
+                                            recursivecommand = seg7r.ReadByte();
+
+
+
+                                            if (recursivecommand == 0x04)
+                                            {
+                                                output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, segment, segment, vaddress, caddress + 1, vertCache, texClass);
+                                                vaddress = Convert.ToInt32(output);
+                                                // MessageBox.Show("Vert Update-" + vaddress.ToString());
+                                                output = "";
+                                            }
+                                            if (recursivecommand == 0xE4)
+                                            {
+                                                caddress += 4;
+                                            }
+                                            if (recursivecommand == 0xB1)
+                                            {
+                                                output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, segment, segment, vaddress, caddress + 1, vertCache, texClass);
+                                            }
+                                            if (recursivecommand == 0xBF)
+                                            {
+                                                output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, segment, segment, vaddress, caddress + 1, vertCache, texClass);
+                                            }
+                                            if (recursivecommand == 0xB8)
+                                            {
+                                                output = "";
+
+                                                System.IO.File.AppendAllText(savePath, "ENDOBJECT" + Environment.NewLine);
+                                                System.IO.File.AppendAllText(savePath, "Segment 0" + segid.ToString() + "00" + caddress.ToString("X") + Environment.NewLine);
+                                                System.IO.File.AppendAllText(savePath, Environment.NewLine);
+
+                                                n = 2;
+                                            }
+                                            if (output != "")
+                                            {
+                                                System.IO.File.AppendAllText(savePath, output);
+                                            }
+                                        }
+                                        caddress += 8;
+                                    }
+
+                                    output = "";
+
+                                }
+
+
+
+
+                                if (output != "")
+                                {
+                                    System.IO.File.AppendAllText(savePath, output);
+                                }
+
+                                //MessageBox.Show("Command-"+commandbyte.ToString("X"));
+
+                                current_offset += 8;
+                            }
+
+
+                        }
+                        else
+                            breakBool = true;
+                        targetOffset = targetOffset + 4;
+                    }
+
+                    MessageBox.Show("Finished");
+                }
+            }
         }
 
 
@@ -497,14 +724,14 @@ namespace Tarmac64
 
         private void button12_Click(object sender, EventArgs e)
         {
-            TM64_Geometry mk = new TM64_Geometry();
+            TM64 Tarmac = new TM64();
 
             OpenFileDialog openFile = new OpenFileDialog();
             if (openFile.ShowDialog() == DialogResult.OK)
             {
                 byte[] vertData = File.ReadAllBytes(openFile.FileName);
 
-                byte[] outData = mk.decompress_seg7(vertData);
+                byte[] outData = Tarmac.Decompress_seg7(vertData);
                 
 
                 SaveFileDialog saveFile = new SaveFileDialog();
@@ -656,12 +883,12 @@ namespace Tarmac64
                         byteArray = memoryStream.ToArray();
                     }
 
-                    TM64_Geometry mk = new TM64_Geometry();
+                    TM64 Tarmac = new TM64();
                     File.WriteAllBytes(outPath + ".data.bin", byteArray);
 
                     try
                     {
-                        byte[] textureData = mk.decompressMIO0(byteArray);
+                        byte[] textureData = Tarmac.DecompressMIO0(byteArray);
 
 
                         int width, height = 0;
@@ -829,6 +1056,441 @@ namespace Tarmac64
 
 
                     }
+                }
+            }
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            int segment = 13;
+            byte[] printByte = BitConverter.GetBytes(segment << 24);
+            Array.Reverse(printByte);
+            MessageBox.Show(printByte[0].ToString("X")+ printByte[1].ToString("X") + printByte[2].ToString("X") + printByte[3].ToString("X"));
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog vertSave = new FolderBrowserDialog();
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryReader br = new BinaryReader(memoryStream);
+            OpenFileDialog openFile = new OpenFileDialog();
+            for (int currentVert = 0; currentVert < 32; currentVert++)
+            {
+                vertCache[currentVert] = new TM64_Geometry.Vertex();
+                vertCache[currentVert].position = new TM64_Geometry.Position();
+                vertCache[currentVert].color = new TM64_Geometry.OK64Color();
+            }
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openFile.FileName;
+                byte[] fileData = File.ReadAllBytes(filePath);
+
+                memoryStream.Write(fileData,0,fileData.Length);
+
+                if (vertSave.ShowDialog() == DialogResult.OK)
+                {
+                    br.BaseStream.Seek(0x122390, SeekOrigin.Begin);
+                    for (int i = 0; i < 20; i++)
+                    {
+                        seg6_addr[i] = br.ReadUInt32();
+                        seg6_end[i] = br.ReadUInt32();
+                        seg4_addr[i] = br.ReadUInt32();
+                        seg7_end[i] = br.ReadUInt32();
+                        seg9_addr[i] = br.ReadUInt32();
+                        seg9_end[i] = br.ReadUInt32();
+                        seg47_buf[i] = br.ReadUInt32();
+                        numVtxs[i] = br.ReadUInt32();
+                        seg7_ptr[i] = br.ReadUInt32();
+                        seg7_size[i] = br.ReadUInt32();
+                        texture_addr[i] = br.ReadUInt32();
+                        flag[i] = br.ReadUInt16();
+                        unused[i] = br.ReadUInt16();
+
+
+
+
+                        byte[] flip = new byte[4];
+
+                        flip = BitConverter.GetBytes(seg6_addr[i]);
+                        Array.Reverse(flip);
+                        seg6_addr[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(seg6_end[i]);
+                        Array.Reverse(flip);
+                        seg6_end[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(seg4_addr[i]);
+                        Array.Reverse(flip);
+                        seg4_addr[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(seg7_end[i]);
+                        Array.Reverse(flip);
+                        seg7_end[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(seg9_addr[i]);
+                        Array.Reverse(flip);
+                        seg9_addr[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(seg9_end[i]);
+                        Array.Reverse(flip);
+                        seg9_end[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(seg47_buf[i]);
+                        Array.Reverse(flip);
+                        seg47_buf[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(numVtxs[i]);
+                        Array.Reverse(flip);
+                        numVtxs[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(seg7_ptr[i]);
+                        Array.Reverse(flip);
+                        seg7_ptr[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(seg7_size[i]);
+                        Array.Reverse(flip);
+                        seg7_size[i] = BitConverter.ToUInt32(flip, 0);
+
+                        flip = BitConverter.GetBytes(texture_addr[i]);
+                        Array.Reverse(flip);
+                        texture_addr[i] = BitConverter.ToUInt32(flip, 0);
+
+                        byte[] flop = new byte[2];
+
+                        flop = BitConverter.GetBytes(flag[i]);
+                        Array.Reverse(flop);
+                        flag[i] = BitConverter.ToUInt16(flop, 0);
+
+                        flop = BitConverter.GetBytes(unused[i]);
+                        Array.Reverse(flop);
+                        unused[i] = BitConverter.ToUInt16(flop, 0);
+
+
+
+                        seg7_romptr[i] = seg7_ptr[i] - seg47_buf[i] + seg4_addr[i];
+
+                    }
+                    int currentOffset = 0;
+                    TM64 Tarmac = new TM64();
+                    TM64_Geometry TarmacGeometry = new TM64_Geometry();
+                    for (int cID = 0; cID < 16; cID++)
+                    {
+
+
+                        string savePath = Path.Combine(vertSave.SelectedPath,items[raceOrder[cID]]+".model.txt");
+
+
+
+                        int targetOffset = Convert.ToInt32(seg6_addr[raceOrder[cID]]);
+                        byte[] romBytes = File.ReadAllBytes(filePath);
+
+                        byte[] compressedFile = new byte[romBytes.Length - targetOffset];
+                        Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+
+                        byte[] decompressedverts = Tarmac.DecompressMIO0(compressedFile);
+                        byte[] seg6 = decompressedverts.ToArray();
+
+                        uint seg7_addr = (seg7_ptr[raceOrder[cID]] - seg47_buf[raceOrder[cID]]) + seg4_addr[raceOrder[cID]];
+
+
+
+
+                        targetOffset = Convert.ToInt32(seg4_addr[raceOrder[cID]]);
+                        romBytes = File.ReadAllBytes(filePath);
+
+                        compressedFile = new byte[romBytes.Length - targetOffset];
+                        Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
+
+                        decompressedverts = Tarmac.DecompressMIO0(compressedFile);
+                        List<byte> vertList = decompressedverts.ToList();
+                        List<byte> insert = new List<byte> { 0x00, 0x00 };
+                        int vertcount = (vertList.Count / 14);
+
+                        for (int i = 0; i < vertcount; i++)
+                        {
+                            vertList.InsertRange((i + 1) * 10 + (i * 2) + (i * 4), insert);
+                        }
+                        byte[] seg4 = vertList.ToArray();
+
+                        byte[] ROM = File.ReadAllBytes(filePath);
+                        byte[] useg7 = Tarmac.Dumpseg7(raceOrder[cID], ROM);
+                        byte[] seg7 = Tarmac.Decompress_seg7(useg7);
+
+                        int texClass = 0;
+
+                        MemoryStream seg7m = new MemoryStream(seg7);
+                        MemoryStream seg6m = new MemoryStream(seg6);
+                        MemoryStream seg4m = new MemoryStream(seg4);
+                        BinaryReader seg7r = new BinaryReader(seg7m);
+                        BinaryReader seg6r = new BinaryReader(seg6m);
+                        BinaryReader seg4r = new BinaryReader(seg4m);
+
+                        int vaddress = new int();
+
+
+                        byte commandbyte = new byte();
+                        byte[] byte29 = new byte[2];
+
+                        string output = "";
+                        byte[] voffset = new byte[2];
+                        // offsets to surface maps for each course, in course order. battle maps have no surface map and are listed as 0xFF for simplicicty.
+
+                        int[] surfaceoffset = { 0x9650, 0x72d0, 0x93d8, 0xb458, 0x18240, 0x79a0, 0x18fd8, 0xdc28, 0xff28, 0x144b8, 0x23b68, 0x23070, 0x9c20, 0x16440, 0xcc38, 0xff, 0xff, 0xff, 0x14338, 0xff };
+
+                        TM64_Geometry.OK64Color[] segmentColors = new TM64_Geometry.OK64Color[64];
+                        Random rngValue = new Random();
+                        for (int i = 0; i < 64; i++)
+                        {
+                            segmentColors[i] = new TM64_Geometry.OK64Color();
+                            byte r, g, b = new int();
+                            r = Convert.ToByte(rngValue.Next(0, 255));
+                            g = Convert.ToByte(rngValue.Next(0, 255));
+                            b = Convert.ToByte(rngValue.Next(0, 255));
+                            segmentColors[i].R = r;
+                            segmentColors[i].G = g;
+                            segmentColors[i].B = b;
+                        }
+
+                        int current_offset = surfaceoffset[raceOrder[cID]];
+                        for (int i = 0; i < 1;)
+                        {
+
+                            seg6r.BaseStream.Seek(current_offset, SeekOrigin.Begin);
+                            byte[] rsp_add = seg6r.ReadBytes(4);
+                            int surfaceID = Convert.ToInt32(seg6r.ReadByte());
+                            int sectionID = Convert.ToInt32(seg6r.ReadByte());
+
+
+                            if (rsp_add[0] == 0x00)
+                            {
+                                i = 2;
+                            }
+                            else
+                            {
+
+                                int newR, newG, newB = new int();
+
+                                if (sectionID != 255)
+                                {
+
+                                    int colorOffset = rngValue.Next(0, 20);
+                                    newR = segmentColors[sectionID].R - colorOffset;
+                                    if (newR < 0)
+                                    {
+                                        newR = 0;
+                                    }
+
+                                    newG = segmentColors[sectionID].G - colorOffset;
+                                    if (newG < 0)
+                                    {
+                                        newR = 0;
+                                    }
+
+                                    newB = segmentColors[sectionID].B - colorOffset;
+                                    if (newB < 0)
+                                    {
+                                        newB = 0;
+                                    }
+                                }
+                                else
+                                {
+                                    newR = 255;
+                                    newG = 255;
+                                    newB = 255;
+                                }
+                                Array.Reverse(rsp_add);
+
+                                int Value = BitConverter.ToInt32(rsp_add, 0);
+                                String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
+
+
+                                int segid = Convert.ToByte(Binary.Substring(0, 8), 2);
+                                int caddress = Convert.ToInt32(Binary.Substring(8, 24), 2);
+
+                                System.IO.File.AppendAllText(savePath, "NEWOBJECT" + Environment.NewLine);
+                                System.IO.File.AppendAllText(savePath, newR.ToString() + ", " + newG.ToString() + ", " + newB.ToString() + ", " + Environment.NewLine);
+                                System.IO.File.AppendAllText(savePath, "Section " + sectionID.ToString() + "- Surface " + surfaceID.ToString("X"
+                                    ) + "- Segment 0" + segid.ToString() + "00" + caddress.ToString("X") + Environment.NewLine);
+
+
+                                //MessageBox.Show(segid.ToString() + "-" + caddress.ToString());
+
+                                output = "";
+                                byte recursivecommand = new byte();
+
+                                if (segid == 6)
+                                {
+                                    seg6r.BaseStream.Seek(caddress, SeekOrigin.Begin);
+                                    recursivecommand = seg6r.ReadByte();
+                                    //MessageBox.Show(recursivecommand.ToString("x") + "-6");
+                                    if (recursivecommand == 0x06)
+                                    {
+                                        seg6r.BaseStream.Seek(3, SeekOrigin.Current);
+                                        rsp_add = seg6r.ReadBytes(4);
+                                        Array.Reverse(rsp_add);
+
+                                        Value = BitConverter.ToInt32(rsp_add, 0);
+                                        Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
+
+
+                                        segid = Convert.ToByte(Binary.Substring(0, 8), 2);
+                                        caddress = Convert.ToInt32(Binary.Substring(8, 24), 2);
+
+                                        System.IO.File.AppendAllText(savePath, "NEWOBJECT" + Environment.NewLine);
+                                        System.IO.File.AppendAllText(savePath, newR.ToString() + ", " + newG.ToString() + ", " + newB.ToString() + ", " + Environment.NewLine);
+                                        System.IO.File.AppendAllText(savePath, "Surface " + surfaceID.ToString() + "- Segment 0" + segid.ToString() + "00" + caddress.ToString("X") + Environment.NewLine);
+
+                                    }
+                                }
+                                if (segid == 7)
+                                {
+                                    seg7r.BaseStream.Seek(caddress, SeekOrigin.Begin);
+                                    recursivecommand = seg7r.ReadByte();
+                                    //MessageBox.Show(recursivecommand.ToString("x")+"-7");
+                                    if (recursivecommand == 0x06)
+                                    {
+                                        seg7r.BaseStream.Seek(3, SeekOrigin.Current);
+                                        rsp_add = seg7r.ReadBytes(4);
+                                        Array.Reverse(rsp_add);
+
+                                        Value = BitConverter.ToInt32(rsp_add, 0);
+                                        Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
+
+
+                                        segid = Convert.ToByte(Binary.Substring(0, 8), 2);
+                                        caddress = Convert.ToInt32(Binary.Substring(8, 24), 2);
+
+                                        System.IO.File.AppendAllText(savePath, "NEWOBJECT" + Environment.NewLine);
+                                        System.IO.File.AppendAllText(savePath, newR.ToString() + ", " + newG.ToString() + ", " + newB.ToString() + ", " + Environment.NewLine);
+                                        System.IO.File.AppendAllText(savePath, "Surface " + surfaceID.ToString() + "- Segment 0" + segid.ToString() + "00" + caddress.ToString("X") + Environment.NewLine);
+
+                                    }
+                                }
+
+
+
+
+                                for (int n = 0; n < 1;)
+                                {
+                                    if (segid == 6)
+                                    {
+                                        seg6r.BaseStream.Seek(caddress, SeekOrigin.Begin);
+                                        recursivecommand = seg6r.ReadByte();
+                                        //MessageBox.Show(recursivecommand.ToString("X"));
+                                        if (recursivecommand == 0x04)
+                                        {
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache, texClass);
+                                            vaddress = Convert.ToInt32(output);
+                                            output = "";
+                                        }
+                                        if (recursivecommand == 0xE4)
+                                        {
+                                            caddress += 4;
+                                        }
+                                        if (recursivecommand == 0xB1)
+                                        {
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache, texClass);
+                                        }
+                                        if (recursivecommand == 0xBF)
+                                        {
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg6, seg4, vaddress, caddress + 1, vertCache, texClass);
+                                        }
+                                        if (recursivecommand == 0xB8)
+                                        {
+                                            output = "";
+
+                                            System.IO.File.AppendAllText(savePath, "ENDOBJECT" + Environment.NewLine);
+                                            System.IO.File.AppendAllText(savePath, newR.ToString() + ", " + newG.ToString() + ", " + newB.ToString() + ", " + Environment.NewLine);
+                                            System.IO.File.AppendAllText(savePath, "Surface " + surfaceID.ToString() + "- Segment 0" + segid.ToString() + "00" + caddress.ToString("X") + Environment.NewLine);
+
+                                            n = 2;
+                                        }
+                                        if (output != "")
+                                        {
+                                            System.IO.File.AppendAllText(savePath, output);
+                                        }
+                                    }
+
+                                    if (segid == 7)
+                                    {
+                                        seg7r.BaseStream.Seek(caddress, SeekOrigin.Begin);
+                                        recursivecommand = seg7r.ReadByte();
+                                        //MessageBox.Show(recursivecommand.ToString("X"));
+
+
+                                        if (recursivecommand == 0x04)
+                                        {
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg7, seg4, vaddress, caddress + 1, vertCache, texClass);
+                                            vaddress = Convert.ToInt32(output);
+                                            // MessageBox.Show("Vert Update-" + vaddress.ToString());
+                                            output = "";
+                                        }
+                                        if (recursivecommand == 0xE4)
+                                        {
+                                            caddress += 4;
+                                        }
+                                        if (recursivecommand == 0xB1)
+                                        {
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg7, seg4, vaddress, caddress + 1, vertCache, texClass);
+                                        }
+                                        if (recursivecommand == 0xBF)
+                                        {
+                                            output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, recursivecommand, seg7, seg4, vaddress, caddress + 1, vertCache, texClass);
+                                        }
+                                        if (recursivecommand == 0xB8)
+                                        {
+                                            output = "";
+
+                                            System.IO.File.AppendAllText(savePath, "ENDOBJECT" + Environment.NewLine);
+                                            System.IO.File.AppendAllText(savePath, newR.ToString() + ", " + newG.ToString() + ", " + newB.ToString() + ", " + Environment.NewLine);
+                                            System.IO.File.AppendAllText(savePath, "Surface " + surfaceID.ToString() + "- Segment 0" + segid.ToString() + "00" + caddress.ToString("X") + Environment.NewLine);
+
+                                            n = 2;
+                                        }
+                                        if (output != "")
+                                        {
+                                            System.IO.File.AppendAllText(savePath, output);
+                                        }
+                                    }
+                                    caddress += 8;
+                                }
+
+
+
+                                System.IO.File.AppendAllText(savePath, "ENDSECTION" + Environment.NewLine); ;
+                                System.IO.File.AppendAllText(savePath, newR.ToString() + ", " + newG.ToString() + ", " + newB.ToString() + ", " + Environment.NewLine);
+                                System.IO.File.AppendAllText(savePath, "Surface " + surfaceID.ToString() + "- Segment 0" + segid.ToString() + "00" + caddress.ToString("X") + Environment.NewLine);
+                                output = "";
+
+                            }
+
+
+                            //MessageBox.Show("Command-"+commandbyte.ToString("X"));
+
+                            current_offset += 8;
+                        }
+
+
+
+
+                        
+
+                    }
+                }
+                MessageBox.Show("Finished");
+            }
+            
+
+        }
+
+        private void button19_Click(object sender, EventArgs e)
+        {
+            if (fileOpen.ShowDialog() == DialogResult.OK)
+            {
+                if (fileSave.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(fileSave.FileName, Tarmac.CompressMIO0(File.ReadAllBytes(fileOpen.FileName)));
                 }
             }
         }

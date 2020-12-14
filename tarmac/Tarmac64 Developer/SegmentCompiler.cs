@@ -12,7 +12,7 @@ using System.Drawing;
 using System.Text;
 using System.Collections;
 using System.Windows.Media.Imaging;
-using Tarmac64_Geometry;
+using Tarmac64_Library;
 
 
 
@@ -41,7 +41,8 @@ namespace Tarmac64
 
         bool debugmode = false;
 
-        TM64_Geometry mk = new TM64_Geometry();
+        TM64 Tarmac = new TM64();
+        TM64_Geometry TarmacGeometry = new TM64_Geometry();
 
         string filePath = "";
         string savePath = "";
@@ -463,7 +464,7 @@ namespace Tarmac64
                 }
                 else
                 {
-                    byte[] tempseg = mk.dumpseg4(cID, rombytes);
+                    byte[] tempseg = Tarmac.Dumpseg4(cID, rombytes);
                     Array.Resize(ref seg4, tempseg.Length);
                     Array.Copy(tempseg, 0, seg4, 0, tempseg.Length);
                 }
@@ -478,7 +479,7 @@ namespace Tarmac64
                 }
                 else
                 {
-                    byte[] tempseg = mk.dumpseg6(cID, rombytes);
+                    byte[] tempseg = Tarmac.Dumpseg6(cID, rombytes);
                     Array.Resize(ref seg6, tempseg.Length);
                     Array.Copy(tempseg, 0, seg6, 0, tempseg.Length);
                 }
@@ -493,7 +494,7 @@ namespace Tarmac64
                 }
                 else
                 {
-                    byte[] tempseg = mk.dumpseg7(cID, rombytes);
+                    byte[] tempseg = Tarmac.Dumpseg7(cID, rombytes);
                     Array.Resize(ref seg7, tempseg.Length);
                     Array.Copy(tempseg, 0, seg7, 0, tempseg.Length);
                 }
@@ -508,13 +509,13 @@ namespace Tarmac64
                 }
                 else
                 {
-                    byte[] tempseg = mk.dumpseg9(cID, rombytes);
+                    byte[] tempseg = Tarmac.Dumpseg9(cID, rombytes);
                     Array.Resize(ref seg9, tempseg.Length);
                     Array.Copy(tempseg, 0, seg9, 0, tempseg.Length);
                 }
                 string outpath = vertsave.FileName;
                 
-                byte[] newROM = mk.compileSegment(seg4, seg6, seg7, seg9, rombytes, coursebox.SelectedIndex);
+                byte[] newROM = Tarmac.CompileSegment(seg4, seg6, seg7, seg9, rombytes, coursebox.SelectedIndex);
                 File.WriteAllBytes(vertsave.FileName, newROM);
                 MessageBox.Show("Finished");
             }

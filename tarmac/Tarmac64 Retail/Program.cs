@@ -1,5 +1,4 @@
-﻿using Collada141;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +17,7 @@ namespace Tarmac64_Retail
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);                        
-            Application.Run(new Tarmac64.GeometryCompiler());
+            Application.Run(new Tarmac64_Library.GeometryCompiler());
         }
     }
 }

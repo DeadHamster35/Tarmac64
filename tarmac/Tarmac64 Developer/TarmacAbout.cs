@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Tarmac64_Library;
 
 
 
@@ -111,6 +112,12 @@ namespace Tarmac64
         private void debugTestToolStripMenuItem_Click(object sender, EventArgs e)
         {
             renderDebug f2 = new renderDebug();
+            f2.ShowDialog();
+        }
+
+        private void modelCompilerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Tarmac64_Library.ModelCompiler f2 = new Tarmac64_Library.ModelCompiler();
             f2.ShowDialog();
         }
     }

@@ -49,6 +49,15 @@
     <Reference Include="Cereal64.Microcodes">
       <HintPath>..\cereal64\Cereal64.Microcodes.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="SharpDX">
       <HintPath>..\modified assimp\SharpDX.dll</HintPath>
@@ -82,17 +91,27 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BigEndianBinaryReader.cs" />
-    <Compile Include="BigEndianBinaryWriter.cs" />
     <Compile Include="ObjectCompiler.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ObjectCompiler.Designer.cs">
       <DependentUpon>ObjectCompiler.cs</DependentUpon>
     </Compile>
-    <Compile Include="PinaColladaBerg.cs" />
-    <Compile Include="collada_schema_1_4.cs" />
+    <Compile Include="TM64_GL.cs" />
+    <Compile Include="CourseMaker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CourseMaker.Designer.cs">
+      <DependentUpon>CourseMaker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ModelCompiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModelCompiler.Designer.cs">
+      <DependentUpon>ModelCompiler.cs</DependentUpon>
+    </Compile>
     <Compile Include="TM64.cs" />
+    <Compile Include="TM64_Course.cs" />
     <Compile Include="TM64_Paths.cs" />
     <Compile Include="GeometryCompiler.cs">
       <SubType>Form</SubType>
@@ -113,12 +132,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="RacerEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="RacerEditor.Designer.cs">
-      <DependentUpon>RacerEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="TMAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,8 +140,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CourseMaker.resx">
+      <DependentUpon>CourseMaker.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ObjectCompiler.resx">
       <DependentUpon>ObjectCompiler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModelCompiler.resx">
+      <DependentUpon>ModelCompiler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GeometryCompiler.resx">
       <DependentUpon>GeometryCompiler.cs</DependentUpon>
@@ -137,9 +156,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="RacerEditor.resx">
-      <DependentUpon>RacerEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TMAbout.resx">
       <DependentUpon>TMAbout.cs</DependentUpon>
@@ -151,10 +167,15 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\ZONE.FBX" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\NONE_475.FBX" />
+    <None Include="Resources\Tree1.bmp" />
+    <None Include="Resources\Tree1.png" />
     <Content Include="SharpGL.ico" />
     <Content Include="SharpGL.png" />
+    <Content Include="Tree1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\AssimpNet.4.1.0\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" />

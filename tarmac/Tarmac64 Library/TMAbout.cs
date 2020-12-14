@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using Tarmac64_Library;
 
 
 
@@ -25,7 +25,7 @@ namespace Tarmac64
         }
 
 
-
+        TM64 Tarmac = new TM64();
 
 
         DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
@@ -39,11 +39,6 @@ namespace Tarmac64
             f2.ShowDialog();
         }
 
-        private void RacerEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RacerEditor f2 = new RacerEditor();
-            f2.ShowDialog();
-        }
 
         private void OKAbout_Load(object sender, EventArgs e)
         {
@@ -59,6 +54,11 @@ namespace Tarmac64
         {
             GeometryCompiler f2 = new GeometryCompiler();
             f2.ShowDialog();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            TM64.OK64Settings okSettings = Tarmac.LoadSettings();
         }
     }
 }
