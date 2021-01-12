@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace LakitoolDev
+namespace Tarmac64
 {
     internal static class Program
     {

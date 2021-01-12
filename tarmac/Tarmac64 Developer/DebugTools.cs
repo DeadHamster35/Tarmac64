@@ -1494,5 +1494,27 @@ namespace Tarmac64
                 }
             }
         }
+
+        private void textBox1_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button20_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderSave = new FolderBrowserDialog();
+            if (fileOpen.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = fileOpen.FileName;
+                if (folderSave.ShowDialog() == DialogResult.OK)
+                {
+                    string outputDir = folderSave.SelectedPath;
+
+                    int startOffset = Convert.ToInt32(texturedumpbox.Text);
+                    int endOffset = Convert.ToInt32(texturedumpend.Text);
+                    Tarmac.DumpTexturesOffset(startOffset, endOffset, outputDir, filePath);
+                }
+            }
+        }
     }
 }

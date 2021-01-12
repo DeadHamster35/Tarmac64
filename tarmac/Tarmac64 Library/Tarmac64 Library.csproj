@@ -20,10 +20,10 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\OverKart\Tarmac64.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\Tarmac64 Developer\Tarmac64.ruleset</CodeAnalysisRuleSet>
     <NoWarn>IDE0044;IDE0017;IDE0059</NoWarn>
     <WarningsAsErrors>IDE1006</WarningsAsErrors>
   </PropertyGroup>
@@ -40,6 +40,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aspose.3D, Version=20.7.0.0, Culture=neutral, PublicKeyToken=f071c641d0b4582b, processorArchitecture=MSIL">
+      <HintPath>..\..\..\copyman\CopyMan\packages\Aspose.3D.20.7.0\lib\net46\Aspose.3D.dll</HintPath>
+    </Reference>
     <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
     </Reference>
@@ -97,12 +100,24 @@
     <Compile Include="ObjectCompiler.Designer.cs">
       <DependentUpon>ObjectCompiler.cs</DependentUpon>
     </Compile>
-    <Compile Include="TM64_GL.cs" />
-    <Compile Include="CourseMaker.cs">
+    <Compile Include="TarmacAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CourseMaker.Designer.cs">
-      <DependentUpon>CourseMaker.cs</DependentUpon>
+    <Compile Include="TarmacAbout.Designer.cs">
+      <DependentUpon>TarmacAbout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TextureCompiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TextureCompiler.Designer.cs">
+      <DependentUpon>TextureCompiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TM64_GL.cs" />
+    <Compile Include="CourseJR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CourseJR.Designer.cs">
+      <DependentUpon>CourseJR.cs</DependentUpon>
     </Compile>
     <Compile Include="ModelCompiler.cs">
       <SubType>Form</SubType>
@@ -113,11 +128,11 @@
     <Compile Include="TM64.cs" />
     <Compile Include="TM64_Course.cs" />
     <Compile Include="TM64_Paths.cs" />
-    <Compile Include="GeometryCompiler.cs">
+    <Compile Include="CourseCompiler.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GeometryCompiler.Designer.cs">
-      <DependentUpon>GeometryCompiler.cs</DependentUpon>
+    <Compile Include="CourseCompiler.Designer.cs">
+      <DependentUpon>CourseCompiler.cs</DependentUpon>
     </Compile>
     <Compile Include="N64Graphics.cs" />
     <Compile Include="TM64_Geometry.cs" />
@@ -132,16 +147,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="TMAbout.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TMAbout.Designer.cs">
-      <DependentUpon>TMAbout.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CourseMaker.resx">
-      <DependentUpon>CourseMaker.cs</DependentUpon>
+    <EmbeddedResource Include="CourseJR.resx">
+      <DependentUpon>CourseJR.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ObjectCompiler.resx">
       <DependentUpon>ObjectCompiler.cs</DependentUpon>
@@ -149,16 +158,19 @@
     <EmbeddedResource Include="ModelCompiler.resx">
       <DependentUpon>ModelCompiler.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GeometryCompiler.resx">
-      <DependentUpon>GeometryCompiler.cs</DependentUpon>
+    <EmbeddedResource Include="CourseCompiler.resx">
+      <DependentUpon>CourseCompiler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="TMAbout.resx">
-      <DependentUpon>TMAbout.cs</DependentUpon>
+    <EmbeddedResource Include="TarmacAbout.resx">
+      <DependentUpon>TarmacAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextureCompiler.resx">
+      <DependentUpon>TextureCompiler.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +185,7 @@
     <None Include="Resources\NONE_475.FBX" />
     <None Include="Resources\Tree1.bmp" />
     <None Include="Resources\Tree1.png" />
+    <None Include="Resources\TextLogo.png" />
     <Content Include="SharpGL.ico" />
     <Content Include="SharpGL.png" />
     <Content Include="Tree1.png" />

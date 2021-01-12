@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Tarmac64;
+using Tarmac64_Library;
 
 namespace Tarmac64_Retail
 {
@@ -17,7 +17,7 @@ namespace Tarmac64_Retail
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);                        
-            Application.Run(new Tarmac64_Library.GeometryCompiler());
+            Application.Run(new Tarmac64_Library.TarmacAbout());
         }
     }
 }

@@ -66,17 +66,11 @@ namespace Tarmac64_Library
             skyData.TopColor.B = 0;
             skyData.TopColor.A = 0;
 
-            skyData.MidBotColor = new TM64_Geometry.OK64Color();
-            skyData.MidBotColor.R = 0;
-            skyData.MidBotColor.G = 0;
-            skyData.MidBotColor.B = 0;
-            skyData.MidBotColor.A = 0;
-
-            skyData.MidTopColor = new TM64_Geometry.OK64Color();
-            skyData.MidTopColor.R = 0;
-            skyData.MidTopColor.G = 0;
-            skyData.MidTopColor.B = 0;
-            skyData.MidTopColor.A = 0;
+            skyData.MidColor = new TM64_Geometry.OK64Color();
+            skyData.MidColor.R = 0;
+            skyData.MidColor.G = 0;
+            skyData.MidColor.B = 0;
+            skyData.MidColor.A = 0;
 
             skyData.BotColor = new TM64_Geometry.OK64Color();
             skyData.BotColor.R = 0;
@@ -853,7 +847,6 @@ namespace Tarmac64_Library
             if (textureArray[textureBox.SelectedIndex].texturePath != null)
             {
                 bitm.ImageLocation = textureArray[textureBox.SelectedIndex].texturePath;
-                tBox.Checked = textureArray[textureBox.SelectedIndex].textureTransparent;
                 return true;
             }
             else
@@ -949,11 +942,6 @@ namespace Tarmac64_Library
             }
         }
 
-
-        private void tBox_CheckedChanged(object sender, EventArgs e)
-        {
-            textureArray[textureBox.SelectedIndex].textureTransparent = tBox.Checked;
-        }
 
 
 
@@ -1334,12 +1322,6 @@ namespace Tarmac64_Library
 
         }
 
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            Tarmac64.OKRetail tarmacAbout = new Tarmac64.OKRetail();
-            tarmacAbout.Show();
-
-        }
 
         //
 

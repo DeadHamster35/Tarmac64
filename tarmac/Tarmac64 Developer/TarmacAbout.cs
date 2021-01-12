@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tarmac64_Library;
+using Tarmac64;
 
 
 
@@ -65,8 +66,7 @@ namespace Tarmac64
 
         private void NotForRetailToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DebugTools f2 = new DebugTools();
-            f2.ShowDialog();
+
         }
 
 
@@ -91,7 +91,7 @@ namespace Tarmac64
 
         private void GeometryToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            GeometryCompiler f2 = new GeometryCompiler();
+            CourseCompiler f2 = new CourseCompiler();
             
             f2.ShowDialog();
         }
@@ -120,5 +120,24 @@ namespace Tarmac64
             Tarmac64_Library.ModelCompiler f2 = new Tarmac64_Library.ModelCompiler();
             f2.ShowDialog();
         }
+
+        private void textureCompilerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Tarmac64_Library.TextureCompiler f2 = new Tarmac64_Library.TextureCompiler();
+            f2.ShowDialog();
+        }
+
+        private void debugKitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DebugTools f2 = new DebugTools();
+            f2.ShowDialog();
+        }
+
+        private void courseImporterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SegmentCompiler f2 = new SegmentCompiler();
+            f2.ShowDialog();
+        }
+
     }
 }

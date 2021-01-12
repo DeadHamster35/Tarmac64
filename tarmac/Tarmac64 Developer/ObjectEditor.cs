@@ -113,17 +113,17 @@ namespace Tarmac64
             objOffsets[15].offset = new List<int>();
             objOffsets[15].offset.Add(0x38);
             objOffsets.Add(new Offset { });
-            objOffsets[15].offset = new List<int>();
-            objOffsets[15].offset.Add(0X80);
+            objOffsets[16].offset = new List<int>();
+            objOffsets[16].offset.Add(0X80);
             objOffsets.Add(new Offset { });
-            objOffsets[15].offset = new List<int>();
-            objOffsets[15].offset.Add(0x28);
+            objOffsets[17].offset = new List<int>();
+            objOffsets[17].offset.Add(0x28);
             objOffsets.Add(new Offset { });
-            objOffsets[15].offset = new List<int>();
-            objOffsets[15].offset.Add(0x13EC0);
+            objOffsets[18].offset = new List<int>();
+            objOffsets[18].offset.Add(0x13EC0);
             objOffsets.Add(new Offset { });
-            objOffsets[15].offset = new List<int>();
-            objOffsets[15].offset.Add(0x58);
+            objOffsets[19].offset = new List<int>();
+            objOffsets[19].offset.Add(0x58);
         }
 
 
@@ -221,6 +221,7 @@ namespace Tarmac64
                 br.BaseStream.Position = objOffsets[cID].offset[x];
 
                 pathgroup.Add(new TM64_Paths.Pathgroup { });
+                pathgroup[x].pathList = new TM64_Paths.Pathlist[10];
 
                 List<TM64_Paths.Pathlist> tempList = new List<TM64_Paths.Pathlist>();
 
@@ -230,11 +231,7 @@ namespace Tarmac64
                     endpath = true;
 
                     tempList.Add(new TM64_Paths.Pathlist { });
-
-
-
-
-                    pathgroup[x].pathList[n].pathmarker = new List<TM64_Paths.Marker>();
+                    tempList[n].pathmarker = new List<TM64_Paths.Marker>();
 
                     for (int i = 0; endpath; i = i + 1)
                     {
@@ -275,7 +272,7 @@ namespace Tarmac64
                         else
                         {
 
-                            pathgroup[x].pathList[n].pathmarker.Add(new TM64_Paths.Marker
+                            tempList[n].pathmarker.Add(new TM64_Paths.Marker
                             {
                                 xval = tempint[0],
                                 zval = tempint[1],
@@ -289,11 +286,12 @@ namespace Tarmac64
                         }
 
 
+
                     }
+                    
                     n = n + 1;
+                    
                 }
-
-
                 pathgroup[x].pathList = tempList.ToArray();
                 x = x + 1;
             }

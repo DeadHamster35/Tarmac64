@@ -19,7 +19,6 @@ using System.Text.RegularExpressions;
 using System.Security.Permissions;
 using SharpDX;
 using System.Windows;
-using Tarmac64;
 using Tarmac64_Library;
 
 using System.Windows.Media;
@@ -117,9 +116,13 @@ namespace Tarmac64_Library
             public string texturePath { get; set; }
             public int textureWidth { get; set; }
             public int textureHeight { get; set; }
-            public int textureFormat { get; set; }
-            public int textureClass { get; set; }
-            public bool textureTransparent { get; set; }
+            public int textureCodec { get; set; }
+            public int textureClass { get; set; } //combo of width/height used for easier identifying. 
+            public int textureModeS { get; set; } //0 = wrap - 1 = mirror - 2 = clamp
+            public int textureModeT { get; set; } //0 = wrap - 1 = mirror - 2 = clamp
+            public int textureScrollS { get; set; }
+            public int textureScrollT { get; set; }
+            public int textureTransparent { get; set; }  //0 = opaque - 1 = transparent  - 2 = translucent
             public Image textureBitmap { get; set; }
             public byte[] compressedTexture { get; set; }
             public int compressedSize { get; set; }
@@ -127,6 +130,7 @@ namespace Tarmac64_Library
             public int segmentPosition { get; set; }
             public int romPosition { get; set; }
             public int[] f3dexPosition { get; set; }
+            public int vertAlpha { get; set; }
 
         }
         public class OK64F3DGroup
@@ -817,7 +821,12 @@ namespace Tarmac64_Library
                 {   
                     textureArray[materialIndex].texturePath = fbx.Materials[materialIndex].TextureDiffuse.FilePath;
                     textureArray[materialIndex].textureName = Path.GetFileName(textureArray[materialIndex].texturePath);
-                    textureArray[materialIndex].textureFormat = 0;
+                    textureArray[materialIndex].textureCodec = 0;
+                    textureArray[materialIndex].textureScrollS = 0;
+                    textureArray[materialIndex].textureScrollT = 0;
+                    textureArray[materialIndex].textureModeS = 0;
+                    textureArray[materialIndex].textureModeT = 0;
+                    textureArray[materialIndex].vertAlpha = 255;
                     string mainDirectory = Path.GetDirectoryName(filePath);
                     textureArray[materialIndex].texturePath = Path.Combine(mainDirectory, textureArray[materialIndex].texturePath);
                     textureArray[materialIndex].texturePath = Path.GetFullPath(textureArray[materialIndex].texturePath);
@@ -943,6 +952,11 @@ namespace Tarmac64_Library
                     newObject.modelGeometry[currentFace].VertData = new Vertex[3];
 
                     newObject.modelGeometry[currentFace].VertIndex = new VertIndex();
+
+                    if (childPoly.IndexCount != 3)
+                    {
+                        MessageBox.Show("FATAL ERROR - INDEX COUNT " + childPoly.IndexCount + "-" + newObject.objectName);
+                    }
                     newObject.modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
                     newObject.modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);
                     newObject.modelGeometry[currentFace].VertIndex.IndexC = Convert.ToInt16(childPoly.Indices[2]);
@@ -1345,7 +1359,7 @@ namespace Tarmac64_Library
 
             if ((textureObject.textureWidth == 32 | textureObject.textureWidth == 64) & (textureObject.textureHeight == 32 | textureObject.textureHeight == 64))
             {
-                if (textureObject.textureFormat == 0)
+                if (textureObject.textureCodec == 0)
                 {
                     if (textureObject.textureWidth == 32)
                     {
@@ -1889,7 +1903,7 @@ namespace Tarmac64_Library
                     byte[] imageData = null;
                     byte[] paletteData = null;
                     Bitmap bitmapData = new Bitmap(textureObject[currentTexture].texturePath);
-                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].textureFormat], bitmapData);
+                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].textureCodec], bitmapData);
                     
 
 
@@ -1953,11 +1967,11 @@ namespace Tarmac64_Library
                 {
                     // Establish codec and convert texture. Compress converted texture data via MIO0 compression
 
-                    N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
+                    N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.RGBA32 };
                     byte[] imageData = null;
                     byte[] paletteData = null;
                     Bitmap bitmapData = new Bitmap(textureObject[currentTexture].texturePath);
-                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].textureFormat], bitmapData);
+                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].textureCodec], bitmapData);
                     byte[] compressedTexture = Tarmac.CompressMIO0(imageData);
 
 
@@ -2211,7 +2225,7 @@ namespace Tarmac64_Library
                                                 seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
                                                 seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
                                                 seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
-                                                seg4w.Write(Convert.ToByte(0));
+                                                seg4w.Write(Convert.ToByte(TextureObjects[cObj.materialID].vertAlpha));
                                                 break;
                                             }
 
@@ -2291,17 +2305,17 @@ namespace Tarmac64_Library
                                         }
                                     case 2:
                                         {
+                                            seg4w.Write(Convert.ToByte(255));
                                             seg4w.Write(Convert.ToByte(0));
-                                            seg4w.Write(Convert.ToByte(153));
-                                            seg4w.Write(Convert.ToByte(153));
+                                            seg4w.Write(Convert.ToByte(0));
                                             seg4w.Write(Convert.ToByte(0));
                                             break;
                                         }
                                     case 3:
                                         {
-                                            seg4w.Write(Convert.ToByte(255));
                                             seg4w.Write(Convert.ToByte(0));
-                                            seg4w.Write(Convert.ToByte(0));
+                                            seg4w.Write(Convert.ToByte(153));
+                                            seg4w.Write(Convert.ToByte(153));
                                             seg4w.Write(Convert.ToByte(0));
                                             break;
                                         }
@@ -2319,7 +2333,7 @@ namespace Tarmac64_Library
                                             seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
                                             seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
                                             seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
-                                            seg4w.Write(Convert.ToByte(0));
+                                            seg4w.Write(Convert.ToByte(TextureObjects[cObj.materialID].vertAlpha));
                                             break;
                                         }
                                 }
@@ -2539,14 +2553,6 @@ namespace Tarmac64_Library
             byte[] byteArray = new byte[0];
 
 
-            UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
-            UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
-            UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
-            UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 }; ///texture sizes...
-            byte[] heightex = { 5, 5, 6, 5, 5, 6, 5 };
-            byte[] widthex = { 5, 6, 5, 5, 6, 5, 5 };
-
-
 
             int relativeZero = vertMagic;
             int relativeIndex = 0;
@@ -2604,120 +2610,6 @@ namespace Tarmac64_Library
                     cObj.meshPosition[subIndex] = Convert.ToInt32(seg7m.Position);
 
 
-                    byteArray = BitConverter.GetBytes(0xBB000001);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xFFFFFFFF);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-
-                    ImgType = ImgTypes[textureObject[cObj.materialID].textureClass];
-                    ImgFlag1 = STheight[textureObject[cObj.materialID].textureClass];
-                    ImgFlag2 = STwidth[textureObject[cObj.materialID].textureClass];
-                    if (textureObject[cObj.materialID].textureClass == 6)
-                    {
-                        ImgFlag3 = 0x100;
-                    }
-                    else
-                    {
-                        ImgFlag3 = 0x00;
-                    }
-
-
-
-                    byteArray = BitConverter.GetBytes(0xE8000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-
-
-                    byteArray = BitConverter.GetBytes((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(Convert.ToInt32(((heightex[textureObject[materialID].textureClass] & 0xF) << 0x12) | (((heightex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 0xE) | ((widthex[textureObject[materialID].textureClass] & 0xF) << 8) | (((widthex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 4)));
-
-                    //IDK why but this makes it into what it's supposed to be. 
-                    byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
-                    //IDK why but this makes it into what it's supposed to be. 
-
-
-
-                    Array.Reverse(byteArray);
-
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xF2000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes((((ImgFlag2 - 1) << 0xE) | ((ImgFlag1 - 1) << 2)));
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xFD100000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x05000000 | textureObject[materialID].segmentPosition);  //told you we would need this later. you didn't believe me </3 :'(
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xE8000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    ///F5100000 07000000 E6000000 00000000 F3000000 073FF100
-
-                    byteArray = BitConverter.GetBytes(0xF5100000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x07000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xE6000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xF3000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    if (textureObject[materialID].textureClass == 0)
-                    {
-                        byteArray = BitConverter.GetBytes(0x073FF100);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-                    }
-                    else if (textureObject[materialID].textureClass == 1)
-                    {
-                        byteArray = BitConverter.GetBytes(0x077FF080);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-
-                    }
-                    else if (textureObject[materialID].textureClass == 2)
-                    {
-                        byteArray = BitConverter.GetBytes(0x077FF100);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-                    }
 
 
 
@@ -2822,10 +2714,53 @@ namespace Tarmac64_Library
                                     seg4w.Write(byteArray);
 
 
-                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
-                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
-                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
-                                    seg4w.Write(Convert.ToByte(0));
+
+                                    switch (cObj.surfaceProperty)
+                                    {
+                                        case 1:
+                                            {
+                                                seg4w.Write(Convert.ToByte(153));
+                                                seg4w.Write(Convert.ToByte(0));
+                                                seg4w.Write(Convert.ToByte(153));
+                                                seg4w.Write(Convert.ToByte(0));
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                seg4w.Write(Convert.ToByte(0));
+                                                seg4w.Write(Convert.ToByte(153));
+                                                seg4w.Write(Convert.ToByte(153));
+                                                seg4w.Write(Convert.ToByte(0));
+                                                break;
+                                            }
+                                        case 3:
+                                            {
+                                                seg4w.Write(Convert.ToByte(255));
+                                                seg4w.Write(Convert.ToByte(0));
+                                                seg4w.Write(Convert.ToByte(0));
+                                                seg4w.Write(Convert.ToByte(0));
+                                                break;
+                                            }
+                                        case 4:
+                                            {
+                                                seg4w.Write(Convert.ToByte(230));
+                                                seg4w.Write(Convert.ToByte(204));
+                                                seg4w.Write(Convert.ToByte(0));
+                                                seg4w.Write(Convert.ToByte(0));
+                                                break;
+                                            }
+                                        case 0:
+                                        default:
+                                            {
+                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
+                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
+                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
+                                                seg4w.Write(Convert.ToByte(textureObject[cObj.materialID].vertAlpha));
+                                                break;
+                                            }
+
+
+                                    }
                                 }
                             }
 
@@ -2913,10 +2848,53 @@ namespace Tarmac64_Library
                                 seg4w.Write(byteArray);
 
 
-                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
-                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
-                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
-                                seg4w.Write(Convert.ToByte(0));
+
+                                switch (cObj.surfaceProperty)
+                                {
+                                    case 1:
+                                        {
+                                            seg4w.Write(Convert.ToByte(153));
+                                            seg4w.Write(Convert.ToByte(0));
+                                            seg4w.Write(Convert.ToByte(153));
+                                            seg4w.Write(Convert.ToByte(0));
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            seg4w.Write(Convert.ToByte(0));
+                                            seg4w.Write(Convert.ToByte(153));
+                                            seg4w.Write(Convert.ToByte(153));
+                                            seg4w.Write(Convert.ToByte(0));
+                                            break;
+                                        }
+                                    case 3:
+                                        {
+                                            seg4w.Write(Convert.ToByte(255));
+                                            seg4w.Write(Convert.ToByte(0));
+                                            seg4w.Write(Convert.ToByte(0));
+                                            seg4w.Write(Convert.ToByte(0));
+                                            break;
+                                        }
+                                    case 4:
+                                        {
+                                            seg4w.Write(Convert.ToByte(230));
+                                            seg4w.Write(Convert.ToByte(204));
+                                            seg4w.Write(Convert.ToByte(0));
+                                            seg4w.Write(Convert.ToByte(0));
+                                            break;
+                                        }
+                                    case 0:
+                                    default:
+                                        {
+                                            seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
+                                            seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
+                                            seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
+                                            seg4w.Write(Convert.ToByte(textureObject[cObj.materialID].vertAlpha));
+                                            break;
+                                        }
+
+
+                                }
                             }
 
                             faceIndex++;
@@ -3005,13 +2983,14 @@ namespace Tarmac64_Library
                 seg7w.Write(byteArray);
 
 
-                
 
+                byte ImgModeS = Convert.ToByte(textureObject[materialID].textureModeS & 0xF);
+                byte ImgModeT = Convert.ToByte(textureObject[materialID].textureModeT & 0xF);
 
                 ImgType = ImgTypes[textureObject[materialID].textureClass];
                 ImgFlag1 = STheight[textureObject[materialID].textureClass];
                 ImgFlag2 = STwidth[textureObject[materialID].textureClass];
-                if (textureObject[materialID].textureClass == 6)
+                if (textureObject[materialID].textureCodec == 1)
                 {
                     ImgFlag3 = 0x100;
                 }
@@ -3030,24 +3009,41 @@ namespace Tarmac64_Library
                 Array.Reverse(byteArray);
                 seg7w.Write(byteArray);
 
-
+                /*
+                byte height = Convert.ToByte((value32 >> 14) & 0xFF);
+                byte heightmode = Convert.ToByte((value32 >> 18) & 0xFF);
+                byte width = Convert.ToByte((value32 >> 4) & 0xFF);
+                byte widthmode = Convert.ToByte((value32 >> 8) & 0xFF);
+                */
 
                 byteArray = BitConverter.GetBytes((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3);
                 Array.Reverse(byteArray);
                 seg7w.Write(byteArray);
 
-                byteArray = BitConverter.GetBytes(Convert.ToInt32(((heightex[textureObject[materialID].textureClass] & 0xF) << 0x12) | (((heightex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 0xE) | ((widthex[textureObject[materialID].textureClass] & 0xF) << 8) | (((widthex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 4)));
+
+                byteArray = BitConverter.GetBytes(Convert.ToInt32((
+                    (heightex[textureObject[materialID].textureClass] & 0xF) << 14) | 
+                    (ImgModeT << 18) | 
+                    ((widthex[textureObject[materialID].textureClass] & 0xF) << 4) | 
+                    (ImgModeS << 8)
+                    ));
+
+
+
 
                 //IDK why but this makes it into what it's supposed to be. 
-                byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
+                //byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
                 //IDK why but this makes it into what it's supposed to be. 
+
+
+                //after like a year we finally got around to fixing that.
+                //keeping it as a humble reminder of how far we've come. 
 
 
 
                 Array.Reverse(byteArray);
 
                 seg7w.Write(byteArray);
-
                 byteArray = BitConverter.GetBytes(0xF2000000);
                 Array.Reverse(byteArray);
                 seg7w.Write(byteArray);
@@ -3056,9 +3052,20 @@ namespace Tarmac64_Library
                 Array.Reverse(byteArray);
                 seg7w.Write(byteArray);
 
-                byteArray = BitConverter.GetBytes(0xFD100000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
+                if (textureObject[materialID].textureCodec == 0)
+                {
+                    byteArray = BitConverter.GetBytes(0xFD100000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+                }
+                else
+                {
+                    
+                    byteArray = BitConverter.GetBytes(0xFD180000);
+                    Array.Reverse(byteArray);
+                    seg7w.Write(byteArray);
+                    
+                }
 
                 byteArray = BitConverter.GetBytes(Convert.ToUInt32(BitConverter.ToUInt32(SegmentByte, 0) | textureObject[materialID].segmentPosition));  //told you we would need this later. you didn't believe me </3 :'(
                 Array.Reverse(byteArray);
@@ -3086,6 +3093,7 @@ namespace Tarmac64_Library
                 Array.Reverse(byteArray);
                 seg7w.Write(byteArray);
 
+
                 byteArray = BitConverter.GetBytes(0x00000000);
                 Array.Reverse(byteArray);
                 seg7w.Write(byteArray);
@@ -3093,6 +3101,7 @@ namespace Tarmac64_Library
                 byteArray = BitConverter.GetBytes(0xF3000000);
                 Array.Reverse(byteArray);
                 seg7w.Write(byteArray);
+
 
                 if (textureObject[materialID].textureClass == 0)
                 {
@@ -3239,6 +3248,8 @@ namespace Tarmac64_Library
                     seg7w.Write(byteArray);
 
 
+                    byte ImgModeS = Convert.ToByte(textureObject[materialID].textureModeS & 0xF);
+                    byte ImgModeT = Convert.ToByte(textureObject[materialID].textureModeT & 0xF);
 
                     ImgType = ImgTypes[textureObject[cObj.materialID].textureClass];
                     ImgFlag1 = STheight[textureObject[cObj.materialID].textureClass];
@@ -3263,15 +3274,27 @@ namespace Tarmac64_Library
                     seg7w.Write(byteArray);
 
 
+                    /*
+                    byte height = Convert.ToByte((value32 >> 14) & 0xFF);
+                    byte heightmode = Convert.ToByte((value32 >> 18) & 0xFF);
+                    byte width = Convert.ToByte((value32 >> 4) & 0xFF);
+                    byte widthmode = Convert.ToByte((value32 >> 8) & 0xFF);
+                    */
 
                     byteArray = BitConverter.GetBytes((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3);
                     Array.Reverse(byteArray);
                     seg7w.Write(byteArray);
 
-                    byteArray = BitConverter.GetBytes(Convert.ToInt32(((heightex[textureObject[materialID].textureClass] & 0xF) << 0x12) | (((heightex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 0xE) | ((widthex[textureObject[materialID].textureClass] & 0xF) << 8) | (((widthex[textureObject[materialID].textureClass] & 0xF0) >> 4) << 4)));
+
+                    byteArray = BitConverter.GetBytes(Convert.ToInt32((
+                        (heightex[textureObject[materialID].textureClass] & 0xF) << 14) |
+                        (ImgModeT << 18) |
+                        ((widthex[textureObject[materialID].textureClass] & 0xF) << 4) |
+                        (ImgModeS << 8)
+                        ));
 
                     //IDK why but this makes it into what it's supposed to be. 
-                    byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
+                    //byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
                     //IDK why but this makes it into what it's supposed to be. 
 
 
@@ -3445,7 +3468,7 @@ namespace Tarmac64_Library
                                     seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
                                     seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
                                     seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
-                                    seg4w.Write(Convert.ToByte(0));
+                                    seg4w.Write(Convert.ToByte(textureObject[cObj.materialID].vertAlpha));
                                 }
                             }
 
@@ -3526,7 +3549,7 @@ namespace Tarmac64_Library
                                 seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
                                 seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
                                 seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
-                                seg4w.Write(Convert.ToByte(0));
+                                seg4w.Write(Convert.ToByte(textureObject[cObj.materialID].vertAlpha));
                             }
 
                             faceIndex++;
@@ -3664,7 +3687,7 @@ namespace Tarmac64_Library
 
                 if (textureWritten)
                 {
-                    if (textureObject[currentTexture].textureTransparent)
+                    if (textureObject[currentTexture].textureTransparent == 1)
                     {
                         
                         byteArray = BitConverter.GetBytes(0xB900031D);
@@ -3676,6 +3699,17 @@ namespace Tarmac64_Library
                         seg6w.Write(byteArray);
 
                         
+                    }
+                    if (textureObject[currentTexture].textureTransparent == 2)
+                    {
+
+                        byteArray = BitConverter.GetBytes(0xFC127E24);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(0xFFFFF3F9);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
                     }
                 }
             }
@@ -3719,18 +3753,189 @@ namespace Tarmac64_Library
                     int objectCount = sectionList[currentSection].viewList[currentView].objectList.Length;
                     sectionList[currentSection].viewList[currentView].segmentPosition = Convert.ToInt32(seg6m.Position);
 
+
+
+                    //opaque 
                     bool textureWritten = false;
+                    bool opaqueWritten = false;
+                    for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+                    {
+                        textureWritten = false;
+                        if (textureObject[currentTexture].textureTransparent == 0)
+                        {
+
+                            if (!opaqueWritten)
+                            {
+                                opaqueWritten = true;
+                                //B900031D00552078
+                                //enable opacity.
+                                byteArray = BitConverter.GetBytes(0xB900031D);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(0x00552078);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
+
+                            }
+
+                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                            {
+
+                                int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
+                                if (courseObject[objectIndex].materialID == currentTexture)
+                                {
+                                    if (!textureWritten)
+                                    {
+                                        textureWritten = true;
+                                        byteArray = BitConverter.GetBytes(0x06000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+
+                                        byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+                                        textureWritten = true;
+                                    }
+                                    for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                    {
+                                        byteArray = BitConverter.GetBytes(0x06000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+
+                                        byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+
+                    //translucent
+
+                    bool translucentwritten = false;
+                    for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+                    {
+                        textureWritten = false;
+
+                        if (textureObject[currentTexture].textureTransparent == 2)
+                        {
+                            if (!translucentwritten)
+                            {
+                                translucentwritten = true;
+                                //
+                                //enable translucency.
+                                byteArray = BitConverter.GetBytes(0xE7000000);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(0x00000000);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(0xFC121824);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(0xB900031D);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
+
+                                byteArray = BitConverter.GetBytes(0x00404DD8);
+                                Array.Reverse(byteArray);
+                                seg6w.Write(byteArray);
+
+
+
+                            }
+                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                            {
+
+                                int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
+
+                                if (courseObject[objectIndex].materialID == currentTexture)
+                                {
+                                    if (!textureWritten)
+                                    {
+                                        textureWritten = true;
+                                        byteArray = BitConverter.GetBytes(0x06000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+
+                                        byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+                                        textureWritten = true;
+                                    }
+                                    for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                    {
+                                        byteArray = BitConverter.GetBytes(0x06000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+
+                                        byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                        Array.Reverse(byteArray);
+                                        seg6w.Write(byteArray);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+                    if (translucentwritten)
+                    {
+
+                        //B900031D00552078
+                        //disable translucency
+                        byteArray = BitConverter.GetBytes(0xFC127E24);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(0xFFFFF3F9);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(0xB900031D);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(0x00442D58);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+
+                    }
+
+                    byteArray = BitConverter.GetBytes(0xB8000000);
+                    Array.Reverse(byteArray);
+                    seg6w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg6w.Write(byteArray);
+
+
+
+                    //transparent
+
                     bool transparentWritten = false;
                     for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
                     {
                         textureWritten = false;
-                        if (textureObject[currentTexture].textureTransparent)
-                        {
 
+                        if (textureObject[currentTexture].textureTransparent == 1)
+                        {
                             if (!transparentWritten)
                             {
                                 transparentWritten = true;
-                                //B900031D00552078
+                                //B900031D00553078
                                 //enable transparency.
                                 byteArray = BitConverter.GetBytes(0xB900031D);
                                 Array.Reverse(byteArray);
@@ -3741,59 +3946,6 @@ namespace Tarmac64_Library
                                 seg6w.Write(byteArray);
 
                             }
-
-                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
-                            {
-
-                                int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
-                                if (courseObject[objectIndex].materialID == currentTexture)
-                                {
-                                    if (!textureWritten)
-                                    {
-                                        byteArray = BitConverter.GetBytes(0x06000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
-
-                                        byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
-                                        textureWritten = true;
-                                    }
-                                    for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
-                                    {
-                                        byteArray = BitConverter.GetBytes(0x06000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
-
-                                        byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-
-
-                    if (transparentWritten)
-                    {
-                        byteArray = BitConverter.GetBytes(0xB900031D);
-                        Array.Reverse(byteArray);
-                        seg6w.Write(byteArray);
-
-                        byteArray = BitConverter.GetBytes(0x00552078);
-                        Array.Reverse(byteArray);
-                        seg6w.Write(byteArray);
-                    }
-
-                    
-                    for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
-                    {
-                        textureWritten = false;
-
-                        if (!textureObject[currentTexture].textureTransparent)
-                        {
                             for (int currentObject = 0; currentObject < objectCount; currentObject++)
                             {
                                 
@@ -3803,6 +3955,7 @@ namespace Tarmac64_Library
                                 {
                                     if (!textureWritten)
                                     {
+                                        textureWritten = true;
                                         byteArray = BitConverter.GetBytes(0x06000000);
                                         Array.Reverse(byteArray);
                                         seg6w.Write(byteArray);
@@ -3825,6 +3978,21 @@ namespace Tarmac64_Library
                                 }
                             }
                         }
+
+                    }
+
+                    if (transparentWritten)
+                    {
+                        
+                        //B900031D00552078
+                        //enable opacity.
+                        byteArray = BitConverter.GetBytes(0xB900031D);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(0x00552078);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
 
                     }
 

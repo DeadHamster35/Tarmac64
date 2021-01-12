@@ -81,22 +81,22 @@ namespace Tarmac64_Library.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap overkarttext {
-            get {
-                object obj = ResourceManager.GetObject("overkarttext", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         public static byte[] popResources {
             get {
                 object obj = ResourceManager.GetObject("popResources", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap TextLogo {
+            get {
+                object obj = ResourceManager.GetObject("TextLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

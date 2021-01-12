@@ -765,6 +765,124 @@ namespace Tarmac64_Library
 
 
         }
+
+
+
+
+        public void DumpTexturesOffset(int offset, int endoffset, string outputDir, string filePath)
+        {
+
+
+
+            TM64_Course TarmacCourse = new TM64_Course();
+            int fileName = 0;
+            byte[] fileData = File.ReadAllBytes(filePath);
+
+
+            TM64_Course.Header[] courseHeaders = TarmacCourse.loadHeader(fileData);
+
+            int s9Start = offset;
+            int s9End = endoffset;
+
+            byte[] seg9 = new byte[(s9End - s9Start)];
+
+            Buffer.BlockCopy(fileData, s9Start, seg9, 0, (s9End - s9Start));
+
+
+
+
+            MemoryStream memoryStream = new MemoryStream(seg9);
+
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+
+            for (int i = 0; binaryReader.BaseStream.Position < binaryReader.BaseStream.Length; i++)
+            {
+                flip4 = binaryReader.ReadBytes(4);
+                Array.Reverse(flip4);
+                int textureOffset = BitConverter.ToInt32(flip4, 0);
+
+                flip4 = binaryReader.ReadBytes(4);
+                Array.Reverse(flip4);
+                int compressSize = BitConverter.ToInt32(flip4, 0);
+
+
+
+                if (textureOffset != 0)
+                {
+                    textureOffset = (textureOffset & 0xFFFFFF) + 0x641F70;
+
+                    byte[] textureFile = new byte[compressSize];
+
+                    Array.Copy(fileData, textureOffset, textureFile, 0, compressSize);
+
+                    byte[] decompressedTexture = DecompressMIO0(textureFile);
+                    byte[] voidBytes = new byte[0];
+
+                    int width = 0;
+                    int height = 0;
+
+
+                    if (decompressedTexture.Length == 0x800)
+                    {
+                        width = 32;
+                        height = 32;
+
+                        Bitmap exportBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                        Graphics graphicsBitmap = Graphics.FromImage(exportBitmap);
+                        N64Graphics.RenderTexture(graphicsBitmap, decompressedTexture, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
+
+                        string texturePath = Path.Combine(outputDir, fileName.ToString("X") + ".png");
+
+                        exportBitmap.Save(texturePath, ImageFormat.Png);
+                        fileName = fileName + decompressedTexture.Length;
+
+                    }
+                    else
+                    {
+                        width = 32;
+                        height = 64;
+
+                        Bitmap exportBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                        Graphics graphicsBitmap = Graphics.FromImage(exportBitmap);
+                        N64Graphics.RenderTexture(graphicsBitmap, decompressedTexture, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
+
+                        string texturePath = Path.Combine(outputDir, fileName.ToString("X") + ".32x64.png");
+
+                        exportBitmap.Save(texturePath, ImageFormat.Png);
+
+                        width = 64;
+                        height = 32;
+
+                        exportBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                        graphicsBitmap = Graphics.FromImage(exportBitmap);
+                        N64Graphics.RenderTexture(graphicsBitmap, decompressedTexture, voidBytes, 0, width, height, 1, N64Codec.RGBA16, N64IMode.AlphaCopyIntensity);
+
+                        texturePath = Path.Combine(outputDir, fileName.ToString("X") + ".64x32.png");
+
+                        exportBitmap.Save(texturePath, ImageFormat.Png);
+                        fileName = fileName + decompressedTexture.Length;
+                    }
+
+
+
+                }
+                else
+                {
+                    binaryReader.BaseStream.Seek(binaryReader.BaseStream.Length, SeekOrigin.Begin);
+                }
+                binaryReader.BaseStream.Position = binaryReader.BaseStream.Position + 8;
+            }
+            MessageBox.Show("Finished");
+
+
+
+
+
+        }
+
+
+
         public byte[] Dumpseg4(int cID, byte[] fileData)
         {
 
@@ -2724,554 +2842,6 @@ namespace Tarmac64_Library
 
         }
 
-        public byte[] compress_seg7(string filePath)
-        {
-
-            /// This will compress compatible F3DEX commands into a compressed Segment 7.
-            /// This is used exclusively by Mario Kart 64's Segment 7.
-            /// No, I don't know how this works. Don't ask me how it works.
-            /// I have no fucking clue how I wrote this. If you find out, let me know!
-
-
-
-            ///You may ask yourself, "What is that beautiful house?"
-            ///You may ask yourself, "Where does that highway go to?"
-            ///And you may ask yourself, "Am I right? Am I wrong?"
-            ///And you may say to yourself, "My God! What have I done?"
-
-
-
-
-
-
-
-            int indexA = 0;
-            int indexB = 0;
-            int indexC = 0;
-
-
-
-
-
-
-
-
-            byte[] ROM = File.ReadAllBytes(filePath);
-
-
-
-
-            MemoryStream romm = new MemoryStream(ROM);
-            BinaryReader mainseg = new BinaryReader(romm);
-            MemoryStream seg7m = new MemoryStream();
-            BinaryWriter seg7w = new BinaryWriter(seg7m);
-
-            seg7w.BaseStream.Seek(0, SeekOrigin.Begin);
-
-
-            string commandbyte = "";  ///keeping the same name from above decompress process
-            byte[] byte29 = new byte[2];
-            string compar = "";
-            byte F3Dbyte = new byte();
-            byte[] parambyte = new byte[2];
-
-
-
-
-
-
-            byte[] voffset = new byte[2];
-
-            byte compressbyte = new byte();
-
-            mainseg.BaseStream.Position = 0;
-
-            for (int i = 0; (mainseg.BaseStream.Position < mainseg.BaseStream.Length); i++)
-            {
-
-                F3Dbyte = mainseg.ReadByte();
-                commandbyte = F3Dbyte.ToString("x").PadLeft(2, '0').ToUpper();
-
-                ///MessageBox.Show(F3Dbyte.ToString("x").PadLeft(2,'0').ToUpper() + "--" + mainseg.BaseStream.Position.ToString()); ;
-
-
-
-
-                if (commandbyte == "BC")
-                {
-
-
-                    MessageBox.Show("Unsupported Command -BC-");
-                    ///0x00 -- 0x14
-
-                    ///curently unsupported, ??not featured in stock MK64 racing tracks?? Can't find in multiple courses.
-
-
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBC000002));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x80000040));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03860010));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | (commandbyte * 0x18) + 8));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03880010));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-                    ///flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | commandbyte * 0x18));
-                    ///Array.Reverse(flip4);
-                    ///seg7w.Write(flip4);
-
-
-                }
-                if (commandbyte == "FC")
-                {
-
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "1218")
-                    {
-                        compressbyte = 0x15;
-                    }
-                    if (compar == "127E")
-                    {
-                        compressbyte = 0x16;
-                    }
-                    if (compar == "FFFF")
-                    {
-                        compressbyte = 0x17;
-                    }
-
-                    mainseg.BaseStream.Seek(5, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-
-                }
-                if (commandbyte == "B9")
-                {
-
-
-                    mainseg.BaseStream.Seek(5, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "2078")
-                    {
-                        compressbyte = 0x18;
-                    }
-                    if (compar == "3078")
-                    {
-                        compressbyte = 0x19;
-                    }
-                    seg7w.Write(compressbyte);
-
-                }
-                if (commandbyte == "E8")
-                {
-                    /// 000000 00000000
-                    ///0x1A -> 0x1F + 0x2C
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-
-
-
-
-
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-
-                    byte[] Param = new byte[2];
-
-
-                    ///don't ask me I don't know
-                    ///don't ask me I don't know
-                    byte[] parameters = mainseg.ReadBytes(4);
-                    Array.Reverse(parameters);
-                    value32 = BitConverter.ToUInt32(parameters, 0);
-                    uint opint = new uint();
-                    opint = value32 >> 14;
-
-                    Param[0] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
-
-                    opint = value32 >> 4;
-
-                    Param[1] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
-
-                    Array.Reverse(Param);
-
-                    mainseg.BaseStream.Seek(4, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                    ///MessageBox.Show(compar);
-                    if (compar == "F51011000007C07C")
-                    {
-                        compressbyte = 0x2C;
-                    }
-                    if (compar == "F51010000007C07C")
-                    {
-
-                        compressbyte = 0x1A;
-                    }
-                    if (compar == "F5102000000FC07C")
-                    {
-
-                        compressbyte = 0x1B;
-                    }
-                    if (compar == "F51010000007C0FC")
-                    {
-                        compressbyte = 0x1C;
-                    }
-                    if (compar == "F57010000007C07C")
-                    {
-                        compressbyte = 0x1D;
-                    }
-                    if (compar == "F5702000000FC07C")
-                    {
-                        compressbyte = 0x1E;
-                    }
-                    if (compar == "F57010000007C0FC")
-                    {
-                        compressbyte = 0x1F;
-                    }
-                    ///MessageBox.Show(BitConverter.ToString(Param));
-                    seg7w.Write(compressbyte);
-                    seg7w.Write(Param);
-                    ///don't ask me I don't know
-                    ///don't ask me I don't know
-                }
-                if (commandbyte == "FD")
-                {
-
-
-                    ///0x20  ->  0x25
-
-
-                    mainseg.BaseStream.Seek(1, SeekOrigin.Current);
-
-
-                    byte[] Param = new byte[3];
-
-
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-
-                    byte[] parambytes = mainseg.ReadBytes(4);
-                    Array.Reverse(parambytes);
-                    value32 = BitConverter.ToUInt32(parambytes, 0);
-
-
-                    Param[0] = Convert.ToByte((value32 - 0x05000000) >> 11);
-                    Param[1] = 0x00;
-                    Param[2] = 0x70;
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-                    ///dont ask me I don't know
-                    ///MessageBox.Show(value32.ToString("x")+"--"+Param[0].ToString("x"));
-                    mainseg.BaseStream.Seek(28, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-
-
-
-
-                    if (compar == "0000073FF100")
-                    {
-
-                        compressbyte = 0x20;
-                    }
-                    if (compar == "0000077FF080")
-                    {
-
-                        compressbyte = 0x21;
-                    }
-                    if (compar == "0000077FF100")
-                    {
-                        compressbyte = 0x22;
-                    }
-                    if (compar == "0003073FF100")
-                    {
-                        compressbyte = 0x23;
-                    }
-                    if (compar == "0003077FF080")
-                    {
-                        compressbyte = 0x24;
-                    }
-                    if (compar == "0003077FF100")
-                    {
-                        compressbyte = 0x25;
-                    }
-
-                    seg7w.Write(compressbyte);
-                    seg7w.Write(Param);
-
-
-                }
-                if (commandbyte == "BB")
-                {
-
-                    ///0x26 000001  FFFFFFFF
-                    ///0x27    00010001
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "0001")
-                    {
-                        compressbyte = 0x27;
-                    }
-                    if (compar == "FFFF")
-                    {
-                        compressbyte = 0x26;
-                    }
-                    seg7w.Write(compressbyte);
-
-                    mainseg.BaseStream.Seek(2, SeekOrigin.Current);
-
-
-
-
-                }
-
-                if (commandbyte == "BF")
-                {
-
-
-
-                    compressbyte = 0x29;
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(4, SeekOrigin.Current);
-
-                    indexC = mainseg.ReadByte();
-                    indexB = mainseg.ReadByte();
-                    indexA = mainseg.ReadByte();
-
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
-
-
-                    flip4 = BitConverter.GetBytes(Convert.ToUInt16((indexC) | (indexB << 5) | indexA << 10));
-
-
-                    seg7w.Write(flip4);
-                }
-                if (commandbyte == "B8")
-                {
-
-                    ///0x2A
-                    compressbyte = 0x2A;
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-
-                }
-                if (commandbyte == "06")
-                {
-
-                    ///0x2B
-                    compressbyte = 0x2B;
-
-
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-
-                    byte[] parambytes = mainseg.ReadBytes(4);
-                    Array.Reverse(parambytes);
-                    value32 = BitConverter.ToUInt32(parambytes, 0);
-
-                    value32 = value32 & 0x00FFFFFF;
-
-
-
-                    seg7w.Write(compressbyte);
-                    seg7w.Write(Convert.ToUInt16(value32 / 8));
-                }
-                if (commandbyte == "BE")
-                {
-
-                    ///0x2D
-                    compressbyte = 0x2D;
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-                }
-                if (commandbyte == "D0")
-                {
-
-
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "002E")
-                    {
-                        compressbyte = 0x2E;
-                    }
-                    if (compar == "002F")
-                    {
-                        compressbyte = 0x2F;
-                    }
-                    if (compar == "0030")
-                    {
-                        compressbyte = 0x30;
-                    }
-
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(8, SeekOrigin.Current);
-                }
-                if (commandbyte == "04")
-                {
-
-                    ///0x33->0x52
-                    mainseg.BaseStream.Seek(1, SeekOrigin.Current);
-                    byte[] Param = mainseg.ReadBytes(2);
-                    Array.Reverse(Param);
-                    value16 = BitConverter.ToUInt16(Param, 0);
-
-                    compressbyte = Convert.ToByte(((value16 + 1) / 0x410) + 0x32);
-                    seg7w.Write(compressbyte);
-
-                    byte[] parambytes = mainseg.ReadBytes(4);
-                    Array.Reverse(parambytes);
-                    value32 = BitConverter.ToUInt32(parambytes, 0);
-                    value32 = (value32 - 0x04000000) / 16;
-
-                    value16 = Convert.ToUInt16(value32);
-                    seg7w.Write(value16);
-                }
-
-                if (commandbyte == "FC")
-                {
-
-                    ///0x53
-                    compressbyte = 0x53;
-                    mainseg.BaseStream.Seek(7, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-                }
-
-                if (commandbyte == "B9")
-                {
-
-                    mainseg.BaseStream.Seek(3, SeekOrigin.Current);
-                    byte29 = mainseg.ReadBytes(2);
-                    compar = BitConverter.ToString(byte29).Replace("-", "");
-
-                    if (compar == "0044")
-                    {
-                        compressbyte = 0x54;
-                    }
-                    if (compar == "0040")
-                    {
-                        compressbyte = 0x55;
-                    }
-                    seg7w.Write(compressbyte);
-                    mainseg.BaseStream.Seek(2, SeekOrigin.Current);
-
-
-
-
-                }
-                if (commandbyte == "B7")
-                {
-
-                    ///0x56
-                    compressbyte = 0x56;
-                    mainseg.BaseStream.Seek(15, SeekOrigin.Current);
-
-                    seg7w.Write(compressbyte);
-                }
-                if (commandbyte == "B6")
-                {
-
-                    ///0x57
-                    compressbyte = 0x57;
-                    mainseg.BaseStream.Seek(15, SeekOrigin.Current);
-                    seg7w.Write(compressbyte);
-                }
-                if (commandbyte == "B1")
-                {
-
-                    ///0x58
-                    compressbyte = 0x58;
-                    seg7w.Write(compressbyte);
-
-
-                    indexC = mainseg.ReadByte();
-                    indexB = mainseg.ReadByte();
-                    indexA = mainseg.ReadByte();
-
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
-
-
-                    flip4 = BitConverter.GetBytes(Convert.ToUInt16((indexC) | (indexB << 5) | indexA << 10));
-
-
-                    seg7w.Write(flip4);
-
-
-                    ///twice for second set of verts
-                    ///have to move the reader forward by 1 position first
-
-                    mainseg.BaseStream.Seek(1, SeekOrigin.Current);
-
-                    indexC = mainseg.ReadByte();
-                    indexB = mainseg.ReadByte();
-                    indexA = mainseg.ReadByte();
-
-                    indexA = indexA / 2;
-                    indexB = indexB / 2;
-                    indexC = indexC / 2;
-
-                    flip4 = BitConverter.GetBytes(Convert.ToUInt16((indexC) | (indexB << 5) | indexA << 10));
-
-
-                    seg7w.Write(flip4);
-
-
-
-
-
-                }
-
-            }
-
-
-            flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFF000000));
-            Array.Reverse(flip4);
-            seg7w.Write(flip4);
-            flip4 = BitConverter.GetBytes(Convert.ToUInt32(0));
-            Array.Reverse(flip4);
-            seg7w.Write(flip4);
-
-            seg7w.Write(flip4);
-
-            seg7w.Write(flip4);
-
-            ///fin
-
-
-            //MessageBox.Show("Compressed");
-            byte[] seg7 = seg7m.ToArray();
-            return (seg7);
-
-
-
-
-
-        }
-
 
         public byte[] compress_seg7(byte[] ROM)
         {
@@ -3410,7 +2980,7 @@ namespace Tarmac64_Library
                 }
                 if (commandbyte == "E8")
                 {
-                    /// 000000 00000000
+                    /// 00000000 00000000
                     ///0x1A -> 0x1F + 0x2C
                     mainseg.BaseStream.Seek(7, SeekOrigin.Current);
 
@@ -3432,13 +3002,16 @@ namespace Tarmac64_Library
                     Array.Reverse(parameters);
                     value32 = BitConverter.ToUInt32(parameters, 0);
                     uint opint = new uint();
-                    opint = value32 >> 14;
+                    byte height = Convert.ToByte((value32 >> 14) & 0xF);
+                    byte heightmode = Convert.ToByte((value32 >> 18) & 0xF);
+                    byte width = Convert.ToByte((value32 >> 4) & 0xF);
+                    byte widthmode = Convert.ToByte((value32 >> 8) & 0xF);
 
-                    Param[0] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
+                    Param[0] = Convert.ToByte((height) << 4 | (heightmode));
 
                     opint = value32 >> 4;
 
-                    Param[1] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
+                    Param[1] = Convert.ToByte((width) << 4 | (widthmode));
 
                     Array.Reverse(Param);
 

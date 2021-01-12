@@ -46,6 +46,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.OutputBox = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button19 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
@@ -74,7 +75,9 @@
             this.button16 = new System.Windows.Forms.Button();
             this.button17 = new System.Windows.Forms.Button();
             this.button18 = new System.Windows.Forms.Button();
-            this.button19 = new System.Windows.Forms.Button();
+            this.button20 = new System.Windows.Forms.Button();
+            this.texturedumpbox = new System.Windows.Forms.TextBox();
+            this.texturedumpend = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -265,6 +268,16 @@
             this.groupBox2.TabIndex = 37;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "OK64 Emu";
+            // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(227, 163);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(75, 23);
+            this.button19.TabIndex = 53;
+            this.button19.Text = "Compress";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.button19_Click);
             // 
             // button9
             // 
@@ -519,21 +532,39 @@
             this.button18.UseVisualStyleBackColor = true;
             this.button18.Click += new System.EventHandler(this.button18_Click);
             // 
-            // button19
+            // button20
             // 
-            this.button19.Location = new System.Drawing.Point(227, 163);
-            this.button19.Name = "button19";
-            this.button19.Size = new System.Drawing.Size(75, 23);
-            this.button19.TabIndex = 53;
-            this.button19.Text = "Compress";
-            this.button19.UseVisualStyleBackColor = true;
-            this.button19.Click += new System.EventHandler(this.button19_Click);
+            this.button20.Location = new System.Drawing.Point(21, 365);
+            this.button20.Name = "button20";
+            this.button20.Size = new System.Drawing.Size(75, 23);
+            this.button20.TabIndex = 61;
+            this.button20.Text = "texturedumpOffset";
+            this.button20.UseVisualStyleBackColor = true;
+            this.button20.Click += new System.EventHandler(this.button20_Click);
+            // 
+            // texturedumpbox
+            // 
+            this.texturedumpbox.Location = new System.Drawing.Point(21, 394);
+            this.texturedumpbox.Name = "texturedumpbox";
+            this.texturedumpbox.Size = new System.Drawing.Size(156, 20);
+            this.texturedumpbox.TabIndex = 62;
+            this.texturedumpbox.TextChanged += new System.EventHandler(this.textBox1_TextChanged_1);
+            // 
+            // texturedumpend
+            // 
+            this.texturedumpend.Location = new System.Drawing.Point(21, 420);
+            this.texturedumpend.Name = "texturedumpend";
+            this.texturedumpend.Size = new System.Drawing.Size(156, 20);
+            this.texturedumpend.TabIndex = 63;
             // 
             // DebugTools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(713, 353);
+            this.ClientSize = new System.Drawing.Size(713, 458);
+            this.Controls.Add(this.texturedumpend);
+            this.Controls.Add(this.texturedumpbox);
+            this.Controls.Add(this.button20);
             this.Controls.Add(this.button18);
             this.Controls.Add(this.button17);
             this.Controls.Add(this.button16);
@@ -611,5 +642,8 @@
         private System.Windows.Forms.Button button17;
         private System.Windows.Forms.Button button18;
         private System.Windows.Forms.Button button19;
+        private System.Windows.Forms.Button button20;
+        private System.Windows.Forms.TextBox texturedumpbox;
+        private System.Windows.Forms.TextBox texturedumpend;
     }
 }

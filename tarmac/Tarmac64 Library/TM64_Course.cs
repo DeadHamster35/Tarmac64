@@ -45,6 +45,8 @@ namespace Tarmac64_Library
             public CourseHeader HeaderData { get; set; }
             public int PathLength { get; set; }
             public float WaterLevel { get; set; }
+            public int ScrollOffset { get; set; }
+            public int LastOffset { get; set; }
         }
         public class MiniMap
         {
@@ -64,7 +66,7 @@ namespace Tarmac64_Library
         }
         public class OK64Header
         {
-            public int Version { get; set; }  //version 4
+            public int Version { get; set; }  
             public int Sky { get; set; }
             public int Credits { get; set; }
             public int Ghost { get; set; }
@@ -98,8 +100,7 @@ namespace Tarmac64_Library
         public class Sky
         {
             public TM64_Geometry.OK64Color TopColor { get; set; }
-            public TM64_Geometry.OK64Color MidTopColor { get; set; }
-            public TM64_Geometry.OK64Color MidBotColor { get; set; }
+            public TM64_Geometry.OK64Color MidColor { get; set; }
             public TM64_Geometry.OK64Color BotColor { get; set; }
         }
 
@@ -328,7 +329,7 @@ namespace Tarmac64_Library
             //begin writing header info
 
             courseData.OK64HeaderData = new OK64Header();
-            courseData.OK64HeaderData.Version = 4;
+            courseData.OK64HeaderData.Version = 5;
 
             //add sky colors
 
@@ -342,17 +343,17 @@ namespace Tarmac64_Library
             binaryWriter.Write(Convert.ToByte(0x00));
             binaryWriter.Write(courseData.SkyColors.TopColor.B);
             binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidTopColor.R);
+            binaryWriter.Write(courseData.SkyColors.MidColor.R);
             binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidTopColor.G);
+            binaryWriter.Write(courseData.SkyColors.MidColor.G);
             binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidTopColor.B);
+            binaryWriter.Write(courseData.SkyColors.MidColor.B);
             binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidBotColor.R);
+            binaryWriter.Write(courseData.SkyColors.MidColor.R);
             binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidBotColor.G);
+            binaryWriter.Write(courseData.SkyColors.MidColor.G);
             binaryWriter.Write(Convert.ToByte(0x00));
-            binaryWriter.Write(courseData.SkyColors.MidBotColor.B);
+            binaryWriter.Write(courseData.SkyColors.MidColor.B);
             binaryWriter.Write(Convert.ToByte(0x00));
             binaryWriter.Write(courseData.SkyColors.BotColor.R);
             binaryWriter.Write(Convert.ToByte(0x00));
@@ -546,6 +547,94 @@ namespace Tarmac64_Library
             courseData.OK64HeaderData.MusicID = courseData.MusicID;
 
 
+
+
+            //WaterVertex (translucency) and Map Scrolling
+
+
+            courseData.ScrollOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+
+            //scroll data
+            int scrollCount = 0;
+            foreach (var textureObject in courseData.TextureObjects)
+            {
+                if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                {
+                    scrollCount++;
+                }
+            }
+
+            flip = BitConverter.GetBytes(Convert.ToInt32(scrollCount));
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            if (scrollCount > 0)
+            {
+
+                foreach (var textureObject in courseData.TextureObjects)
+                {
+                    if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                    {
+                        flip = BitConverter.GetBytes(Convert.ToInt32(textureObject.f3dexPosition[0] | 0x07000000));
+                        Array.Reverse(flip);
+                        binaryWriter.Write(flip);
+                        flip = BitConverter.GetBytes(Convert.ToInt16(textureObject.textureScrollS));
+                        Array.Reverse(flip);
+                        binaryWriter.Write(flip);
+                        flip = BitConverter.GetBytes(Convert.ToInt16(textureObject.textureScrollT));
+                        Array.Reverse(flip);
+                        binaryWriter.Write(flip);
+                    }
+                }
+            }
+
+            //watervertex
+            int waterCount = 0;
+            
+            for (int currentIndex = 0; currentIndex < courseData.TextureObjects.Length; currentIndex++)
+            {
+                if (courseData.TextureObjects[currentIndex].textureTransparent == 2)
+                {
+                    foreach (var subObject in courseData.MasterObjects)
+                    {
+                        if (subObject.materialID == currentIndex)
+                        {
+                            waterCount++;
+                        }
+                    }
+                }
+            }
+            flip = BitConverter.GetBytes(Convert.ToInt32(waterCount));
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            if (waterCount > 0)
+            {
+                for (int currentIndex = 0; currentIndex < courseData.TextureObjects.Length; currentIndex++)
+                {
+                    if (courseData.TextureObjects[currentIndex].textureTransparent == 2)
+                    {
+                        foreach (var subObject in courseData.MasterObjects)
+                        {
+                            if (subObject.materialID == currentIndex)
+                            {
+                                foreach (var objPosition in subObject.meshPosition)
+                                {
+                                    flip = BitConverter.GetBytes(Convert.ToInt32(objPosition | 0x07000000));
+                                    Array.Reverse(flip);
+                                    binaryWriter.Write(flip);
+
+                                    flip = BitConverter.GetBytes(Convert.ToInt32(courseData.TextureObjects[currentIndex].vertAlpha));
+                                    Array.Reverse(flip);
+                                    binaryWriter.Write(flip);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            courseData.LastOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
 
 
             courseData.HeaderData = new CourseHeader();
@@ -779,6 +868,15 @@ namespace Tarmac64_Library
             Array.Reverse(flip);
             binaryWriter.Write(flip);
 
+            flip = BitConverter.GetBytes(courseData.ScrollOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            flip = BitConverter.GetBytes(courseData.LastOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+
 
             for (int currentPad = 0; currentPad < 16; currentPad++)
             {
@@ -827,5 +925,128 @@ namespace Tarmac64_Library
 
         }
 
+
+
+
+
+        public void WriteCourseInfo(Course CourseSave, string savePath)
+        {
+            List<string> outputFile = new List<string>();
+
+            outputFile.Add(CourseSave.Credits);
+            outputFile.Add(CourseSave.PreviewPath);
+            outputFile.Add(CourseSave.BannerPath);
+            outputFile.Add(CourseSave.GhostPath);
+            outputFile.Add(CourseSave.AssmeblyPath);
+            outputFile.Add(CourseSave.MapData.MinimapPath);
+            outputFile.Add(CourseSave.MapData.MapCoord.X.ToString());
+            outputFile.Add(CourseSave.MapData.MapCoord.Y.ToString());
+            outputFile.Add(CourseSave.MapData.StartCoord.X.ToString());
+            outputFile.Add(CourseSave.MapData.StartCoord.Y.ToString());
+            outputFile.Add(CourseSave.MapData.MapScale.ToString());
+            outputFile.Add(CourseSave.MapData.MapColor.R.ToString());
+            outputFile.Add(CourseSave.MapData.MapColor.G.ToString());
+            outputFile.Add(CourseSave.MapData.MapColor.B.ToString());
+            outputFile.Add(CourseSave.SkyColors.TopColor.R.ToString());
+            outputFile.Add(CourseSave.SkyColors.TopColor.G.ToString());
+            outputFile.Add(CourseSave.SkyColors.TopColor.B.ToString());
+            outputFile.Add(CourseSave.SkyColors.MidColor.R.ToString());
+            outputFile.Add(CourseSave.SkyColors.MidColor.G.ToString());
+            outputFile.Add(CourseSave.SkyColors.MidColor.B.ToString()); 
+            outputFile.Add(CourseSave.SkyColors.BotColor.R.ToString());
+            outputFile.Add(CourseSave.SkyColors.BotColor.G.ToString());
+            outputFile.Add(CourseSave.SkyColors.BotColor.B.ToString());
+            outputFile.Add(CourseSave.EchoValues[0].ToString());
+            outputFile.Add(CourseSave.EchoValues[1].ToString());
+            outputFile.Add(CourseSave.WaterLevel.ToString());
+            outputFile.Add(CourseSave.GameTempos[0].ToString());
+            outputFile.Add(CourseSave.GameTempos[1].ToString());
+            outputFile.Add(CourseSave.GameTempos[2].ToString());
+            outputFile.Add(CourseSave.GameTempos[3].ToString());
+            outputFile.Add(CourseSave.MusicID.ToString());
+            File.WriteAllLines(savePath, outputFile);
+        }
+
+        public Course ReadCourseInfo(string filePath)
+        {
+            Course CourseData = new Course();
+
+            string[] inputFile = File.ReadAllLines(filePath);
+            int thisLine = 0;
+
+            CourseData.Credits = inputFile[thisLine];
+            thisLine++;
+            CourseData.PreviewPath = inputFile[thisLine];
+            thisLine++;
+            CourseData.BannerPath = inputFile[thisLine];
+            thisLine++;
+            CourseData.GhostPath = inputFile[thisLine];
+            thisLine++;
+            CourseData.AssmeblyPath = inputFile[thisLine];
+            thisLine++;
+            CourseData.MapData = new MiniMap();
+            CourseData.MapData.MinimapPath = inputFile[thisLine];
+            thisLine++;
+            CourseData.MapData.MapCoord = new Vector2D(Convert.ToInt32(inputFile[thisLine]), Convert.ToInt32(inputFile[thisLine + 1]));
+            thisLine++;
+            thisLine++;
+            CourseData.MapData.StartCoord = new Vector2D(Convert.ToInt32(inputFile[thisLine]), Convert.ToInt32(inputFile[thisLine +1]));
+            thisLine++;
+            thisLine++;
+            CourseData.MapData.MapScale = Convert.ToSingle(inputFile[thisLine]);
+            thisLine++;
+            CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
+            CourseData.MapData.MapColor.R = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.MapData.MapColor.G = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.MapData.MapColor.B = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+
+            CourseData.SkyColors = new Sky();
+            CourseData.SkyColors.TopColor = new TM64_Geometry.OK64Color();
+            CourseData.SkyColors.TopColor.R = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.SkyColors.TopColor.G = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.SkyColors.TopColor.B = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.SkyColors.MidColor = new TM64_Geometry.OK64Color();
+            CourseData.SkyColors.MidColor.R = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.SkyColors.MidColor.G = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.SkyColors.MidColor.B = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.SkyColors.BotColor = new TM64_Geometry.OK64Color();
+            CourseData.SkyColors.BotColor.R = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.SkyColors.BotColor.G = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.SkyColors.BotColor.B = Convert.ToByte(inputFile[thisLine]);
+            thisLine++;
+            CourseData.EchoValues = new int[2];
+            CourseData.EchoValues[0] = Convert.ToInt32(inputFile[thisLine]);
+            thisLine++;
+            CourseData.EchoValues[1] = Convert.ToInt32(inputFile[thisLine]);
+            thisLine++;
+            CourseData.WaterLevel = Convert.ToInt32(inputFile[thisLine]);
+            thisLine++;
+            CourseData.GameTempos = new int[4];
+            CourseData.GameTempos[0] = Convert.ToInt32(inputFile[thisLine]);
+            thisLine++;
+            CourseData.GameTempos[1] = Convert.ToInt32(inputFile[thisLine]);
+            thisLine++;
+            CourseData.GameTempos[2] = Convert.ToInt32(inputFile[thisLine]);
+            thisLine++;
+            CourseData.GameTempos[3] = Convert.ToInt32(inputFile[thisLine]);
+            thisLine++;
+            CourseData.MusicID = Convert.ToInt32(inputFile[thisLine]);
+            thisLine++;
+
+            return CourseData;
+        }
+
     }
 }
+

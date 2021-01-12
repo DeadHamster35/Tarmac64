@@ -18,74 +18,70 @@ Global line_count = 0
 
 struct vertex
 (
-	pos,
-	tex
+pos,
+tex
 )
 
 
 
-rollout MK64Vimport "OverKart64 MAX" width:365 height:215
+rollout OverKartMAX "OverKart64 MAX" width:1000 height:45
 
-	(
-		GroupBox grp1 "Setup" pos:[4,0] width:355 height:55
+(
+GroupBox grp1 "Setup" pos:[0,0] width:170 height:45
 
-		edittext sectioncount pos:[185,20] width:160 height:25 readOnly:false
-		button addSimple "Simple" pos:[15,20] width:75 height:25
-		button addSection "Complex" pos:[100,20] width:75 height:25
+edittext sectioncount pos:[85,20] width:75 height:20 readOnly:false
+button addSection "Create" pos:[5,20] width:75 height:20
 
-		label author "DeadHamster <3" pos:[275, 198] enabled:false
+label author "<3 Hamp" pos:[940, 5] enabled:false
 
-		GroupBox grp2 "Tools" pos:[4,55] width:355 height:55
-		button clnbtn "Clone Objects" pos:[10,75] width:75 height:25
-		button ASVbtn "Run SVs" pos:[95,75] width:75 height:25
-		button prepBtn "Prep Model" pos:[180,75] width:75 height:25
-		button spc2btn "Split Material" pos:[265,75] width:75 height:25
+GroupBox grp2 "Tools" pos:[175,0] width:245 height:45
+button clnbtn "Clone Objects" pos:[180,20] width:75 height:20
+button prepBtn "Prep Model" pos:[260,20] width:75 height:20
+button spc2btn "Split Material" pos:[340,20] width:75 height:20
 
 
 
-		GroupBox grp4 "Paths + Objects" pos:[4,110] width:175 height:85
-		button POPcreatebtn "Create POP Objects" pos:[9,130] width:160 height:25
-		button POPexportbtn "Export POP Objects" pos:[9,160] width:160 height:25
+GroupBox grp4 "Paths + Objects" pos:[425,0] width:165 height:45
+button POPcreatebtn "Create" pos:[430,20] width:75 height:20
+button POPexportbtn "Export" pos:[510,20] width:75 height:20
 
-		GroupBox grp5 "Materials and Names" pos:[185,110] width:175 height:85
-		edittext namtext pos:[190,130] width:160 height:25 readOnly:false
-		button chgnam "Name" pos:[190,160] width:50 height:25
-		button parnam "AutoPart" pos:[245,160] width:50 height:25
-		button matnam "SwapMat" pos:[300,160] width:50 height:25
+GroupBox grp5 "Materials and Names" pos:[595,0] width:340 height:45
+edittext namtext pos:[600,20] width:160 height:20 readOnly:false
+button chgnam "Name" pos:[770,20] width:50 height:20
+button parnam "AutoPart" pos:[825,20] width:50 height:20
+button matnam "SwapMat" pos:[880,20] width:50 height:20
 
 
 
 
 
-		on MK64Vimport open do
-		(
+on OverKartMAX open do
+(
 
-			ClearListener()
-			temp_buffer = fopen (sysInfo.tempdir + "\\float_conv_buffer.txt") "wb+"
+ClearListener()
+temp_buffer = fopen (sysInfo.tempdir + "\\float_conv_buffer.txt") "wb+"
 
-			searchstring = "section count"
-			sourceobj = getNodeByName searchstring exact:true
-			if (sourceobj == undefined) then
-			(
-				section_count = 0
+searchstring = "section count"
+sourceobj = getNodeByName searchstring exact:true
+if (sourceobj == undefined) then
+(
+section_count = 0
 
-			)
-			else
-			(
-				sectioncount.readOnly = true
-				addSection.enabled = false
-				section_count = sourceobj.Verts[1].pos.x
-				if (section_count > 1) then
-				(
-					sectioncount.Text = (section_count as Integer) as String + " Sections"
-				)
-				else
-				(
-					sectioncount.Text = (section_count as Integer) as String + " Section"
-				)
-			)
-		)
+)
+else
+(
 
+section_count = sourceobj.Verts[1].pos.x
+if (section_count > 1) then
+(
+sectioncount.Text = (section_count as Integer) as String
+)
+else
+(
+sectioncount.Text = (section_count as Integer) as String
+)
+)
+)
 
 
 
@@ -102,1792 +98,669 @@ rollout MK64Vimport "OverKart64 MAX" width:365 height:215
 
 
 
+on POPexportbtn pressed do
+(
 
+output_name = getSaveFileName caption:"Exporting Path and Object Positions" \
+filename: "" \
+types:"OK64-POP (*.OK64.POP)|*.OK64.POP|All Files (*.*)|*.*|"
 
+if output_name == undefined then
+(
 
+)
+else
+(
+txt = createfile output_name
 
 
-		on POPexportbtn pressed do
-		(
+searchstring = "Course Paths"
+parentObj = getNodeByName searchstring exact:true
+pathObj = parentObj.Children[1]
 
-			output_name = getSaveFileName caption:"Exporting Path and Object Positions" \
-			filename: "" \
-			types:"OK64-POP (*.OK64.POP)|*.OK64.POP|All Files (*.*)|*.*|"
+pathIndex = 1
+pathCount = numKnots pathObj 1
 
-			if output_name == undefined then
-			(
+printstring = "path"
+format printstring to:txt
+format "\n" to:txt
 
-			)
-			else
-			(
-				txt = createfile output_name
+printstring = pathCount as string
+format printstring to:txt
+format "\n" to:txt
 
+while pathIndex <= pathCount do
+(
+vertPos = getKnotPoint pathObj 1 pathIndex
+printstring = vertPos as string
+format printstring to:txt
+format "\n" to:txt
 
-				searchstring = "Course Paths"
-				parentObj = getNodeByName searchstring exact:true
-				pathObj = parentObj.Children[1]
+vertFlag = materialID pathObj 1 pathIndex
+printstring = vertFlag as string
+format printstring to:txt
+format "\n" to:txt
 
-				pathIndex = 1
-				pathCount = numKnots pathObj 1
+pathIndex = pathIndex+1
+)
 
-				printstring = "path"
-				format printstring to:txt
-				format "\n" to:txt
 
-				printstring = pathCount as string
-				format printstring to:txt
-				format "\n" to:txt
 
-				while pathIndex <= pathCount do
-				(
-					vertPos = getKnotPoint pathObj 1 pathIndex
-					printstring = vertPos as string
-					format printstring to:txt
-					format "\n" to:txt
+searchstring = "Objects - Items Blocks"
+parentObj = getNodeByName searchstring exact:true
 
-					vertFlag = materialID pathObj 1 pathIndex
-					printstring = vertFlag as string
-					format printstring to:txt
-					format "\n" to:txt
+countIndex = 1
+topCount = parentObj.Children.Count
 
-					pathIndex = pathIndex+1
-				)
+printstring = "item"
+format printstring to:txt
+format "\n" to:txt
 
 
+printstring = topCount as string
+format printstring to:txt
+format "\n" to:txt
 
-				searchstring = "Objects - Items Blocks"
-				parentObj = getNodeByName searchstring exact:true
+while countIndex <= topCount do
+(
+vertPos = parentObj.Children[countIndex].pos
+printstring = vertPos as string
+format printstring to:txt
+format "\n" to:txt
 
-				countIndex = 1
-				topCount = parentObj.Children.Count
+vertFlag = 0
+printstring = vertFlag as string
+format printstring to:txt
+format "\n" to:txt
 
-				printstring = "item"
-				format printstring to:txt
-				format "\n" to:txt
+countIndex = countIndex+1
+)
 
+searchstring = "Objects - Trees"
+parentObj = getNodeByName searchstring exact:true
 
-				printstring = topCount as string
-				format printstring to:txt
-				format "\n" to:txt
+countIndex = 1
+topCount = parentObj.Children.Count
 
-				while countIndex <= topCount do
-				(
-					vertPos = parentObj.Children[countIndex].pos
-					printstring = vertPos as string
-					format printstring to:txt
-					format "\n" to:txt
 
-					vertFlag = 0
-					printstring = vertFlag as string
-					format printstring to:txt
-					format "\n" to:txt
+printstring = "tree"
+format printstring to:txt
+format "\n" to:txt
 
-					countIndex = countIndex+1
-				)
 
-				searchstring = "Objects - Trees"
-				parentObj = getNodeByName searchstring exact:true
+printstring = topCount as string
+format printstring to:txt
+format "\n" to:txt
 
-				countIndex = 1
-				topCount = parentObj.Children.Count
+while countIndex <= topCount do
+(
+vertPos = parentObj.Children[countIndex].pos
+printstring = vertPos as string
+format printstring to:txt
+format "\n" to:txt
 
+vertFlag = 0
+printstring = vertFlag as string
+format printstring to:txt
+format "\n" to:txt
 
-				printstring = "tree"
-				format printstring to:txt
-				format "\n" to:txt
 
+countIndex = countIndex+1
+)
 
-				printstring = topCount as string
-				format printstring to:txt
-				format "\n" to:txt
+searchstring = "Objects - Piranha Plants"
+parentObj = getNodeByName searchstring exact:true
 
-				while countIndex <= topCount do
-				(
-					vertPos = parentObj.Children[countIndex].pos
-					printstring = vertPos as string
-					format printstring to:txt
-					format "\n" to:txt
+countIndex = 1
+topCount = parentObj.Children.Count
 
-					vertFlag = 0
-					printstring = vertFlag as string
-					format printstring to:txt
-					format "\n" to:txt
 
+printstring = "plant"
+format printstring to:txt
+format "\n" to:txt
 
-					countIndex = countIndex+1
-				)
 
-				searchstring = "Objects - Piranha Plants"
-				parentObj = getNodeByName searchstring exact:true
+printstring = topCount as string
+format printstring to:txt
+format "\n" to:txt
 
-				countIndex = 1
-				topCount = parentObj.Children.Count
+while countIndex <= topCount do
+(
+vertPos = parentObj.Children[countIndex].pos
+printstring = vertPos as string
+format printstring to:txt
+format "\n" to:txt
 
+vertFlag = 0
+printstring = vertFlag as string
+format printstring to:txt
+format "\n" to:txt
 
-				printstring = "plant"
-				format printstring to:txt
-				format "\n" to:txt
 
+countIndex = countIndex+1
+)
 
-				printstring = topCount as string
-				format printstring to:txt
-				format "\n" to:txt
 
-				while countIndex <= topCount do
-				(
-					vertPos = parentObj.Children[countIndex].pos
-					printstring = vertPos as string
-					format printstring to:txt
-					format "\n" to:txt
+searchstring = "Objects - Red Coins"
+parentObj = getNodeByName searchstring exact:true
 
-					vertFlag = 0
-					printstring = vertFlag as string
-					format printstring to:txt
-					format "\n" to:txt
+countIndex = 1
+topCount = parentObj.Children.Count
 
 
-					countIndex = countIndex+1
-				)
+printstring = "redcoin"
+format printstring to:txt
+format "\n" to:txt
 
 
+printstring = topCount as string
+format printstring to:txt
+format "\n" to:txt
 
-				MessageBox "Finished"
-				close txt
+while countIndex <= topCount do
+(
+vertPos = parentObj.Children[countIndex].pos
+printstring = vertPos as string
+format printstring to:txt
+format "\n" to:txt
 
-			)
+vertFlag = 0
+printstring = vertFlag as string
+format printstring to:txt
+format "\n" to:txt
 
 
-		)
+countIndex = countIndex+1
+)
 
 
-		fn drawLineBetweenTwoPoints pointA pointB =
-		(
-		  ss = SplineShape pos:pointA
-		  addNewSpline ss
-		  addKnot ss 1 #corner #line PointA
-		  addKnot ss 1 #corner #line PointB
-		  updateShape ss
-		  ss
-		)
 
+MessageBox "Finished"
+close txt
 
+)
 
 
-		on POPcreatebtn pressed do
-		(
-			Print "Startup Paths"
+)
 
 
-			parentpath = undefined
-			parentpath = box length:25 width:25 height:25
-			parentpath.pos = [100,-50,-1500]
-			parentpath.name = "Course Paths"
+fn drawLineBetweenTwoPoints pointA pointB =
+(
+ss = SplineShape pos:pointA
+addNewSpline ss
+addKnot ss 1 #corner #line PointA
+addKnot ss 1 #corner #line PointB
+updateShape ss
+ss
+)
 
 
 
 
-			marker_count = 800
-			step_count = 10
+on POPcreatebtn pressed do
+(
+Print "Startup Paths"
 
-			section_step = 800 / section_count
-			current_section = 1
 
-			print ("Section Step -"+(section_step as string))
+parentpath = undefined
+parentpath = box length:25 width:25 height:25
+parentpath.pos = [100,-50,-1500]
+parentpath.name = "Course Paths"
 
-			lastX = 0
-			lastY = 0
-			lastZ = 0
-			thisX = 0
-			thisY = 0
-			thisZ = 0
-			marker = 1
 
 
-			master_spline = undefined
 
-			stop_count = marker_count / 8
+marker_count = 800
+step_count = 10
+if (section_count > 0) then
+(
+section_step = 800 / section_count
+)
+else
+section_step = 800
+current_section = 1
 
-			while marker <= marker_count do
-			(
-				print marker
+print ("Section Step -"+(section_step as string))
 
-				if ((marker - (section_step * (current_section - 1))) >= section_step) then
-				(
-					if (current_section < section_count) then
-					(
-						current_section = current_section + 1
-						windows.processPostedMessages()
-					)
-				)
+lastX = 0
+lastY = 0
+lastZ = 0
+thisX = 0
+thisY = 0
+thisZ = 0
+marker = 1
 
-				if (marker <= stop_count) then
-				(
-					thisX = thisX + step_count
-					thisY = thisY
-					thisZ = thisZ
-				)
-				if ((marker > stop_count) and (marker <= stop_count * 3)) then
-				(
-					thisX = thisX
-					thisY = thisY + step_count
-					thisZ = thisZ
-				)
-				if ((marker > stop_count * 3) and (marker <= stop_count * 5)) then
-				(
-					thisX = thisX - step_count
-					thisY = thisY
-					thisZ = thisZ
-				)
-				if ((marker > stop_count * 5) and (marker <= stop_count * 7)) then
-				(
-					thisX = thisX
-					thisY = thisY - step_count
-					thisZ = thisZ
-				)
-				if ((marker > stop_count * 7) and (marker <= stop_count * 8)) then
-				(
-					thisX = thisX + step_count
-					thisY = thisY
-					thisZ = thisZ
-				)
 
+master_spline = undefined
 
-				newSpline = undefined
-				newSpline = drawLineBetweenTwoPoints [lastX,lastY,lastZ] [thisX,thisY,thisZ]
-				newSpline.parent = parentpath
+stop_count = marker_count / 8
 
+while marker <= marker_count do
+(
+print marker
 
-				setMaterialID newSpline 1 1 current_section
+if ((marker - (section_step * (current_section - 1))) >= section_step) then
+(
+if (current_section < section_count) then
+(
+current_section = current_section + 1
+windows.processPostedMessages()
+)
+)
 
-				if (marker == 1) then
-				(
-					masterSpline = newSpline
-				)
-				else
-				(
-					addAndWeld masterSpline newSpline 0
-				)
+if (marker <= stop_count) then
+(
+thisX = thisX + step_count
+thisY = thisY
+thisZ = thisZ
+)
+if ((marker > stop_count) and (marker <= stop_count * 3)) then
+(
+thisX = thisX
+thisY = thisY + step_count
+thisZ = thisZ
+)
+if ((marker > stop_count * 3) and (marker <= stop_count * 5)) then
+(
+thisX = thisX - step_count
+thisY = thisY
+thisZ = thisZ
+)
+if ((marker > stop_count * 5) and (marker <= stop_count * 7)) then
+(
+thisX = thisX
+thisY = thisY - step_count
+thisZ = thisZ
+)
+if ((marker > stop_count * 7) and (marker <= stop_count * 8)) then
+(
+thisX = thisX + step_count
+thisY = thisY
+thisZ = thisZ
+)
 
-				lastX = thisX
-				lastY = thisY
-				lastZ = thisZ
 
-				marker = marker + 1
+newSpline = undefined
+newSpline = drawLineBetweenTwoPoints [lastX,lastY,lastZ] [thisX,thisY,thisZ]
+newSpline.parent = parentpath
 
 
-			)
+setMaterialID newSpline 1 1 current_section
 
+if (marker == 1) then
+(
+masterSpline = newSpline
+)
+else
+(
+addAndWeld masterSpline newSpline 0
+)
 
-			Print "Startup Objects"
+lastX = thisX
+lastY = thisY
+lastZ = thisZ
 
+marker = marker + 1
 
 
+)
 
-			maxCount = 64
 
-			treeIndex = 1
-			piranhaIndex = 1
-			itemIndex = 1
+Print "Startup Objects"
 
 
 
-			parentobj = undefined
-			parentobj = box length:25 width:25 height:25
-			parentobj.pos = [100,0,-1500]
-			parentobj.name = "Objects - Trees"
 
+maxCount = 64
 
-			treeBlock = undefined
-			treeBlock = box length:5 width:5 height:5
-			treeBlock.pos = [0,0,0]
-			treeBlock.name = "tree"
-			treeBlock.parent = parentobj
+treeIndex = 1
+piranhaIndex = 1
+itemIndex = 1
 
 
 
+parentobj = undefined
+parentobj = box length:25 width:25 height:25
+parentobj.pos = [100,0,-1500]
+parentobj.name = "Objects - Trees"
 
-			parentobj = undefined
-			parentobj = box length:25 width:25 height:25
-			parentobj.pos = [100,50,-1500]
-			parentobj.name = "Objects - Piranha Plants"
 
+treeBlock = undefined
+treeBlock = box length:5 width:5 height:5
+treeBlock.pos = [0,0,0]
+treeBlock.name = "tree"
+treeBlock.parent = parentobj
 
-			piranhaBlock = undefined
-			piranhaBlock = box length:5 width:5 height:5
-			piranhaBlock.pos = [20,0,0]
-			piranhaBlock.name = "Piranha"
-			piranhaBlock.parent = parentobj
 
 
 
-			parentobj = undefined
-			parentobj = box length:25 width:25 height:25
-			parentobj.pos = [100,100,-1700]
-			parentobj.name = "Objects - Items Blocks"
+parentobj = undefined
+parentobj = box length:25 width:25 height:25
+parentobj.pos = [100,50,-1500]
+parentobj.name = "Objects - Piranha Plants"
 
 
-			itemBlock = undefined
-			itemBlock = box length:5 width:5 height:5
-			itemBlock.pos = [40,0,0]
-			itemBlock.name = "Item"
-			itemBlock.parent = parentobj
+piranhaBlock = undefined
+piranhaBlock = box length:5 width:5 height:5
+piranhaBlock.pos = [20,0,0]
+piranhaBlock.name = "Piranha"
+piranhaBlock.parent = parentobj
 
 
-			Print "Finished"
-			MessageBox "Finished"
-		)
 
+parentobj = undefined
+parentobj = box length:25 width:25 height:25
+parentobj.pos = [100,100,-1700]
+parentobj.name = "Objects - Items Blocks"
 
 
+itemBlock = undefined
+itemBlock = box length:5 width:5 height:5
+itemBlock.pos = [40,0,0]
+itemBlock.name = "Item"
+itemBlock.parent = parentobj
 
+parentobj = undefined
+parentobj = box length:25 width:25 height:25
+parentobj.pos = [100,0,-1500]
+parentobj.name = "Objects - Red Coins"
 
 
+treeBlock = undefined
+treeBlock = box length:5 width:5 height:5
+treeBlock.pos = [0,0,0]
+treeBlock.name = "Coin 1"
+treeBlock.parent = parentobj
 
-		struct s_Node ( obj, dist )
 
-		fn sortNodesFN node1 node2 =
-		(
-			if node1.dist < node2.dist then -1 else 1
-		)
+Print "Finished"
+MessageBox "Finished"
+)
 
 
 
 
 
 
-		on ASVbtn pressed do
-		(
 
+struct s_Node ( obj, dist )
 
-			start1 = timeStamp()
-			searchstring = "Course Master Objects" as string
-			format searchstring to:listener
-			format "\n" to:listener
-			masterobj = getNodeByName searchstring exact:true
-			format masterobj.Name to:listener
-			format "\n" to:listener
+fn sortNodesFN node1 node2 =
+(
+if node1.dist < node2.dist then -1 else 1
+)
 
 
+fn getMaterialIDs obj =
+(
+id_arr = #()
 
-			for sectionview = 1 to section_count do
-			(
+for i in 1 to 257 do
+(
+obj.selectByMaterial i
+the_faces = getFaceSelection obj
+if (the_faces as array).count != 0 do
+(
+append id_arr i
+)
+)
+id_arr
+)
 
+on chgnam pressed do
+(
+the_sel = selection as array
+if (the_sel.count != 0) do
+(
+i = 0
+for obj in the_sel do
+(
+printstring = namtext.Text
+obj.name = printstring
+i=i+1
+)
+)
+messagebox "Finished"
+)
 
-				searchstring = "Section "+((sectionview as integer) as string)+" Surface" as string
-				format searchstring to:listener
-				format "\n" to:listener
-				surfaceobj = getNodeByName searchstring exact:true
-				format surfaceobj.Name to:listener
-				format "\n" to:listener
+on parnam pressed do
+(
+the_sel = selection as array
+if (the_sel.count != 0) do
+(
+i = 0
+for obj in the_sel do
+(
+printstring = namtext.Text+"_part"+i as string
+obj.name = printstring
+i=i+1
+)
+)
+messagebox "Finished"
+)
 
+on matnam pressed do
+(
+the_sel = selection as array
+if (the_sel.count != 0) do
+(
+i = 0
+for obj in the_sel do
+(
+printstring = filterString obj.name "_"
+sendstring = namtext.Text+"_"+printstring[2]
+format sendstring to:listener
+format "\n" to:listener
+i=i+1
+obj.name = sendstring
+)
+)
+messagebox "Finished"
+)
 
 
-				selectarray = #()
 
-				print "raytest start"
-				format "\n" to:listener
 
+on spC2Btn pressed do
+(
 
 
-				for objectindex = 1 to surfaceobj.children.count do
-				(
+undo "MK64 Split" on
+(
 
 
-					printstring = "Start Object "+objectindex as string
-					print printstring
-					windows.processPostedMessages()
-					tmesh = surfaceobj.children[objectindex]
-					num_verts = tmesh.numverts
-					num_faces = tmesh.numfaces
+the_sel = selection as array
+for obj in the_sel where \
+superclassof obj == GeometryClass and \
+obj.material != undefined do
+(
+try(convertToPoly obj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
+the_orig = obj
+the_polyobj = copy the_orig
 
-					-- sectionview NORTH
-					for vertindex = 1 to num_verts do
-					(
-						vert = tmesh.verts[vertindex]
+theDetachedObj = ()
 
+the_mat = obj.material
+id_count = the_mat.numSubs
+id_list = getMaterialIDs the_polyobj
 
+-- start detaching
+for i in id_list do
+(
+the_polyobj.selectByMaterial i
+the_faces = getFaceSelection the_polyobj
 
-						printstring = "Section "+sectionview as string+"/"+section_count as string+" - Object "+objectindex as string +"/"+ surfaceobj.children.count as string +" - Vert "+vertindex as string + "/" + num_verts as string + " - North"
-						print printstring
-						windows.processPostedMessages()
+the_name = "name"
 
 
-						yval = vert.pos.y
-						for child = 1 to masterobj.children.count do
-						(
-							childmesh = masterobj.children[child]
-							child_verts = childmesh.numverts
-							for childvertindex = 1 to child_verts do
-							(
-								vert = childmesh.verts[childvertindex]
+polyOp.detachFaces the_polyobj the_faces asnode:true name:the_name
+theDetachedObj = (getnodebyname the_name)
 
-								cyval = vert.pos.y
 
-								if cyval > yval then
-								(
-									append selectarray childmesh
-								)
+theDetachedObj.parent = the_orig.parent
+convertToMesh theDetachedObj
+convert = getFaceMatID theDetachedObj 1
 
-							)
+finalname = convert as string
 
-						)
+theDetachedObj.name = finalname
+)-- end detach loop
+delete the_polyobj
+delete the_orig
 
 
-					)
 
-				)
 
+)
+)
+)
 
-				select selectarray
 
-				print "north "+sectionview as string
-				windows.processPostedMessages()
-				searchstring = "Section "+((sectionview as integer) as string)+" North" as string
-				sourceobj = getNodeByName searchstring exact:true
-				if (sourceobj == undefined) then
-				(
-					specialsection = undefined
-					specialsection = box length:15 width:15 height:15
-					specialsection.name = searchstring
-					specialsection.pos=[ -50 , -1250 , -1500]
-					sourceobj = specialsection
-				)
-				the_sel = selection as array
-				if (the_sel.count != 0) do
-				(
 
-					for obj in the_sel do
-					(
 
 
-						maxOps.cloneNodes obj cloneType:#copy newNodes:&nnl #nodialog
-						nnl[1].name = obj.name
-						nnl[1].parent = sourceobj
-						nnl[1].isHidden = true
 
-					)
-				)
 
 
 
 
-				selectarray = #()
+on clnbtn pressed do
+(
 
+searchstring = "Temp Section"
+sourceobj = getNodeByName searchstring exact:true
+if (sourceobj == undefined) then
+(
+specialsection = undefined
+specialsection = box length:15 width:15 height:15
+specialsection.name = "Temp Section"
+specialsection.pos=[ -50 , -1250 , -1500]
+sourceobj = specialsection
+)
+the_sel = selection as array
+if (the_sel.count != 0) do
+(
 
+for obj in the_sel do
+(
+maxOps.cloneNodes obj cloneType:#copy newNodes:&nnl #nodialog
+nnl[1].name = obj.name
+nnl[1].parent = sourceobj
+)
+)
+messagebox "Finished"
 
+)
 
 
-				for objectindex = 1 to surfaceobj.children.count do
-				(
 
 
-					printstring = "Start Object "+objectindex as string
-					print printstring
-					windows.processPostedMessages()
-					tmesh = surfaceobj.children[objectindex]
-					num_verts = tmesh.numverts
-					num_faces = tmesh.numfaces
 
-					-- sectionview EAST
-					for vertindex = 1 to num_verts do
-					(
-						vert = tmesh.verts[vertindex]
 
 
 
-						printstring = "Section "+sectionview as string+"/"+section_count as string+" - Object "+objectindex as string +"/"+ surfaceobj.children.count as string +" - Vert "+vertindex as string + "/" + num_verts as string + " - East"
-						print printstring
-						windows.processPostedMessages()
 
-						xval = vert.pos.x
-						for child = 1 to masterobj.children.count do
-						(
-							childmesh = masterobj.children[child]
-							child_verts = childmesh.numverts
-							for childvertindex = 1 to child_verts do
-							(
-								vert = childmesh.verts[childvertindex]
 
-								cxval = vert.pos.x
 
-								if cxval > xval then
-								(
-									append selectarray childmesh
-								)
 
-							)
 
-						)
-					)
-				)
 
+on prepBtn pressed do
+(
 
-				select selectarray
+undo "MK64 Prep" on
+(
 
-				print "east "+sectionview as string
-				windows.processPostedMessages()
-				searchstring = "Section "+((sectionview as integer) as string)+" East" as string
-				sourceobj = getNodeByName searchstring exact:true
-				if (sourceobj == undefined) then
-				(
-					specialsection = undefined
-					specialsection = box length:15 width:15 height:15
-					specialsection.name = searchstring
-					specialsection.pos=[ -50 , -1250 , -1500]
-					sourceobj = specialsection
-				)
-				the_sel = selection as array
-				if (the_sel.count != 0) do
-				(
 
-					for obj in the_sel do
-					(
+searchstring = "Master Course"
+sourceobj = getNodeByName searchstring exact:true
+format sourceobj.Name to:listener
 
 
-						maxOps.cloneNodes obj cloneType:#copy newNodes:&nnl #nodialog
-						nnl[1].name = obj.name
-						nnl[1].parent = sourceobj
-						nnl[1].isHidden = true
+tmesh = sourceobj
 
-					)
-				)
+num_verts = tmesh.numverts
 
 
+for v = 1 to num_verts do
+(
+vert = tmesh.verts[v]
+vert.pos.x = vert.pos.x as integer
+vert.pos.y = vert.pos.y as integer
+vert.pos.z = vert.pos.z as integer
+)
 
-				selectarray = #()
+messagebox "Finished"
 
+)-- end Undo
+)
 
-				for objectindex = 1 to surfaceobj.children.count do
-				(
 
 
 
-					printstring = "Start Object "+objectindex as string
-					print printstring
-					windows.processPostedMessages()
-					tmesh = surfaceobj.children[objectindex]
-					num_verts = tmesh.numverts
-					num_faces = tmesh.numfaces
 
-					-- sectionview SOUTH
-					for vertindex = 1 to num_verts do
-					(
-						vert = tmesh.verts[vertindex]
 
 
-						printstring = "Section "+sectionview as string+"/"+section_count as string+" - Object "+objectindex as string +"/"+ surfaceobj.children.count as string +" - Vert "+vertindex as string + "/" + num_verts as string + " - South"
-						print printstring
-						windows.processPostedMessages()
 
 
-						yval = vert.pos.y
-						for child = 1 to masterobj.children.count do
-						(
-							childmesh = masterobj.children[child]
-							child_verts = childmesh.numverts
-							for childvertindex = 1 to child_verts do
-							(
-								vert = childmesh.verts[childvertindex]
 
-								cyval = vert.pos.y
 
-								if cyval < yval then
-								(
-									append selectarray childmesh
-								)
 
-							)
 
-						)
-					)
-				)
 
 
-				select selectarray
+on addSection pressed do
+(
+section_count = sectioncount.Text as integer
+Print "Adding Section - " + section_count as string
 
-				print "south "+sectionview as string
-				windows.processPostedMessages()
-				searchstring = "Section "+((sectionview as integer) as string)+" South" as string
-				sourceobj = getNodeByName searchstring exact:true
-				if (sourceobj == undefined) then
-				(
-					specialsection = undefined
-					specialsection = box length:15 width:15 height:15
-					specialsection.name = searchstring
-					specialsection.pos=[ -50 , -1250 , -1500]
-					sourceobj = specialsection
-				)
-				the_sel = selection as array
-				if (the_sel.count != 0) do
-				(
 
-					for obj in the_sel do
-					(
+specialsection = undefined
+specialsection = box length:15 width:15 height:15
+specialsection.name = "Course Master Objects"
+specialsection.pos=[ -50 , -1000 , -1500]
 
 
-						maxOps.cloneNodes obj cloneType:#copy newNodes:&nnl #nodialog
-						nnl[1].name = obj.name
-						nnl[1].parent = sourceobj
-						nnl[1].isHidden = true
+sectioncount.Text =""
 
-					)
-				)
 
+i = 1
+while i <= section_count do
+(
+nextsection = undefined
+nextsection = box length:25 width:25 height:25
+nextsection.name = "Section "+i as string
+nextsection.pos=[i*50 , -1000 , -1500]
 
+i = i+1
+)
 
-				selectarray = #()
 
 
-				for objectindex = 1 to surfaceobj.children.count do
-				(
+searchstring = "section count"
+sourceobj = getNodeByName searchstring exact:true
+if (sourceobj == undefined) then
+(
+v1 = [section_count,75,-1550]
+v2 = [section_count,0,-1550]
+v3 = [section_count,0,-1575]
+vert_array = #()
+face_array = #()
+append vert_array v1
+append vert_array v2
+append vert_array v3
+sourceobj = mesh vertices:vert_array faces:#([1,2,3])
+sourceobj.name = "section count"
+)
 
 
 
-					printstring = "Start Object "+objectindex as string
-					print printstring
-					windows.processPostedMessages()
-					tmesh = surfaceobj.children[objectindex]
-					num_verts = tmesh.numverts
-					num_faces = tmesh.numfaces
+)
 
 
-					-- sectionview WEST
-					for vertindex = 1 to num_verts do
-					(
-						vert = tmesh.verts[vertindex]
 
-						printstring = "Section "+sectionview as string+"/"+section_count as string+" - Object "+objectindex as string +"/"+ surfaceobj.children.count as string +" - Vert "+vertindex as string + "/" + num_verts as string + " - West"
-						print printstring
-						windows.processPostedMessages()
+)
 
-						xval = vert.pos.x
-						for child = 1 to masterobj.children.count do
-						(n
-							childmesh = masterobj.children[child]
-							child_verts = childmesh.numverts
-							for childvertindex = 1 to child_verts do
-							(
-								vert = childmesh.verts[childvertindex]
-
-								cxval = vert.pos.x
-
-								if cxval < xval then
-								(
-									append selectarray childmesh
-								)
-
-							)
-
-						)
-
-
-					)
-				)
-
-
-				select selectarray
-				print "west "+sectionview as string
-				windows.processPostedMessages()
-				searchstring = "Section "+((sectionview as integer) as string)+" West" as string
-				sourceobj = getNodeByName searchstring exact:true
-				if (sourceobj == undefined) then
-				(
-					specialsection = undefined
-					specialsection = box length:15 width:15 height:15
-					specialsection.name = searchstring
-					specialsection.pos=[ -50 , -1250 , -1500]
-					sourceobj = specialsection
-				)
-				the_sel = selection as array
-				if (the_sel.count != 0) do
-				(
-
-					for obj in the_sel do
-					(
-
-
-						maxOps.cloneNodes obj cloneType:#copy newNodes:&nnl #nodialog
-						nnl[1].name = obj.name
-						nnl[1].parent = sourceobj
-						nnl[1].isHidden = true
-
-					)
-				)
-
-
-
-				selectarray = #()
-
-
-
-				printstring = "raytest end " + sectionview as string + " section"
-				print printstring
-			)
-				end1 = timeStamp()
-				time = (end1 - start1) / 1000
-
-				minutes = 0
-
-				while time > 60 do
-				(
-					time = time - 60
-					minutes = minutes + 1
-				)
-
-				printstring = "Took " + minutes as string+" minutes and "+time as string + " seconds."
-				MessageBox printstring
-
-
-		)
-
-
-
-
-
-
-
-
-
-
-		fn getMaterialIDs obj =
-		(
-			id_arr = #()
-
-			for i in 1 to 257 do
-			(
-				obj.selectByMaterial i
-				the_faces = getFaceSelection obj
-				if (the_faces as array).count != 0 do
-				(
-					append id_arr i
-				)
-			)
-			id_arr
-		)
-
-		on chgnam pressed do
-		(
-			the_sel = selection as array
-			if (the_sel.count != 0) do
-			(
-				i = 0
-				for obj in the_sel do
-				(
-					printstring = namtext.Text
-					obj.name = printstring
-					i=i+1
-				)
-			)
-			messagebox "Finished"
-		)
-
-		on parnam pressed do
-		(
-			the_sel = selection as array
-			if (the_sel.count != 0) do
-			(
-				i = 0
-				for obj in the_sel do
-				(
-					printstring = namtext.Text+"_part"+i as string
-					obj.name = printstring
-					i=i+1
-				)
-			)
-			messagebox "Finished"
-		)
-
-		on matnam pressed do
-		(
-			the_sel = selection as array
-			if (the_sel.count != 0) do
-			(
-				i = 0
-				for obj in the_sel do
-				(
-					printstring = filterString obj.name "_"
-					sendstring = namtext.Text+"_"+printstring[2]
-					format sendstring to:listener
-					format "\n" to:listener
-					i=i+1
-					obj.name = sendstring
-				)
-			)
-			messagebox "Finished"
-		)
-
-
-
-
-		on spC2Btn pressed do
-		(
-
-
-			undo "MK64 Split" on
-			(
-
-
-				the_sel = selection as array
-				for obj in the_sel where \
-				superclassof obj == GeometryClass and \
-				obj.material != undefined do
-				(
-					try(convertToPoly obj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
-					the_orig = obj
-					the_polyobj = copy the_orig
-
-					theDetachedObj = ()
-
-					the_mat = obj.material
-					id_count = the_mat.numSubs
-					id_list = getMaterialIDs the_polyobj
-
-					-- start detaching
-					for i in id_list do
-					(
-						the_polyobj.selectByMaterial i
-						the_faces = getFaceSelection the_polyobj
-
-						the_name = "name"
-
-
-						polyOp.detachFaces the_polyobj the_faces asnode:true name:the_name
-						theDetachedObj = (getnodebyname the_name)
-
-
-						theDetachedObj.parent = the_orig.parent
-						convertToMesh theDetachedObj
-						convert = getFaceMatID theDetachedObj 1
-
-						finalname = convert as string
-
-						theDetachedObj.name = finalname
-					)-- end detach loop
-					delete the_polyobj
-					delete the_orig
-
-
-
-
-				)
-			)
-		)
-
-
-
-
-
-
-
-
-
-
-		on clnbtn pressed do
-		(
-
-			searchstring = "Temp Section"
-			sourceobj = getNodeByName searchstring exact:true
-			if (sourceobj == undefined) then
-			(
-				specialsection = undefined
-				specialsection = box length:15 width:15 height:15
-				specialsection.name = "Temp Section"
-				specialsection.pos=[ -50 , -1250 , -1500]
-				sourceobj = specialsection
-			)
-			the_sel = selection as array
-			if (the_sel.count != 0) do
-			(
-
-				for obj in the_sel do
-				(
-					maxOps.cloneNodes obj cloneType:#copy newNodes:&nnl #nodialog
-					nnl[1].name = obj.name
-					nnl[1].parent = sourceobj
-				)
-			)
-			messagebox "Finished"
-
-		)
-
-
-
-
-
-
-
-
-		on spCBtn pressed do
-		(
-
-
-			undo "MK64 Split" on
-			(
-
-				z = 1
-
-
-
-				searchstring = "Special Section Surface"
-				format searchstring to:listener
-
-
-				obj = getNodeByName searchstring exact:true
-				format obj.Name to:listener
-				select obj.children
-
-
-				the_sel = selection as array
-				for obj in the_sel where \
-				superclassof obj == GeometryClass and \
-				obj.material != undefined do
-				(
-					try(convertToPoly obj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
-					the_orig = obj
-					the_polyobj = copy the_orig
-
-					theDetachedObj = ()
-
-					the_mat = obj.material
-					id_count = the_mat.numSubs
-					id_list = getMaterialIDs the_polyobj
-
-					-- start detaching
-					for i in id_list do
-					(
-						the_polyobj.selectByMaterial i
-						the_faces = getFaceSelection the_polyobj
-
-						the_name = "name"
-
-
-						polyOp.detachFaces the_polyobj the_faces asnode:true name:the_name
-						theDetachedObj = (getnodebyname the_name)
-
-
-						theDetachedObj.parent = the_orig.parent
-						convertToMesh theDetachedObj
-						convert = getFaceMatID theDetachedObj 1
-
-						finalname = convert as string
-
-						theDetachedObj.name = finalname
-					)-- end detach loop
-					delete the_polyobj
-					delete the_orig
-
-					if (theDetachedObj.numfaces > 25) do
-					(
-						try(convertToPoly theDetachedObj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
-						facecount = theDetachedObj.numfaces
-
-						the_name = "name"
-						faces_left = facecount
-						i = 1
-
-						while (faces_left > 0) do
-						(
-
-
-							face_array = #()
-
-							if (faces_left > 25) then
-							(
-								for f = 1 to 25 do
-								(
-									append face_array f
-								)
-								setFaceSelection theDetachedObj face_array
-								the_faces = getFaceSelection theDetachedObj
-								polyOp.detachFaces theDetachedObj the_faces asnode:true name:the_name
-								newDetach = (getnodebyname the_name)
-								newDetach.parent = theDetachedObj.parent
-								newDetach.name = theDetachedObj.name
-								faces_left = faces_left - 25
-							)
-							else
-							(
-								for f = 1 to faces_left do
-								(
-									append face_array f
-								)
-								setFaceSelection theDetachedObj face_array
-								the_faces = getFaceSelection theDetachedObj
-								polyOp.detachFaces theDetachedObj the_faces asnode:true name:the_name
-								newDetach = (getnodebyname the_name)
-								newDetach.parent = theDetachedObj.parent
-								newDetach.name = theDetachedObj.name
-								faces_left = 0
-							)
-							i = i +1
-						)
-					)
-
-
-				)
-
-
-				while z <= section_count do
-				(
-
-					searchstring = "Section "+(z) as string
-					format searchstring to:listener
-					sourceobj = getNodeByName searchstring exact:true
-					format sourceobj.Name to:listener
-
-					sourcechild = undefined
-
-					x = 5
-
-					obj = sourceobj.children[x]
-					select obj.children
-
-
-					the_sel = selection as array
-					for obj in the_sel where \
-					superclassof obj == GeometryClass and \
-					obj.material != undefined do
-					(
-						try(convertToPoly obj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
-						the_orig = obj
-						the_polyobj = copy the_orig
-
-						theDetachedObj = ()
-
-						the_mat = obj.material
-						id_count = the_mat.numSubs
-						id_list = getMaterialIDs the_polyobj
-
-						-- start detaching
-						for i in id_list do
-						(
-							the_polyobj.selectByMaterial i
-							the_faces = getFaceSelection the_polyobj
-
-							the_name = "name"
-
-
-							polyOp.detachFaces the_polyobj the_faces asnode:true name:the_name
-							theDetachedObj = (getnodebyname the_name)
-
-
-							theDetachedObj.parent = the_orig.parent
-							convertToMesh theDetachedObj
-							convert = getFaceMatID theDetachedObj 1
-
-							finalname = convert as string
-
-							theDetachedObj.name = finalname
-						)-- end detach loop
-						delete the_polyobj
-						delete the_orig
-
-
-						if (theDetachedObj.numfaces > 25) do
-						(
-							try(convertToPoly theDetachedObj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
-							facecount = theDetachedObj.numfaces
-
-							the_name = "name"
-							faces_left = facecount
-							i = 1
-
-							while (faces_left > 0) do
-							(
-
-
-								face_array = #()
-
-								if (faces_left > 25) then
-								(
-									for f = 1 to 25 do
-									(
-										append face_array f
-									)
-									setFaceSelection theDetachedObj face_array
-									the_faces = getFaceSelection theDetachedObj
-									polyOp.detachFaces theDetachedObj the_faces asnode:true name:the_name
-									newDetach = (getnodebyname the_name)
-									newDetach.parent = theDetachedObj.parent
-									newDetach.name = theDetachedObj.name
-									faces_left = faces_left - 25
-								)
-								else
-								(
-									for f = 1 to faces_left do
-									(
-										append face_array f
-									)
-									setFaceSelection theDetachedObj face_array
-									the_faces = getFaceSelection theDetachedObj
-									polyOp.detachFaces theDetachedObj the_faces asnode:true name:the_name
-									newDetach = (getnodebyname the_name)
-									newDetach.parent = theDetachedObj.parent
-									newDetach.name = theDetachedObj.name
-									faces_left = 0
-								)
-								i = i +1
-							)
-						)
-
-						x=x+1
-					)
-					z = z + 1
-				)
-			)
-
-		)
-
-
-
-
-
-
-
-		on spCBtn pressed do
-		(
-
-
-			undo "MK64 Split" on
-			(
-
-				z = 1
-
-
-
-				searchstring = "Special Section Surface"
-				format searchstring to:listener
-
-
-				obj = getNodeByName searchstring exact:true
-				format obj.Name to:listener
-				select obj.children
-
-
-				the_sel = selection as array
-				for obj in the_sel where \
-				superclassof obj == GeometryClass and \
-				obj.material != undefined do
-				(
-					try(convertToPoly obj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
-					the_orig = obj
-					the_polyobj = copy the_orig
-
-					theDetachedObj = ()
-
-					the_mat = obj.material
-					id_count = the_mat.numSubs
-					id_list = getMaterialIDs the_polyobj
-
-					-- start detaching
-					for i in id_list do
-					(
-						the_polyobj.selectByMaterial i
-						the_faces = getFaceSelection the_polyobj
-
-						the_name = "name"
-
-
-						polyOp.detachFaces the_polyobj the_faces asnode:true name:the_name
-						theDetachedObj = (getnodebyname the_name)
-
-
-						theDetachedObj.parent = the_orig.parent
-						convertToMesh theDetachedObj
-						convert = getFaceMatID theDetachedObj 1
-
-						finalname = convert as string
-
-						theDetachedObj.name = finalname
-					)-- end detach loop
-					delete the_polyobj
-					delete the_orig
-
-					if (theDetachedObj.numfaces > 25) do
-					(
-						try(convertToPoly theDetachedObj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
-						facecount = theDetachedObj.numfaces
-
-						the_name = "name"
-						faces_left = facecount
-						i = 1
-
-						while (faces_left > 0) do
-						(
-
-
-							face_array = #()
-
-							if (faces_left > 25) then
-							(
-								for f = 1 to 25 do
-								(
-									append face_array f
-								)
-								setFaceSelection theDetachedObj face_array
-								the_faces = getFaceSelection theDetachedObj
-								polyOp.detachFaces theDetachedObj the_faces asnode:true name:the_name
-								newDetach = (getnodebyname the_name)
-								newDetach.parent = theDetachedObj.parent
-								newDetach.name = theDetachedObj.name
-								faces_left = faces_left - 25
-							)
-							else
-							(
-								for f = 1 to faces_left do
-								(
-									append face_array f
-								)
-								setFaceSelection theDetachedObj face_array
-								the_faces = getFaceSelection theDetachedObj
-								polyOp.detachFaces theDetachedObj the_faces asnode:true name:the_name
-								newDetach = (getnodebyname the_name)
-								newDetach.parent = theDetachedObj.parent
-								newDetach.name = theDetachedObj.name
-								faces_left = 0
-							)
-							i = i +1
-						)
-					)
-
-
-				)
-
-
-				while z <= section_count do
-				(
-
-					searchstring = "Section "+(z) as string
-					format searchstring to:listener
-					sourceobj = getNodeByName searchstring exact:true
-					format sourceobj.Name to:listener
-
-					sourcechild = undefined
-
-					x = 5
-
-					obj = sourceobj.children[x]
-					select obj.children
-
-
-					the_sel = selection as array
-					for obj in the_sel where \
-					superclassof obj == GeometryClass and \
-					obj.material != undefined do
-					(
-						try(convertToPoly obj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
-						the_orig = obj
-						the_polyobj = copy the_orig
-
-						theDetachedObj = ()
-
-						the_mat = obj.material
-						id_count = the_mat.numSubs
-						id_list = getMaterialIDs the_polyobj
-
-						-- start detaching
-						for i in id_list do
-						(
-							the_polyobj.selectByMaterial i
-							the_faces = getFaceSelection the_polyobj
-
-							the_name = "name"
-
-
-							polyOp.detachFaces the_polyobj the_faces asnode:true name:the_name
-							theDetachedObj = (getnodebyname the_name)
-
-
-							theDetachedObj.parent = the_orig.parent
-							convertToMesh theDetachedObj
-							convert = getFaceMatID theDetachedObj 1
-
-							finalname = convert as string
-
-							theDetachedObj.name = finalname
-						)-- end detach loop
-						delete the_polyobj
-						delete the_orig
-
-
-						if (theDetachedObj.numfaces > 25) do
-						(
-							try(convertToPoly theDetachedObj)catch(exit; print "DetacByID: Error Occured on Object Conversion")
-							facecount = theDetachedObj.numfaces
-
-							the_name = "name"
-							faces_left = facecount
-							i = 1
-
-							while (faces_left > 0) do
-							(
-
-
-								face_array = #()
-
-								if (faces_left > 25) then
-								(
-									for f = 1 to 25 do
-									(
-										append face_array f
-									)
-									setFaceSelection theDetachedObj face_array
-									the_faces = getFaceSelection theDetachedObj
-									polyOp.detachFaces theDetachedObj the_faces asnode:true name:the_name
-									newDetach = (getnodebyname the_name)
-									newDetach.parent = theDetachedObj.parent
-									newDetach.name = theDetachedObj.name
-									faces_left = faces_left - 25
-								)
-								else
-								(
-									for f = 1 to faces_left do
-									(
-										append face_array f
-									)
-									setFaceSelection theDetachedObj face_array
-									the_faces = getFaceSelection theDetachedObj
-									polyOp.detachFaces theDetachedObj the_faces asnode:true name:the_name
-									newDetach = (getnodebyname the_name)
-									newDetach.parent = theDetachedObj.parent
-									newDetach.name = theDetachedObj.name
-									faces_left = 0
-								)
-								i = i +1
-							)
-						)
-
-						x=x+1
-					)
-					z = z + 1
-				)
-			)
-
-		)
-
-		on prepBtn pressed do
-		(
-
-			undo "MK64 Prep" on
-			(
-
-
-				searchstring = "Master Course"
-				sourceobj = getNodeByName searchstring exact:true
-				format sourceobj.Name to:listener
-
-
-				tmesh = sourceobj
-
-				num_verts = tmesh.numverts
-
-
-				for v = 1 to num_verts do
-				(
-					vert = tmesh.verts[v]
-					vert.pos.x = vert.pos.x as integer
-					vert.pos.y = vert.pos.y as integer
-					vert.pos.z = vert.pos.z as integer
-				)
-
-				messagebox "Finished"
-
-			)-- end Undo
-		)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		on addSection pressed do
-		(
-			section_count = sectioncount.Text as integer
-			Print "Adding Section - " + section_count as string
-
-
-			specialsection = undefined
-			specialsection = box length:15 width:15 height:15
-			specialsection.name = "Course Master Objects"
-			specialsection.pos=[ -50 , -1000 , -1500]
-
-
-			sectioncount.Text =""
-
-
-			i = 1
-			while i <= section_count do
-			(
-				nextsection = undefined
-				nextsection = box length:25 width:25 height:25
-				nextsection.name = "Section "+i as string
-				nextsection.pos=[i*50 , -1000 , -1500]
-
-				childsection = undefined
-				childsection = box length:15 width:15 height:15
-				childsection.name = "Section "+i as string+" North"
-				childsection.pos=[i*50 , -1050 , -1500]
-				childsection.parent = nextsection
-
-				childsection = undefined
-				childsection = box length:15 width:15 height:15
-				childsection.name = "Section "+i as string+" East"
-				childsection.pos=[i*50 , -1100 , -1500]
-				childsection.parent = nextsection
-
-				childsection = undefined
-				childsection = box length:15 width:15 height:15
-				childsection.name = "Section "+i as string+" South"
-				childsection.pos=[i*50 , -1150 , -1500]
-				childsection.parent = nextsection
-
-				childsection = undefined
-				childsection = box length:15 width:15 height:15
-				childsection.name = "Section "+i as string+" West"
-				childsection.pos=[i*50 , -1200 , -1500]
-				childsection.parent = nextsection
-
-				childsection = undefined
-				childsection = box length:15 width:15 height:15
-				childsection.name = "Section "+i as string+" Surface"
-				childsection.pos=[i*50 , -1250 , -1500]
-				childsection.parent = nextsection
-
-				i = i+1
-			)
-
-
-
-			searchstring = "section count"
-			sourceobj = getNodeByName searchstring exact:true
-			if (sourceobj == undefined) then
-			(
-				v1 = [section_count,75,-1550]
-				v2 = [section_count,0,-1550]
-				v3 = [section_count,0,-1575]
-				vert_array = #()
-				face_array = #()
-				append vert_array v1
-				append vert_array v2
-				append vert_array v3
-				sourceobj = mesh vertices:vert_array faces:#([1,2,3])
-				sourceobj.name = "section count"
-			)
-
-
-
-		)
-
-
-		on addSimple pressed do
-		(
-			section_count = sectioncount.Text as integer
-			
-
-			sectioncount.Text =""
-
-
-			i = 1
-			while i <= section_count do
-			(
-				childsection = undefined
-				childsection = box length:15 width:15 height:15
-				childsection.name = "Section "+i as string
-				childsection.pos=[i*50 , -1250 , -1500]
-				childsection.parent = nextsection
-
-				i = i+1
-			)
-
-
-			searchstring = "section count"
-			sourceobj = getNodeByName searchstring exact:true
-			if (sourceobj == undefined) then
-			(
-				v1 = [section_count,75,-1550]
-				v2 = [section_count,0,-1550]
-				v3 = [section_count,0,-1575]
-				vert_array = #()
-				face_array = #()
-				append vert_array v1
-				append vert_array v2
-				append vert_array v3
-				sourceobj = mesh vertices:vert_array faces:#([1,2,3])
-				sourceobj.name = "section count"
-			)
-
-
-
-		)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		on exRbtn pressed do
-		(
-
-			output_name = getSaveFileName caption:"Exporting Section View" \
-			filename: "" \
-			types:"TXT (*.txt)|*.txt|All Files (*.*)|*.*|"
-
-
-			out_file = createfile output_name
-
-
-			material_read = 0
-			printstring = section_count as string
-
-			format printstring to: listener
-			format "\n" to: listener
-			format printstring to: out_file
-			format "\n" to: out_file
-			i = 1
-			while i <= section_count do
-			(
-
-				searchstring = "Section "+(i) as string
-				sourceobj = getNodeByName searchstring exact:true
-
-
-				sourcechild = undefined
-
-
-
-
-				x = 1
-				while x <= 4 do
-				(
-					sourcechild = sourceobj.children[x]
-
-
-					printstring = sourcechild.name
-					format printstring to:listener
-					format "\n" to:listener
-					format printstring to: out_file
-					format "\n" to: out_file
-
-
-
-					printstring = sourcechild.children.count as string
-					format printstring to: listener
-					format "\n" to: listener
-					format printstring to: out_file
-					format "\n" to: out_file
-
-					select sourcechild.children
-
-					n = 1
-					while n <= sourcechild.children.count do
-					(
-						printstring = sourcechild.children[n].name
-						format printstring to: listener
-						format "\n" to: listener
-						format printstring to: out_file
-						format "\n" to: out_file
-
-						n = n+1
-					)
-					x = x + 1
-
-				)
-				i=i+1
-			)
-			close out_file
-			messagebox "Finished"
-
-		)
-
-
-
-
-
-
-
-
-
-		on imRbtn pressed do
-		(
-
-			in_name = getOpenFileName \
-					filename: "" \
-					types: "TXT File (*.txt)|*.txt|All Files (*.*)|*.*"
-			if in_name != undefined then
-			(
-
-				in_file = openfile in_name
-
-
-				material_read = 0
-				printstring = section_count as string
-
-
-
-				format printstring to: listener
-				format "\n" to: listener
-
-				i = 1
-
-				readstring = readLine in_file as string
-				filesection_count = readstring as integer
-
-
-				printstring = filesection_count as string
-
-
-
-				format printstring to: listener
-				format "\n" to: listener
-
-				while i <= filesection_count do
-				(
-
-					SectionName_Garbage = readLine in_file as string
-
-					readstring = readLine in_file as string
-					subsection_count = readstring as integer
-					n = 1
-
-
-
-					printstring = i as string
-
-
-
-					format printstring to: listener
-					format "\n" to: listener
-
-
-
-					while n<= subsection_count do
-					(
-						searchstring = readLine in_file as string
-						childobj = getNodeByName searchstring exact:true
-
-						if (childobj == undefined) then
-						(
-						printstring = "UNDEFINED" as string + searchstring
-						format printstring to: listener
-						format "\n" to: listener
-						)
-						searchstring = "Section "+(i) as string+" North"
-						parentobj = getNodeByName searchstring exact:true
-
-
-						maxOps.cloneNodes childobj cloneType:#copy newNodes:&nnl #nodialog
-						nnl[1].name = childobj.name
-						nnl[1].parent = parentobj
-
-						n = n+1
-
-					)
-
-					SectionName_Garbage = readLine in_file as string
-					format SectionName_Garbage to: listener
-					format "\n" to: listener
-
-
-
-					readstring = readLine in_file as string
-					subsection_count = readstring as integer
-					n = 1
-
-					while n <= subsection_count do
-					(
-						searchstring = readLine in_file as string
-						childobj = getNodeByName searchstring exact:true
-
-						searchstring = "Section "+(i) as string+" East"
-						parentobj = getNodeByName searchstring exact:true
-
-
-						maxOps.cloneNodes childobj cloneType:#copy newNodes:&nnl #nodialog
-						nnl[1].name = childobj.name
-						nnl[1].parent = parentobj
-
-						n = n+1
-					)
-
-					SectionName_Garbage = readLine in_file as string
-					format SectionName_Garbage to: listener
-					format "\n" to: listener
-
-					readstring = readLine in_file as string
-					subsection_count = readstring as integer
-					n = 1
-
-					while n<= subsection_count do
-					(
-						searchstring = readLine in_file as string
-						childobj = getNodeByName searchstring exact:true
-
-						searchstring = "Section "+(i) as string+" South"
-						parentobj = getNodeByName searchstring exact:true
-
-
-						maxOps.cloneNodes childobj cloneType:#copy newNodes:&nnl #nodialog
-						nnl[1].name = childobj.name
-						nnl[1].parent = parentobj
-
-						n = n+1
-					)
-
-					SectionName_Garbage = readLine in_file as string
-					format SectionName_Garbage to: listener
-					format "\n" to: listener
-
-					readstring = readLine in_file as string
-					subsection_count = readstring as integer
-					n = 1
-
-					while n<= subsection_count do
-					(
-						searchstring = readLine in_file as string
-						childobj = getNodeByName searchstring exact:true
-
-						searchstring = "Section "+(i) as string+" West"
-						parentobj = getNodeByName searchstring exact:true
-
-
-						maxOps.cloneNodes childobj cloneType:#instance newNodes:&nnl #nodialog
-						nnl[1].name = childobj.name
-						nnl[1].parent = parentobj
-
-						n = n+1
-					)
-					printstring = "Done"
-
-
-
-					format printstring to: listener
-					format "\n" to: listener
-					i = i + 1
-				)
-				close in_file
-				messagebox "Finished"
-			)
-
-		)
-
-		-- End of rollout
-	)
-CreateDialog MK64Vimport
+CreateDialog OverKartMAX
+cui.RegisterDialogBar OverKartMAX style:#(#cui_dock_bottom, #cui_floatable)
+cui.DockDialogBar OverKartMAX #cui_dock_bottom

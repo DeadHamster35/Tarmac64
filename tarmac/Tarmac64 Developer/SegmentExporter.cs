@@ -1696,7 +1696,8 @@ namespace Tarmac64
                 {
                     savePath = vertSave.FileName;
                     MessageBox.Show(savePath);
-                    byte[] seg7 = Tarmac.compress_seg7(compressedfile);
+                    byte[] compressedData = File.ReadAllBytes(compressedfile);
+                    byte[] seg7 = Tarmac.compress_seg7(compressedData);
 
                     File.WriteAllBytes(savePath, seg7);
                     MessageBox.Show("Finished");

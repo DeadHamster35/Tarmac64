@@ -51,7 +51,9 @@ namespace Tarmac64_Library
 
                 
 
-                string[] fileList = Directory.GetFiles(dialog.FileName, "*.FBX*", SearchOption.AllDirectories);
+                string[] bigList = Directory.GetFiles(dialog.FileName, "*.FBX*", SearchOption.AllDirectories);
+                string[] littleList = Directory.GetFiles(dialog.FileName, "*.fbx*", SearchOption.AllDirectories);
+                string[] fileList = littleList.Concat(bigList).ToArray();
                 AssimpContext importer = new AssimpContext();
 
                 foreach (string FBXFilePath in fileList)
@@ -101,6 +103,58 @@ namespace Tarmac64_Library
                 SegmentBox.Items.Add(i.ToString("X"));
             }
             SegmentBox.SelectedIndex = 8;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            byte[] OutputData = new byte[0];
+            string outputText = "";
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = false;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+
+
+
+                string FBXFilePath = dialog.FileName;
+                AssimpContext importer = new AssimpContext();
+
+                int DataLength = Convert.ToInt32(MagicBox.Text, 16);
+
+
+                Scene ModelData = importer.ImportFile(FBXFilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
+                string filename = Path.GetFileNameWithoutExtension(FBXFilePath);
+                int materialCount = ModelData.MaterialCount;
+                int SegmentID = SegmentBox.SelectedIndex;
+
+
+
+                Assimp.Node masterNode = ModelData.RootNode.FindNode("Master Objects");
+                if (masterNode != null)
+                {
+                    TextureObjects = TarmacGeo.loadTextures(ModelData, FBXFilePath);
+                    MasterObjects = TarmacGeo.createObjects(ModelData);
+
+
+                    OutputData = TarmacGeo.writeRawTextures(OutputData, TextureObjects, DataLength);
+                    TarmacGeo.compileTextureObject(ref DataLength, ref OutputData, OutputData, TextureObjects, DataLength, SegmentID);
+                    TarmacGeo.compileF3DObject(ref DataLength, ref OutputData, OutputData, MasterObjects, TextureObjects, DataLength, SegmentID);
+
+                    outputText += filename + "-" + DataLength.ToString("X") + Environment.NewLine;
+                    OutputData = TarmacGeo.compileObjectList(ref DataLength, ModelData, OutputData, MasterObjects, TextureObjects, SegmentID);
+
+
+                }
+                
+
+                if (FileSave.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(FileSave.FileName + ".raw.bin", OutputData);
+                    File.WriteAllBytes(FileSave.FileName, Tarmac.CompressMIO0(OutputData));
+                    File.WriteAllText(FileSave.FileName + ".help.txt", outputText);
+                }
+
+            }
         }
     }
 }

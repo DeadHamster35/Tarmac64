@@ -190,7 +190,6 @@
             this.about_button.TabIndex = 88;
             this.about_button.Text = "About";
             this.about_button.UseVisualStyleBackColor = true;
-            this.about_button.Click += new System.EventHandler(this.Button1_Click);
             // 
             // csBox
             // 

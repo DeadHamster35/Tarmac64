@@ -17,7 +17,7 @@ namespace TarmacJR
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Tarmac64_Library.CourseMaker());
+            Application.Run(new Tarmac64_Library.CourseJR());
         }
     }
 }
