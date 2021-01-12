@@ -1,6 +1,6 @@
 ﻿namespace Tarmac64_Library
 {
-    partial class GeometryCompiler
+    partial class CourseCompiler
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GeometryCompiler));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CourseCompiler));
             this.courseBox = new System.Windows.Forms.ComboBox();
             this.actionBtn = new System.Windows.Forms.Button();
             this.cupBox = new System.Windows.Forms.ComboBox();
@@ -37,7 +37,6 @@
             this.cyBox = new System.Windows.Forms.TextBox();
             this.czBox = new System.Windows.Forms.TextBox();
             this.cxBox = new System.Windows.Forms.TextBox();
-            this.about_button = new System.Windows.Forms.Button();
             this.csBox = new System.Windows.Forms.TextBox();
             this.cName = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -73,15 +72,32 @@
             this.viewBox = new System.Windows.Forms.ComboBox();
             this.TextureData = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.tBox = new System.Windows.Forms.CheckBox();
-            this.textureBox = new System.Windows.Forms.ComboBox();
-            this.heightBox = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.textureScrollTBox = new System.Windows.Forms.TextBox();
+            this.textureScrollSBox = new System.Windows.Forms.TextBox();
+            this.label58 = new System.Windows.Forms.Label();
+            this.label59 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.heightBox = new System.Windows.Forms.TextBox();
+            this.label56 = new System.Windows.Forms.Label();
+            this.textureModeTBox = new System.Windows.Forms.ComboBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.textureAlphaBox = new System.Windows.Forms.ComboBox();
+            this.label55 = new System.Windows.Forms.Label();
+            this.textureCodecBox = new System.Windows.Forms.ComboBox();
+            this.label33 = new System.Windows.Forms.Label();
+            this.textureModeSBox = new System.Windows.Forms.ComboBox();
+            this.textureBox = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.widthBox = new System.Windows.Forms.TextBox();
             this.bitm = new System.Windows.Forms.PictureBox();
             this.CourseInfo = new System.Windows.Forms.TabPage();
+            this.label57 = new System.Windows.Forms.Label();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.ImportData = new System.Windows.Forms.Button();
+            this.SaveBtn = new System.Windows.Forms.Button();
             this.label51 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.label50 = new System.Windows.Forms.Label();
@@ -133,21 +149,16 @@
             this.label39 = new System.Windows.Forms.Label();
             this.songBox = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.SkyRMB = new System.Windows.Forms.TextBox();
-            this.SkyGMB = new System.Windows.Forms.TextBox();
-            this.SkyBMB = new System.Windows.Forms.TextBox();
             this.SkyRB = new System.Windows.Forms.TextBox();
             this.SkyGB = new System.Windows.Forms.TextBox();
             this.SkyBB = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.SkyRT = new System.Windows.Forms.TextBox();
             this.SkyGT = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.SkyBT = new System.Windows.Forms.TextBox();
-            this.SkyRMT = new System.Windows.Forms.TextBox();
-            this.ColorPickMB = new System.Windows.Forms.Button();
-            this.SkyGMT = new System.Windows.Forms.TextBox();
-            this.SkyBMT = new System.Windows.Forms.TextBox();
+            this.SkyRM = new System.Windows.Forms.TextBox();
+            this.SkyGM = new System.Windows.Forms.TextBox();
+            this.SkyBM = new System.Windows.Forms.TextBox();
             this.ColorPickB = new System.Windows.Forms.Button();
             this.label29 = new System.Windows.Forms.Label();
             this.label27 = new System.Windows.Forms.Label();
@@ -185,8 +196,10 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.SaveBtn = new System.Windows.Forms.Button();
             this.raycastBox = new System.Windows.Forms.CheckBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.vertAlphaBox = new System.Windows.Forms.TextBox();
+            this.label60 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -204,6 +217,7 @@
             this.tabControl1.SuspendLayout();
             this.Object.SuspendLayout();
             this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // courseBox
@@ -218,16 +232,16 @@
             this.courseBox.Location = new System.Drawing.Point(218, 649);
             this.courseBox.Name = "courseBox";
             this.courseBox.Size = new System.Drawing.Size(92, 21);
-            this.courseBox.TabIndex = 34;
+            this.courseBox.TabIndex = 52;
             // 
             // actionBtn
             // 
             this.actionBtn.AutoSize = true;
-            this.actionBtn.Location = new System.Drawing.Point(90, 13);
+            this.actionBtn.Location = new System.Drawing.Point(14, 11);
             this.actionBtn.Margin = new System.Windows.Forms.Padding(5);
             this.actionBtn.Name = "actionBtn";
             this.actionBtn.Size = new System.Drawing.Size(65, 23);
-            this.actionBtn.TabIndex = 19;
+            this.actionBtn.TabIndex = 0;
             this.actionBtn.Text = "Load";
             this.actionBtn.UseVisualStyleBackColor = true;
             this.actionBtn.Click += new System.EventHandler(this.LoadBtn_Click);
@@ -244,7 +258,7 @@
             this.cupBox.Location = new System.Drawing.Point(91, 649);
             this.cupBox.Name = "cupBox";
             this.cupBox.Size = new System.Drawing.Size(121, 21);
-            this.cupBox.TabIndex = 36;
+            this.cupBox.TabIndex = 51;
             // 
             // setBox
             // 
@@ -258,7 +272,7 @@
             this.setBox.Location = new System.Drawing.Point(15, 649);
             this.setBox.Name = "setBox";
             this.setBox.Size = new System.Drawing.Size(70, 21);
-            this.setBox.TabIndex = 37;
+            this.setBox.TabIndex = 50;
             // 
             // openGLControl
             // 
@@ -276,6 +290,7 @@
             this.openGLControl.RenderTrigger = SharpGL.RenderTrigger.TimerBased;
             this.openGLControl.Size = new System.Drawing.Size(904, 616);
             this.openGLControl.TabIndex = 39;
+            this.openGLControl.TabStop = false;
             this.openGLControl.Visible = false;
             this.openGLControl.OpenGLInitialized += new System.EventHandler(this.openGLControl_OpenGLInitialized);
             this.openGLControl.OpenGLDraw += new SharpGL.RenderEventHandler(this.openGLControl_OpenGLDraw);
@@ -292,6 +307,7 @@
             this.cyBox.Name = "cyBox";
             this.cyBox.Size = new System.Drawing.Size(70, 20);
             this.cyBox.TabIndex = 84;
+            this.cyBox.TabStop = false;
             // 
             // czBox
             // 
@@ -301,6 +317,7 @@
             this.czBox.Name = "czBox";
             this.czBox.Size = new System.Drawing.Size(70, 20);
             this.czBox.TabIndex = 83;
+            this.czBox.TabStop = false;
             // 
             // cxBox
             // 
@@ -310,16 +327,7 @@
             this.cxBox.Name = "cxBox";
             this.cxBox.Size = new System.Drawing.Size(70, 20);
             this.cxBox.TabIndex = 82;
-            // 
-            // about_button
-            // 
-            this.about_button.Location = new System.Drawing.Point(256, 13);
-            this.about_button.Name = "about_button";
-            this.about_button.Size = new System.Drawing.Size(54, 23);
-            this.about_button.TabIndex = 88;
-            this.about_button.Text = "About";
-            this.about_button.UseVisualStyleBackColor = true;
-            this.about_button.Click += new System.EventHandler(this.Button1_Click);
+            this.cxBox.TabStop = false;
             // 
             // csBox
             // 
@@ -329,6 +337,7 @@
             this.csBox.Name = "csBox";
             this.csBox.Size = new System.Drawing.Size(70, 20);
             this.csBox.TabIndex = 91;
+            this.csBox.TabStop = false;
             // 
             // cName
             // 
@@ -338,6 +347,7 @@
             this.cName.Name = "cName";
             this.cName.Size = new System.Drawing.Size(188, 20);
             this.cName.TabIndex = 92;
+            this.cName.TabStop = false;
             // 
             // groupBox3
             // 
@@ -366,6 +376,7 @@
             this.CheckboxTextured.Name = "CheckboxTextured";
             this.CheckboxTextured.Size = new System.Drawing.Size(68, 17);
             this.CheckboxTextured.TabIndex = 94;
+            this.CheckboxTextured.TabStop = false;
             this.CheckboxTextured.Text = "Textured";
             this.CheckboxTextured.UseVisualStyleBackColor = true;
             // 
@@ -441,13 +452,13 @@
             this.surfpropertybox.Items.AddRange(new object[] {
             "Standard",
             "Force Tumble",
-            "Darken Player",
             "No Collision",
+            "Darken Player",
             "Out of Bounds"});
             this.surfpropertybox.Location = new System.Drawing.Point(59, 52);
             this.surfpropertybox.Name = "surfpropertybox";
             this.surfpropertybox.Size = new System.Drawing.Size(207, 21);
-            this.surfpropertybox.TabIndex = 28;
+            this.surfpropertybox.TabIndex = 3;
             this.surfpropertybox.SelectedIndexChanged += new System.EventHandler(this.surfacepropertybox_SelectedIndexChanged);
             // 
             // label14
@@ -467,6 +478,7 @@
             this.surfvertBox.Name = "surfvertBox";
             this.surfvertBox.Size = new System.Drawing.Size(70, 20);
             this.surfvertBox.TabIndex = 20;
+            this.surfvertBox.TabStop = false;
             this.surfvertBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // surffaceBox
@@ -476,6 +488,7 @@
             this.surffaceBox.Name = "surffaceBox";
             this.surffaceBox.Size = new System.Drawing.Size(70, 20);
             this.surffaceBox.TabIndex = 21;
+            this.surffaceBox.TabStop = false;
             this.surffaceBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label23
@@ -504,7 +517,7 @@
             this.surfsectionBox.Location = new System.Drawing.Point(59, 25);
             this.surfsectionBox.Name = "surfsectionBox";
             this.surfsectionBox.Size = new System.Drawing.Size(75, 21);
-            this.surfsectionBox.TabIndex = 8;
+            this.surfsectionBox.TabIndex = 1;
             this.surfsectionBox.SelectedIndexChanged += new System.EventHandler(this.SurfsectionBox_SelectedIndexChanged);
             // 
             // label17
@@ -523,7 +536,7 @@
             this.surfmaterialBox.Location = new System.Drawing.Point(191, 25);
             this.surfmaterialBox.Name = "surfmaterialBox";
             this.surfmaterialBox.Size = new System.Drawing.Size(75, 21);
-            this.surfmaterialBox.TabIndex = 14;
+            this.surfmaterialBox.TabIndex = 2;
             this.surfmaterialBox.SelectedIndexChanged += new System.EventHandler(this.SurfmaterialBox_SelectedIndexChanged);
             // 
             // SectionViews
@@ -555,12 +568,14 @@
             this.chkPop.Location = new System.Drawing.Point(159, 542);
             this.chkPop.Name = "chkPop";
             this.chkPop.Size = new System.Drawing.Size(102, 17);
-            this.chkPop.TabIndex = 101;
+            this.chkPop.TabIndex = 8;
             this.chkPop.Text = "Draw POP Data";
             this.chkPop.UseVisualStyleBackColor = true;
             // 
             // masterBox
             // 
+            this.masterBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.masterBox.CheckBoxes = true;
             this.masterBox.Location = new System.Drawing.Point(3, 33);
             this.masterBox.Name = "masterBox";
@@ -577,7 +592,7 @@
             this.chkWireframe.Location = new System.Drawing.Point(159, 519);
             this.chkWireframe.Name = "chkWireframe";
             this.chkWireframe.Size = new System.Drawing.Size(111, 17);
-            this.chkWireframe.TabIndex = 98;
+            this.chkWireframe.TabIndex = 7;
             this.chkWireframe.Text = "Wireframe Hidden";
             this.chkWireframe.UseVisualStyleBackColor = true;
             // 
@@ -590,7 +605,7 @@
             this.chkHover.Location = new System.Drawing.Point(159, 496);
             this.chkHover.Name = "chkHover";
             this.chkHover.Size = new System.Drawing.Size(83, 17);
-            this.chkHover.TabIndex = 97;
+            this.chkHover.TabIndex = 6;
             this.chkHover.Text = "Flash Hover";
             this.chkHover.UseVisualStyleBackColor = true;
             // 
@@ -603,7 +618,7 @@
             this.chkSection.Location = new System.Drawing.Point(159, 473);
             this.chkSection.Name = "chkSection";
             this.chkSection.Size = new System.Drawing.Size(90, 17);
-            this.chkSection.TabIndex = 96;
+            this.chkSection.TabIndex = 5;
             this.chkSection.Text = "Flash Section";
             this.chkSection.UseVisualStyleBackColor = true;
             this.chkSection.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
@@ -614,7 +629,7 @@
             this.button1.Location = new System.Drawing.Point(70, 469);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(61, 23);
-            this.button1.TabIndex = 95;
+            this.button1.TabIndex = 4;
             this.button1.Text = "Export";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click_1);
@@ -625,7 +640,7 @@
             this.importBtn.Location = new System.Drawing.Point(3, 469);
             this.importBtn.Name = "importBtn";
             this.importBtn.Size = new System.Drawing.Size(61, 23);
-            this.importBtn.TabIndex = 94;
+            this.importBtn.TabIndex = 3;
             this.importBtn.Text = "Import";
             this.importBtn.UseVisualStyleBackColor = true;
             this.importBtn.Click += new System.EventHandler(this.ImportBtn_Click);
@@ -663,6 +678,7 @@
             this.objectBox.Name = "objectBox";
             this.objectBox.Size = new System.Drawing.Size(57, 20);
             this.objectBox.TabIndex = 10;
+            this.objectBox.TabStop = false;
             this.objectBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // faceBox
@@ -672,6 +688,7 @@
             this.faceBox.Name = "faceBox";
             this.faceBox.Size = new System.Drawing.Size(57, 20);
             this.faceBox.TabIndex = 7;
+            this.faceBox.TabStop = false;
             this.faceBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label8
@@ -692,7 +709,7 @@
             this.sectionBox.Location = new System.Drawing.Point(3, 6);
             this.sectionBox.Name = "sectionBox";
             this.sectionBox.Size = new System.Drawing.Size(167, 21);
-            this.sectionBox.TabIndex = 5;
+            this.sectionBox.TabIndex = 1;
             this.sectionBox.SelectedIndexChanged += new System.EventHandler(this.SectionBox_SelectedIndexChanged);
             // 
             // viewBox
@@ -702,11 +719,12 @@
             this.viewBox.Location = new System.Drawing.Point(176, 6);
             this.viewBox.Name = "viewBox";
             this.viewBox.Size = new System.Drawing.Size(106, 21);
-            this.viewBox.TabIndex = 4;
+            this.viewBox.TabIndex = 2;
             this.viewBox.SelectedIndexChanged += new System.EventHandler(this.ViewBox_SelectedIndexChanged);
             // 
             // TextureData
             // 
+            this.TextureData.AutoScroll = true;
             this.TextureData.Controls.Add(this.groupBox5);
             this.TextureData.Controls.Add(this.bitm);
             this.TextureData.Location = new System.Drawing.Point(4, 22);
@@ -719,101 +737,257 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.tBox);
-            this.groupBox5.Controls.Add(this.textureBox);
-            this.groupBox5.Controls.Add(this.heightBox);
-            this.groupBox5.Controls.Add(this.label5);
+            this.groupBox5.Controls.Add(this.vertAlphaBox);
+            this.groupBox5.Controls.Add(this.label60);
+            this.groupBox5.Controls.Add(this.textureScrollTBox);
+            this.groupBox5.Controls.Add(this.textureScrollSBox);
+            this.groupBox5.Controls.Add(this.label58);
+            this.groupBox5.Controls.Add(this.label59);
             this.groupBox5.Controls.Add(this.label4);
+            this.groupBox5.Controls.Add(this.heightBox);
+            this.groupBox5.Controls.Add(this.label56);
+            this.groupBox5.Controls.Add(this.textureModeTBox);
+            this.groupBox5.Controls.Add(this.label22);
+            this.groupBox5.Controls.Add(this.textureAlphaBox);
+            this.groupBox5.Controls.Add(this.label55);
+            this.groupBox5.Controls.Add(this.textureCodecBox);
+            this.groupBox5.Controls.Add(this.label33);
+            this.groupBox5.Controls.Add(this.textureModeSBox);
+            this.groupBox5.Controls.Add(this.textureBox);
+            this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.label3);
             this.groupBox5.Controls.Add(this.widthBox);
-            this.groupBox5.Location = new System.Drawing.Point(6, 299);
+            this.groupBox5.Location = new System.Drawing.Point(3, 294);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(280, 100);
+            this.groupBox5.Size = new System.Drawing.Size(282, 241);
             this.groupBox5.TabIndex = 10;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Material ";
+            this.groupBox5.Text = "q";
             // 
-            // tBox
+            // textureScrollTBox
             // 
-            this.tBox.AutoSize = true;
-            this.tBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.tBox.Location = new System.Drawing.Point(191, 80);
-            this.tBox.Margin = new System.Windows.Forms.Padding(5);
-            this.tBox.Name = "tBox";
-            this.tBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.tBox.Size = new System.Drawing.Size(81, 17);
-            this.tBox.TabIndex = 12;
-            this.tBox.Text = "Transparent";
-            this.tBox.UseVisualStyleBackColor = true;
-            this.tBox.CheckedChanged += new System.EventHandler(this.tBox_CheckedChanged);
+            this.textureScrollTBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.textureScrollTBox.Location = new System.Drawing.Point(200, 111);
+            this.textureScrollTBox.Margin = new System.Windows.Forms.Padding(5);
+            this.textureScrollTBox.Name = "textureScrollTBox";
+            this.textureScrollTBox.Size = new System.Drawing.Size(70, 20);
+            this.textureScrollTBox.TabIndex = 24;
+            this.textureScrollTBox.TextChanged += new System.EventHandler(this.textureScrollTBox_TextChanged);
+            // 
+            // textureScrollSBox
+            // 
+            this.textureScrollSBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.textureScrollSBox.Location = new System.Drawing.Point(69, 111);
+            this.textureScrollSBox.Margin = new System.Windows.Forms.Padding(5);
+            this.textureScrollSBox.Name = "textureScrollSBox";
+            this.textureScrollSBox.Size = new System.Drawing.Size(70, 20);
+            this.textureScrollSBox.TabIndex = 23;
+            this.textureScrollSBox.TextChanged += new System.EventHandler(this.textureScrollSBox_TextChanged);
+            // 
+            // label58
+            // 
+            this.label58.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label58.AutoSize = true;
+            this.label58.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label58.Location = new System.Drawing.Point(150, 114);
+            this.label58.Margin = new System.Windows.Forms.Padding(5);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(40, 13);
+            this.label58.TabIndex = 22;
+            this.label58.Text = "Scroll T";
+            // 
+            // label59
+            // 
+            this.label59.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label59.AutoSize = true;
+            this.label59.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label59.Location = new System.Drawing.Point(15, 114);
+            this.label59.Margin = new System.Windows.Forms.Padding(5);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(42, 13);
+            this.label59.TabIndex = 21;
+            this.label59.Text = "Scroll S";
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(153, 53);
+            this.label4.Margin = new System.Windows.Forms.Padding(5);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(37, 13);
+            this.label4.TabIndex = 18;
+            this.label4.Text = "Height";
+            // 
+            // heightBox
+            // 
+            this.heightBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.heightBox.Enabled = false;
+            this.heightBox.Location = new System.Drawing.Point(200, 50);
+            this.heightBox.Margin = new System.Windows.Forms.Padding(5);
+            this.heightBox.Name = "heightBox";
+            this.heightBox.Size = new System.Drawing.Size(70, 20);
+            this.heightBox.TabIndex = 3;
+            // 
+            // label56
+            // 
+            this.label56.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label56.AutoSize = true;
+            this.label56.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label56.Location = new System.Drawing.Point(148, 83);
+            this.label56.Margin = new System.Windows.Forms.Padding(5);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(42, 13);
+            this.label56.TabIndex = 16;
+            this.label56.Text = "Mode T";
+            // 
+            // textureModeTBox
+            // 
+            this.textureModeTBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.textureModeTBox.FormattingEnabled = true;
+            this.textureModeTBox.Items.AddRange(new object[] {
+            "Wrap",
+            "Mirror"});
+            this.textureModeTBox.Location = new System.Drawing.Point(200, 80);
+            this.textureModeTBox.Margin = new System.Windows.Forms.Padding(5);
+            this.textureModeTBox.Name = "textureModeTBox";
+            this.textureModeTBox.Size = new System.Drawing.Size(70, 21);
+            this.textureModeTBox.TabIndex = 5;
+            this.textureModeTBox.SelectedIndexChanged += new System.EventHandler(this.textureModeTBox_SelectedIndexChanged);
+            // 
+            // label22
+            // 
+            this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label22.Location = new System.Drawing.Point(25, 144);
+            this.label22.Margin = new System.Windows.Forms.Padding(5);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(34, 13);
+            this.label22.TabIndex = 14;
+            this.label22.Text = "Alpha";
+            // 
+            // textureAlphaBox
+            // 
+            this.textureAlphaBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.textureAlphaBox.FormattingEnabled = true;
+            this.textureAlphaBox.Items.AddRange(new object[] {
+            "Opaque",
+            "Transparent",
+            "Translucent"});
+            this.textureAlphaBox.Location = new System.Drawing.Point(69, 141);
+            this.textureAlphaBox.Margin = new System.Windows.Forms.Padding(5);
+            this.textureAlphaBox.Name = "textureAlphaBox";
+            this.textureAlphaBox.Size = new System.Drawing.Size(201, 21);
+            this.textureAlphaBox.TabIndex = 6;
+            this.textureAlphaBox.SelectedIndexChanged += new System.EventHandler(this.textureAlphaBox_SelectedIndexChanged);
+            // 
+            // label55
+            // 
+            this.label55.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label55.AutoSize = true;
+            this.label55.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label55.Location = new System.Drawing.Point(22, 205);
+            this.label55.Margin = new System.Windows.Forms.Padding(5);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(37, 13);
+            this.label55.TabIndex = 12;
+            this.label55.Text = "Codec";
+            this.label55.Visible = false;
+            // 
+            // textureCodecBox
+            // 
+            this.textureCodecBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.textureCodecBox.FormattingEnabled = true;
+            this.textureCodecBox.Items.AddRange(new object[] {
+            "RGBA16",
+            "RGBA32"});
+            this.textureCodecBox.Location = new System.Drawing.Point(69, 202);
+            this.textureCodecBox.Margin = new System.Windows.Forms.Padding(5);
+            this.textureCodecBox.Name = "textureCodecBox";
+            this.textureCodecBox.Size = new System.Drawing.Size(201, 21);
+            this.textureCodecBox.TabIndex = 7;
+            this.textureCodecBox.Visible = false;
+            this.textureCodecBox.SelectedIndexChanged += new System.EventHandler(this.textureCodecBox_SelectedIndexChanged);
+            // 
+            // label33
+            // 
+            this.label33.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label33.AutoSize = true;
+            this.label33.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label33.Location = new System.Drawing.Point(12, 83);
+            this.label33.Margin = new System.Windows.Forms.Padding(5);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(47, 13);
+            this.label33.TabIndex = 10;
+            this.label33.Text = "Mode  S";
+            // 
+            // textureModeSBox
+            // 
+            this.textureModeSBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.textureModeSBox.FormattingEnabled = true;
+            this.textureModeSBox.Items.AddRange(new object[] {
+            "Wrap",
+            "Mirror"});
+            this.textureModeSBox.Location = new System.Drawing.Point(69, 80);
+            this.textureModeSBox.Margin = new System.Windows.Forms.Padding(5);
+            this.textureModeSBox.Name = "textureModeSBox";
+            this.textureModeSBox.Size = new System.Drawing.Size(70, 21);
+            this.textureModeSBox.TabIndex = 4;
+            this.textureModeSBox.SelectedIndexChanged += new System.EventHandler(this.textureModeBox_SelectedIndexChanged);
             // 
             // textureBox
             // 
+            this.textureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.textureBox.FormattingEnabled = true;
-            this.textureBox.Location = new System.Drawing.Point(43, 19);
+            this.textureBox.Location = new System.Drawing.Point(41, 19);
             this.textureBox.Margin = new System.Windows.Forms.Padding(5);
             this.textureBox.Name = "textureBox";
             this.textureBox.Size = new System.Drawing.Size(229, 21);
             this.textureBox.TabIndex = 1;
             this.textureBox.SelectedIndexChanged += new System.EventHandler(this.Matbox_SelectedIndexChanged);
             // 
-            // heightBox
-            // 
-            this.heightBox.Enabled = false;
-            this.heightBox.Location = new System.Drawing.Point(71, 50);
-            this.heightBox.Margin = new System.Windows.Forms.Padding(5);
-            this.heightBox.Name = "heightBox";
-            this.heightBox.Size = new System.Drawing.Size(75, 20);
-            this.heightBox.TabIndex = 2;
-            // 
             // label5
             // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(156, 53);
+            this.label5.Location = new System.Drawing.Point(26, 53);
             this.label5.Margin = new System.Windows.Forms.Padding(5);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(33, 13);
             this.label5.TabIndex = 6;
             this.label5.Text = "Width";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(28, 53);
-            this.label4.Margin = new System.Windows.Forms.Padding(5);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(37, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Height";
-            // 
             // label3
             // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(6, 22);
+            this.label3.Location = new System.Drawing.Point(18, 22);
             this.label3.Margin = new System.Windows.Forms.Padding(5);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(27, 13);
+            this.label3.Size = new System.Drawing.Size(13, 13);
             this.label3.TabIndex = 4;
-            this.label3.Text = "ID #";
+            this.label3.Text = "#";
             // 
             // widthBox
             // 
+            this.widthBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.widthBox.Enabled = false;
-            this.widthBox.Location = new System.Drawing.Point(197, 50);
+            this.widthBox.Location = new System.Drawing.Point(69, 50);
             this.widthBox.Margin = new System.Windows.Forms.Padding(5);
             this.widthBox.Name = "widthBox";
-            this.widthBox.Size = new System.Drawing.Size(75, 20);
-            this.widthBox.TabIndex = 3;
+            this.widthBox.Size = new System.Drawing.Size(70, 20);
+            this.widthBox.TabIndex = 2;
             // 
             // bitm
             // 
             this.bitm.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.bitm.Location = new System.Drawing.Point(6, 18);
+            this.bitm.Location = new System.Drawing.Point(3, 6);
             this.bitm.Name = "bitm";
-            this.bitm.Size = new System.Drawing.Size(275, 275);
+            this.bitm.Size = new System.Drawing.Size(282, 282);
             this.bitm.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.bitm.TabIndex = 0;
             this.bitm.TabStop = false;
@@ -821,6 +995,12 @@
             // CourseInfo
             // 
             this.CourseInfo.AutoScroll = true;
+            this.CourseInfo.Controls.Add(this.label57);
+            this.CourseInfo.Controls.Add(this.textBox6);
+            this.CourseInfo.Controls.Add(this.label1);
+            this.CourseInfo.Controls.Add(this.comboBox3);
+            this.CourseInfo.Controls.Add(this.ImportData);
+            this.CourseInfo.Controls.Add(this.SaveBtn);
             this.CourseInfo.Controls.Add(this.label51);
             this.CourseInfo.Controls.Add(this.groupBox7);
             this.CourseInfo.Controls.Add(this.waterBox);
@@ -863,11 +1043,74 @@
             this.CourseInfo.Text = "Course Info";
             this.CourseInfo.UseVisualStyleBackColor = true;
             // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label57.Location = new System.Drawing.Point(9, 579);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(31, 13);
+            this.label57.TabIndex = 186;
+            this.label57.Text = "Point";
+            // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(48, 576);
+            this.textBox6.Margin = new System.Windows.Forms.Padding(5);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(55, 20);
+            this.textBox6.TabIndex = 185;
+            this.textBox6.Text = "0";
+            this.textBox6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(216, 579);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(34, 13);
+            this.label1.TabIndex = 184;
+            this.label1.Text = "Bomb";
+            // 
+            // comboBox3
+            // 
+            this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.Location = new System.Drawing.Point(114, 576);
+            this.comboBox3.Margin = new System.Windows.Forms.Padding(5);
+            this.comboBox3.Name = "comboBox3";
+            this.comboBox3.Size = new System.Drawing.Size(89, 21);
+            this.comboBox3.TabIndex = 183;
+            // 
+            // ImportData
+            // 
+            this.ImportData.AutoSize = true;
+            this.ImportData.Location = new System.Drawing.Point(5, 24);
+            this.ImportData.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.ImportData.Name = "ImportData";
+            this.ImportData.Size = new System.Drawing.Size(65, 23);
+            this.ImportData.TabIndex = 1;
+            this.ImportData.Text = "Import";
+            this.ImportData.UseVisualStyleBackColor = true;
+            this.ImportData.Click += new System.EventHandler(this.ImportCourseInfo);
+            // 
+            // SaveBtn
+            // 
+            this.SaveBtn.AutoSize = true;
+            this.SaveBtn.Location = new System.Drawing.Point(76, 24);
+            this.SaveBtn.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.SaveBtn.Name = "SaveBtn";
+            this.SaveBtn.Size = new System.Drawing.Size(65, 23);
+            this.SaveBtn.TabIndex = 2;
+            this.SaveBtn.Text = "Export";
+            this.SaveBtn.UseVisualStyleBackColor = true;
+            this.SaveBtn.Click += new System.EventHandler(this.SaveBtn_Click);
+            // 
             // label51
             // 
             this.label51.AutoSize = true;
             this.label51.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label51.Location = new System.Drawing.Point(215, 577);
+            this.label51.Location = new System.Drawing.Point(216, 612);
             this.label51.Name = "label51";
             this.label51.Size = new System.Drawing.Size(43, 13);
             this.label51.TabIndex = 178;
@@ -899,10 +1142,10 @@
             this.groupBox7.Controls.Add(this.startYBox);
             this.groupBox7.Controls.Add(this.startXBox);
             this.groupBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox7.Location = new System.Drawing.Point(5, 166);
+            this.groupBox7.Location = new System.Drawing.Point(5, 205);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(280, 183);
-            this.groupBox7.TabIndex = 153;
+            this.groupBox7.TabIndex = 12;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Minimap";
             // 
@@ -922,7 +1165,7 @@
             this.MapScaleBox.Margin = new System.Windows.Forms.Padding(5);
             this.MapScaleBox.Name = "MapScaleBox";
             this.MapScaleBox.Size = new System.Drawing.Size(147, 19);
-            this.MapScaleBox.TabIndex = 16;
+            this.MapScaleBox.TabIndex = 7;
             this.MapScaleBox.Text = "0";
             this.MapScaleBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -962,7 +1205,7 @@
             this.mapYBox.Margin = new System.Windows.Forms.Padding(5);
             this.mapYBox.Name = "mapYBox";
             this.mapYBox.Size = new System.Drawing.Size(50, 19);
-            this.mapYBox.TabIndex = 13;
+            this.mapYBox.TabIndex = 4;
             this.mapYBox.Text = "0";
             this.mapYBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -972,7 +1215,7 @@
             this.mapXBox.Margin = new System.Windows.Forms.Padding(5);
             this.mapXBox.Name = "mapXBox";
             this.mapXBox.Size = new System.Drawing.Size(50, 19);
-            this.mapXBox.TabIndex = 12;
+            this.mapXBox.TabIndex = 3;
             this.mapXBox.Text = "0";
             this.mapXBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -991,7 +1234,7 @@
             this.mapBtn.Location = new System.Drawing.Point(179, 21);
             this.mapBtn.Name = "mapBtn";
             this.mapBtn.Size = new System.Drawing.Size(25, 23);
-            this.mapBtn.TabIndex = 11;
+            this.mapBtn.TabIndex = 2;
             this.mapBtn.Text = "...";
             this.mapBtn.UseVisualStyleBackColor = true;
             this.mapBtn.Click += new System.EventHandler(this.mapBtn_Click_1);
@@ -1002,7 +1245,7 @@
             this.mapBox.Margin = new System.Windows.Forms.Padding(5);
             this.mapBox.Name = "mapBox";
             this.mapBox.Size = new System.Drawing.Size(164, 19);
-            this.mapBox.TabIndex = 10;
+            this.mapBox.TabIndex = 1;
             // 
             // MapRBox
             // 
@@ -1010,7 +1253,7 @@
             this.MapRBox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
             this.MapRBox.Name = "MapRBox";
             this.MapRBox.Size = new System.Drawing.Size(60, 19);
-            this.MapRBox.TabIndex = 17;
+            this.MapRBox.TabIndex = 8;
             this.MapRBox.Text = "0";
             this.MapRBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.MapRBox.TextChanged += new System.EventHandler(this.MapR_TextChanged);
@@ -1021,7 +1264,7 @@
             this.MapGBox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
             this.MapGBox.Name = "MapGBox";
             this.MapGBox.Size = new System.Drawing.Size(60, 19);
-            this.MapGBox.TabIndex = 18;
+            this.MapGBox.TabIndex = 9;
             this.MapGBox.Text = "0";
             this.MapGBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.MapGBox.TextChanged += new System.EventHandler(this.MapG_TextChanged);
@@ -1032,7 +1275,7 @@
             this.MapBBox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
             this.MapBBox.Name = "MapBBox";
             this.MapBBox.Size = new System.Drawing.Size(60, 19);
-            this.MapBBox.TabIndex = 19;
+            this.MapBBox.TabIndex = 10;
             this.MapBBox.Text = "0";
             this.MapBBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.MapBBox.TextChanged += new System.EventHandler(this.MapB_TextChanged);
@@ -1073,7 +1316,7 @@
             this.ColorPickMap.Location = new System.Drawing.Point(220, 154);
             this.ColorPickMap.Name = "ColorPickMap";
             this.ColorPickMap.Size = new System.Drawing.Size(24, 23);
-            this.ColorPickMap.TabIndex = 20;
+            this.ColorPickMap.TabIndex = 11;
             this.ColorPickMap.UseVisualStyleBackColor = false;
             this.ColorPickMap.Click += new System.EventHandler(this.ColorPickMap_Click);
             // 
@@ -1124,7 +1367,7 @@
             this.startYBox.Margin = new System.Windows.Forms.Padding(5);
             this.startYBox.Name = "startYBox";
             this.startYBox.Size = new System.Drawing.Size(50, 19);
-            this.startYBox.TabIndex = 15;
+            this.startYBox.TabIndex = 6;
             this.startYBox.Text = "0";
             this.startYBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -1134,17 +1377,17 @@
             this.startXBox.Margin = new System.Windows.Forms.Padding(5);
             this.startXBox.Name = "startXBox";
             this.startXBox.Size = new System.Drawing.Size(50, 19);
-            this.startXBox.TabIndex = 14;
+            this.startXBox.TabIndex = 5;
             this.startXBox.Text = "0";
             this.startXBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // waterBox
             // 
-            this.waterBox.Location = new System.Drawing.Point(48, 574);
+            this.waterBox.Location = new System.Drawing.Point(115, 609);
             this.waterBox.Margin = new System.Windows.Forms.Padding(5);
             this.waterBox.Name = "waterBox";
-            this.waterBox.Size = new System.Drawing.Size(147, 20);
-            this.waterBox.TabIndex = 38;
+            this.waterBox.Size = new System.Drawing.Size(89, 20);
+            this.waterBox.TabIndex = 16;
             this.waterBox.Text = "0";
             this.waterBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -1152,7 +1395,7 @@
             // 
             this.label32.AutoSize = true;
             this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label32.Location = new System.Drawing.Point(215, 547);
+            this.label32.Location = new System.Drawing.Point(215, 549);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(31, 13);
             this.label32.TabIndex = 152;
@@ -1167,7 +1410,7 @@
             this.groupBox4.Controls.Add(this.comboBox2);
             this.groupBox4.Controls.Add(this.label18);
             this.groupBox4.Controls.Add(this.comboBox1);
-            this.groupBox4.Location = new System.Drawing.Point(5, 676);
+            this.groupBox4.Location = new System.Drawing.Point(5, 711);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(280, 110);
             this.groupBox4.TabIndex = 151;
@@ -1192,7 +1435,7 @@
             this.checkBox2.Margin = new System.Windows.Forms.Padding(5);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(81, 17);
-            this.checkBox2.TabIndex = 46;
+            this.checkBox2.TabIndex = 24;
             this.checkBox2.Text = "Slippery Ice";
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
@@ -1202,7 +1445,7 @@
             this.textBox10.Margin = new System.Windows.Forms.Padding(5);
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new System.Drawing.Size(50, 20);
-            this.textBox10.TabIndex = 47;
+            this.textBox10.TabIndex = 25;
             this.textBox10.Text = "0";
             // 
             // label19
@@ -1223,7 +1466,7 @@
             this.comboBox2.Margin = new System.Windows.Forms.Padding(5);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(192, 21);
-            this.comboBox2.TabIndex = 45;
+            this.comboBox2.TabIndex = 23;
             // 
             // label18
             // 
@@ -1243,13 +1486,13 @@
             this.comboBox1.Margin = new System.Windows.Forms.Padding(5);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(192, 21);
-            this.comboBox1.TabIndex = 44;
+            this.comboBox1.TabIndex = 22;
             // 
             // label12
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label12.Location = new System.Drawing.Point(108, 547);
+            this.label12.Location = new System.Drawing.Point(111, 549);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(26, 13);
             this.label12.TabIndex = 149;
@@ -1257,11 +1500,11 @@
             // 
             // EchoStopBox
             // 
-            this.EchoStopBox.Location = new System.Drawing.Point(145, 544);
+            this.EchoStopBox.Location = new System.Drawing.Point(148, 546);
             this.EchoStopBox.Margin = new System.Windows.Forms.Padding(5);
             this.EchoStopBox.Name = "EchoStopBox";
-            this.EchoStopBox.Size = new System.Drawing.Size(50, 20);
-            this.EchoStopBox.TabIndex = 37;
+            this.EchoStopBox.Size = new System.Drawing.Size(55, 20);
+            this.EchoStopBox.TabIndex = 15;
             this.EchoStopBox.Text = "0";
             this.EchoStopBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -1269,7 +1512,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label11.Location = new System.Drawing.Point(11, 547);
+            this.label11.Location = new System.Drawing.Point(11, 549);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(29, 13);
             this.label11.TabIndex = 147;
@@ -1277,18 +1520,18 @@
             // 
             // EchoStartBox
             // 
-            this.EchoStartBox.Location = new System.Drawing.Point(48, 544);
+            this.EchoStartBox.Location = new System.Drawing.Point(48, 546);
             this.EchoStartBox.Margin = new System.Windows.Forms.Padding(5);
             this.EchoStartBox.Name = "EchoStartBox";
-            this.EchoStartBox.Size = new System.Drawing.Size(50, 20);
-            this.EchoStartBox.TabIndex = 36;
+            this.EchoStartBox.Size = new System.Drawing.Size(55, 20);
+            this.EchoStartBox.TabIndex = 14;
             this.EchoStartBox.Text = "0";
             this.EchoStartBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label7
             // 
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label7.Location = new System.Drawing.Point(162, 599);
+            this.label7.Location = new System.Drawing.Point(163, 634);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(40, 13);
             this.label7.TabIndex = 145;
@@ -1297,18 +1540,18 @@
             // 
             // sp4Box
             // 
-            this.sp4Box.Location = new System.Drawing.Point(162, 617);
+            this.sp4Box.Location = new System.Drawing.Point(163, 652);
             this.sp4Box.Margin = new System.Windows.Forms.Padding(5);
             this.sp4Box.Name = "sp4Box";
             this.sp4Box.Size = new System.Drawing.Size(40, 20);
-            this.sp4Box.TabIndex = 42;
+            this.sp4Box.TabIndex = 20;
             this.sp4Box.Text = "1";
             this.sp4Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label43
             // 
             this.label43.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label43.Location = new System.Drawing.Point(12, 599);
+            this.label43.Location = new System.Drawing.Point(13, 634);
             this.label43.Name = "label43";
             this.label43.Size = new System.Drawing.Size(40, 13);
             this.label43.TabIndex = 143;
@@ -1317,18 +1560,18 @@
             // 
             // sp1Box
             // 
-            this.sp1Box.Location = new System.Drawing.Point(12, 617);
+            this.sp1Box.Location = new System.Drawing.Point(13, 652);
             this.sp1Box.Margin = new System.Windows.Forms.Padding(5);
             this.sp1Box.Name = "sp1Box";
             this.sp1Box.Size = new System.Drawing.Size(40, 20);
-            this.sp1Box.TabIndex = 39;
+            this.sp1Box.TabIndex = 17;
             this.sp1Box.Text = "1";
             this.sp1Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label42
             // 
             this.label42.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label42.Location = new System.Drawing.Point(62, 599);
+            this.label42.Location = new System.Drawing.Point(63, 634);
             this.label42.Name = "label42";
             this.label42.Size = new System.Drawing.Size(40, 13);
             this.label42.TabIndex = 141;
@@ -1337,18 +1580,18 @@
             // 
             // sp2Box
             // 
-            this.sp2Box.Location = new System.Drawing.Point(62, 617);
+            this.sp2Box.Location = new System.Drawing.Point(63, 652);
             this.sp2Box.Margin = new System.Windows.Forms.Padding(5);
             this.sp2Box.Name = "sp2Box";
             this.sp2Box.Size = new System.Drawing.Size(40, 20);
-            this.sp2Box.TabIndex = 40;
+            this.sp2Box.TabIndex = 18;
             this.sp2Box.Text = "1";
             this.sp2Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label41
             // 
             this.label41.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label41.Location = new System.Drawing.Point(112, 599);
+            this.label41.Location = new System.Drawing.Point(113, 634);
             this.label41.Name = "label41";
             this.label41.Size = new System.Drawing.Size(40, 13);
             this.label41.TabIndex = 139;
@@ -1357,11 +1600,11 @@
             // 
             // sp3Box
             // 
-            this.sp3Box.Location = new System.Drawing.Point(112, 617);
+            this.sp3Box.Location = new System.Drawing.Point(113, 652);
             this.sp3Box.Margin = new System.Windows.Forms.Padding(5);
             this.sp3Box.Name = "sp3Box";
             this.sp3Box.Size = new System.Drawing.Size(40, 20);
-            this.sp3Box.TabIndex = 41;
+            this.sp3Box.TabIndex = 19;
             this.sp3Box.Text = "1";
             this.sp3Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -1369,7 +1612,7 @@
             // 
             this.label40.AutoSize = true;
             this.label40.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label40.Location = new System.Drawing.Point(215, 650);
+            this.label40.Location = new System.Drawing.Point(216, 685);
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(34, 13);
             this.label40.TabIndex = 137;
@@ -1379,7 +1622,7 @@
             // 
             this.label39.AutoSize = true;
             this.label39.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label39.Location = new System.Drawing.Point(215, 620);
+            this.label39.Location = new System.Drawing.Point(215, 655);
             this.label39.Name = "label39";
             this.label39.Size = new System.Drawing.Size(38, 13);
             this.label39.TabIndex = 136;
@@ -1388,29 +1631,24 @@
             // songBox
             // 
             this.songBox.FormattingEnabled = true;
-            this.songBox.Location = new System.Drawing.Point(5, 647);
+            this.songBox.Location = new System.Drawing.Point(14, 682);
             this.songBox.Margin = new System.Windows.Forms.Padding(5);
             this.songBox.Name = "songBox";
-            this.songBox.Size = new System.Drawing.Size(197, 21);
-            this.songBox.TabIndex = 43;
+            this.songBox.Size = new System.Drawing.Size(189, 21);
+            this.songBox.TabIndex = 21;
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.SkyRMB);
-            this.groupBox2.Controls.Add(this.SkyGMB);
-            this.groupBox2.Controls.Add(this.SkyBMB);
             this.groupBox2.Controls.Add(this.SkyRB);
             this.groupBox2.Controls.Add(this.SkyGB);
             this.groupBox2.Controls.Add(this.SkyBB);
-            this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.SkyRT);
             this.groupBox2.Controls.Add(this.SkyGT);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.SkyBT);
-            this.groupBox2.Controls.Add(this.SkyRMT);
-            this.groupBox2.Controls.Add(this.ColorPickMB);
-            this.groupBox2.Controls.Add(this.SkyGMT);
-            this.groupBox2.Controls.Add(this.SkyBMT);
+            this.groupBox2.Controls.Add(this.SkyRM);
+            this.groupBox2.Controls.Add(this.SkyGM);
+            this.groupBox2.Controls.Add(this.SkyBM);
             this.groupBox2.Controls.Add(this.ColorPickB);
             this.groupBox2.Controls.Add(this.label29);
             this.groupBox2.Controls.Add(this.label27);
@@ -1420,97 +1658,53 @@
             this.groupBox2.Controls.Add(this.label30);
             this.groupBox2.Controls.Add(this.label31);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox2.Location = new System.Drawing.Point(5, 355);
+            this.groupBox2.Location = new System.Drawing.Point(5, 394);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(280, 178);
-            this.groupBox2.TabIndex = 127;
+            this.groupBox2.Size = new System.Drawing.Size(280, 137);
+            this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Sky Colors";
             // 
-            // SkyRMB
-            // 
-            this.SkyRMB.Location = new System.Drawing.Point(8, 120);
-            this.SkyRMB.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.SkyRMB.Name = "SkyRMB";
-            this.SkyRMB.Size = new System.Drawing.Size(60, 19);
-            this.SkyRMB.TabIndex = 28;
-            this.SkyRMB.Text = "0";
-            this.SkyRMB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.SkyRMB.TextChanged += new System.EventHandler(this.SkyRMB_TextChanged);
-            // 
-            // SkyGMB
-            // 
-            this.SkyGMB.Location = new System.Drawing.Point(80, 120);
-            this.SkyGMB.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.SkyGMB.Name = "SkyGMB";
-            this.SkyGMB.Size = new System.Drawing.Size(60, 19);
-            this.SkyGMB.TabIndex = 29;
-            this.SkyGMB.Text = "0";
-            this.SkyGMB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.SkyGMB.TextChanged += new System.EventHandler(this.SkyGMB_TextChanged);
-            // 
-            // SkyBMB
-            // 
-            this.SkyBMB.Location = new System.Drawing.Point(150, 120);
-            this.SkyBMB.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.SkyBMB.Name = "SkyBMB";
-            this.SkyBMB.Size = new System.Drawing.Size(60, 19);
-            this.SkyBMB.TabIndex = 30;
-            this.SkyBMB.Text = "0";
-            this.SkyBMB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.SkyBMB.TextChanged += new System.EventHandler(this.SkyBMB_TextChanged);
-            // 
             // SkyRB
             // 
-            this.SkyRB.Location = new System.Drawing.Point(8, 149);
-            this.SkyRB.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
+            this.SkyRB.Location = new System.Drawing.Point(8, 103);
+            this.SkyRB.Margin = new System.Windows.Forms.Padding(5);
             this.SkyRB.Name = "SkyRB";
             this.SkyRB.Size = new System.Drawing.Size(60, 19);
-            this.SkyRB.TabIndex = 32;
+            this.SkyRB.TabIndex = 9;
             this.SkyRB.Text = "0";
             this.SkyRB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.SkyRB.TextChanged += new System.EventHandler(this.SkyRB_TextChanged);
             // 
             // SkyGB
             // 
-            this.SkyGB.Location = new System.Drawing.Point(80, 149);
-            this.SkyGB.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
+            this.SkyGB.Location = new System.Drawing.Point(80, 103);
+            this.SkyGB.Margin = new System.Windows.Forms.Padding(5);
             this.SkyGB.Name = "SkyGB";
             this.SkyGB.Size = new System.Drawing.Size(60, 19);
-            this.SkyGB.TabIndex = 33;
+            this.SkyGB.TabIndex = 10;
             this.SkyGB.Text = "0";
             this.SkyGB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.SkyGB.TextChanged += new System.EventHandler(this.SkyGB_TextChanged);
             // 
             // SkyBB
             // 
-            this.SkyBB.Location = new System.Drawing.Point(150, 149);
-            this.SkyBB.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
+            this.SkyBB.Location = new System.Drawing.Point(150, 103);
+            this.SkyBB.Margin = new System.Windows.Forms.Padding(5);
             this.SkyBB.Name = "SkyBB";
             this.SkyBB.Size = new System.Drawing.Size(60, 19);
-            this.SkyBB.TabIndex = 34;
+            this.SkyBB.TabIndex = 11;
             this.SkyBB.Text = "0";
             this.SkyBB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.SkyBB.TextChanged += new System.EventHandler(this.SkyBB_TextChanged);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(244, 124);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(24, 13);
-            this.label1.TabIndex = 103;
-            this.label1.Text = "Mid";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // SkyRT
             // 
             this.SkyRT.Location = new System.Drawing.Point(8, 45);
-            this.SkyRT.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.SkyRT.Margin = new System.Windows.Forms.Padding(5);
             this.SkyRT.Name = "SkyRT";
             this.SkyRT.Size = new System.Drawing.Size(60, 19);
-            this.SkyRT.TabIndex = 21;
+            this.SkyRT.TabIndex = 1;
             this.SkyRT.Text = "0";
             this.SkyRT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.SkyRT.TextChanged += new System.EventHandler(this.SkyRT_TextChanged);
@@ -1518,10 +1712,10 @@
             // SkyGT
             // 
             this.SkyGT.Location = new System.Drawing.Point(80, 45);
-            this.SkyGT.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.SkyGT.Margin = new System.Windows.Forms.Padding(5);
             this.SkyGT.Name = "SkyGT";
             this.SkyGT.Size = new System.Drawing.Size(60, 19);
-            this.SkyGT.TabIndex = 21;
+            this.SkyGT.TabIndex = 2;
             this.SkyGT.Text = "0";
             this.SkyGT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.SkyGT.TextChanged += new System.EventHandler(this.SkyGT_TextChanged);
@@ -1530,7 +1724,8 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(244, 153);
+            this.label2.Location = new System.Drawing.Point(244, 107);
+            this.label2.Margin = new System.Windows.Forms.Padding(5);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(26, 13);
             this.label2.TabIndex = 104;
@@ -1540,64 +1735,55 @@
             // SkyBT
             // 
             this.SkyBT.Location = new System.Drawing.Point(150, 45);
-            this.SkyBT.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.SkyBT.Margin = new System.Windows.Forms.Padding(5);
             this.SkyBT.Name = "SkyBT";
             this.SkyBT.Size = new System.Drawing.Size(60, 19);
-            this.SkyBT.TabIndex = 22;
+            this.SkyBT.TabIndex = 3;
             this.SkyBT.Text = "0";
             this.SkyBT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.SkyBT.TextChanged += new System.EventHandler(this.SkyBT_TextChanged);
             // 
-            // SkyRMT
+            // SkyRM
             // 
-            this.SkyRMT.Location = new System.Drawing.Point(8, 74);
-            this.SkyRMT.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
-            this.SkyRMT.Name = "SkyRMT";
-            this.SkyRMT.Size = new System.Drawing.Size(60, 19);
-            this.SkyRMT.TabIndex = 24;
-            this.SkyRMT.Text = "0";
-            this.SkyRMT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.SkyRMT.TextChanged += new System.EventHandler(this.SkyRMT_TextChanged);
+            this.SkyRM.Location = new System.Drawing.Point(8, 74);
+            this.SkyRM.Margin = new System.Windows.Forms.Padding(5);
+            this.SkyRM.Name = "SkyRM";
+            this.SkyRM.Size = new System.Drawing.Size(60, 19);
+            this.SkyRM.TabIndex = 5;
+            this.SkyRM.Text = "0";
+            this.SkyRM.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.SkyRM.TextChanged += new System.EventHandler(this.SkyRMT_TextChanged);
             // 
-            // ColorPickMB
+            // SkyGM
             // 
-            this.ColorPickMB.BackColor = System.Drawing.Color.Fuchsia;
-            this.ColorPickMB.Location = new System.Drawing.Point(218, 118);
-            this.ColorPickMB.Name = "ColorPickMB";
-            this.ColorPickMB.Size = new System.Drawing.Size(24, 23);
-            this.ColorPickMB.TabIndex = 31;
-            this.ColorPickMB.UseVisualStyleBackColor = false;
-            this.ColorPickMB.Click += new System.EventHandler(this.ColorPickMB_Click);
+            this.SkyGM.Location = new System.Drawing.Point(80, 74);
+            this.SkyGM.Margin = new System.Windows.Forms.Padding(5);
+            this.SkyGM.Name = "SkyGM";
+            this.SkyGM.Size = new System.Drawing.Size(60, 19);
+            this.SkyGM.TabIndex = 6;
+            this.SkyGM.Text = "0";
+            this.SkyGM.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.SkyGM.TextChanged += new System.EventHandler(this.SkyGMT_TextChanged);
             // 
-            // SkyGMT
+            // SkyBM
             // 
-            this.SkyGMT.Location = new System.Drawing.Point(80, 74);
-            this.SkyGMT.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
-            this.SkyGMT.Name = "SkyGMT";
-            this.SkyGMT.Size = new System.Drawing.Size(60, 19);
-            this.SkyGMT.TabIndex = 25;
-            this.SkyGMT.Text = "0";
-            this.SkyGMT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.SkyGMT.TextChanged += new System.EventHandler(this.SkyGMT_TextChanged);
-            // 
-            // SkyBMT
-            // 
-            this.SkyBMT.Location = new System.Drawing.Point(150, 74);
-            this.SkyBMT.Margin = new System.Windows.Forms.Padding(5, 5, 5, 8);
-            this.SkyBMT.Name = "SkyBMT";
-            this.SkyBMT.Size = new System.Drawing.Size(60, 19);
-            this.SkyBMT.TabIndex = 26;
-            this.SkyBMT.Text = "0";
-            this.SkyBMT.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.SkyBMT.TextChanged += new System.EventHandler(this.SkyBMT_TextChanged);
+            this.SkyBM.Location = new System.Drawing.Point(150, 74);
+            this.SkyBM.Margin = new System.Windows.Forms.Padding(5);
+            this.SkyBM.Name = "SkyBM";
+            this.SkyBM.Size = new System.Drawing.Size(60, 19);
+            this.SkyBM.TabIndex = 7;
+            this.SkyBM.Text = "0";
+            this.SkyBM.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.SkyBM.TextChanged += new System.EventHandler(this.SkyBMT_TextChanged);
             // 
             // ColorPickB
             // 
             this.ColorPickB.BackColor = System.Drawing.Color.Fuchsia;
-            this.ColorPickB.Location = new System.Drawing.Point(218, 147);
+            this.ColorPickB.Location = new System.Drawing.Point(218, 101);
+            this.ColorPickB.Margin = new System.Windows.Forms.Padding(5);
             this.ColorPickB.Name = "ColorPickB";
             this.ColorPickB.Size = new System.Drawing.Size(24, 23);
-            this.ColorPickB.TabIndex = 35;
+            this.ColorPickB.TabIndex = 12;
             this.ColorPickB.UseVisualStyleBackColor = false;
             this.ColorPickB.Click += new System.EventHandler(this.ColorPickB_Click);
             // 
@@ -1635,9 +1821,10 @@
             // 
             this.ColorPickT.BackColor = System.Drawing.Color.Fuchsia;
             this.ColorPickT.Location = new System.Drawing.Point(218, 43);
+            this.ColorPickT.Margin = new System.Windows.Forms.Padding(5);
             this.ColorPickT.Name = "ColorPickT";
             this.ColorPickT.Size = new System.Drawing.Size(24, 23);
-            this.ColorPickT.TabIndex = 23;
+            this.ColorPickT.TabIndex = 4;
             this.ColorPickT.UseVisualStyleBackColor = false;
             this.ColorPickT.Click += new System.EventHandler(this.ColorPickT_Click);
             // 
@@ -1645,9 +1832,10 @@
             // 
             this.ColorPickMT.BackColor = System.Drawing.Color.Fuchsia;
             this.ColorPickMT.Location = new System.Drawing.Point(218, 72);
+            this.ColorPickMT.Margin = new System.Windows.Forms.Padding(5);
             this.ColorPickMT.Name = "ColorPickMT";
             this.ColorPickMT.Size = new System.Drawing.Size(24, 23);
-            this.ColorPickMT.TabIndex = 27;
+            this.ColorPickMT.TabIndex = 8;
             this.ColorPickMT.UseVisualStyleBackColor = false;
             this.ColorPickMT.Click += new System.EventHandler(this.ColorPickMT_Click);
             // 
@@ -1656,6 +1844,7 @@
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label30.Location = new System.Drawing.Point(244, 78);
+            this.label30.Margin = new System.Windows.Forms.Padding(5);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(24, 13);
             this.label30.TabIndex = 91;
@@ -1667,6 +1856,7 @@
             this.label31.AutoSize = true;
             this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label31.Location = new System.Drawing.Point(244, 49);
+            this.label31.Margin = new System.Windows.Forms.Padding(5);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(24, 13);
             this.label31.TabIndex = 90;
@@ -1677,7 +1867,7 @@
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(208, 111);
+            this.label13.Location = new System.Drawing.Point(208, 150);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(75, 13);
             this.label13.TabIndex = 126;
@@ -1685,27 +1875,27 @@
             // 
             // ghostBtn
             // 
-            this.ghostBtn.Location = new System.Drawing.Point(177, 106);
+            this.ghostBtn.Location = new System.Drawing.Point(177, 145);
             this.ghostBtn.Name = "ghostBtn";
             this.ghostBtn.Size = new System.Drawing.Size(25, 23);
-            this.ghostBtn.TabIndex = 7;
+            this.ghostBtn.TabIndex = 9;
             this.ghostBtn.Text = "...";
             this.ghostBtn.UseVisualStyleBackColor = true;
             this.ghostBtn.Click += new System.EventHandler(this.ghostBtn_Click_1);
             // 
             // ghostBox
             // 
-            this.ghostBox.Location = new System.Drawing.Point(5, 108);
+            this.ghostBox.Location = new System.Drawing.Point(5, 147);
             this.ghostBox.Margin = new System.Windows.Forms.Padding(5);
             this.ghostBox.Name = "ghostBox";
             this.ghostBox.Size = new System.Drawing.Size(164, 20);
-            this.ghostBox.TabIndex = 6;
+            this.ghostBox.TabIndex = 8;
             // 
             // label34
             // 
             this.label34.AutoSize = true;
             this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label34.Location = new System.Drawing.Point(208, 141);
+            this.label34.Location = new System.Drawing.Point(208, 180);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(69, 13);
             this.label34.TabIndex = 120;
@@ -1713,27 +1903,27 @@
             // 
             // asmBtn
             // 
-            this.asmBtn.Location = new System.Drawing.Point(177, 136);
+            this.asmBtn.Location = new System.Drawing.Point(177, 175);
             this.asmBtn.Name = "asmBtn";
             this.asmBtn.Size = new System.Drawing.Size(25, 23);
-            this.asmBtn.TabIndex = 9;
+            this.asmBtn.TabIndex = 11;
             this.asmBtn.Text = "...";
             this.asmBtn.UseVisualStyleBackColor = true;
             this.asmBtn.Click += new System.EventHandler(this.asmBtn_Click_1);
             // 
             // asmBox
             // 
-            this.asmBox.Location = new System.Drawing.Point(5, 138);
+            this.asmBox.Location = new System.Drawing.Point(5, 177);
             this.asmBox.Margin = new System.Windows.Forms.Padding(5);
             this.asmBox.Name = "asmBox";
             this.asmBox.Size = new System.Drawing.Size(164, 20);
-            this.asmBox.TabIndex = 8;
+            this.asmBox.TabIndex = 10;
             // 
             // label26
             // 
             this.label26.AutoSize = true;
             this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.Location = new System.Drawing.Point(208, 81);
+            this.label26.Location = new System.Drawing.Point(208, 120);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(73, 13);
             this.label26.TabIndex = 117;
@@ -1741,27 +1931,27 @@
             // 
             // bannerBtn
             // 
-            this.bannerBtn.Location = new System.Drawing.Point(177, 76);
+            this.bannerBtn.Location = new System.Drawing.Point(177, 115);
             this.bannerBtn.Name = "bannerBtn";
             this.bannerBtn.Size = new System.Drawing.Size(25, 23);
-            this.bannerBtn.TabIndex = 5;
+            this.bannerBtn.TabIndex = 7;
             this.bannerBtn.Text = "...";
             this.bannerBtn.UseVisualStyleBackColor = true;
             this.bannerBtn.Click += new System.EventHandler(this.bannerBtn_Click_1);
             // 
             // bannerBox
             // 
-            this.bannerBox.Location = new System.Drawing.Point(5, 78);
+            this.bannerBox.Location = new System.Drawing.Point(5, 117);
             this.bannerBox.Margin = new System.Windows.Forms.Padding(5);
             this.bannerBox.Name = "bannerBox";
             this.bannerBox.Size = new System.Drawing.Size(164, 20);
-            this.bannerBox.TabIndex = 4;
+            this.bannerBox.TabIndex = 6;
             // 
             // label25
             // 
             this.label25.AutoSize = true;
             this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(208, 51);
+            this.label25.Location = new System.Drawing.Point(208, 90);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(77, 13);
             this.label25.TabIndex = 114;
@@ -1769,27 +1959,27 @@
             // 
             // previewBtn
             // 
-            this.previewBtn.Location = new System.Drawing.Point(177, 46);
+            this.previewBtn.Location = new System.Drawing.Point(177, 85);
             this.previewBtn.Name = "previewBtn";
             this.previewBtn.Size = new System.Drawing.Size(25, 23);
-            this.previewBtn.TabIndex = 3;
+            this.previewBtn.TabIndex = 5;
             this.previewBtn.Text = "...";
             this.previewBtn.UseVisualStyleBackColor = true;
             this.previewBtn.Click += new System.EventHandler(this.previewBtn_Click_1);
             // 
             // previewBox
             // 
-            this.previewBox.Location = new System.Drawing.Point(5, 48);
+            this.previewBox.Location = new System.Drawing.Point(5, 87);
             this.previewBox.Margin = new System.Windows.Forms.Padding(5);
             this.previewBox.Name = "previewBox";
             this.previewBox.Size = new System.Drawing.Size(164, 20);
-            this.previewBox.TabIndex = 2;
+            this.previewBox.TabIndex = 4;
             // 
             // label15
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(211, 21);
+            this.label15.Location = new System.Drawing.Point(211, 60);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(56, 13);
             this.label15.TabIndex = 83;
@@ -1797,11 +1987,11 @@
             // 
             // nameBox
             // 
-            this.nameBox.Location = new System.Drawing.Point(5, 18);
+            this.nameBox.Location = new System.Drawing.Point(5, 57);
             this.nameBox.Margin = new System.Windows.Forms.Padding(5);
             this.nameBox.Name = "nameBox";
             this.nameBox.Size = new System.Drawing.Size(197, 20);
-            this.nameBox.TabIndex = 1;
+            this.nameBox.TabIndex = 3;
             // 
             // tabControl1
             // 
@@ -1820,6 +2010,7 @@
             // 
             // Object
             // 
+            this.Object.AutoScroll = true;
             this.Object.Controls.Add(this.groupBox8);
             this.Object.Controls.Add(this.listBox1);
             this.Object.Location = new System.Drawing.Point(4, 22);
@@ -1975,38 +2166,57 @@
             this.listBox1.Size = new System.Drawing.Size(281, 264);
             this.listBox1.TabIndex = 19;
             // 
-            // SaveBtn
-            // 
-            this.SaveBtn.AutoSize = true;
-            this.SaveBtn.Location = new System.Drawing.Point(165, 13);
-            this.SaveBtn.Margin = new System.Windows.Forms.Padding(5);
-            this.SaveBtn.Name = "SaveBtn";
-            this.SaveBtn.Size = new System.Drawing.Size(65, 23);
-            this.SaveBtn.TabIndex = 95;
-            this.SaveBtn.Text = "Save";
-            this.SaveBtn.UseVisualStyleBackColor = true;
-            this.SaveBtn.Visible = false;
-            // 
             // raycastBox
             // 
             this.raycastBox.AutoSize = true;
-            this.raycastBox.Location = new System.Drawing.Point(15, 17);
+            this.raycastBox.Location = new System.Drawing.Point(89, 15);
             this.raycastBox.Margin = new System.Windows.Forms.Padding(5);
             this.raycastBox.Name = "raycastBox";
             this.raycastBox.Size = new System.Drawing.Size(65, 17);
             this.raycastBox.TabIndex = 96;
+            this.raycastBox.TabStop = false;
             this.raycastBox.Text = "Raycast";
             this.raycastBox.UseVisualStyleBackColor = true;
             // 
-            // GeometryCompiler
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::Tarmac64_Library.Properties.Resources.TextLogo;
+            this.pictureBox2.Location = new System.Drawing.Point(162, 11);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(164, 23);
+            this.pictureBox2.TabIndex = 97;
+            this.pictureBox2.TabStop = false;
+            // 
+            // vertAlphaBox
+            // 
+            this.vertAlphaBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.vertAlphaBox.Location = new System.Drawing.Point(200, 172);
+            this.vertAlphaBox.Margin = new System.Windows.Forms.Padding(5);
+            this.vertAlphaBox.Name = "vertAlphaBox";
+            this.vertAlphaBox.Size = new System.Drawing.Size(70, 20);
+            this.vertAlphaBox.TabIndex = 26;
+            this.vertAlphaBox.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
+            // 
+            // label60
+            // 
+            this.label60.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label60.AutoSize = true;
+            this.label60.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label60.Location = new System.Drawing.Point(134, 175);
+            this.label60.Margin = new System.Windows.Forms.Padding(5);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(56, 13);
+            this.label60.TabIndex = 25;
+            this.label60.Text = "Vert Alpha";
+            // 
+            // CourseCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 682);
+            this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.raycastBox);
-            this.Controls.Add(this.SaveBtn);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.about_button);
             this.Controls.Add(this.setBox);
             this.Controls.Add(this.cupBox);
             this.Controls.Add(this.tabControl1);
@@ -2015,8 +2225,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(1920, 1080);
             this.MinimumSize = new System.Drawing.Size(640, 480);
-            this.Name = "GeometryCompiler";
-            this.Text = "Tarmac64";
+            this.Name = "CourseCompiler";
+            this.Text = "Course Compiler";
             this.Load += new System.EventHandler(this.FormLoad);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.openGLControl_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).EndInit();
@@ -2046,6 +2256,7 @@
             this.Object.ResumeLayout(false);
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2060,7 +2271,6 @@
         private System.Windows.Forms.TextBox cyBox;
         private System.Windows.Forms.TextBox czBox;
         private System.Windows.Forms.TextBox cxBox;
-        private System.Windows.Forms.Button about_button;
         private System.Windows.Forms.TextBox csBox;
         private System.Windows.Forms.TextBox cName;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -2091,9 +2301,7 @@
         private System.Windows.Forms.TabPage TextureData;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.ComboBox textureBox;
-        private System.Windows.Forms.TextBox heightBox;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox widthBox;
         private System.Windows.Forms.PictureBox bitm;
@@ -2105,9 +2313,9 @@
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.TextBox SkyBMT;
-        private System.Windows.Forms.TextBox SkyGMT;
-        private System.Windows.Forms.TextBox SkyRMT;
+        private System.Windows.Forms.TextBox SkyBM;
+        private System.Windows.Forms.TextBox SkyGM;
+        private System.Windows.Forms.TextBox SkyRM;
         private System.Windows.Forms.TextBox SkyBT;
         private System.Windows.Forms.TextBox SkyGT;
         private System.Windows.Forms.TextBox SkyRT;
@@ -2115,15 +2323,10 @@
         private System.Windows.Forms.TextBox nameBox;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TextBox SkyRMB;
-        private System.Windows.Forms.TextBox SkyGMB;
-        private System.Windows.Forms.TextBox SkyBMB;
         private System.Windows.Forms.TextBox SkyRB;
         private System.Windows.Forms.TextBox SkyGB;
         private System.Windows.Forms.TextBox SkyBB;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button ColorPickMB;
         private System.Windows.Forms.Button ColorPickB;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Button ghostBtn;
@@ -2193,8 +2396,6 @@
         private System.Windows.Forms.Label label51;
         private System.Windows.Forms.TextBox waterBox;
         private System.Windows.Forms.CheckBox CheckboxTextured;
-        private System.Windows.Forms.CheckBox tBox;
-        private System.Windows.Forms.Button SaveBtn;
         private System.Windows.Forms.CheckBox raycastBox;
         private System.Windows.Forms.TabPage Object;
         private System.Windows.Forms.ListBox listBox1;
@@ -2210,5 +2411,28 @@
         private System.Windows.Forms.Label label53;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.ComboBox textureModeSBox;
+        private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.ComboBox textureCodecBox;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.ComboBox textureAlphaBox;
+        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.ComboBox textureModeTBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox heightBox;
+        private System.Windows.Forms.Button ImportData;
+        private System.Windows.Forms.Button SaveBtn;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.TextBox textureScrollTBox;
+        private System.Windows.Forms.TextBox textureScrollSBox;
+        private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.TextBox vertAlphaBox;
+        private System.Windows.Forms.Label label60;
     }
 }

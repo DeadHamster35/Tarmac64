@@ -1,6 +1,6 @@
 ﻿namespace Tarmac64_Library
 {
-    partial class CourseMaker
+    partial class CourseJR
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CourseMaker));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CourseJR));
             this.courseBox = new System.Windows.Forms.ComboBox();
             this.actionBtn = new System.Windows.Forms.Button();
             this.cupBox = new System.Windows.Forms.ComboBox();
@@ -37,13 +37,13 @@
             this.cyBox = new System.Windows.Forms.TextBox();
             this.czBox = new System.Windows.Forms.TextBox();
             this.cxBox = new System.Windows.Forms.TextBox();
-            this.about_button = new System.Windows.Forms.Button();
             this.csBox = new System.Windows.Forms.TextBox();
             this.cName = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.CheckboxTextured = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.EditorTools = new System.Windows.Forms.TabPage();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -60,6 +60,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.controlGroup = new System.Windows.Forms.GroupBox();
+            this.listBox2 = new System.Windows.Forms.ListBox();
             this.ObjectSelectBox = new System.Windows.Forms.ComboBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
@@ -178,8 +179,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.listBox2 = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -303,16 +302,6 @@
             this.cxBox.Size = new System.Drawing.Size(70, 20);
             this.cxBox.TabIndex = 82;
             // 
-            // about_button
-            // 
-            this.about_button.Location = new System.Drawing.Point(247, 13);
-            this.about_button.Name = "about_button";
-            this.about_button.Size = new System.Drawing.Size(54, 23);
-            this.about_button.TabIndex = 88;
-            this.about_button.Text = "About";
-            this.about_button.UseVisualStyleBackColor = true;
-            this.about_button.Click += new System.EventHandler(this.Button1_Click);
-            // 
             // csBox
             // 
             this.csBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -396,6 +385,14 @@
             this.EditorTools.TabIndex = 0;
             this.EditorTools.Text = "Editor Tools";
             this.EditorTools.UseVisualStyleBackColor = true;
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(32, 38);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(250, 173);
+            this.listBox1.TabIndex = 123;
             // 
             // label9
             // 
@@ -578,6 +575,14 @@
             this.controlGroup.TabIndex = 106;
             this.controlGroup.TabStop = false;
             this.controlGroup.Text = "Chunk Controls";
+            // 
+            // listBox2
+            // 
+            this.listBox2.FormattingEnabled = true;
+            this.listBox2.Location = new System.Drawing.Point(7, 131);
+            this.listBox2.Name = "listBox2";
+            this.listBox2.Size = new System.Drawing.Size(265, 108);
+            this.listBox2.TabIndex = 124;
             // 
             // ObjectSelectBox
             // 
@@ -1887,29 +1892,12 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(279, 567);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
-            // listBox1
-            // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(32, 38);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(250, 173);
-            this.listBox1.TabIndex = 123;
-            // 
-            // listBox2
-            // 
-            this.listBox2.FormattingEnabled = true;
-            this.listBox2.Location = new System.Drawing.Point(7, 131);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(265, 108);
-            this.listBox2.TabIndex = 124;
-            // 
             // CourseMaker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 682);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.about_button);
             this.Controls.Add(this.setBox);
             this.Controls.Add(this.cupBox);
             this.Controls.Add(this.tabControl1);
@@ -1964,7 +1952,6 @@
         private System.Windows.Forms.TextBox cyBox;
         private System.Windows.Forms.TextBox czBox;
         private System.Windows.Forms.TextBox cxBox;
-        private System.Windows.Forms.Button about_button;
         private System.Windows.Forms.TextBox csBox;
         private System.Windows.Forms.TextBox cName;
         private System.Windows.Forms.GroupBox groupBox3;

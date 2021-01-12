@@ -28,12 +28,13 @@ namespace Tarmac64_Library
 {
 
 
-    public partial class GeometryCompiler : Form
+    public partial class CourseCompiler : Form
     {
 
         TM64 Tarmac = new TM64();
         TM64_Course TarmacCourse = new TM64_Course();
         TM64_GL TarmacGL = new TM64_GL();
+        CommonOpenFileDialog fileOpen = new CommonOpenFileDialog();
 
         TM64.OK64Settings okSettings = new TM64.OK64Settings();
 
@@ -46,7 +47,7 @@ namespace Tarmac64_Library
         
 
 
-        public GeometryCompiler()
+        public CourseCompiler()
         {
             InitializeComponent();
         }
@@ -66,17 +67,6 @@ namespace Tarmac64_Library
             skyData.TopColor.B = 0;
             skyData.TopColor.A = 0;
 
-            skyData.MidBotColor = new TM64_Geometry.OK64Color();
-            skyData.MidBotColor.R = 0;
-            skyData.MidBotColor.G = 0;
-            skyData.MidBotColor.B = 0;
-            skyData.MidBotColor.A = 0;
-
-            skyData.MidTopColor = new TM64_Geometry.OK64Color();
-            skyData.MidTopColor.R = 0;
-            skyData.MidTopColor.G = 0;
-            skyData.MidTopColor.B = 0;
-            skyData.MidTopColor.A = 0;
 
             skyData.BotColor = new TM64_Geometry.OK64Color();
             skyData.BotColor.R = 0;
@@ -95,20 +85,15 @@ namespace Tarmac64_Library
             gl = openGLControl.OpenGL;
             if (System.Diagnostics.Process.GetCurrentProcess().ProcessName == "Tarmac64 Designer")
             {
-                about_button.Visible = true;
                 tabControl1.TabPages.Remove(tabControl1.TabPages[4]);
-            }
-            else
-            {
-                about_button.Visible = false;                
             }
             courseBox.SelectedIndex = 0;
             cupBox.SelectedIndex = 0;
             setBox.SelectedIndex = 0;
 
-            SkyRMT.Text = "216";
-            SkyGMT.Text = "232";
-            SkyBMT.Text = "248";
+            SkyRM.Text = "216";
+            SkyGM.Text = "232";
+            SkyBM.Text = "248";
 
             mapXBox.Text = "260";
             mapYBox.Text = "170";
@@ -215,9 +200,6 @@ namespace Tarmac64_Library
         TM64_GL.TMCamera localCamera = new TM64_GL.TMCamera();
         OpenGL gl = new OpenGL();
 
-
-
-        OpenFileDialog fileOpen = new OpenFileDialog();
         
 
 
@@ -672,11 +654,11 @@ namespace Tarmac64_Library
             ColorPickT.BackColor = buttonColor;
 
             colorInt[0] = 0;
-            int.TryParse(SkyRMT.Text, out colorInt[0]);
+            int.TryParse(SkyRM.Text, out colorInt[0]);
             colorInt[1] = 0;
-            int.TryParse(SkyGMT.Text, out colorInt[1]);
+            int.TryParse(SkyGM.Text, out colorInt[1]);
             colorInt[2] = 0;
-            int.TryParse(SkyBMT.Text, out colorInt[2]);
+            int.TryParse(SkyBM.Text, out colorInt[2]);
             if (colorInt[0] < 256 & colorInt[0] > -1 & colorInt[1] < 256 & colorInt[1] > -1 & colorInt[2] < 256 & colorInt[2] > -1)
             {
                 buttonColor = System.Drawing.Color.FromArgb(colorInt[0], colorInt[1], colorInt[2]);
@@ -687,21 +669,6 @@ namespace Tarmac64_Library
             }
             ColorPickMT.BackColor = buttonColor;
 
-            colorInt[0] = 0;
-            int.TryParse(SkyRMB.Text, out colorInt[0]);
-            colorInt[1] = 0;
-            int.TryParse(SkyGMB.Text, out colorInt[1]);
-            colorInt[2] = 0;
-            int.TryParse(SkyBMB.Text, out colorInt[2]);
-            if (colorInt[0] < 256 & colorInt[0] > -1 & colorInt[1] < 256 & colorInt[1] > -1 & colorInt[2] < 256 & colorInt[2] > -1)
-            {
-                buttonColor = System.Drawing.Color.FromArgb(colorInt[0], colorInt[1], colorInt[2]);
-            }
-            else
-            {
-                buttonColor = System.Drawing.Color.FromArgb(0, 0, 0);
-            }
-            ColorPickMB.BackColor = buttonColor;
 
             colorInt[0] = 0;
             int.TryParse(SkyRB.Text, out colorInt[0]);
@@ -748,21 +715,22 @@ namespace Tarmac64_Library
             Byte.TryParse(SkyBT.Text, out colorValue);
             skyData.TopColor.B = colorValue;
 
-            skyData.MidTopColor = new TM64_Geometry.OK64Color();
-            Byte.TryParse(SkyRMT.Text, out colorValue);
-            skyData.MidTopColor.R = colorValue;
-            Byte.TryParse(SkyGMT.Text, out colorValue);
-            skyData.MidTopColor.G = colorValue;
-            Byte.TryParse(SkyBMT.Text, out colorValue);
-            skyData.MidTopColor.B = colorValue;
+            skyData.MidColor = new TM64_Geometry.OK64Color();
+            Byte.TryParse(SkyRM.Text, out colorValue);
+            skyData.MidColor.R = colorValue;
+            Byte.TryParse(SkyGM.Text, out colorValue);
+            skyData.MidColor.G = colorValue;
+            Byte.TryParse(SkyBM.Text, out colorValue);
+            skyData.MidColor.B = colorValue;
 
-            skyData.MidBotColor = new TM64_Geometry.OK64Color();
-            Byte.TryParse(SkyRMB.Text, out colorValue);
-            skyData.MidBotColor.R = colorValue;
-            Byte.TryParse(SkyGMB.Text, out colorValue);
-            skyData.MidBotColor.G = colorValue;
-            Byte.TryParse(SkyBMB.Text, out colorValue);
-            skyData.MidBotColor.B = colorValue;
+            skyData.MidColor = new TM64_Geometry.OK64Color();
+            Byte.TryParse(SkyRB.Text, out colorValue);
+            skyData.MidColor.R = colorValue;
+            Byte.TryParse(SkyGB.Text, out colorValue);
+            skyData.MidColor.G = colorValue;
+            Byte.TryParse(SkyBB.Text, out colorValue);
+            skyData.MidColor.B = colorValue;
+
 
             mapData.MapColor = new TM64_Geometry.OK64Color();
             Byte.TryParse(MapRBox.Text, out colorValue);
@@ -785,19 +753,21 @@ namespace Tarmac64_Library
             int setID = setBox.SelectedIndex;
 
             MessageBox.Show("Select OverKart Patched ROM");
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 string romPath = fileOpen.FileName;
 
                 MessageBox.Show("Please select an output Directory");
 
-                CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-                dialog.InitialDirectory = okSettings.ProjectDirectory;
-                dialog.IsFolderPicker = true;
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+
+                fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+                fileOpen.IsFolderPicker = true;
+                if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                 
-                    string outputDirectory = dialog.FileName;
+                    string outputDirectory = fileOpen.FileName;
 
                     List<byte[]> Segments = new List<byte[]>();
                     byte[] rom = File.ReadAllBytes(romPath);
@@ -1001,6 +971,10 @@ namespace Tarmac64_Library
                         courseData.MapData.MapCoord = new Vector2D(mapCoords[0], mapCoords[1]);
                         courseData.MapData.StartCoord = new Vector2D(startCoords[0], startCoords[1]);
                         courseData.MapData.MapColor = mapData.MapColor;
+
+                        courseData.MasterObjects = masterObjects;
+                        courseData.SurfaceObjects = surfaceObjects;
+                        courseData.TextureObjects = textureArray;
                         
                         float tempfloat = new float();
                         Single.TryParse(MapScaleBox.Text, out tempfloat);
@@ -1059,10 +1033,14 @@ namespace Tarmac64_Library
         private void LoadModel()
         {
             MessageBox.Show("Select .FBX File");
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.InitialDirectory = okSettings.ProjectDirectory;
+            dialog.IsFolderPicker = false;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 //Get the path of specified file
-                FBXfilePath = fileOpen.FileName;
+                FBXfilePath = dialog.FileName;
                 levelFormat = 0;
 
                 if (raycastBox.Checked)
@@ -1233,9 +1211,12 @@ namespace Tarmac64_Library
             }
 
             MessageBox.Show("Select OK64.POP File");
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            
+            dialog.InitialDirectory = okSettings.ProjectDirectory;
+            dialog.IsFolderPicker = false;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                popFile = fileOpen.FileName;
+                popFile = dialog.FileName;
                 if (levelFormat == 0)
                 {
                     pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);
@@ -1382,7 +1363,13 @@ namespace Tarmac64_Library
                 bitm.ImageLocation = textureArray[textureBox.SelectedIndex].texturePath;
                 heightBox.Text = textureArray[textureBox.SelectedIndex].textureHeight.ToString();
                 widthBox.Text = textureArray[textureBox.SelectedIndex].textureWidth.ToString();
-                tBox.Checked = textureArray[textureBox.SelectedIndex].textureTransparent;
+                textureModeSBox.SelectedIndex = textureArray[textureBox.SelectedIndex].textureModeS;
+                textureModeTBox.SelectedIndex = textureArray[textureBox.SelectedIndex].textureModeT;
+                textureAlphaBox.SelectedIndex = textureArray[textureBox.SelectedIndex].textureTransparent;
+                textureCodecBox.SelectedIndex = textureArray[textureBox.SelectedIndex].textureCodec;
+                textureScrollSBox.Text = textureArray[textureBox.SelectedIndex].textureScrollS.ToString();
+                textureScrollTBox.Text = textureArray[textureBox.SelectedIndex].textureScrollT.ToString();
+                vertAlphaBox.Text = textureArray[textureBox.SelectedIndex].vertAlpha.ToString();
                 return true;
             }
             else
@@ -1537,11 +1524,11 @@ namespace Tarmac64_Library
 
 
             int rr = 0;
-            int.TryParse(SkyRMT.Text, out rr);
+            int.TryParse(SkyRM.Text, out rr);
             int gg = 0;
-            int.TryParse(SkyGMT.Text, out gg);
+            int.TryParse(SkyGM.Text, out gg);
             int bb = 0;
-            int.TryParse(SkyBMT.Text, out bb);
+            int.TryParse(SkyBM.Text, out bb);
             System.Drawing.Color buttonColor = System.Drawing.Color.FromArgb(rr, gg, bb);
 
             skyDialog.Color = buttonColor;
@@ -1550,9 +1537,9 @@ namespace Tarmac64_Library
             if (skyDialog.ShowDialog() == DialogResult.OK)
             {
                 buttonColor = skyDialog.Color;
-                SkyRMT.Text = skyDialog.Color.R.ToString();
-                SkyGMT.Text = skyDialog.Color.G.ToString();
-                SkyBMT.Text = skyDialog.Color.B.ToString();
+                SkyRM.Text = skyDialog.Color.R.ToString();
+                SkyGM.Text = skyDialog.Color.G.ToString();
+                SkyBM.Text = skyDialog.Color.B.ToString();
             }
             ColorUpdate();
 
@@ -1561,7 +1548,9 @@ namespace Tarmac64_Library
 
         private void PreviewBtn_Click(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 //Get the path of specified file
                 previewBox.Text = fileOpen.FileName;
@@ -1570,7 +1559,9 @@ namespace Tarmac64_Library
 
         private void BannerBtn_Click(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 //Get the path of specified file
                 bannerBox.Text = fileOpen.FileName;
@@ -1579,7 +1570,9 @@ namespace Tarmac64_Library
 
         private void MapBtn_Click(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 //Get the path of specified file
                 mapBox.Text = fileOpen.FileName;
@@ -1588,7 +1581,9 @@ namespace Tarmac64_Library
 
         private void AsmBtn_Click(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 //Get the path of specified file
                 asmBox.Text = fileOpen.FileName;
@@ -1598,7 +1593,9 @@ namespace Tarmac64_Library
 
         private void ghostbtn_Click(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 //Get the path of specified file
                 ghostBox.Text = fileOpen.FileName;
@@ -1607,7 +1604,7 @@ namespace Tarmac64_Library
 
         private void tBox_CheckedChanged(object sender, EventArgs e)
         {
-            textureArray[textureBox.SelectedIndex].textureTransparent = tBox.Checked;
+            
         }
 
 
@@ -2201,12 +2198,6 @@ namespace Tarmac64_Library
 
         }
 
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            Tarmac64.OKRetail tarmacAbout = new Tarmac64.OKRetail();
-            tarmacAbout.Show();
-
-        }
 
         //
 
@@ -2581,9 +2572,9 @@ namespace Tarmac64_Library
             ColorDialog ColorPick = new ColorDialog();
             if (ColorPick.ShowDialog() == DialogResult.OK)
             {
-                SkyRMT.Text = ColorPick.Color.R.ToString();
-                SkyGMT.Text = ColorPick.Color.G.ToString();
-                SkyBMT.Text = ColorPick.Color.B.ToString();
+                SkyRM.Text = ColorPick.Color.R.ToString();
+                SkyGM.Text = ColorPick.Color.G.ToString();
+                SkyBM.Text = ColorPick.Color.B.ToString();
             }
             ColorUpdate();
         }
@@ -2618,10 +2609,6 @@ namespace Tarmac64_Library
             ColorUpdate();
         }
 
-        private void SkyBMB_TextChanged(object sender, EventArgs e)
-        {
-            ColorUpdate();
-        }
 
         private void SkyBB_TextChanged(object sender, EventArgs e)
         {
@@ -2633,15 +2620,6 @@ namespace Tarmac64_Library
             ColorUpdate();
         }
 
-        private void SkyGMB_TextChanged(object sender, EventArgs e)
-        {
-            ColorUpdate();
-        }
-
-        private void SkyRMB_TextChanged(object sender, EventArgs e)
-        {
-            ColorUpdate();
-        }
 
         private void SkyRB_TextChanged(object sender, EventArgs e)
         {
@@ -2649,17 +2627,6 @@ namespace Tarmac64_Library
         }
 
 
-        private void ColorPickMB_Click(object sender, EventArgs e)
-        {
-            ColorDialog ColorPick = new ColorDialog();
-            if (ColorPick.ShowDialog() == DialogResult.OK)
-            {
-                SkyRMB.Text = ColorPick.Color.R.ToString();
-                SkyGMB.Text = ColorPick.Color.G.ToString();
-                SkyBMB.Text = ColorPick.Color.B.ToString();
-            }
-            ColorUpdate();
-        }
 
         private void ColorPickB_Click(object sender, EventArgs e)
         {
@@ -2687,7 +2654,9 @@ namespace Tarmac64_Library
 
         private void previewBtn_Click_1(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 previewBox.Text = fileOpen.FileName;
             }
@@ -2695,7 +2664,9 @@ namespace Tarmac64_Library
 
         private void bannerBtn_Click_1(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 bannerBox.Text = fileOpen.FileName;
             }
@@ -2703,7 +2674,9 @@ namespace Tarmac64_Library
 
         private void ghostBtn_Click_1(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 ghostBox.Text = fileOpen.FileName;
             }
@@ -2711,7 +2684,9 @@ namespace Tarmac64_Library
 
         private void asmBtn_Click_1(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 asmBox.Text = fileOpen.FileName;
             }
@@ -2719,7 +2694,9 @@ namespace Tarmac64_Library
 
         private void mapBtn_Click_1(object sender, EventArgs e)
         {
-            if (fileOpen.ShowDialog() == DialogResult.OK)
+            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 mapBox.Text = fileOpen.FileName;
             }
@@ -2748,6 +2725,176 @@ namespace Tarmac64_Library
         private void button2_Click_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void textureModeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textureArray[textureBox.SelectedIndex].textureModeS = textureModeSBox.SelectedIndex;
+        }
+
+        private void textureAlphaBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textureArray[textureBox.SelectedIndex].textureTransparent = textureAlphaBox.SelectedIndex;
+        }
+
+        private void textureCodecBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textureArray[textureBox.SelectedIndex].textureCodec = textureCodecBox.SelectedIndex;
+        }
+
+        private void textureModeTBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textureArray[textureBox.SelectedIndex].textureModeT = textureModeTBox.SelectedIndex;
+        }
+
+        private void SaveBtn_Click(object sender, EventArgs e)
+        {
+            gameSpeed = new int[4];
+
+            int.TryParse(sp1Box.Text, out gameSpeed[0]);
+            int.TryParse(sp2Box.Text, out gameSpeed[1]);
+            int.TryParse(sp3Box.Text, out gameSpeed[2]);
+            int.TryParse(sp4Box.Text, out gameSpeed[3]);
+
+
+            //Course Music
+
+            byte songID = Convert.ToByte(songBox.SelectedIndex);
+
+
+
+
+            string courseName = nameBox.Text;
+            string previewImage = previewBox.Text;
+            string bannerImage = bannerBox.Text;
+            string mapImage = mapBox.Text;
+            string customASM = asmBox.Text;
+            string ghostData = ghostBox.Text;
+
+
+
+
+            Int16[] mapCoords = new Int16[2];
+            Int16[] startCoords = new Int16[2];
+
+            Int16.TryParse(mapXBox.Text, out mapCoords[0]);
+            Int16.TryParse(mapYBox.Text, out mapCoords[1]);
+            Int16.TryParse(startXBox.Text, out startCoords[0]);
+            Int16.TryParse(startYBox.Text, out startCoords[1]);
+
+
+
+            int[] echoValues = new int[2];
+
+            int.TryParse(EchoStartBox.Text, out echoValues[0]);
+            int.TryParse(EchoStopBox.Text, out echoValues[1]);
+
+            TM64_Course.Course courseData = new TM64_Course.Course();
+            courseData.Credits = courseName;
+            courseData.PreviewPath = previewImage;
+            courseData.BannerPath = bannerImage;
+            courseData.MapData = new TM64_Course.MiniMap();
+            courseData.MapData.MinimapPath = mapImage;
+            courseData.MapData.MapCoord = new Vector2D(mapCoords[0], mapCoords[1]);
+            courseData.MapData.StartCoord = new Vector2D(startCoords[0], startCoords[1]);
+            courseData.MapData.MapColor = mapData.MapColor;
+
+            float tempfloat = new float();
+            Single.TryParse(MapScaleBox.Text, out tempfloat);
+            courseData.MapData.MapScale = tempfloat;
+
+
+            courseData.EchoValues = echoValues;
+            courseData.AssmeblyPath = customASM;
+            courseData.GhostPath = ghostData;
+            courseData.SkyColors = skyData;
+
+            courseData.MusicID = songID;
+            courseData.GameTempos = gameSpeed;
+            courseData.PathLength = pathGroups[0].pathList[0].pathmarker.Count;
+
+            Single.TryParse(waterBox.Text, out tempfloat);
+            courseData.WaterLevel = tempfloat;
+            SaveFileDialog fileSave = new SaveFileDialog();
+            if (fileSave.ShowDialog() == DialogResult.OK)
+            {
+                TM64_Course TarmacCourse = new TM64_Course();
+                TarmacCourse.WriteCourseInfo(courseData, fileSave.FileName);
+            }
+        }
+
+        private void ImportCourseInfo(object sender, EventArgs e)
+        {
+            fileOpen.IsFolderPicker = false;
+            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                TM64_Course TarmacCourse = new TM64_Course();
+                TM64_Course.Course CourseData = TarmacCourse.ReadCourseInfo(fileOpen.FileName);
+
+                nameBox.Text = CourseData.Credits;
+                previewBox.Text = CourseData.PreviewPath;
+                bannerBox.Text = CourseData.BannerPath;
+                ghostBox.Text = CourseData.GhostPath;
+                asmBox.Text = CourseData.AssmeblyPath;
+                mapBox.Text = CourseData.MapData.MinimapPath;
+                mapXBox.Text = CourseData.MapData.MapCoord.X.ToString();
+                mapYBox.Text = CourseData.MapData.MapCoord.Y.ToString();
+                startXBox.Text = CourseData.MapData.StartCoord.X.ToString();
+                startYBox.Text = CourseData.MapData.StartCoord.Y.ToString();
+                MapScaleBox.Text = CourseData.MapData.MapScale.ToString();
+                MapRBox.Text = CourseData.MapData.MapColor.R.ToString();
+                MapRBox.Text = CourseData.MapData.MapColor.G.ToString();
+                MapRBox.Text = CourseData.MapData.MapColor.B.ToString();
+                SkyRT.Text = CourseData.SkyColors.TopColor.R.ToString();
+                SkyGT.Text = CourseData.SkyColors.TopColor.G.ToString();
+                SkyBT.Text = CourseData.SkyColors.TopColor.B.ToString();
+
+                SkyRM.Text = CourseData.SkyColors.MidColor.R.ToString();
+                SkyGM.Text = CourseData.SkyColors.MidColor.G.ToString();
+                SkyBM.Text = CourseData.SkyColors.MidColor.B.ToString();
+
+                SkyRB.Text = CourseData.SkyColors.BotColor.R.ToString();
+                SkyGB.Text = CourseData.SkyColors.BotColor.G.ToString();
+                SkyBB.Text = CourseData.SkyColors.BotColor.B.ToString();
+
+                EchoStartBox.Text = CourseData.EchoValues[0].ToString();
+                EchoStopBox.Text = CourseData.EchoValues[1].ToString();
+                waterBox.Text = CourseData.WaterLevel.ToString();
+                sp1Box.Text = CourseData.GameTempos[0].ToString();
+                sp2Box.Text = CourseData.GameTempos[1].ToString();
+                sp3Box.Text = CourseData.GameTempos[2].ToString();
+                sp4Box.Text = CourseData.GameTempos[3].ToString();
+                songBox.SelectedIndex = CourseData.MusicID;
+
+            }
+        }
+
+        private void textureScrollSBox_TextChanged(object sender, EventArgs e)
+        {
+            int sScroll;
+            if (int.TryParse(textureScrollSBox.Text, out sScroll))
+            {
+                textureArray[textureBox.SelectedIndex].textureScrollS = sScroll;
+            }
+
+        }
+
+        private void textureScrollTBox_TextChanged(object sender, EventArgs e)
+        {
+            int tScroll;
+            if (int.TryParse(textureScrollTBox.Text, out tScroll))
+            {
+                textureArray[textureBox.SelectedIndex].textureScrollT = tScroll;
+            }
+        }
+
+        private void textBox7_TextChanged(object sender, EventArgs e)
+        {
+            int vAlpha;
+            if (int.TryParse(vertAlphaBox.Text, out vAlpha))
+            {
+                textureArray[textureBox.SelectedIndex].vertAlpha = vAlpha;
+            }
         }
     }
 }

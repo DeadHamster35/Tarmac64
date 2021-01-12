@@ -27,7 +27,7 @@ namespace Tarmac64_Library
 {
 
 
-    public partial class CourseMaker : Form
+    public partial class CourseJR : Form
     {
 
         TM64 Tarmac = new TM64();
@@ -47,7 +47,7 @@ namespace Tarmac64_Library
 
 
 
-        public CourseMaker()
+        public CourseJR()
         {
             InitializeComponent();
         }
@@ -67,17 +67,12 @@ namespace Tarmac64_Library
             skyData.TopColor.B = 0;
             skyData.TopColor.A = 0;
 
-            skyData.MidBotColor = new TM64_Geometry.OK64Color();
-            skyData.MidBotColor.R = 0;
-            skyData.MidBotColor.G = 0;
-            skyData.MidBotColor.B = 0;
-            skyData.MidBotColor.A = 0;
-
-            skyData.MidTopColor = new TM64_Geometry.OK64Color();
-            skyData.MidTopColor.R = 0;
-            skyData.MidTopColor.G = 0;
-            skyData.MidTopColor.B = 0;
-            skyData.MidTopColor.A = 0;
+            skyData.MidColor = new TM64_Geometry.OK64Color();
+            skyData.MidColor.R = 0;
+            skyData.MidColor.G = 0;
+            skyData.MidColor.B = 0;
+            skyData.MidColor.A = 0;
+            
 
             skyData.BotColor = new TM64_Geometry.OK64Color();
             skyData.BotColor.R = 0;
@@ -94,14 +89,7 @@ namespace Tarmac64_Library
             okSettings = Tarmac.LoadSettings();
 
             gl = openGLControl.OpenGL;
-            if (System.Diagnostics.Process.GetCurrentProcess().ProcessName == "Tarmac64 Designer")
-            {
-                about_button.Visible = true;
-            }
-            else
-            {
-                about_button.Visible = false;
-            }
+
             courseBox.SelectedIndex = 0;
             cupBox.SelectedIndex = 0;
             setBox.SelectedIndex = 0;
@@ -676,21 +664,14 @@ namespace Tarmac64_Library
             Byte.TryParse(SkyBT.Text, out colorValue);
             skyData.TopColor.B = colorValue;
 
-            skyData.MidTopColor = new TM64_Geometry.OK64Color();
+            skyData.MidColor = new TM64_Geometry.OK64Color();
             Byte.TryParse(SkyRMT.Text, out colorValue);
-            skyData.MidTopColor.R = colorValue;
+            skyData.MidColor.R = colorValue;
             Byte.TryParse(SkyGMT.Text, out colorValue);
-            skyData.MidTopColor.G = colorValue;
+            skyData.MidColor.G = colorValue;
             Byte.TryParse(SkyBMT.Text, out colorValue);
-            skyData.MidTopColor.B = colorValue;
+            skyData.MidColor.B = colorValue;
 
-            skyData.MidBotColor = new TM64_Geometry.OK64Color();
-            Byte.TryParse(SkyRMB.Text, out colorValue);
-            skyData.MidBotColor.R = colorValue;
-            Byte.TryParse(SkyGMB.Text, out colorValue);
-            skyData.MidBotColor.G = colorValue;
-            Byte.TryParse(SkyBMB.Text, out colorValue);
-            skyData.MidBotColor.B = colorValue;
 
             mapData.MapColor = new TM64_Geometry.OK64Color();
             Byte.TryParse(MapRBox.Text, out colorValue);
@@ -786,7 +767,7 @@ namespace Tarmac64_Library
 
         private void tBox_CheckedChanged(object sender, EventArgs e)
         {
-            textureArray[textureBox.SelectedIndex].textureTransparent = tBox.Checked;
+            
         }
 
 
@@ -1290,12 +1271,6 @@ namespace Tarmac64_Library
 
         }
 
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            Tarmac64.OKRetail tarmacAbout = new Tarmac64.OKRetail();
-            tarmacAbout.Show();
-
-        }
 
         //
 
