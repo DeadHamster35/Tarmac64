@@ -23,7 +23,6 @@ using System.Windows.Input;
 using System.Drawing.Imaging;
 using Cereal64.Microcodes.F3DEX.DataElements;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Microsoft.Win32;
 
 namespace Tarmac64_Library
 {
