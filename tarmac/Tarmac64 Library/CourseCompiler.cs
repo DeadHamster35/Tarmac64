@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Forms;
@@ -23,6 +23,7 @@ using System.Windows.Input;
 using System.Drawing.Imaging;
 using Cereal64.Microcodes.F3DEX.DataElements;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.Win32;
 
 namespace Tarmac64_Library
 {
@@ -44,7 +45,7 @@ namespace Tarmac64_Library
         int sectionCount = 0;
         public int programFormat;
         int levelFormat = 0;
-        
+
 
 
         public CourseCompiler()
@@ -76,7 +77,7 @@ namespace Tarmac64_Library
         }
         private void FormLoad(object sender, EventArgs e)
         {
-            
+
             CreateGeometry();
             CreateColors();
             okSettings = Tarmac.LoadSettings();
@@ -183,7 +184,7 @@ namespace Tarmac64_Library
         List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>();
 
         TM64_Geometry.OK64F3DObject[] surfaceObjects = new TM64_Geometry.OK64F3DObject[0];
-    
+
 
         TM64_Geometry.OK64Texture[] textureArray = new TM64_Geometry.OK64Texture[0];
 
@@ -200,7 +201,7 @@ namespace Tarmac64_Library
         TM64_GL.TMCamera localCamera = new TM64_GL.TMCamera();
         OpenGL gl = new OpenGL();
 
-        
+    
 
 
 
@@ -752,25 +753,19 @@ namespace Tarmac64_Library
             int cID = (cupBox.SelectedIndex * 4) + courseBox.SelectedIndex;
             int setID = setBox.SelectedIndex;
 
-            MessageBox.Show("Select OverKart Patched ROM");
-            fileOpen.InitialDirectory = okSettings.ProjectDirectory;
-            fileOpen.IsFolderPicker = false;
-            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
-            {
-                string romPath = fileOpen.FileName;
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
 
-                MessageBox.Show("Please select an output Directory");
-
-
-                fileOpen.InitialDirectory = okSettings.ProjectDirectory;
-                fileOpen.IsFolderPicker = true;
-                if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
+                string outputDirectory = okSettings.CurrentDirectory + "\\out";
+                if (!Directory.Exists(outputDirectory))
+                {
+                    Directory.CreateDirectory(outputDirectory);
+                }
+  
+                if (File.Exists(okSettings.AppDirectory+"\\overkart.z64"))
                 {
                 
-                    string outputDirectory = fileOpen.FileName;
-
                     List<byte[]> Segments = new List<byte[]>();
-                    byte[] rom = File.ReadAllBytes(romPath);
+                    byte[] rom = File.ReadAllBytes(okSettings.AppDirectory + "\\overkart.z64");
 
 
                     byte[] segment4 = new byte[0];
@@ -1023,24 +1018,33 @@ namespace Tarmac64_Library
                     savepath = Path.Combine(outputDirectory, "Segment 9.bin");
                     File.WriteAllBytes(savepath, segment9);
 
+                    /*
+                     * Export OK64 CONFIG
+                     */
+                    ExportCourseInfo();
 
                     MessageBox.Show("Finished");
+                } else
+                {
+                    throw new FileNotFoundException("Could not find overkart.z64 beside Tarmac executable");
                 }
-            }
         }
+        
 
 
         private void LoadModel()
         {
-            MessageBox.Show("Select .FBX File");
-
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = okSettings.ProjectDirectory;
-            dialog.IsFolderPicker = false;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            OpenFileDialog wpfDialog = new OpenFileDialog();
+            wpfDialog.InitialDirectory = okSettings.ProjectDirectory;
+            wpfDialog.Title = "Select .FBX File";
+            wpfDialog.FilterIndex = 2;
+            wpfDialog.Filter = "fbx files (*.fbx)|*.fbx";
+        if (wpfDialog.ShowDialog() ==  DialogResult.OK)
             {
+                okSettings.CurrentDirectory = System.IO.Path.GetDirectoryName(wpfDialog.FileName);
                 //Get the path of specified file
-                FBXfilePath = dialog.FileName;
+                FBXfilePath = wpfDialog.FileName;
+
                 levelFormat = 0;
 
                 if (raycastBox.Checked)
@@ -1210,13 +1214,12 @@ namespace Tarmac64_Library
                 actionBtn.Text = "Compile";
             }
 
-            MessageBox.Show("Select OK64.POP File");
-            
-            dialog.InitialDirectory = okSettings.ProjectDirectory;
-            dialog.IsFolderPicker = false;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            /**
+             * Read OK64.POP File
+             */
+            if (File.Exists(okSettings.CurrentDirectory + "\\POP.OK64"))
             {
-                popFile = dialog.FileName;
+                popFile = okSettings.CurrentDirectory + "\\POP.OK64";
                 if (levelFormat == 0)
                 {
                     pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);
@@ -1226,9 +1229,18 @@ namespace Tarmac64_Library
                     pathGroups = tm64Path.loadBattlePOP(popFile);
                 }
             }
+            else
+            {
+                throw new FileNotFoundException("Error: Place 'OK64.POP' file beside the FBX file.\nIt must be named 'OK64.POP'");
+            }
             openGLControl.Visible = true;
             openGLControl.Enabled = true;
-            
+
+
+            /*
+             * Import OK64 CONFIG
+             */
+             ImportCourseInfo();
         }
 
 
@@ -2198,22 +2210,7 @@ namespace Tarmac64_Library
 
         }
 
-
-        //
-
-        //
-
-        //
-
-        //
-
-
-
-
-        
-
-
-        private void Button1_Click_1(object sender, EventArgs e)
+        private void ExportBtn_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
             if (saveFile.ShowDialog() == DialogResult.OK)
@@ -2221,7 +2218,7 @@ namespace Tarmac64_Library
                 string filePath = saveFile.FileName;
 
                 TM64_Geometry TarmacGeometry = new TM64_Geometry();
-                TarmacGeometry.ExportSVL(filePath, masterObjects.Length, sectionList, masterObjects);                
+                TarmacGeometry.ExportSVL(filePath, masterObjects.Length, sectionList, masterObjects);
             }
         }
 
@@ -2246,7 +2243,6 @@ namespace Tarmac64_Library
                 }
             }
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             
@@ -2747,7 +2743,7 @@ namespace Tarmac64_Library
             textureArray[textureBox.SelectedIndex].textureModeT = textureModeTBox.SelectedIndex;
         }
 
-        private void SaveBtn_Click(object sender, EventArgs e)
+        private void ExportCourseInfo()
         {
             gameSpeed = new int[4];
 
@@ -2815,57 +2811,68 @@ namespace Tarmac64_Library
 
             Single.TryParse(waterBox.Text, out tempfloat);
             courseData.WaterLevel = tempfloat;
-            SaveFileDialog fileSave = new SaveFileDialog();
-            if (fileSave.ShowDialog() == DialogResult.OK)
+
+            if (!File.Exists(okSettings.CurrentDirectory + "\\CONFIG.OK64"))
+            {
+                File.Create(okSettings.CurrentDirectory + "\\CONFIG.OK64");
+            }
+            if (File.Exists(okSettings.CurrentDirectory + "\\CONFIG.OK64"))
             {
                 TM64_Course TarmacCourse = new TM64_Course();
-                TarmacCourse.WriteCourseInfo(courseData, fileSave.FileName);
+                TarmacCourse.WriteCourseInfo(courseData, okSettings.CurrentDirectory + "\\CONFIG.OK64");
+            } else {
+                throw new FileNotFoundException("ERROR: Could not write CONFIG.OK64");
             }
         }
 
-        private void ImportCourseInfo(object sender, EventArgs e)
+        private void ImportCourseInfo()
         {
-            fileOpen.IsFolderPicker = false;
-            if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
+            if (File.Exists(okSettings.CurrentDirectory + "\\CONFIG.OK64"))
             {
                 TM64_Course TarmacCourse = new TM64_Course();
-                TM64_Course.Course CourseData = TarmacCourse.ReadCourseInfo(fileOpen.FileName);
+                TM64_Course.Course CourseData = TarmacCourse.ReadCourseInfo(okSettings.CurrentDirectory + "\\CONFIG.OK64");
+                if (CourseData != null)
+                {
+                    nameBox.Text = CourseData.Credits;
+                    previewBox.Text = CourseData.PreviewPath;
+                    bannerBox.Text = CourseData.BannerPath;
+                    ghostBox.Text = CourseData.GhostPath;
+                    asmBox.Text = CourseData.AssmeblyPath;
+                    mapBox.Text = CourseData.MapData.MinimapPath;
+                    mapXBox.Text = CourseData.MapData.MapCoord.X.ToString();
+                    mapYBox.Text = CourseData.MapData.MapCoord.Y.ToString();
+                    startXBox.Text = CourseData.MapData.StartCoord.X.ToString();
+                    startYBox.Text = CourseData.MapData.StartCoord.Y.ToString();
+                    MapScaleBox.Text = CourseData.MapData.MapScale.ToString();
+                    MapRBox.Text = CourseData.MapData.MapColor.R.ToString();
+                    MapRBox.Text = CourseData.MapData.MapColor.G.ToString();
+                    MapRBox.Text = CourseData.MapData.MapColor.B.ToString();
+                    SkyRT.Text = CourseData.SkyColors.TopColor.R.ToString();
+                    SkyGT.Text = CourseData.SkyColors.TopColor.G.ToString();
+                    SkyBT.Text = CourseData.SkyColors.TopColor.B.ToString();
 
-                nameBox.Text = CourseData.Credits;
-                previewBox.Text = CourseData.PreviewPath;
-                bannerBox.Text = CourseData.BannerPath;
-                ghostBox.Text = CourseData.GhostPath;
-                asmBox.Text = CourseData.AssmeblyPath;
-                mapBox.Text = CourseData.MapData.MinimapPath;
-                mapXBox.Text = CourseData.MapData.MapCoord.X.ToString();
-                mapYBox.Text = CourseData.MapData.MapCoord.Y.ToString();
-                startXBox.Text = CourseData.MapData.StartCoord.X.ToString();
-                startYBox.Text = CourseData.MapData.StartCoord.Y.ToString();
-                MapScaleBox.Text = CourseData.MapData.MapScale.ToString();
-                MapRBox.Text = CourseData.MapData.MapColor.R.ToString();
-                MapRBox.Text = CourseData.MapData.MapColor.G.ToString();
-                MapRBox.Text = CourseData.MapData.MapColor.B.ToString();
-                SkyRT.Text = CourseData.SkyColors.TopColor.R.ToString();
-                SkyGT.Text = CourseData.SkyColors.TopColor.G.ToString();
-                SkyBT.Text = CourseData.SkyColors.TopColor.B.ToString();
+                    SkyRM.Text = CourseData.SkyColors.MidColor.R.ToString();
+                    SkyGM.Text = CourseData.SkyColors.MidColor.G.ToString();
+                    SkyBM.Text = CourseData.SkyColors.MidColor.B.ToString();
 
-                SkyRM.Text = CourseData.SkyColors.MidColor.R.ToString();
-                SkyGM.Text = CourseData.SkyColors.MidColor.G.ToString();
-                SkyBM.Text = CourseData.SkyColors.MidColor.B.ToString();
+                    SkyRB.Text = CourseData.SkyColors.BotColor.R.ToString();
+                    SkyGB.Text = CourseData.SkyColors.BotColor.G.ToString();
+                    SkyBB.Text = CourseData.SkyColors.BotColor.B.ToString();
 
-                SkyRB.Text = CourseData.SkyColors.BotColor.R.ToString();
-                SkyGB.Text = CourseData.SkyColors.BotColor.G.ToString();
-                SkyBB.Text = CourseData.SkyColors.BotColor.B.ToString();
+                    EchoStartBox.Text = CourseData.EchoValues[0].ToString();
+                    EchoStopBox.Text = CourseData.EchoValues[1].ToString();
+                    waterBox.Text = CourseData.WaterLevel.ToString();
+                    sp1Box.Text = CourseData.GameTempos[0].ToString();
+                    sp2Box.Text = CourseData.GameTempos[1].ToString();
+                    sp3Box.Text = CourseData.GameTempos[2].ToString();
+                    sp4Box.Text = CourseData.GameTempos[3].ToString();
+                    songBox.SelectedIndex = CourseData.MusicID;
+                }
 
-                EchoStartBox.Text = CourseData.EchoValues[0].ToString();
-                EchoStopBox.Text = CourseData.EchoValues[1].ToString();
-                waterBox.Text = CourseData.WaterLevel.ToString();
-                sp1Box.Text = CourseData.GameTempos[0].ToString();
-                sp2Box.Text = CourseData.GameTempos[1].ToString();
-                sp3Box.Text = CourseData.GameTempos[2].ToString();
-                sp4Box.Text = CourseData.GameTempos[3].ToString();
-                songBox.SelectedIndex = CourseData.MusicID;
-
+            }
+            else
+            {
+                MessageBox.Show("CONFIG.OK64 Error! Continuing without loading previous user input.");
             }
         }
 
