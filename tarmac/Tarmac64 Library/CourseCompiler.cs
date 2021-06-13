@@ -2871,7 +2871,7 @@ namespace Tarmac64_Library
             }
             else
             {
-                MessageBox.Show("CONFIG.OK64 Error! Continuing without loading previous user input.");
+                MessageBox.Show("CONFIG.OK64 does not exist or is corrupted.\nFile will be created during compile to save user input.");
             }
         }
 
