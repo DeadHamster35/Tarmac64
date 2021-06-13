@@ -1,4 +1,4 @@
-﻿namespace Tarmac64_Library
+namespace Tarmac64_Library
 {
     partial class CourseCompiler
     {
@@ -61,7 +61,7 @@
             this.chkWireframe = new System.Windows.Forms.CheckBox();
             this.chkHover = new System.Windows.Forms.CheckBox();
             this.chkSection = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.exportBtn = new System.Windows.Forms.Button();
             this.importBtn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -96,8 +96,6 @@
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.ImportData = new System.Windows.Forms.Button();
-            this.SaveBtn = new System.Windows.Forms.Button();
             this.label51 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.label50 = new System.Windows.Forms.Label();
@@ -546,7 +544,7 @@
             this.SectionViews.Controls.Add(this.chkWireframe);
             this.SectionViews.Controls.Add(this.chkHover);
             this.SectionViews.Controls.Add(this.chkSection);
-            this.SectionViews.Controls.Add(this.button1);
+            this.SectionViews.Controls.Add(this.exportBtn);
             this.SectionViews.Controls.Add(this.importBtn);
             this.SectionViews.Controls.Add(this.groupBox1);
             this.SectionViews.Controls.Add(this.sectionBox);
@@ -623,16 +621,16 @@
             this.chkSection.UseVisualStyleBackColor = true;
             this.chkSection.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
-            // button1
+            // exportBtn
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Location = new System.Drawing.Point(70, 469);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(61, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Export";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click_1);
+            this.exportBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.exportBtn.Location = new System.Drawing.Point(70, 469);
+            this.exportBtn.Name = "button1";
+            this.exportBtn.Size = new System.Drawing.Size(61, 23);
+            this.exportBtn.TabIndex = 4;
+            this.exportBtn.Text = "Export";
+            this.exportBtn.UseVisualStyleBackColor = true;
+            this.exportBtn.Click += new System.EventHandler(this.ExportBtn_Click);
             // 
             // importBtn
             // 
@@ -643,8 +641,7 @@
             this.importBtn.TabIndex = 3;
             this.importBtn.Text = "Import";
             this.importBtn.UseVisualStyleBackColor = true;
-            this.importBtn.Click += new System.EventHandler(this.ImportBtn_Click);
-            // 
+            this.importBtn.Click += new System.EventHandler(this.ImportBtn_Click);// 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -999,8 +996,6 @@
             this.CourseInfo.Controls.Add(this.textBox6);
             this.CourseInfo.Controls.Add(this.label1);
             this.CourseInfo.Controls.Add(this.comboBox3);
-            this.CourseInfo.Controls.Add(this.ImportData);
-            this.CourseInfo.Controls.Add(this.SaveBtn);
             this.CourseInfo.Controls.Add(this.label51);
             this.CourseInfo.Controls.Add(this.groupBox7);
             this.CourseInfo.Controls.Add(this.waterBox);
@@ -1081,30 +1076,6 @@
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(89, 21);
             this.comboBox3.TabIndex = 183;
-            // 
-            // ImportData
-            // 
-            this.ImportData.AutoSize = true;
-            this.ImportData.Location = new System.Drawing.Point(5, 24);
-            this.ImportData.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
-            this.ImportData.Name = "ImportData";
-            this.ImportData.Size = new System.Drawing.Size(65, 23);
-            this.ImportData.TabIndex = 1;
-            this.ImportData.Text = "Import";
-            this.ImportData.UseVisualStyleBackColor = true;
-            this.ImportData.Click += new System.EventHandler(this.ImportCourseInfo);
-            // 
-            // SaveBtn
-            // 
-            this.SaveBtn.AutoSize = true;
-            this.SaveBtn.Location = new System.Drawing.Point(76, 24);
-            this.SaveBtn.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
-            this.SaveBtn.Name = "SaveBtn";
-            this.SaveBtn.Size = new System.Drawing.Size(65, 23);
-            this.SaveBtn.TabIndex = 2;
-            this.SaveBtn.Text = "Export";
-            this.SaveBtn.UseVisualStyleBackColor = true;
-            this.SaveBtn.Click += new System.EventHandler(this.SaveBtn_Click);
             // 
             // label51
             // 
@@ -2289,7 +2260,7 @@
         private System.Windows.Forms.CheckBox chkWireframe;
         private System.Windows.Forms.CheckBox chkHover;
         private System.Windows.Forms.CheckBox chkSection;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button exportBtn;
         private System.Windows.Forms.Button importBtn;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label9;
@@ -2421,8 +2392,6 @@
         private System.Windows.Forms.ComboBox textureModeTBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox heightBox;
-        private System.Windows.Forms.Button ImportData;
-        private System.Windows.Forms.Button SaveBtn;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label label57;
         private System.Windows.Forms.TextBox textBox6;
