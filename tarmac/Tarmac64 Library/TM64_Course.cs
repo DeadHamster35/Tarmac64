@@ -1,4 +1,4 @@
-﻿using Assimp;
+using Assimp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -972,6 +972,10 @@ namespace Tarmac64_Library
             Course CourseData = new Course();
 
             string[] inputFile = File.ReadAllLines(filePath);
+            if (inputFile.Length == 0) {
+                CourseData = null;
+                return CourseData;
+            }
             int thisLine = 0;
 
             CourseData.Credits = inputFile[thisLine];
