@@ -2813,7 +2813,7 @@ namespace Tarmac64_Library
 
             if (!File.Exists(okSettings.CurrentDirectory + "\\CONFIG.OK64"))
             {
-                File.Create(okSettings.CurrentDirectory + "\\CONFIG.OK64");
+                File.Create(okSettings.CurrentDirectory + "\\CONFIG.OK64").Close();
             }
             if (File.Exists(okSettings.CurrentDirectory + "\\CONFIG.OK64"))
             {
