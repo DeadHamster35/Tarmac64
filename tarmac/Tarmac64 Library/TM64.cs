@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -92,6 +92,8 @@ namespace Tarmac64_Library
 
         public class OK64Settings
         {
+            public string AppDirectory { get; set; }
+            public string CurrentDirectory { get; set; }
             public string ProjectDirectory { get; set; }
             public string JRDirectory { get; set; }
             public bool Valid { get; set; }
@@ -361,6 +363,7 @@ namespace Tarmac64_Library
             string AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string SettingsPath = Path.Combine(AppData, "Tarmac.OK64Settings");
             string[] settings = new string[0];
+            OkSettings.AppDirectory = Path.GetDirectoryName(Application.ExecutablePath);
 
             bool corrupt = Forced;
             if (!File.Exists(SettingsPath))
@@ -390,6 +393,7 @@ namespace Tarmac64_Library
                 CommonOpenFileDialog dialog = new CommonOpenFileDialog();
                 dialog.InitialDirectory = "C:\\";
                 dialog.IsFolderPicker = true;
+                dialog.Title = "Select Project Folder";
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     OkSettings.ProjectDirectory = dialog.FileName;
@@ -397,6 +401,7 @@ namespace Tarmac64_Library
                 MessageBox.Show("Please select your TarmacJR Chunk Folder");
                 dialog.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
                 dialog.IsFolderPicker = true;
+                dialog.Title = "Select TarmacJR Chunk Folder";
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     OkSettings.JRDirectory = dialog.FileName;
