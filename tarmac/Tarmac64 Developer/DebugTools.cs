@@ -16,7 +16,6 @@ using Tarmac64_Library;
 
 //custom libraries
 
-using AssimpSharp;  //for handling model data
 using Texture64;  //for handling texture data
 
 
@@ -29,6 +28,9 @@ using System.Security.Permissions;
 using SharpDX;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Assimp;
 
 namespace Tarmac64
 {
@@ -1514,6 +1516,63 @@ namespace Tarmac64
                     int endOffset = Convert.ToInt32(texturedumpend.Text);
                     Tarmac.DumpTexturesOffset(startOffset, endOffset, outputDir, filePath);
                 }
+            }
+        }
+
+        private void button21_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Select .FBX File");
+
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            
+            dialog.Title = "FBX File";
+            dialog.IsFolderPicker = false;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                //Get the path of specified file
+                string FBXfilePath = dialog.FileName;
+
+                Scene fbx = new Scene();
+                AssimpContext importer = new AssimpContext();
+
+                fbx = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
+                int x = 5;
+                x = 5 + 2;
+            }
+
+        }
+
+        private void button22_Click(object sender, EventArgs e)
+        {
+            TM64_Geometry.OK64Texture TextureObject = new TM64_Geometry.OK64Texture();
+            TextureObject.segmentPosition = Convert.ToInt32(BitmapAddress.Text,16);
+            TextureObject.palettePosition = Convert.ToInt32(PaletteAddress.Text, 16);
+            TM64_Geometry TarmacGeometry = new TM64_Geometry();
+            byte[] SegmentByte = BitConverter.GetBytes(6);
+            SaveFileDialog FileSave = new SaveFileDialog();
+            if (FileSave.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllBytes(FileSave.FileName, TarmacGeometry.RGBA(TextureObject, 0, SegmentByte));
+            }
+        }
+
+        private void button23_Click(object sender, EventArgs e)
+        {
+            TM64_Geometry.OK64Texture TextureObject = new TM64_Geometry.OK64Texture();
+            TextureObject.textureWidth = 64;
+            TextureObject.textureHeight = 64;
+            TextureObject.bitSize = 0;
+            
+            TextureObject.segmentPosition = 0x2000;
+            TextureObject.palettePosition = 0x4000;
+            TM64_Geometry TarmacGeometry = new TM64_Geometry();
+
+            byte[] SegmentByte = BitConverter.GetBytes(6);
+            Array.Reverse(SegmentByte);
+            SaveFileDialog FileSave = new SaveFileDialog();
+            if (FileSave.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllBytes(FileSave.FileName, TarmacGeometry.CI(TextureObject, 0, SegmentByte));
             }
         }
     }

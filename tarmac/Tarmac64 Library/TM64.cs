@@ -35,28 +35,6 @@ namespace Tarmac64_Library
         public static int newint = 4;
 
 
-
-
-        MemoryStream bs = new MemoryStream();
-        BinaryReader br = new BinaryReader(Stream.Null);
-        BinaryWriter bw = new BinaryWriter(Stream.Null);
-
-        public static UInt32[] seg6_addr = new UInt32[20];
-        public static UInt32[] seg6_end = new UInt32[20];
-        public static UInt32[] seg4_addr = new UInt32[20];
-        public static UInt32[] seg7_end = new UInt32[20];
-        public static UInt32[] seg9_addr = new UInt32[20];
-        public static UInt32[] seg9_end = new UInt32[20];
-        public static UInt32[] seg47_buf = new UInt32[20];
-        public static UInt32[] numVtxs = new UInt32[20];
-        public static UInt32[] seg7_ptr = new UInt32[20];
-        public static UInt32[] seg7_size = new UInt32[20];
-        public static UInt32[] texture_addr = new UInt32[20];
-        public static UInt16[] flag = new UInt16[20];
-        public static UInt16[] unused = new UInt16[20];
-
-        public static UInt32[] seg7_romptr = new UInt32[20];
-
         byte[] flip2 = new byte[2];
         byte[] flip4 = new byte[4];
 
@@ -128,6 +106,8 @@ namespace Tarmac64_Library
             public int flag { get; set; }
 
         }
+
+
 
         List<Offset> pathOffsets = new List<Offset>();
 
@@ -369,19 +349,27 @@ namespace Tarmac64_Library
             }
             else
             {
-                settings = File.ReadAllLines(SettingsPath);
-                if (settings.Length == 2)
+                if (Forced)
                 {
-                    OkSettings.ProjectDirectory = settings[0];
-                    OkSettings.JRDirectory = settings[1];
-                    if (OkSettings.ProjectDirectory == null | OkSettings.JRDirectory == null)
-                    {
-                        corrupt = true;
-                    }
+                    corrupt = true;
+                    File.Delete(SettingsPath);
                 }
                 else
                 {
-                    corrupt = true;
+                    settings = File.ReadAllLines(SettingsPath);
+                    if (settings.Length == 2)
+                    {
+                        OkSettings.ProjectDirectory = settings[0];
+                        OkSettings.JRDirectory = settings[1];
+                        if (OkSettings.ProjectDirectory == null | OkSettings.JRDirectory == null)
+                        {
+                            corrupt = true;
+                        }
+                    }
+                    else
+                    {
+                        corrupt = true;
+                    }
                 }
             }
             if (corrupt)
@@ -499,9 +487,9 @@ namespace Tarmac64_Library
                 binaryWriter.Write(Convert.ToByte(0x00));
             }
 
-            byte[] compseg7 = compress_seg7(seg7);
+            //byte[] compseg7 = compress_seg7(seg7);
             seg7start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(compseg7, 0, compseg7.Length);
+            binaryWriter.Write(seg7, 0, seg7.Length);
             seg7end = Convert.ToUInt32(binaryWriter.BaseStream.Position);
             seg7rsp = Convert.ToUInt32(0x0F000000 | (seg7start - seg4start));
 
@@ -758,7 +746,6 @@ namespace Tarmac64_Library
                 }
                 binaryReader.BaseStream.Position = binaryReader.BaseStream.Position + 8;
             }
-            MessageBox.Show("Finished");
 
 
 
@@ -2395,6 +2382,19 @@ namespace Tarmac64_Library
         public byte[] CompressMIO0(byte[] inputFile)
         {
             byte[] outputFile = Cereal64.Common.Utils.Encoding.MIO0.Encode(inputFile);
+            return outputFile;
+        }
+        public byte[] DecompressTKMK(byte[] inputFile)
+        {
+            TKMK00Encoder TKMK = new TKMK00Encoder();
+            byte[] outputFile = TKMK.Decode(inputFile, 0, 0xFF00);
+            return outputFile;
+        }
+
+        public byte[] CompressTKMK(byte[] inputFile, int Width, int Height)
+        {
+            TKMK00Encoder TKMK = new TKMK00Encoder();
+            byte[] outputFile = TKMK.Encode(inputFile, Width, Height, 0);
             return outputFile;
         }
 

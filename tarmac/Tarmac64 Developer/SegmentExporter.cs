@@ -710,7 +710,7 @@ namespace Tarmac64
                 int targetOffset = Convert.ToInt32(seg4_addr[cID]);
                 byte[] romBytes = File.ReadAllBytes(filePath);
 
-                byte[] compressedFile = new byte[0];
+                byte[] compressedFile = new byte[romBytes.Length - targetOffset];
                 Array.Copy(romBytes, targetOffset, compressedFile, 0, romBytes.Length - targetOffset);
 
 
@@ -1207,6 +1207,10 @@ namespace Tarmac64
                         output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache, texClass);
                     }
                     if (commandbyte == 0xF5)
+                    {
+                        output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache, texClass, false);
+                    }
+                    if (commandbyte == 0xFD)
                     {
                         output = TarmacGeometry.F3DEX_Model(out vertCache, out texClass, commandbyte, seg7, seg4, vaddress, displayOffset + 1, vertCache, texClass, false);
                     }
@@ -1740,6 +1744,8 @@ namespace Tarmac64
                 
                 cID = coursebox.SelectedIndex;
                 Tarmac.DumpTextures(cID,outputDir,filePath);
+
+                MessageBox.Show("Finished");
             }
             
         }

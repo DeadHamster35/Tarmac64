@@ -37,8 +37,11 @@ namespace Tarmac64_Library
         SaveFileDialog FileSave = new SaveFileDialog();
         TM64 Tarmac = new TM64();
         TM64_Geometry TarmacGeo = new TM64_Geometry();
-        TM64_Geometry.OK64F3DObject[] MasterObjects = new TM64_Geometry.OK64F3DObject[0];
-        TM64_Geometry.OK64Texture[] TextureObjects = new TM64_Geometry.OK64Texture[0];
+        TM64_Geometry.OK64F3DObject[][] MasterObjects = new TM64_Geometry.OK64F3DObject[0][];
+        TM64_Geometry.OK64Texture[][] TextureObjects = new TM64_Geometry.OK64Texture[0][];
+        int lastMaterial = 0;
+        int materialCount = 0;
+        int LastSelectedIndex = -1;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -51,13 +54,16 @@ namespace Tarmac64_Library
 
                 
 
-                string[] bigList = Directory.GetFiles(dialog.FileName, "*.FBX*", SearchOption.AllDirectories);
-                string[] littleList = Directory.GetFiles(dialog.FileName, "*.fbx*", SearchOption.AllDirectories);
-                string[] fileList = littleList.Concat(bigList).ToArray();
+                string[] fileList = Directory.GetFiles(dialog.FileName, "*.FBX*", SearchOption.AllDirectories);
                 AssimpContext importer = new AssimpContext();
+                MasterObjects = new TM64_Geometry.OK64F3DObject[fileList.Length][];
+                TextureObjects = new TM64_Geometry.OK64Texture[fileList.Length][];
 
-                foreach (string FBXFilePath in fileList)
+                FBXBox.Items.Clear();
+
+                for (int currentFile = 0; currentFile < fileList.Length; currentFile++)
                 {
+                    string FBXFilePath = fileList[currentFile];
                     int DataLength = Convert.ToInt32(MagicBox.Text, 16);
                     
 
@@ -71,28 +77,16 @@ namespace Tarmac64_Library
                     Assimp.Node masterNode = ModelData.RootNode.FindNode("Master Objects");
                     if (masterNode != null)
                     {
-                        TextureObjects = TarmacGeo.loadTextures(ModelData, FBXFilePath);
-                        MasterObjects = TarmacGeo.createObjects(ModelData);
-
-                        
-                        OutputData = TarmacGeo.writeRawTextures(OutputData, TextureObjects, DataLength);
-                        TarmacGeo.compileTextureObject(ref DataLength, ref OutputData, OutputData, TextureObjects, DataLength, SegmentID);
-                        TarmacGeo.compileF3DObject(ref DataLength, ref OutputData, OutputData, MasterObjects, TextureObjects, DataLength, SegmentID);
-
-                        outputText += filename + "-" + DataLength.ToString("X") + Environment.NewLine;
-                        OutputData = TarmacGeo.compileObjectList(ref DataLength, ModelData, OutputData, MasterObjects, TextureObjects, SegmentID);
-
-                        
+                        TextureObjects[currentFile] = TarmacGeo.loadTextures(ModelData, FBXFilePath);                        
+                        MasterObjects[currentFile] = TarmacGeo.createObjects(ModelData, TextureObjects[currentFile]);
                     }
+                    else
+                    {
+                        MessageBox.Show("Error - " + FBXFilePath);
+                    }
+                    FBXBox.Items.Add(Path.GetFileNameWithoutExtension(FBXFilePath));
                 }
-
-                if (FileSave.ShowDialog() == DialogResult.OK)
-                {
-                    File.WriteAllBytes(FileSave.FileName + ".raw.bin", OutputData);
-                    File.WriteAllBytes(FileSave.FileName, Tarmac.CompressMIO0(OutputData));
-                    File.WriteAllText(FileSave.FileName + ".help.txt", outputText);
-                }
-
+                FBXBox.SelectedIndex = 0;
             }
         }
 
@@ -111,6 +105,9 @@ namespace Tarmac64_Library
             string outputText = "";
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
             dialog.IsFolderPicker = false;
+
+            MasterObjects = new TM64_Geometry.OK64F3DObject[1][];
+            TextureObjects = new TM64_Geometry.OK64Texture[1][];
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
 
@@ -119,7 +116,6 @@ namespace Tarmac64_Library
                 string FBXFilePath = dialog.FileName;
                 AssimpContext importer = new AssimpContext();
 
-                int DataLength = Convert.ToInt32(MagicBox.Text, 16);
 
 
                 Scene ModelData = importer.ImportFile(FBXFilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
@@ -127,34 +123,107 @@ namespace Tarmac64_Library
                 int materialCount = ModelData.MaterialCount;
                 int SegmentID = SegmentBox.SelectedIndex;
 
-
+                FBXBox.Items.Clear();
 
                 Assimp.Node masterNode = ModelData.RootNode.FindNode("Master Objects");
                 if (masterNode != null)
                 {
-                    TextureObjects = TarmacGeo.loadTextures(ModelData, FBXFilePath);
-                    MasterObjects = TarmacGeo.createObjects(ModelData);
-
-
-                    OutputData = TarmacGeo.writeRawTextures(OutputData, TextureObjects, DataLength);
-                    TarmacGeo.compileTextureObject(ref DataLength, ref OutputData, OutputData, TextureObjects, DataLength, SegmentID);
-                    TarmacGeo.compileF3DObject(ref DataLength, ref OutputData, OutputData, MasterObjects, TextureObjects, DataLength, SegmentID);
-
-                    outputText += filename + "-" + DataLength.ToString("X") + Environment.NewLine;
-                    OutputData = TarmacGeo.compileObjectList(ref DataLength, ModelData, OutputData, MasterObjects, TextureObjects, SegmentID);
-
-
+                    TextureObjects[0] = TarmacGeo.loadTextures(ModelData, FBXFilePath);
+                    MasterObjects[0] = TarmacGeo.createObjects(ModelData, TextureObjects[0]);
                 }
-                
-
-                if (FileSave.ShowDialog() == DialogResult.OK)
+                else
                 {
-                    File.WriteAllBytes(FileSave.FileName + ".raw.bin", OutputData);
-                    File.WriteAllBytes(FileSave.FileName, Tarmac.CompressMIO0(OutputData));
-                    File.WriteAllText(FileSave.FileName + ".help.txt", outputText);
+                    MessageBox.Show("Error - " + FBXFilePath);
                 }
+                FBXBox.Items.Add(Path.GetFileNameWithoutExtension(FBXFilePath));
+
 
             }
         }
+
+
+
+        private void FBXBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (LastSelectedIndex != -1)
+            {
+                TextureObjects[LastSelectedIndex] = TextureControl.textureArray;                
+            }
+            LastSelectedIndex = FBXBox.SelectedIndex;
+            TextureControl.textureArray = TextureObjects[FBXBox.SelectedIndex];
+            TextureControl.AddNewTextures(TextureObjects[FBXBox.SelectedIndex].Length);
+        }
+
+        private void WriteData()
+        {
+            byte[] OutputData = new byte[0];
+            byte[] HeaderData = new byte[0];
+            string asmText = "";
+            string hText = "";
+            string filename = "";
+
+            int SegmentID = Convert.ToInt32(SegmentBox.Text);
+            int DataLength = Convert.ToInt32(MagicBox.Text, 16) + (MasterObjects.Length * 16);
+            int[] RootPositions = new int[MasterObjects.Length];
+
+            for (int currentItem = 0; currentItem < MasterObjects.Length; currentItem++)
+            {
+                
+                OutputData = TarmacGeo.writeRawTextures(OutputData, TextureObjects[currentItem], DataLength);
+                OutputData = TarmacGeo.compileTextureObject(OutputData, TextureObjects[currentItem], DataLength, SegmentID);
+                OutputData = TarmacGeo.compileF3DObject(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], DataLength, SegmentID);
+                
+
+                int SegmentPosition = OutputData.Length + (SegmentID * 0x01000000) + DataLength;
+
+                HeaderData = TarmacGeo.compileF3DHeader(SegmentPosition, HeaderData);
+
+                asmText += ".definelabel " + MasterObjects[currentItem][0].objectName + ", 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
+                hText += "extern long " + MasterObjects[currentItem][0].objectName + "; //0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
+
+                OutputData = TarmacGeo.compileObjectList(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], SegmentID);
+
+
+
+            }
+            
+            if (FileSave.ShowDialog() == DialogResult.OK)
+            {
+                MemoryStream memoryStream = new MemoryStream();
+                BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+                binaryWriter.Write(HeaderData);
+                binaryWriter.Write(OutputData);
+                byte[] FinalData = memoryStream.ToArray();
+                byte[] CompressedData = Tarmac.CompressMIO0(FinalData);
+                string savePath = Path.GetDirectoryName(FileSave.FileName);
+                string fileName = Path.GetFileNameWithoutExtension(FileSave.FileName);
+                hText += "#define " + fileName + "_RawDataSize 0x" + OutputData.Length.ToString("X")+Environment.NewLine;
+                hText += "#define " + fileName + "_CompressedSize 0x" + CompressedData.Length.ToString("X") + Environment.NewLine;
+
+                File.WriteAllBytes(FileSave.FileName, CompressedData);
+                File.WriteAllBytes(Path.Combine(savePath, fileName + ".raw"), FinalData);                
+                File.WriteAllText(Path.Combine(savePath, fileName + ".asm"), asmText);
+                File.WriteAllText(Path.Combine(savePath, fileName + ".h"), hText);
+            }
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            WriteData();
+        }
     }
 }
+
+
+/*
+ * 
+ * 
+
+
+
+                
+                
+
+                
+
+*/

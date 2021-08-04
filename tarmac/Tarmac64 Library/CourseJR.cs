@@ -39,7 +39,7 @@ namespace Tarmac64_Library
         TM64.OK64Settings okSettings = new TM64.OK64Settings();
 
         bool updateBool = false;
-
+        bool loadGL = false;
         int raycastBoolean = 0;
         int sectionCount = 0;
         public int programFormat;
@@ -144,7 +144,7 @@ namespace Tarmac64_Library
         }
 
         Stopwatch clockTime = new Stopwatch();
-        bool loadGL = false;
+        bool loadfalse;
         SharpGL.SceneGraph.Assets.Texture glTexture = new SharpGL.SceneGraph.Assets.Texture();
 
         uint[] gtexture = new uint[1];
@@ -697,7 +697,7 @@ namespace Tarmac64_Library
             LocalStream.Position = 0;
             
             fbx = importer.ImportFileFromStream(LocalStream, PostProcessPreset.TargetRealTimeMaximumQuality);
-            EmptyBlock.ObjectList = TarmacGeometry.createObjects(fbx);
+            EmptyBlock.ObjectList = TarmacGeometry.createObjects(fbx, textureArray);
 
             LocalStream = new MemoryStream();
             LocalStream.Position = 0;
@@ -705,7 +705,7 @@ namespace Tarmac64_Library
             LocalStream.Position = 0;
 
             fbx = importer.ImportFileFromStream(LocalStream, PostProcessPreset.TargetRealTimeMaximumQuality);
-            ZoneBlock.ObjectList = TarmacGeometry.createObjects(fbx);
+            ZoneBlock.ObjectList = TarmacGeometry.createObjects(fbx, textureArray);
 
 
             foreach (var subObject in EmptyBlock.ObjectList)
@@ -731,7 +731,7 @@ namespace Tarmac64_Library
                 string ParentFolder = Directory.GetParent(ChunkList[currentFile]).Name;
                 BlockObjects[currentFile].BlockName = ParentFolder +"-"+ Path.GetFileNameWithoutExtension(ChunkList[currentFile]);
                 fbx = importer.ImportFile(ChunkList[currentFile], PostProcessPreset.TargetRealTimeMaximumQuality);
-                BlockObjects[currentFile].ObjectList = TarmacGeometry.createObjects(fbx);
+                BlockObjects[currentFile].ObjectList = TarmacGeometry.createObjects(fbx, textureArray);
 
                 ObjectSelectBox.Items.Add(BlockObjects[currentFile].BlockName);
             }
@@ -937,7 +937,7 @@ namespace Tarmac64_Library
                             {
                                 foreach (var thisObject in ThisBlock)
                                 {
-                                    gl = TarmacGL.DrawTarget(gl, localCamera, glTexture, thisObject, ZoneIndex);
+                                    TarmacGL.DrawTarget(gl, localCamera, glTexture, thisObject, ZoneIndex);
                                 }
                             }
                             else
@@ -946,14 +946,14 @@ namespace Tarmac64_Library
                                 {
                                     foreach (var thisObject in ThisBlock)
                                     {
-                                        gl = TarmacGL.DrawTextured(gl, textureArray, localCamera, glTexture, thisObject, ZoneIndex);
+                                        TarmacGL.DrawTextured(gl, textureArray, localCamera, glTexture, thisObject, ZoneIndex);
                                     }
                                 }
                                 else
                                 {
                                     foreach (var thisObject in ThisBlock)
                                     {
-                                        gl = TarmacGL.DrawShaded(gl, textureArray, localCamera, glTexture, thisObject, ZoneIndex);
+                                        TarmacGL.DrawShaded(gl, glTexture, thisObject, thisObject.objectColor, ZoneIndex);
                                     }
                                 }
                             }
@@ -964,14 +964,14 @@ namespace Tarmac64_Library
                             {
                                 foreach (var thisObject in ThisBlock)
                                 {
-                                    gl = TarmacGL.DrawTextured(gl, textureArray, localCamera, glTexture, thisObject, ZoneIndex);
+                                    TarmacGL.DrawTextured(gl, textureArray, localCamera, glTexture, thisObject, ZoneIndex);
                                 }
                             }
                             else
                             {
                                 foreach (var thisObject in ThisBlock)
                                 {
-                                    gl = TarmacGL.DrawShaded(gl, textureArray, localCamera, glTexture, thisObject, ZoneIndex);
+                                    TarmacGL.DrawShaded(gl, glTexture, thisObject, thisObject.objectColor, ZoneIndex);
                                 }
                             }
                         }
@@ -1034,9 +1034,9 @@ namespace Tarmac64_Library
                     }
                 }
             }
-            */
-            loadGL = true;
             
+            loadtrue;
+            */
         }
 
 

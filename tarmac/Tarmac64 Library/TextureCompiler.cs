@@ -38,7 +38,7 @@ namespace Tarmac64_Library
         private void button1_Click(object sender, EventArgs e)
         {
             fileOpen.IsFolderPicker = true;
-            
+            string hText = "";
 
             if (fileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
@@ -49,21 +49,39 @@ namespace Tarmac64_Library
                 string[] imageList = PNGList.Concat(BMPList).Concat(JPGList).Concat(JPEGList).ToArray();
                 string parentDirectory = Path.Combine(fileOpen.FileName, "output");
                 Directory.CreateDirectory(parentDirectory);
+
+                
+                MemoryStream memoryStream = new MemoryStream();
+                BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
                 foreach (var textureAddress in imageList)
                 {
-                    string fileName = Path.GetFileName(textureAddress);
-                    string childDirectory = Path.Combine(parentDirectory, fileName);
+                    string fileName = Path.GetFileNameWithoutExtension(textureAddress);
+                    
                     N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.RGBA32 };
                     byte[] imageData = null;
                     byte[] paletteData = null;
                     Bitmap bitmapData = new Bitmap(textureAddress);
                     N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[codecBox.SelectedIndex], bitmapData);
-                    byte[] compressedTexture = Tarmac.CompressMIO0(imageData);
+
+
+                    int SegmentPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                    binaryWriter.Write(imageData);
+
                     
-                    File.WriteAllBytes(childDirectory + ".RAW",imageData);
-                    File.WriteAllBytes(childDirectory + ".MIO0",compressedTexture);
+                    hText += "#define " + fileName + "_Offset 0x" + SegmentPosition.ToString("X") + Environment.NewLine;
+                    hText += "#define " + fileName + "_Size 0x" + imageData.Length.ToString("X") + Environment.NewLine;
 
                 }
+
+                string childDirectory = Path.Combine(parentDirectory, "ImageData");
+                
+                File.WriteAllBytes(childDirectory + ".RAW", memoryStream.ToArray());
+                File.WriteAllBytes(childDirectory + ".MIO0", Tarmac.CompressMIO0(memoryStream.ToArray()));
+                
+                File.WriteAllText(Path.Combine(childDirectory + ".h"), hText);
+
+
                 MessageBox.Show("Finished");
             }
         }
@@ -105,6 +123,7 @@ namespace Tarmac64_Library
 
         private void TextureCompiler_Load(object sender, EventArgs e)
         {
+            
             codecBox.SelectedIndex = 0;
         }
     }

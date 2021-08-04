@@ -139,5 +139,41 @@ namespace Tarmac64
             f2.ShowDialog();
         }
 
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void extractSongToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SongExtractor f2 = new SongExtractor();
+            f2.ShowDialog();
+        }
+
+        private void resetFoldersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TM64 Tarmac = new TM64();
+
+            string message = "Reset your Tarmac Folders?";
+            string caption = "Tarmac64";
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+            DialogResult result;
+            if (MessageBox.Show(message, caption, buttons) == System.Windows.Forms.DialogResult.Yes)
+            {
+                Tarmac.LoadSettings(true);
+            }
+        }
+
+        private void courseLoaderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GameBuilder f2 = new GameBuilder();
+            f2.ShowDialog();
+        }
+
+        private void objectTypeCompilerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Tarmac64_Library.ObjectTypeCompiler f2 = new ObjectTypeCompiler();
+            f2.ShowDialog();
+        }
     }
 }

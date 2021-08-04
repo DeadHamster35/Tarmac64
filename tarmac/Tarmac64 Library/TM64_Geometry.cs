@@ -116,18 +116,25 @@ namespace Tarmac64_Library
             public string texturePath { get; set; }
             public int textureWidth { get; set; }
             public int textureHeight { get; set; }
-            public int textureCodec { get; set; }
+            public int textureCodec { get; set; } //0 RGBA 1 
             public int textureClass { get; set; } //combo of width/height used for easier identifying. 
+            public int bitSize { get; set; }
             public int textureModeS { get; set; } //0 = wrap - 1 = mirror - 2 = clamp
             public int textureModeT { get; set; } //0 = wrap - 1 = mirror - 2 = clamp
             public int textureScrollS { get; set; }
             public int textureScrollT { get; set; }
+            public int textureScreen { get; set; }
             public int textureTransparent { get; set; }  //0 = opaque - 1 = transparent  - 2 = translucent
+            public bool textureDoubleSide { get; set; }
             public Image textureBitmap { get; set; }
             public byte[] compressedTexture { get; set; }
+            public byte[] PaletteData { get; set; }
+            public byte[] rawTexture { get; set; }
             public int compressedSize { get; set; }
             public int fileSize { get; set; }
             public int segmentPosition { get; set; }
+            public int palettePosition { get; set; }
+            public int paletteSize { get; set; }
             public int romPosition { get; set; }
             public int[] f3dexPosition { get; set; }
             public int vertAlpha { get; set; }
@@ -142,13 +149,6 @@ namespace Tarmac64_Library
         }
 
 
-        public class OK64Animation
-        {
-            
-        }
-            
-
-            
 
         public class OK64CourseObject
         {
@@ -156,6 +156,17 @@ namespace Tarmac64_Library
             public OK64F3DObject[] Geometry { get; set; }
             
 
+        }
+
+        public class OK64Animation
+        {
+            public string AnimationName { get; set; }
+            public string FBXPath { get; set; }
+            public int FrameCount { get; set; }
+            public short[][] TranslationData { get; set; }
+            public short[][] RotationData { get; set; }
+            public short[] ScaleData { get; set; }
+            public int Position { get; set; }
         }
 
         public class OK64F3DObject
@@ -215,6 +226,8 @@ namespace Tarmac64_Library
             public Int16 t { get; set; }
             public float sBase { get; set; }
             public float tBase { get; set; }
+            public float sPure { get; set; }
+            public float tPure { get; set; }
             public float u { get; set; }
             public float v { get; set; }
 
@@ -263,6 +276,100 @@ namespace Tarmac64_Library
 
 
         private const double Epsilon = 0.000001d;
+
+
+
+        public TM64_Geometry.Face[] CreateStandard(float Size = 5.0f)
+        {
+            TM64_Geometry.Face[] StandardGeometry = new TM64_Geometry.Face[4];
+            StandardGeometry[0] = new TM64_Geometry.Face();
+
+            StandardGeometry[0].VertData = new TM64_Geometry.Vertex[3];
+
+            StandardGeometry[0].VertData[0] = new TM64_Geometry.Vertex();
+            StandardGeometry[0].VertData[0].position = new TM64_Geometry.Position();
+            StandardGeometry[0].VertData[0].position.x = Convert.ToInt16(-1 * Size);
+            StandardGeometry[0].VertData[0].position.y = Convert.ToInt16(0);
+            StandardGeometry[0].VertData[0].position.z = Convert.ToInt16(0);
+
+            StandardGeometry[0].VertData[1] = new TM64_Geometry.Vertex();
+            StandardGeometry[0].VertData[1].position = new TM64_Geometry.Position();
+            StandardGeometry[0].VertData[1].position.x = Convert.ToInt16(Size);
+            StandardGeometry[0].VertData[1].position.y = Convert.ToInt16(0);
+            StandardGeometry[0].VertData[1].position.z = Convert.ToInt16(0);
+
+            StandardGeometry[0].VertData[2] = new TM64_Geometry.Vertex();
+            StandardGeometry[0].VertData[2].position = new TM64_Geometry.Position();
+            StandardGeometry[0].VertData[2].position.x = Convert.ToInt16(Size);
+            StandardGeometry[0].VertData[2].position.y = Convert.ToInt16(0);
+            StandardGeometry[0].VertData[2].position.z = Convert.ToInt16(Size * 2);
+
+            
+            StandardGeometry[1] = new TM64_Geometry.Face();
+            StandardGeometry[1].VertData = new TM64_Geometry.Vertex[3];
+
+            StandardGeometry[1].VertData[0] = new TM64_Geometry.Vertex();
+            StandardGeometry[1].VertData[0].position = new TM64_Geometry.Position();
+            StandardGeometry[1].VertData[0].position.x = Convert.ToInt16(0);
+            StandardGeometry[1].VertData[0].position.y = Convert.ToInt16(-1 * Size);
+            StandardGeometry[1].VertData[0].position.z = Convert.ToInt16(0);
+
+            StandardGeometry[1].VertData[1] = new TM64_Geometry.Vertex();
+            StandardGeometry[1].VertData[1].position = new TM64_Geometry.Position();
+            StandardGeometry[1].VertData[1].position.x = Convert.ToInt16(0);
+            StandardGeometry[1].VertData[1].position.y = Convert.ToInt16(Size);
+            StandardGeometry[1].VertData[1].position.z = Convert.ToInt16(0);
+
+            StandardGeometry[1].VertData[2] = new TM64_Geometry.Vertex();
+            StandardGeometry[1].VertData[2].position = new TM64_Geometry.Position();
+            StandardGeometry[1].VertData[2].position.x = Convert.ToInt16(0);
+            StandardGeometry[1].VertData[2].position.y = Convert.ToInt16(Size);
+            StandardGeometry[1].VertData[2].position.z = Convert.ToInt16(Size * 2);
+
+            StandardGeometry[2] = new TM64_Geometry.Face();
+            StandardGeometry[2].VertData = new TM64_Geometry.Vertex[3];
+
+            StandardGeometry[2].VertData[0] = new TM64_Geometry.Vertex();
+            StandardGeometry[2].VertData[0].position = new TM64_Geometry.Position();
+            StandardGeometry[2].VertData[0].position.x = Convert.ToInt16(-1 * Size);
+            StandardGeometry[2].VertData[0].position.y = Convert.ToInt16(0);
+            StandardGeometry[2].VertData[0].position.z = Convert.ToInt16(0);
+
+            StandardGeometry[2].VertData[1] = new TM64_Geometry.Vertex();
+            StandardGeometry[2].VertData[1].position = new TM64_Geometry.Position();
+            StandardGeometry[2].VertData[1].position.x = Convert.ToInt16(Size);
+            StandardGeometry[2].VertData[1].position.y = Convert.ToInt16(0);
+            StandardGeometry[2].VertData[1].position.z = Convert.ToInt16(Size * 2);
+
+            StandardGeometry[2].VertData[2] = new TM64_Geometry.Vertex();
+            StandardGeometry[2].VertData[2].position = new TM64_Geometry.Position();
+            StandardGeometry[2].VertData[2].position.x = Convert.ToInt16(-1 * Size);
+            StandardGeometry[2].VertData[2].position.y = Convert.ToInt16(0);
+            StandardGeometry[2].VertData[2].position.z = Convert.ToInt16(Size* 2);
+
+
+            StandardGeometry[3] = new TM64_Geometry.Face();
+            StandardGeometry[3].VertData = new TM64_Geometry.Vertex[3];
+
+            StandardGeometry[3].VertData[0] = new TM64_Geometry.Vertex();
+            StandardGeometry[3].VertData[0].position = new TM64_Geometry.Position();
+            StandardGeometry[3].VertData[0].position.x = Convert.ToInt16(0);
+            StandardGeometry[3].VertData[0].position.y = Convert.ToInt16(-1 * Size);
+            StandardGeometry[3].VertData[0].position.z = Convert.ToInt16(0);
+
+            StandardGeometry[3].VertData[1] = new TM64_Geometry.Vertex();
+            StandardGeometry[3].VertData[1].position = new TM64_Geometry.Position();
+            StandardGeometry[3].VertData[1].position.x = Convert.ToInt16(0);
+            StandardGeometry[3].VertData[1].position.y = Convert.ToInt16(Size);
+            StandardGeometry[3].VertData[1].position.z = Convert.ToInt16(Size * 2);
+
+            StandardGeometry[3].VertData[2] = new TM64_Geometry.Vertex();
+            StandardGeometry[3].VertData[2].position = new TM64_Geometry.Position();
+            StandardGeometry[3].VertData[2].position.x = Convert.ToInt16(0);
+            StandardGeometry[3].VertData[2].position.y = Convert.ToInt16(-1 * Size);
+            StandardGeometry[3].VertData[2].position.z = Convert.ToInt16(Size * 2);
+            return StandardGeometry;
+        }
 
         public Vector3D testIntersect(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC)
         {
@@ -321,6 +428,120 @@ namespace Tarmac64_Library
             return new Vector3D((float)t, (float)u, (float)v);
         }
 
+
+        public Vector3D testIntersect(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, float[] Origin)
+        {
+
+            Vector3D vert0, vert1, vert2;
+
+            vert0.X = vertA.position.x + Origin[0];
+            vert0.Y = vertA.position.y + Origin[1];
+            vert0.Z = vertA.position.z + Origin[2];
+
+            vert1.X = vertB.position.x + Origin[0];
+            vert1.Y = vertB.position.y + Origin[1];
+            vert1.Z = vertB.position.z + Origin[2];
+
+            vert2.X = vertC.position.x + Origin[0];
+            vert2.Y = vertC.position.y + Origin[1];
+            vert2.Z = vertC.position.z + Origin[2];
+
+            var edge1 = vert1 - vert0;
+            var edge2 = vert2 - vert0;
+
+            var pvec = Cross(rayDirection, edge2);
+
+            var det = Dot(edge1, pvec);
+
+            if (det > -Epsilon && det < Epsilon)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var invDet = 1d / det;
+
+            var tvec = rayOrigin - vert0;
+
+            var u = Dot(tvec, pvec) * invDet;
+
+            if (u < 0 || u > 1)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var qvec = Cross(tvec, edge1);
+
+            var v = Dot(rayDirection, qvec) * invDet;
+
+            if (v < 0 || u + v > 1)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var t = Dot(edge2, qvec) * invDet;
+
+            return new Vector3D((float)t, (float)u, (float)v);
+        }
+
+        public Vector3D testIntersectScale(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, float[] Origin, float[] Scale)
+        {
+
+            Vector3D vert0, vert1, vert2;
+
+            vert0.X = (vertA.position.x * Scale[0]) + Origin[0];
+            vert0.Y = (vertA.position.y * Scale[1]) + Origin[1];
+            vert0.Z = (vertA.position.z * Scale[2]) + Origin[2];
+
+            vert1.X = (vertB.position.x * Scale[0]) + Origin[0];
+            vert1.Y = (vertB.position.y * Scale[1]) + Origin[1];
+            vert1.Z = (vertB.position.z * Scale[2]) + Origin[2];
+            
+            vert2.X = (vertC.position.x * Scale[0]) + Origin[0];
+            vert2.Y = (vertC.position.y * Scale[1]) + Origin[1];
+            vert2.Z = (vertC.position.z * Scale[2]) + Origin[2];
+
+            var edge1 = vert1 - vert0;
+            var edge2 = vert2 - vert0;
+
+            var pvec = Cross(rayDirection, edge2);
+
+            var det = Dot(edge1, pvec);
+
+            if (det > -Epsilon && det < Epsilon)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var invDet = 1d / det;
+
+            var tvec = rayOrigin - vert0;
+
+            var u = Dot(tvec, pvec) * invDet;
+
+            if (u < 0 || u > 1)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var qvec = Cross(tvec, edge1);
+
+            var v = Dot(rayDirection, qvec) * invDet;
+
+            if (v < 0 || u + v > 1)
+            {
+                Vector3D returnVector = new Vector3D();
+                return returnVector;
+            }
+
+            var t = Dot(edge2, qvec) * invDet;
+
+            return new Vector3D((float)t, (float)u, (float)v);
+        }
 
         public Vector3D testIntersect(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, int[] ZoneIndex)
         {
@@ -443,8 +664,8 @@ namespace Tarmac64_Library
             int[] zval = new int[3];
             float[] uval = new float[3];
             float[] vval = new float[3];
-            float[] height = new float[] { 32, 32, 64 };
-            float[] width = new float[] { 32, 64, 32 };
+            float[] height = new float[] { 32, 32, 64, 32, 32, 64 };
+            float[] width = new float[] { 32, 64, 32, 32, 64, 32 };
 
             mainsegr.BaseStream.Position = segmentoffset;
 
@@ -557,9 +778,23 @@ namespace Tarmac64_Library
 
 
             }
+            if (commandbyte == 0xFD)
+            {
+                mainsegr.BaseStream.Seek(3, SeekOrigin.Current);
 
+                byte[] rsp_add = mainsegr.ReadBytes(4);
+                Array.Reverse(rsp_add);
+
+
+                int Value = BitConverter.ToInt32(rsp_add, 0);
+                String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
+
+
+                int segid = Convert.ToByte(Binary.Substring(0, 8), 2);
+                uint location = Convert.ToUInt32(Binary.Substring(8, 24), 2);
+                outputstring = "NEWMATERIAL" + Environment.NewLine + location.ToString("X") + Environment.NewLine;
+            }
             if (commandbyte == 0xF5)
-
             {
                 /// Load texture
                 /// Returns the location of a texture
@@ -642,40 +877,7 @@ namespace Tarmac64_Library
                     ///MessageBox.Show("5");
                 }
 
-                uint location = 0;
-                byte fdbyte = mainsegr.ReadByte();
-                if (fdbyte == 0xFD)
-                {
-                    mainsegr.BaseStream.Seek(3, SeekOrigin.Current);
-
-                    byte[] rsp_add = mainsegr.ReadBytes(4);
-                    Array.Reverse(rsp_add);
-
-
-                    int Value = BitConverter.ToInt32(rsp_add, 0);
-                    String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
-
-
-                    int segid = Convert.ToByte(Binary.Substring(0, 8), 2);
-                    location = Convert.ToUInt32(Binary.Substring(8, 24), 2);
-
-                }
-                else
-                {
-                    location = 0xD00D00;
-                    ///MessageBox.Show("D00D00- 0x" + fdbyte.ToString("X")+"---"+mainsegr.BaseStream.Position.ToString());
-                }
-
-                if ((returnBad) | (location != 0xD00D00))
-                {
-                    outputstring = "NEWMATERIAL" + Environment.NewLine + location.ToString("X") + Environment.NewLine;
-                }
-                else
-                {
-                    outputstring = "";
-                }
-
-
+                outputstring = "TEXCLASS" + Environment.NewLine + texClass.ToString() + Environment.NewLine;
                 ///MessageBox.Show(outputstring);
 
             }
@@ -820,13 +1022,16 @@ namespace Tarmac64_Library
                 if (fbx.Materials[materialIndex].TextureDiffuse.FilePath != null) 
                 {   
                     textureArray[materialIndex].texturePath = fbx.Materials[materialIndex].TextureDiffuse.FilePath;
-                    textureArray[materialIndex].textureName = Path.GetFileName(textureArray[materialIndex].texturePath);
-                    textureArray[materialIndex].textureCodec = 0;
+                    textureArray[materialIndex].textureName = Path.GetFileNameWithoutExtension(textureArray[materialIndex].texturePath);
+                    
+                    
                     textureArray[materialIndex].textureScrollS = 0;
                     textureArray[materialIndex].textureScrollT = 0;
+                    textureArray[materialIndex].textureScreen = 0;
                     textureArray[materialIndex].textureModeS = 0;
                     textureArray[materialIndex].textureModeT = 0;
                     textureArray[materialIndex].vertAlpha = 255;
+                    textureArray[materialIndex].textureDoubleSide = false;
                     string mainDirectory = Path.GetDirectoryName(filePath);
                     textureArray[materialIndex].texturePath = Path.Combine(mainDirectory, textureArray[materialIndex].texturePath);
                     textureArray[materialIndex].texturePath = Path.GetFullPath(textureArray[materialIndex].texturePath);
@@ -834,42 +1039,53 @@ namespace Tarmac64_Library
 
                     if (File.Exists(textureArray[materialIndex].texturePath))
                     {
-                        textureArray[materialIndex].textureBitmap = Image.FromFile(textureArray[materialIndex].texturePath);
+                        using (var fs = new FileStream(textureArray[materialIndex].texturePath, FileMode.Open, FileAccess.Read))
+                        {
+                            textureArray[materialIndex].textureBitmap = Image.FromStream(fs);                            
+                        }
                         textureArray[materialIndex].textureHeight = textureArray[materialIndex].textureBitmap.Height;
                         textureArray[materialIndex].textureWidth = textureArray[materialIndex].textureBitmap.Width;
 
+                        int TextureMass = (textureArray[materialIndex].textureHeight * textureArray[materialIndex].textureWidth);
+
+                        textureArray[materialIndex].textureCodec = 0;
+                        if (TextureMass > 2048)
+                        {
+                            textureArray[materialIndex].textureCodec = 1;
+                            textureArray[materialIndex].bitSize = 0;
+                        }
+                        
                     }
                     else
                     {
                         
                         while (!(File.Exists(textureArray[materialIndex].texturePath)))
                         {
-                            MessageBox.Show(textureArray[materialIndex].texturePath + " not found, browse to file!");
+                            /*MessageBox.Show(textureArray[materialIndex].texturePath + " not found, browse to file!");
                             OpenFileDialog fileOpen = new OpenFileDialog();
                             if (fileOpen.ShowDialog() == DialogResult.OK)
                             {
                                 textureArray[materialIndex].texturePath = fileOpen.FileName;
-                                textureArray[materialIndex].textureBitmap = Image.FromFile(textureArray[materialIndex].texturePath);
+                                using (var fs = new FileStream(textureArray[materialIndex].texturePath, FileMode.Open, FileAccess.Read))
+                                {
+                                    textureArray[materialIndex].textureBitmap = Image.FromStream(fs);
+                                }
+
+
                                 textureArray[materialIndex].textureHeight = textureArray[materialIndex].textureBitmap.Height;
                                 textureArray[materialIndex].textureWidth = textureArray[materialIndex].textureBitmap.Width;
                             }
                             else
                             {
                                 MessageBox.Show("ERROR FILE NOT SELECTED");
+                            */
                                 textureArray[materialIndex].textureHeight = 32;
                                 textureArray[materialIndex].textureWidth = 32;
                                 break;
-                            }
+                            //}
                         }
-                        
-
-                        textureArray[materialIndex].textureHeight = 32;
-                        textureArray[materialIndex].textureWidth = 32;
                     }
                     
-
-
-                    textureClass(textureArray[materialIndex]);
 
                 }
             }
@@ -896,7 +1112,97 @@ namespace Tarmac64_Library
                     .Select(x => x.OrgStr);
         }
 
-        public OK64F3DObject createObject (Assimp.Scene fbx, Assimp.Node objectNode)
+
+        public byte[] WriteTextureObjects(OK64Texture[] TextureData)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+
+            binaryWriter.Write(TextureData.Length);
+            for (int ThisTexture = 0; ThisTexture < TextureData.Length; ThisTexture++)
+            {
+                if (TextureData[ThisTexture].texturePath != null)
+                {
+                    binaryWriter.Write(TextureData[ThisTexture].texturePath);
+                    binaryWriter.Write(TextureData[ThisTexture].textureName);
+                    binaryWriter.Write(TextureData[ThisTexture].textureCodec);
+                    binaryWriter.Write(TextureData[ThisTexture].textureScrollS);
+                    binaryWriter.Write(TextureData[ThisTexture].textureScrollT);
+                    binaryWriter.Write(TextureData[ThisTexture].textureScreen);
+                    binaryWriter.Write(TextureData[ThisTexture].textureModeS);
+                    binaryWriter.Write(TextureData[ThisTexture].textureModeT);
+                    binaryWriter.Write(TextureData[ThisTexture].vertAlpha);
+                    binaryWriter.Write(TextureData[ThisTexture].textureDoubleSide);
+                    binaryWriter.Write(TextureData[ThisTexture].textureWidth);
+                    binaryWriter.Write(TextureData[ThisTexture].textureHeight);
+                    binaryWriter.Write(TextureData[ThisTexture].textureClass);
+                }
+                else
+                {
+                    binaryWriter.Write("NULL");
+                }
+                    
+            }
+
+            return memoryStream.ToArray();
+        }
+        public byte[] WriteMasterObjects (OK64F3DObject[] ModelData)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+            binaryWriter.Write(ModelData.Length);
+            for (int ThisModel = 0; ThisModel < ModelData.Length; ThisModel++)
+            {
+                binaryWriter.Write(ModelData[ThisModel].objectName);
+                binaryWriter.Write(ModelData[ThisModel].materialID);
+                binaryWriter.Write(ModelData[ThisModel].vertCount);
+                binaryWriter.Write(ModelData[ThisModel].faceCount);
+
+                binaryWriter.Write(ModelData[ThisModel].meshID.Length);
+                for (int ThisMesh = 0; ThisMesh < ModelData[ThisModel].meshID.Length; ThisMesh++)
+                {
+                    binaryWriter.Write(ModelData[ThisModel].meshID[ThisMesh]);
+                }
+
+                binaryWriter.Write(ModelData[ThisModel].modelGeometry.Length);
+                for (int ThisGeo = 0; ThisGeo < ModelData[ThisModel].modelGeometry.Length; ThisGeo++)
+                {
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].LowX);
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].HighX);
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].LowY);
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].HighY);
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].CenterPosition.X);
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].CenterPosition.Y);
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].CenterPosition.Z);
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex.IndexA);
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex.IndexB);
+                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex.IndexC);
+
+                    for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                    {
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.x);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.y);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.z);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.u);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.v);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.sBase);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.tBase);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.sPure);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.tPure);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].color.R);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].color.G);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].color.B);
+                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].color.A);
+                    }
+
+
+                }
+            }
+            return memoryStream.ToArray();
+        }
+
+        public OK64F3DObject createObject (Assimp.Scene fbx, Assimp.Node objectNode, OK64Texture[] textureArray)
         {
             OK64F3DObject newObject = new OK64F3DObject();
 
@@ -913,7 +1219,6 @@ namespace Tarmac64_Library
                 MessageBox.Show("Empty Course Object! -" + newObject.objectName);
             }
             newObject.materialID = fbx.Meshes[newObject.meshID[0]].MaterialIndex;
-
             int vertCount = 0;
             int faceCount = 0;
 
@@ -1041,17 +1346,31 @@ namespace Tarmac64_Library
                     float[] u_offset = { 0, 0, 0 };
                     float[] v_offset = { 0, 0, 0 };
 
-
                     
 
-                    u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][0]);
-                    v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][1]);
+                    if (fbx.Meshes[childMesh].TextureCoordinateChannels[0].Count == 0)
+                    {
+                        u_offset[0] = 0;
+                        v_offset[0] = 0;
 
-                    u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][0]);
-                    v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][1]);
+                        u_offset[1] = 0;
+                        v_offset[1] = 0;
 
-                    u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][0]);
-                    v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][1]);
+                        u_offset[2] = 0;
+                        v_offset[2] = 0;
+                    }
+                    else
+                    {
+                        u_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][0]);
+                        v_offset[0] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[0]][1]);
+
+                        u_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][0]);
+                        v_offset[1] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[1]][1]);
+
+                        u_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][0]);
+                        v_offset[2] = Convert.ToSingle(fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[2]][1]);
+                    }
+
 
                     // So we check the absolute values to find which is the least distance from the origin.
                     // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
@@ -1114,24 +1433,34 @@ namespace Tarmac64_Library
                     v_offset[2] = v_base + v_shift[2];
 
                     // and now apply the calculation to make them into ST coords for Mario Kart.
-
-
-                    //
-                    int materialID = fbx.Meshes[childMesh].MaterialIndex;
+//
 
                     for (int currentVert = 0; currentVert < 3; currentVert++)
                     {
                         
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.sBase = u_offset[currentVert] * 32;
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.sBase = u_offset[currentVert] * 32;                        
                         newObject.modelGeometry[currentFace].VertData[currentVert].position.tBase = v_offset[currentVert] * -32;
+                        if (fbx.Meshes[childMesh].TextureCoordinateChannels[0].Count == 0)
+                        {
+
+                            newObject.modelGeometry[currentFace].VertData[currentVert].position.sPure = 0;
+                            newObject.modelGeometry[currentFace].VertData[currentVert].position.tPure = 0; 
+                            
+                        }
+                        else 
+                        {
+                            newObject.modelGeometry[currentFace].VertData[currentVert].position.sPure = fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[currentVert]][0] * 32;
+                            newObject.modelGeometry[currentFace].VertData[currentVert].position.tPure = (1 - fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[currentVert]][1]) * 32;
+                        }
                         newObject.modelGeometry[currentFace].VertData[currentVert].position.u = u_offset[currentVert];
                         newObject.modelGeometry[currentFace].VertData[currentVert].position.v = v_offset[currentVert] * -1;
                     }
 
 
-                    
+
 
                     currentFace++;
+
 
                 }
 
@@ -1203,14 +1532,15 @@ namespace Tarmac64_Library
             List<OK64F3DObject> groupObjects = new List<OK64F3DObject>();
             List<OK64F3DObject> ungroupedObjects = new List<OK64F3DObject>();
             List<int> listedObjects = new List<int>();
-
+            int newIndex = 0;
             for (int currentGroup = 0; currentGroup < groupArray.Length; currentGroup++)
             {
                 for (int currentChild = 0; currentChild < groupArray[currentGroup].subIndexes.Length; currentChild++)
                 {
                     groupObjects.Add(masterObjects[groupArray[currentGroup].subIndexes[currentChild]]);
                     listedObjects.Add(groupArray[currentGroup].subIndexes[currentChild]);
-
+                    groupArray[currentGroup].subIndexes[currentChild] = newIndex;
+                    newIndex++;
                 }
             }
             for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
@@ -1251,13 +1581,13 @@ namespace Tarmac64_Library
                     for (int currentGrandchild = 0; currentGrandchild < grandparentCount; currentGrandchild++)
                     {
                         groupList[groupCount].subIndexes[currentGrandchild] = masterCount;
-                        masterList.Add(createObject(fbx, groupParent.Children[currentGrandchild]));
+                        masterList.Add(createObject(fbx, groupParent.Children[currentGrandchild],textureArray));
                         masterCount++;
                     }
                 }
                 else
                 {
-                    masterList.Add(createObject(fbx, masterNode.Children[currentChild]));
+                    masterList.Add(createObject(fbx, masterNode.Children[currentChild], textureArray));
                     masterCount++;
                 }
             }
@@ -1269,7 +1599,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64F3DObject[] createObjects(Assimp.Scene fbx)
+        public OK64F3DObject[] createObjects(Assimp.Scene fbx, OK64Texture[] textureArray)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0;
@@ -1277,8 +1607,7 @@ namespace Tarmac64_Library
 
             for (int childObject = 0; childObject < BaseNode.Children.Count; childObject++)
             {
-                masterObjects.Add(createObject(fbx, BaseNode.Children[childObject]));
-                childObject++;
+                masterObjects.Add(createObject(fbx, BaseNode.Children[childObject], textureArray));
             }
             List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
             OK64F3DObject[] outputObjects = NaturalSort(masterObjects).ToArray();
@@ -1287,7 +1616,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64F3DObject[] createMaster(Assimp.Scene fbx, int sectionCount)
+        public OK64F3DObject[] createMaster(Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0;
@@ -1297,7 +1626,7 @@ namespace Tarmac64_Library
                 
                 for (int childObject = 0; childObject < surfaceNode.Children.Count; childObject++)
                 {
-                    masterObjects.Add(createObject(fbx,surfaceNode.Children[childObject]));
+                    masterObjects.Add(createObject(fbx,surfaceNode.Children[childObject], textureArray));
                     currentObject++;
                 }
                 List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
@@ -1310,7 +1639,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64F3DObject[] loadCollision (Assimp.Scene fbx, int sectionCount, int simpleFormat)
+        public OK64F3DObject[] loadCollision (Assimp.Scene fbx, int sectionCount, int simpleFormat, OK64Texture[] textureArray)
          {   
             int totalIndexCount = 0;
             int totalIndex = 0;
@@ -1336,7 +1665,7 @@ namespace Tarmac64_Library
                 totalIndexCount = totalIndexCount + surfaceNode.Children.Count;
                 for (int currentsubObject = 0; currentsubObject < subobjectCount; currentsubObject++)
                 {
-                    surfaceObjects.Add(createObject(fbx,surfaceNode.Children[currentsubObject]));
+                    surfaceObjects.Add(createObject(fbx,surfaceNode.Children[currentsubObject], textureArray));
                     int currentObject = surfaceObjects.Count - 1;
                     surfaceObjects[currentObject].surfaceID = currentSection + 1;
                     string[] surfaceID = surfaceObjects[currentObject].objectName.Split('_');
@@ -1349,62 +1678,35 @@ namespace Tarmac64_Library
         }
 
 
-        public OK64Texture textureClass(OK64Texture textureObject)
+        public bool GetTextureClass(OK64Texture textureObject)
         {
 
             // series of If/Then statements checking first the Format, then the Height and Width of the texture data to determine it's format.
             // if a texture's width/height are not either 32 or 64 then it returns -1 as an error for bad texture dimensions.
             // if both the height and width are 64, it'll return texture class 0. This should be fixed for future builds with an additional check.
 
-
-            if ((textureObject.textureWidth == 32 | textureObject.textureWidth == 64) & (textureObject.textureHeight == 32 | textureObject.textureHeight == 64))
+            int TextureWeight = textureObject.textureHeight * textureObject.textureWidth;
+            if (TextureWeight > 2048)
             {
-                if (textureObject.textureCodec == 0)
+                if ((textureObject.textureCodec == 1) &(textureObject.bitSize == 0))
                 {
-                    if (textureObject.textureWidth == 32)
+                    if (TextureWeight > 4096)
                     {
-                        if (textureObject.textureHeight == 32)
-                        {
-                            textureObject.textureClass = 0;
-                        }
-                        else
-                        {
-                            textureObject.textureClass = 2;
-                        }
-
+                        return false;
                     }
                     else
                     {
-                        textureObject.textureClass = 1;
+                        return true;
                     }
                 }
                 else
                 {
-                    if (textureObject.textureWidth == 32)
-                    {
-                        if (textureObject.textureHeight == 32)
-                        {
-                            textureObject.textureClass = 3;
-                        }
-                        else
-                        {
-                            textureObject.textureClass = 5;
-                        }
-
-                    }
-                    else
-                    {
-                        textureObject.textureClass = 4;
-                    }
+                    return false;
                 }
             }
-            else
-            {
-                textureObject.textureClass = -1;
-                // texture is not proper dimensions, return an invalid value.
-            }
 
-            return textureObject;
+            return true;
+            
         }
 
         public OK64SectionList[] loadSection(Assimp.Scene fbx, int sectionCount, OK64F3DObject[] masterObjects)
@@ -1448,8 +1750,8 @@ namespace Tarmac64_Library
 
         public void ExportSVL(string filePath, int masterLength, OK64SectionList[] sectionList, OK64F3DObject[] masterObjects)
         {
-
-            File.AppendAllText(filePath, "SVL2" + Environment.NewLine);
+            
+            File.WriteAllText(filePath, "SVL2" + Environment.NewLine);
             File.AppendAllText(filePath, masterLength.ToString() + Environment.NewLine);
             File.AppendAllText(filePath, sectionList.Length.ToString() + Environment.NewLine);
             foreach (var section in sectionList)
@@ -1462,8 +1764,6 @@ namespace Tarmac64_Library
                         File.AppendAllText(filePath, masterObjects[obj].objectName + Environment.NewLine);
                     }
                 }
-
-
             }
         }
 
@@ -1818,15 +2118,14 @@ namespace Tarmac64_Library
 
             for (int currentObject = 0; currentObject < surfaceObjects.Length; currentObject++)
             {
-                if (surfaceObjects[currentObject].surfaceID == (currentSection + 1) & surfaceObjects[currentObject].pathfindingObject.surfaceBoolean)
+                if (surfaceObjects[currentObject].surfaceID == (currentSection + 1))
                 {
                     for (int currentFace = 0; currentFace < surfaceObjects[currentObject].modelGeometry.Length; currentFace++)
                     {
                         
                         raycastOrigin = surfaceObjects[currentObject].modelGeometry[currentFace].CenterPosition;
                             
-                        raycastOrigin.Z += 5;
-
+                        raycastOrigin.Z += 25;
 
 
                         for (int currentSearch = 0; (currentSearch < searchList.Count); currentSearch++)
@@ -1834,12 +2133,11 @@ namespace Tarmac64_Library
                             foreach (var targetFace in masterObjects[searchList[currentSearch]].modelGeometry)
                             {
                                 raycastVector = targetFace.CenterPosition;
-
-
                                 Vector3D targetPoint = testIntersect(raycastOrigin, raycastVector, targetFace.VertData[0], targetFace.VertData[1], targetFace.VertData[2]);
-
-
-
+                                if (masterObjects[searchList[currentSearch]].objectName == "CourseObject_part63");
+                                {
+                                    int x = 0;
+                                }
                                 if (Math.Abs(targetPoint.X) > 0)
                                 {
                                     float targetDistance = Math.Abs(targetPoint.X);
@@ -1857,6 +2155,35 @@ namespace Tarmac64_Library
                                                 {
                                                     closestMaster = checkList[currentCheck];
                                                     targetDistance = Math.Abs(intersectionPoint.X);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                for (int TargetVert = 0; TargetVert < 3; TargetVert++)
+                                {
+                                    raycastVector = new Vector3D(targetFace.VertData[TargetVert].position.x, targetFace.VertData[TargetVert].position.y, targetFace.VertData[TargetVert].position.z);
+                                    targetPoint = testIntersect(raycastOrigin, raycastVector, targetFace.VertData[0], targetFace.VertData[1], targetFace.VertData[2]);
+
+                                    if (Math.Abs(targetPoint.X) > 0)
+                                    {
+                                        float targetDistance = Math.Abs(targetPoint.X);
+
+                                        closestMaster = searchList[currentSearch];
+                                        for (int currentCheck = 0; currentCheck < checkList.Count; currentCheck++)
+                                        {
+                                            foreach (var searchFace in masterObjects[checkList[currentCheck]].modelGeometry)
+                                            {
+                                                Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+
+                                                if (Math.Abs(intersectionPoint.X) > 0)
+                                                {
+                                                    if (Math.Abs(intersectionPoint.X) < targetDistance)
+                                                    {
+                                                        closestMaster = checkList[currentCheck];
+                                                        targetDistance = Math.Abs(intersectionPoint.X);
+                                                    }
                                                 }
                                             }
                                         }
@@ -1882,28 +2209,31 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] writeRawTextures(byte[] rom, OK64Texture[] textureObject, int DataLength)
+        public byte[] writeRawTextures(byte[] SegmentData, OK64Texture[] textureObject, int DataLength)
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryReader binaryReader = new BinaryReader(memoryStream);
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
-            int segment5Position = 0;
+            int TextureSize = SegmentData.Length;
+            
 
-
-            binaryWriter.Write(rom);
+            binaryWriter.Write(SegmentData);
             int textureCount = (textureObject.Length);
             for (int currentTexture = 0; currentTexture < textureCount; currentTexture++)
             {
-                if (textureObject[currentTexture].texturePath != null)
+                if ((textureObject[currentTexture].texturePath != null) && (textureObject[currentTexture].texturePath != "NULL"))
                 {
                     // Establish codec and convert texture. Compress converted texture data via MIO0 compression
 
-                    N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
+                    N64Codec[][] n64Codec = new N64Codec[][] {
+                        new N64Codec[]{ N64Codec.RGBA16, N64Codec.RGBA32 },
+                        new N64Codec[]{ N64Codec.CI4, N64Codec.CI8 },                        
+                    };
                     byte[] imageData = null;
                     byte[] paletteData = null;
                     Bitmap bitmapData = new Bitmap(textureObject[currentTexture].texturePath);
-                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].textureCodec], bitmapData);
+                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].textureCodec][textureObject[currentTexture].bitSize], bitmapData);
                     
 
 
@@ -1911,8 +2241,8 @@ namespace Tarmac64_Library
 
                     textureObject[currentTexture].compressedSize = imageData.Length;
                     textureObject[currentTexture].fileSize = imageData.Length;
-                    textureObject[currentTexture].segmentPosition = segment5Position;  // we need this to build out F3DEX commands later. 
-                    segment5Position = segment5Position + textureObject[currentTexture].fileSize;
+                    textureObject[currentTexture].segmentPosition = TextureSize;  // we need this to build out F3DEX commands later. 
+                    TextureSize = TextureSize + textureObject[currentTexture].fileSize;
 
 
                     //adjust the MIO0 offset to an 8-byte address as required for N64.
@@ -1944,46 +2274,74 @@ namespace Tarmac64_Library
 
 
             byte[] romOut = memoryStream.ToArray();
+            
             return romOut;
 
 
         }
 
 
-        public byte[] writeTextures(byte[] rom, OK64Texture[] textureObject)
+        public void buildTextures(OK64Texture[] TextureArray)
         {
+            int segment5Position = 0;
+            for (int currentTexture = 0; currentTexture < TextureArray.Length; currentTexture++)
+            {
+                if (TextureArray[currentTexture].texturePath != null)
+                {
+                    // Establish codec and convert texture. Compress converted texture data via MIO0 compression
+
+
+                    N64Codec[][] n64Codec = new N64Codec[][] {
+                        new N64Codec[]{ N64Codec.RGBA16, N64Codec.RGBA32 },
+                        new N64Codec[]{ N64Codec.CI4, N64Codec.CI8 },
+                        new N64Codec[]{ N64Codec.IA16 }
+                    };
+                    byte[] imageData = null;
+                    byte[] paletteData = null;
+                    Bitmap bitmapData = new Bitmap(TextureArray[currentTexture].texturePath);
+                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[TextureArray[currentTexture].textureCodec][TextureArray[currentTexture].bitSize], bitmapData);
+                    TextureArray[currentTexture].compressedTexture = Tarmac.CompressMIO0(imageData);
+                    TextureArray[currentTexture].rawTexture = imageData;
+                    TextureArray[currentTexture].PaletteData = paletteData;
+
+                    // finish setting texture parameters based on new texture and compressed data.
+
+                    TextureArray[currentTexture].compressedSize = TextureArray[currentTexture].compressedTexture.Length;
+                    TextureArray[currentTexture].fileSize = imageData.Length;
+                    TextureArray[currentTexture].segmentPosition = segment5Position;  // we need this to build out F3DEX commands later.                     
+                    segment5Position += TextureArray[currentTexture].fileSize;
+                    if (paletteData != null)
+                    {
+                        TextureArray[currentTexture].paletteSize = paletteData.Length;
+                        TextureArray[currentTexture].palettePosition = segment5Position;
+                        segment5Position += TextureArray[currentTexture].paletteSize;
+                        int addressAlign = 0x1000 - (segment5Position % 0x1000);
+                        if (addressAlign == 0x1000)
+                            addressAlign = 0;
+                        segment5Position += addressAlign;
+                    }
+                }
+            }
+        }
+
+        public byte[] WriteTextures(byte[] FileData, TM64_Course.Course Course)
+        {
+            OK64Texture[] TextureArray = Course.TextureObjects;
             MemoryStream memoryStream = new MemoryStream();
             BinaryReader binaryReader = new BinaryReader(memoryStream);
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
-            int segment5Position = 0;
+            TM64 Tarmac = new TM64();
+            
 
+            
 
-            binaryWriter.Write(rom);
-            int textureCount = (textureObject.Length);
-            for (int currentTexture = 0; currentTexture < textureCount; currentTexture++)
+            for (int CurrentTexture = 0; CurrentTexture < TextureArray.Length; CurrentTexture++)
             {
-                if (textureObject[currentTexture].texturePath != null)
+                if ((TextureArray[CurrentTexture].texturePath != null) && (TextureArray[CurrentTexture].texturePath != "NULL"))
                 {
-                    // Establish codec and convert texture. Compress converted texture data via MIO0 compression
-
-                    N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.RGBA32 };
-                    byte[] imageData = null;
-                    byte[] paletteData = null;
-                    Bitmap bitmapData = new Bitmap(textureObject[currentTexture].texturePath);
-                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].textureCodec], bitmapData);
-                    byte[] compressedTexture = Tarmac.CompressMIO0(imageData);
-
-
-                    // finish setting texture parameters based on new texture and compressed data.
-
-                    textureObject[currentTexture].compressedSize = compressedTexture.Length;
-                    textureObject[currentTexture].fileSize = imageData.Length;
-                    textureObject[currentTexture].segmentPosition = segment5Position;  // we need this to build out F3DEX commands later. 
-                    segment5Position = segment5Position + textureObject[currentTexture].fileSize;
-
-
                     //adjust the MIO0 offset to an 8-byte address as required for N64.
+                    /*
                     binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
                     int addressAlign = 4 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 4);
                     if (addressAlign == 4)
@@ -1995,31 +2353,52 @@ namespace Tarmac64_Library
                         binaryWriter.Write(Convert.ToByte(0x00));
                     }
 
-
+                    */
 
                     // write compressed MIO0 texture to end of ROM.
 
-                    textureObject[currentTexture].romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length);
+                    TextureArray[CurrentTexture].romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length);
                     binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
-                    binaryWriter.Write(compressedTexture);
+                    binaryWriter.Write(TextureArray[CurrentTexture].rawTexture);
+                    if (TextureArray[CurrentTexture].PaletteData != null)
+                    {
+                        binaryWriter.Write(TextureArray[CurrentTexture].PaletteData);
+                        int addressAlign = 0x1000 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 0x1000);
+                        if (addressAlign == 0x1000)
+                            addressAlign = 0;
+                        for (int align = 0; align < addressAlign; align++)
+                        {
+                            binaryWriter.Write(Convert.ToByte(0x00));
+                        }
+                    }
                 }
             }
-            
+            byte[] UncompressedData = memoryStream.ToArray();
+            byte[] CompressedData = Tarmac.CompressMIO0(UncompressedData);
+
+            memoryStream = new MemoryStream();
+            binaryReader = new BinaryReader(memoryStream);
+            binaryWriter = new BinaryWriter(memoryStream);
+
+            binaryWriter.Write(FileData);
+            Course.Segment5ROM = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            Course.Segment5Length = UncompressedData.Length;
+            Course.Segment5CompressedLength = CompressedData.Length;
+            binaryWriter.Write(CompressedData);
+
+
             binaryWriter.Write(Convert.ToInt32(0));
             binaryWriter.Write(Convert.ToInt32(0));
             binaryWriter.Write(Convert.ToInt32(0));
             binaryWriter.Write(Convert.ToInt32(0));
-
-
-            byte[] romOut = memoryStream.ToArray();
-            return romOut;
-
-
+            byte[] FileOut = memoryStream.ToArray();
+            return FileOut;
         }
 
 
-        public byte[] compiletextureTable(OK64Texture[] textureObject)
+        public byte[] compiletextureTable(TM64_Course.Course CourseData)
         {
+            OK64Texture[] textureObject = CourseData.TextureObjects;
             MemoryStream memoryStream = new MemoryStream();
             BinaryReader binaryReader = new BinaryReader(memoryStream);
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -2033,10 +2412,11 @@ namespace Tarmac64_Library
             BinaryWriter seg9w = new BinaryWriter(seg9m);
 
             int textureCount = (textureObject.Length);
+            /*
             for (int currentTexture = 0; currentTexture < textureCount; currentTexture++) 
             {
                 // write out segment 9 texture reference.
-                if (textureObject[currentTexture].texturePath != null)
+                if ((textureObject[currentTexture].texturePath != null) && (textureObject[currentTexture].texturePath != "NULL"))
                 {
                     byteArray = BitConverter.GetBytes(Convert.ToUInt32(0x0F000000 | textureObject[currentTexture].romPosition - 0x641F70));
                     Array.Reverse(byteArray);
@@ -2055,6 +2435,25 @@ namespace Tarmac64_Library
                     seg9w.Write(byteArray);
                 }
             }
+            */
+            byteArray = BitConverter.GetBytes(Convert.ToInt32(CourseData.Segment5ROM - 0x641F70));
+            Array.Reverse(byteArray);
+            seg9w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(Convert.ToInt32(CourseData.Segment5CompressedLength));
+            Array.Reverse(byteArray);
+            seg9w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(Convert.ToInt32(CourseData.Segment5Length));
+            Array.Reverse(byteArray);
+            seg9w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0));
+            Array.Reverse(byteArray);
+            seg9w.Write(byteArray);
+
+
+
             byteArray = BitConverter.GetBytes(Convert.ToUInt32(0));
             Array.Reverse(byteArray);
             seg9w.Write(byteArray);
@@ -2074,12 +2473,12 @@ namespace Tarmac64_Library
         }
 
 
-        public void compileF3DObject(ref int outMagic, ref byte[] DataOut, byte[] ModelData, OK64F3DObject[] MasterObjects, OK64Texture[] TextureObjects, int vertMagic, int SegmentID)
+        public byte[] compileF3DObject(byte[] ModelData, OK64F3DObject[] MasterObjects, OK64Texture[] TextureObjects, int vertMagic, int SegmentID)
         {
 
 
             //this function is used to create model data with vert data stored inside the same segment.
-            //this is for "custom models" and is not intended for Mario Kart 64's traditional format.
+            //this is for "custom models" and is not intended for Mario Kart 64's traditional level format.
 
             List<string> object_name = new List<string>();
 
@@ -2099,7 +2498,7 @@ namespace Tarmac64_Library
             byte[] SegmentByte = BitConverter.GetBytes(SegmentID);
             Array.Reverse(SegmentByte);
 
-            int relativeZero = vertMagic;
+            int relativeZero = ModelData.Length + vertMagic;
             int relativeIndex = 0;
 
 
@@ -2164,9 +2563,17 @@ namespace Tarmac64_Library
                                     {
                                         MessageBox.Show("Fatal UV Error " + cObj.objectName);
                                     }
-                                    cObj.modelGeometry[f + faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.sBase * TextureObjects[cObj.materialID].textureWidth);
-                                    cObj.modelGeometry[f + faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.tBase * TextureObjects[cObj.materialID].textureHeight);
 
+                                    if ((TextureObjects[cObj.materialID].textureModeS != 0) || (TextureObjects[cObj.materialID].textureModeT != 0))
+                                    {
+                                        cObj.modelGeometry[f + faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.sPure * TextureObjects[cObj.materialID].textureWidth);
+                                        cObj.modelGeometry[f + faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.tPure * TextureObjects[cObj.materialID].textureHeight);
+                                    }
+                                    else
+                                    {
+                                        cObj.modelGeometry[f + faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.sBase * TextureObjects[cObj.materialID].textureWidth);
+                                        cObj.modelGeometry[f + faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.tBase * TextureObjects[cObj.materialID].textureHeight);
+                                    }
 
 
                                     byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.s));
@@ -2177,60 +2584,14 @@ namespace Tarmac64_Library
                                     Array.Reverse(byteArray);
                                     seg4w.Write(byteArray);
 
-
-                                    /*
-                                    153, 0, 153 - Player tumbles
-                                    0, 153, 153 - No collision
-                                    255, 0, 0 - Darkens the player
-                                    230, 204, 0 - Out of bounds
-                                    */
-
-                                    switch (cObj.surfaceProperty)
-                                    {
-                                        case 1:
-                                            {
-                                                seg4w.Write(Convert.ToByte(153));
-                                                seg4w.Write(Convert.ToByte(0));
-                                                seg4w.Write(Convert.ToByte(153));
-                                                seg4w.Write(Convert.ToByte(0));
-                                                break;
-                                            }
-                                        case 2:
-                                            {
-                                                seg4w.Write(Convert.ToByte(0));
-                                                seg4w.Write(Convert.ToByte(153));
-                                                seg4w.Write(Convert.ToByte(153));
-                                                seg4w.Write(Convert.ToByte(0));
-                                                break;
-                                            }
-                                        case 3:
-                                            {
-                                                seg4w.Write(Convert.ToByte(255));
-                                                seg4w.Write(Convert.ToByte(0));
-                                                seg4w.Write(Convert.ToByte(0));
-                                                seg4w.Write(Convert.ToByte(0));
-                                                break;
-                                            }
-                                        case 4:
-                                            {
-                                                seg4w.Write(Convert.ToByte(230));
-                                                seg4w.Write(Convert.ToByte(204));
-                                                seg4w.Write(Convert.ToByte(0));
-                                                seg4w.Write(Convert.ToByte(0));
-                                                break;
-                                            }
-                                        case 0:
-                                        default:
-                                            {
-                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
-                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
-                                                seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
-                                                seg4w.Write(Convert.ToByte(TextureObjects[cObj.materialID].vertAlpha));
-                                                break;
-                                            }
+                                    
 
 
-                                    }
+                                    
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
+                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
+                                    seg4w.Write(Convert.ToByte(TextureObjects[cObj.materialID].vertAlpha));                                        
                                 }
                             }
 
@@ -2271,9 +2632,17 @@ namespace Tarmac64_Library
                                 {
                                     MessageBox.Show("Fatal UV Error " + cObj.objectName);
                                 }
-                                cObj.modelGeometry[faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.sBase * TextureObjects[cObj.materialID].textureWidth);
-                                cObj.modelGeometry[faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.tBase * TextureObjects[cObj.materialID].textureHeight);
 
+                                if ((TextureObjects[cObj.materialID].textureModeS != 0) || (TextureObjects[cObj.materialID].textureModeT != 0))
+                                {
+                                    cObj.modelGeometry[faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.sPure * TextureObjects[cObj.materialID].textureWidth);
+                                    cObj.modelGeometry[faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.tPure * TextureObjects[cObj.materialID].textureHeight);
+                                }
+                                else
+                                {
+                                    cObj.modelGeometry[faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.sBase * TextureObjects[cObj.materialID].textureWidth);
+                                    cObj.modelGeometry[faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.tBase * TextureObjects[cObj.materialID].textureHeight);
+                                }
 
 
                                 byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.s));
@@ -2286,57 +2655,12 @@ namespace Tarmac64_Library
 
 
 
-                                /*
-                                153, 0, 153 - Player tumbles
-                                0, 153, 153 - No collision
-                                255, 0, 0 - Darkens the player
-                                230, 204, 0 - Out of bounds
-                                */
 
-                                switch (cObj.surfaceProperty)
-                                {
-                                    case 1:
-                                        {
-                                            seg4w.Write(Convert.ToByte(153));
-                                            seg4w.Write(Convert.ToByte(0));
-                                            seg4w.Write(Convert.ToByte(153));
-                                            seg4w.Write(Convert.ToByte(0));
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            seg4w.Write(Convert.ToByte(255));
-                                            seg4w.Write(Convert.ToByte(0));
-                                            seg4w.Write(Convert.ToByte(0));
-                                            seg4w.Write(Convert.ToByte(0));
-                                            break;
-                                        }
-                                    case 3:
-                                        {
-                                            seg4w.Write(Convert.ToByte(0));
-                                            seg4w.Write(Convert.ToByte(153));
-                                            seg4w.Write(Convert.ToByte(153));
-                                            seg4w.Write(Convert.ToByte(0));
-                                            break;
-                                        }
-                                    case 4:
-                                        {
-                                            seg4w.Write(Convert.ToByte(230));
-                                            seg4w.Write(Convert.ToByte(204));
-                                            seg4w.Write(Convert.ToByte(0));
-                                            seg4w.Write(Convert.ToByte(0));
-                                            break;
-                                        }
-                                    case 0:
-                                    default:
-                                        {
-                                            seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
-                                            seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
-                                            seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
-                                            seg4w.Write(Convert.ToByte(TextureObjects[cObj.materialID].vertAlpha));
-                                            break;
-                                        }
-                                }
+
+                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
+                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
+                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
+                                seg4w.Write(Convert.ToByte(TextureObjects[cObj.materialID].vertAlpha));
 
 
                             }
@@ -2363,7 +2687,7 @@ namespace Tarmac64_Library
             }
 
             int newMagic = relativeZero;
-            relativeZero = vertMagic;
+            relativeZero = ModelData.Length + vertMagic;
 
             foreach (var cObj in MasterObjects)
             {
@@ -2534,12 +2858,39 @@ namespace Tarmac64_Library
             outWriter.Write(ModelData);
             outWriter.Write(outseg4);
             outWriter.Write(outseg7);
-            DataOut = outStream.ToArray();
+            return outStream.ToArray();
 
-            outMagic = DataOut.Length;
+            
         }
 
-        public void compileF3DObject(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic)
+        public byte[] compileF3DHeader(int Position, byte[] HeaderData)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+            memoryStream.Write(HeaderData,0,HeaderData.Length);
+
+            byte[] flip = BitConverter.GetBytes(0x06000000);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            flip = BitConverter.GetBytes(Position);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            flip = BitConverter.GetBytes(0xB8000000);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            flip = BitConverter.GetBytes(0);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            return memoryStream.ToArray();
+        }
+
+        public void compileCourseObject(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic)
         {
 
 
@@ -2699,11 +3050,22 @@ namespace Tarmac64_Library
 
 
 
-                                    
-                                    cObj.modelGeometry[f + faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.sBase * textureObject[cObj.materialID].textureWidth);
-                                    cObj.modelGeometry[f + faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.tBase * textureObject[cObj.materialID].textureHeight);
+                                    if (CheckST(cObj, textureObject[cObj.materialID]))
+                                    {
+                                        MessageBox.Show("Fatal UV Error " + cObj.objectName);
+                                    }
 
-                                    
+                                    if ((textureObject[cObj.materialID].textureModeS != 0) || (textureObject[cObj.materialID].textureModeT != 0))
+                                    {
+                                        cObj.modelGeometry[f + faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.sPure * textureObject[cObj.materialID].textureWidth);
+                                        cObj.modelGeometry[f + faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.tPure * textureObject[cObj.materialID].textureHeight);
+                                    }
+                                    else
+                                    {
+                                        cObj.modelGeometry[f + faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.sBase * textureObject[cObj.materialID].textureWidth);
+                                        cObj.modelGeometry[f + faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.tBase * textureObject[cObj.materialID].textureHeight);
+                                    }
+
 
                                     byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.s));
                                     Array.Reverse(byteArray);
@@ -2834,9 +3196,17 @@ namespace Tarmac64_Library
                                 {
                                     MessageBox.Show("Fatal UV Error " + cObj.objectName);
                                 }
-                                cObj.modelGeometry[faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.sBase * textureObject[cObj.materialID].textureWidth);
-                                cObj.modelGeometry[faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.tBase * textureObject[cObj.materialID].textureHeight);
 
+                                if ((textureObject[cObj.materialID].textureModeS != 0) || (textureObject[cObj.materialID].textureModeT != 0))
+                                {
+                                    cObj.modelGeometry[ faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.sPure * textureObject[cObj.materialID].textureWidth);
+                                    cObj.modelGeometry[faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.tPure * textureObject[cObj.materialID].textureHeight);
+                                }
+                                else
+                                {
+                                    cObj.modelGeometry[faceIndex].VertData[v].position.s = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.sBase * textureObject[cObj.materialID].textureWidth);
+                                    cObj.modelGeometry[faceIndex].VertData[v].position.t = Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.tBase * textureObject[cObj.materialID].textureHeight);
+                                }
 
 
                                 byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.s));
@@ -2918,11 +3288,6 @@ namespace Tarmac64_Library
                     relativeZero += relativeIndex;
                     relativeIndex = 0;
                 }
-
-
-
-
-
             }
 
             outseg4 = seg4m.ToArray();
@@ -2931,7 +3296,431 @@ namespace Tarmac64_Library
             outMagic = relativeZero;
         }
 
-        public void compileTextureObject(ref int outMagic, ref byte[] outseg7, byte[] segment7, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5)
+        public byte[] CI(OK64Texture textureObject, int ThisPosition, byte[] SegmentByte)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+            UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
+            UInt32 heightex = Convert.ToUInt32(Math.Log(textureObject.textureHeight) / Math.Log(2));
+            UInt32 widthex = Convert.ToUInt32(Math.Log(textureObject.textureWidth) / Math.Log(2));
+
+            UInt32[] BitSize = new UInt32[] { 0, 1 };
+            UInt32[] ColorCount = new uint[] { 16, 255 };
+
+            byte ImgModeS = Convert.ToByte(textureObject.textureModeS & 0xF);
+            byte ImgModeT = Convert.ToByte(textureObject.textureModeT & 0xF);
+
+            ImgType = 2;
+            ImgFlag1 = Convert.ToUInt32(textureObject.textureHeight);
+            ImgFlag2 = Convert.ToUInt32(textureObject.textureWidth);
+            ImgFlag3 = 0x00;
+
+
+            byte[] byteArray = new byte[2];
+
+            textureObject.f3dexPosition = new int[2];
+
+            ///Ok so now that we've loaded the raw model data, let's start writing some F3DEX. God have mercy.
+
+            textureObject.f3dexPosition[0] = Convert.ToInt32(ThisPosition);
+
+            byteArray = BitConverter.GetBytes(0xBB000001);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xFFFFFFFF);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xE8000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes((((ImgType << 0x15) | 0xF5400000) | ((((ImgFlag2 << 1) + 7) >> 3) << 8)) | ImgFlag3| (BitSize[textureObject.bitSize] & 0xF) << 19);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+
+            byteArray = BitConverter.GetBytes(Convert.ToInt32((
+                (heightex & 0xF) << 14) |
+                (ImgModeT << 18) |
+                ((widthex & 0xF) << 4) |
+                (ImgModeS << 8)
+                ));
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xF2000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes((((ImgFlag2 - 1) << 0xE) | ((ImgFlag1 - 1) << 2)));
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xBA000E02);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00008000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xFD100000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+
+            byteArray = BitConverter.GetBytes(Convert.ToUInt32(BitConverter.ToUInt32(SegmentByte, 0) | textureObject.palettePosition));  //told you we would need this later. you didn't believe me </3 :'(
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xE8000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xF5000100);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x07000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xE6000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xF0000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x07000000 | ((ColorCount[textureObject.bitSize] * 4) & 0x3FF) << 12);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xE7000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xFD400000| (BitSize[textureObject.bitSize] & 0xF) << 19);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(Convert.ToUInt32(BitConverter.ToUInt32(SegmentByte, 0) | textureObject.segmentPosition));  //told you we would need this later. you didn't believe me </3 :'(
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xE8000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xF5480000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x07000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xE6000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xF3000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            uint Unknown = (ImgFlag2 << 1) >> 3;
+            if (Unknown < 1)
+            {
+                Unknown = 1;
+            }
+            byteArray = BitConverter.GetBytes((0x07000000) | (((ImgFlag1 * ImgFlag2)) - 1) << 12 | ((Unknown + 0x7FF)/ Unknown) * 2);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xB8000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            return memoryStream.ToArray();
+
+
+
+        }
+
+        public byte[] IA(OK64Texture textureObject, int ThisPosition, byte[] SegmentByte)
+        {
+            return RGBA(textureObject, ThisPosition, SegmentByte);
+        }
+
+        public byte[] RGBA(OK64Texture textureObject, int ThisPosition, byte[] SegmentByte)
+        {
+
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+            UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;            
+
+            UInt32 heightex = Convert.ToUInt32(Math.Log(textureObject.textureHeight) / Math.Log(2));
+            UInt32 widthex = Convert.ToUInt32(Math.Log(textureObject.textureWidth) / Math.Log(2));
+
+            uint[] Types = { 0, 99, 3 };
+            byte ImgModeS = Convert.ToByte(textureObject.textureModeS & 0xF);
+            byte ImgModeT = Convert.ToByte(textureObject.textureModeT & 0xF);
+
+            ImgType = Types[textureObject.textureCodec];
+            ImgFlag1 = Convert.ToUInt32(textureObject.textureHeight);
+            ImgFlag2 = Convert.ToUInt32(textureObject.textureWidth);
+            ImgFlag3 = 0x00;
+
+
+            byte[] byteArray = new byte[2];
+
+            textureObject.f3dexPosition = new int[2];
+
+            ///Ok so now that we've loaded the raw model data, let's start writing some F3DEX. God have mercy.
+
+            textureObject.f3dexPosition[0] = Convert.ToInt32(ThisPosition);
+
+            byteArray = BitConverter.GetBytes(0xBB000001);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xFFFFFFFF);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xBA000E02);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xE8000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            /*
+            byte height = Convert.ToByte((value32 >> 14) & 0xFF);
+            byte heightmode = Convert.ToByte((value32 >> 18) & 0xFF);
+            byte width = Convert.ToByte((value32 >> 4) & 0xFF);
+            byte widthmode = Convert.ToByte((value32 >> 8) & 0xFF);
+            */
+
+            byteArray = BitConverter.GetBytes((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+
+            byteArray = BitConverter.GetBytes(Convert.ToInt32((
+                (heightex & 0xF) << 14) |
+                (ImgModeT << 18) |
+                ((widthex & 0xF) << 4) |
+                (ImgModeS << 8)
+                ));
+
+
+
+
+            //IDK why but this makes it into what it's supposed to be. 
+            //byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
+            //IDK why but this makes it into what it's supposed to be. 
+
+
+            //after like a year we finally got around to fixing that.
+            //keeping it as a humble reminder of how far we've come. 
+
+
+
+            Array.Reverse(byteArray);
+
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xF2000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes((((ImgFlag2 - 1) << 0xE) | ((ImgFlag1 - 1) << 2)));
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            if (ImgType == 3)
+            {
+                byteArray = BitConverter.GetBytes(0xFD700000);
+                Array.Reverse(byteArray);
+                binaryWriter.Write(byteArray);
+            }
+            else
+            {
+                byteArray = BitConverter.GetBytes(0xFD100000);
+                Array.Reverse(byteArray);
+                binaryWriter.Write(byteArray);
+            }
+
+
+            byteArray = BitConverter.GetBytes(Convert.ToUInt32(BitConverter.ToUInt32(SegmentByte, 0) | textureObject.segmentPosition));  //told you we would need this later. you didn't believe me </3 :'(
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xE8000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            ///F5100000 07000000 E6000000 00000000 F3000000 073FF100
+
+            if (ImgType == 3)
+            {
+                byteArray = BitConverter.GetBytes(0xF5700000);
+                Array.Reverse(byteArray);
+                binaryWriter.Write(byteArray);
+            }
+            else
+            {
+                byteArray = BitConverter.GetBytes(0xF5100000);
+                Array.Reverse(byteArray);
+                binaryWriter.Write(byteArray);
+            }
+            
+
+            byteArray = BitConverter.GetBytes(0x07000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xE6000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xF3000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            uint Unknown = (ImgFlag2 << 1) >> 3;
+            if (Unknown < 1)
+            {
+                Unknown = 1;
+            }
+            byteArray = BitConverter.GetBytes((0x07000000) | (((ImgFlag1 * ImgFlag2)) - 1) << 12 | ((Unknown + 0x7FF) / Unknown));
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0xB8000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            binaryWriter.Write(byteArray);
+
+            return memoryStream.ToArray();
+
+        }
+
+        public byte[] compileCourseTexture(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5)
+        {
+            byte[] byteArray = new byte[0];
+
+
+            
+
+            byte[] SegmentByte = BitConverter.GetBytes(SegmentID);
+            Array.Reverse(SegmentByte);
+
+            int relativeZero = vertMagic;
+
+
+            MemoryStream seg7m = new MemoryStream();
+            BinaryReader seg7r = new BinaryReader(seg7m);
+            BinaryWriter seg7w = new BinaryWriter(seg7m);
+
+
+            MemoryStream seg4m = new MemoryStream();
+            BinaryReader seg4r = new BinaryReader(seg4m);
+            BinaryWriter seg4w = new BinaryWriter(seg4m);
+
+            //prewrite existing Segment 7 data, OR, prefix Segment 7 with a 0xB8 Command. 
+            if (SegmentData.Length > 0)
+            {
+                seg7w.Write(SegmentData);
+            }
+
+            
+
+            for (int materialID = 0; materialID < textureObject.Length; materialID++)
+            {
+                if (textureObject[materialID].texturePath != null)
+                {
+                    switch (textureObject[materialID].textureCodec)
+                    {
+                        case 0:
+                            {
+                                seg7w.Write(RGBA(textureObject[materialID], Convert.ToInt32(seg7w.BaseStream.Position + vertMagic), SegmentByte));
+                                break;
+                            }
+                        case 1:
+                            {
+                                seg7w.Write(CI(textureObject[materialID], Convert.ToInt32(seg7w.BaseStream.Position + vertMagic), SegmentByte));
+                                break;
+                            }
+                        case 2:
+                            {
+                                seg7w.Write(IA(textureObject[materialID], Convert.ToInt32(seg7w.BaseStream.Position + vertMagic), SegmentByte));
+                                break;
+                            }
+                    }
+                }
+            }
+            return seg7m.ToArray();
+        }
+
+
+
+        public byte[] compileTextureObject(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5)
         {
             byte[] byteArray = new byte[0];
 
@@ -2960,652 +3749,46 @@ namespace Tarmac64_Library
             BinaryWriter seg4w = new BinaryWriter(seg4m);
 
             //prewrite existing Segment 7 data, OR, prefix Segment 7 with a 0xB8 Command. 
-            if (segment7.Length > 0)
+            if (SegmentData.Length > 0)
             {
-                seg7w.Write(segment7);
+                seg7w.Write(SegmentData);
             }
 
             for( int materialID = 0; materialID < textureObject.Length; materialID++)
             {
-                textureObject[materialID].f3dexPosition = new int[2];
-
-                ///Ok so now that we've loaded the raw model data, let's start writing some F3DEX. God have mercy.
-
-                textureObject[materialID].f3dexPosition[0] = Convert.ToInt32(seg7m.Position) + vertMagic;
-
-
-                byteArray = BitConverter.GetBytes(0xBB000001);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0xFFFFFFFF);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-
-
-                byte ImgModeS = Convert.ToByte(textureObject[materialID].textureModeS & 0xF);
-                byte ImgModeT = Convert.ToByte(textureObject[materialID].textureModeT & 0xF);
-
-                ImgType = ImgTypes[textureObject[materialID].textureClass];
-                ImgFlag1 = STheight[textureObject[materialID].textureClass];
-                ImgFlag2 = STwidth[textureObject[materialID].textureClass];
-                if (textureObject[materialID].textureCodec == 1)
+                if ((textureObject[materialID].texturePath != null) && (textureObject[materialID].texturePath != "NULL"))
                 {
-                    ImgFlag3 = 0x100;
-                }
-                else
-                {
-                    ImgFlag3 = 0x00;
-                }
-
-
-
-                byteArray = BitConverter.GetBytes(0xE8000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0x00000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                /*
-                byte height = Convert.ToByte((value32 >> 14) & 0xFF);
-                byte heightmode = Convert.ToByte((value32 >> 18) & 0xFF);
-                byte width = Convert.ToByte((value32 >> 4) & 0xFF);
-                byte widthmode = Convert.ToByte((value32 >> 8) & 0xFF);
-                */
-
-                byteArray = BitConverter.GetBytes((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-
-                byteArray = BitConverter.GetBytes(Convert.ToInt32((
-                    (heightex[textureObject[materialID].textureClass] & 0xF) << 14) | 
-                    (ImgModeT << 18) | 
-                    ((widthex[textureObject[materialID].textureClass] & 0xF) << 4) | 
-                    (ImgModeS << 8)
-                    ));
-
-
-
-
-                //IDK why but this makes it into what it's supposed to be. 
-                //byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
-                //IDK why but this makes it into what it's supposed to be. 
-
-
-                //after like a year we finally got around to fixing that.
-                //keeping it as a humble reminder of how far we've come. 
-
-
-
-                Array.Reverse(byteArray);
-
-                seg7w.Write(byteArray);
-                byteArray = BitConverter.GetBytes(0xF2000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes((((ImgFlag2 - 1) << 0xE) | ((ImgFlag1 - 1) << 2)));
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                if (textureObject[materialID].textureCodec == 0)
-                {
-                    byteArray = BitConverter.GetBytes(0xFD100000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-                }
-                else
-                {
-                    
-                    byteArray = BitConverter.GetBytes(0xFD180000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-                    
-                }
-
-                byteArray = BitConverter.GetBytes(Convert.ToUInt32(BitConverter.ToUInt32(SegmentByte, 0) | textureObject[materialID].segmentPosition));  //told you we would need this later. you didn't believe me </3 :'(
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0xE8000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0x00000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                ///F5100000 07000000 E6000000 00000000 F3000000 073FF100
-
-                byteArray = BitConverter.GetBytes(0xF5100000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0x07000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0xE6000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-
-                byteArray = BitConverter.GetBytes(0x00000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0xF3000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-
-                if (textureObject[materialID].textureClass == 0)
-                {
-                    byteArray = BitConverter.GetBytes(0x073FF100);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-                }
-                else if (textureObject[materialID].textureClass == 1)
-                {
-                    byteArray = BitConverter.GetBytes(0x077FF080);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                }
-                else if (textureObject[materialID].textureClass == 2)
-                {
-                    byteArray = BitConverter.GetBytes(0x077FF100);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-                }
-
-
-                byteArray = BitConverter.GetBytes(0xB8000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0x00000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-
-
-                relativeZero += relativeIndex;
-                relativeIndex = 0;
-            }
-            outseg7 = seg7m.ToArray();
-            outMagic = Convert.ToInt32(outseg7.Length) + vertMagic;
-        }
-
-
-        public void compileBattleObject(ref int outDLOffset, ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic)
-        {
-
-
-
-
-            List<string> object_name = new List<string>();
-
-
-
-
-            byte[] byteArray = new byte[0];
-
-
-            UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
-            UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
-            UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
-            UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 }; ///texture sizes...
-            byte[] heightex = { 5, 5, 6, 5, 5, 6, 5 };
-            byte[] widthex = { 5, 6, 5, 5, 6, 5, 5 };
-
-
-
-            int relativeZero = vertMagic;
-            int relativeIndex = 0;
-
-
-            MemoryStream seg7m = new MemoryStream();
-            BinaryReader seg7r = new BinaryReader(seg7m);
-            BinaryWriter seg7w = new BinaryWriter(seg7m);
-
-
-            MemoryStream seg4m = new MemoryStream();
-            BinaryReader seg4r = new BinaryReader(seg4m);
-            BinaryWriter seg4w = new BinaryWriter(seg4m);
-
-            //prewrite existing Segment 4 data. 
-            seg4w.Write(segment4);
-
-            //prewrite existing Segment 7 data, OR, prefix Segment 7 with a 0xB8 Command. 
-            if (segment7.Length > 0)
-            {
-                seg7w.Write(segment7);
-            }
-            else
-            {
-                //Prep Segment 7 for any hardcoded display lists
-
-                byteArray = BitConverter.GetBytes(0xB8000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-
-                byteArray = BitConverter.GetBytes(0x00000000);
-                Array.Reverse(byteArray);
-                seg7w.Write(byteArray);
-            }
-
-            foreach (var cObj in courseObject)
-            {
-                cObj.meshPosition = new int[cObj.meshID.Length];
-                for (int subIndex = 0; subIndex < cObj.meshID.Length; subIndex++)
-                {
-
-
-
-
-
-                    int facecount = cObj.modelGeometry.Length;
-
-
-                    int materialID = new int();
-
-                    materialID = cObj.materialID;
+                    textureObject[materialID].f3dexPosition = new int[2];
 
                     ///Ok so now that we've loaded the raw model data, let's start writing some F3DEX. God have mercy.
 
-                    cObj.meshPosition[subIndex] = Convert.ToInt32(seg7m.Position);
+                    textureObject[materialID].f3dexPosition[0] = Convert.ToInt32(seg7m.Position) + vertMagic;
 
 
-                    byteArray = BitConverter.GetBytes(0xBB000001);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xFFFFFFFF);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    // FC121824 FF33FFFF B900031D 00552078
-
-                    byteArray = BitConverter.GetBytes(0xFC121824);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xFF33FFFF);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xB900031D);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x00552078);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-
-                    byte ImgModeS = Convert.ToByte(textureObject[materialID].textureModeS & 0xF);
-                    byte ImgModeT = Convert.ToByte(textureObject[materialID].textureModeT & 0xF);
-
-                    ImgType = ImgTypes[textureObject[cObj.materialID].textureClass];
-                    ImgFlag1 = STheight[textureObject[cObj.materialID].textureClass];
-                    ImgFlag2 = STwidth[textureObject[cObj.materialID].textureClass];
-                    if (textureObject[cObj.materialID].textureClass == 6)
+                    switch (textureObject[materialID].textureCodec)
                     {
-                        ImgFlag3 = 0x100;
-                    }
-                    else
-                    {
-                        ImgFlag3 = 0x00;
-                    }
-
-
-
-                    byteArray = BitConverter.GetBytes(0xE8000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-
-                    /*
-                    byte height = Convert.ToByte((value32 >> 14) & 0xFF);
-                    byte heightmode = Convert.ToByte((value32 >> 18) & 0xFF);
-                    byte width = Convert.ToByte((value32 >> 4) & 0xFF);
-                    byte widthmode = Convert.ToByte((value32 >> 8) & 0xFF);
-                    */
-
-                    byteArray = BitConverter.GetBytes((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-
-                    byteArray = BitConverter.GetBytes(Convert.ToInt32((
-                        (heightex[textureObject[materialID].textureClass] & 0xF) << 14) |
-                        (ImgModeT << 18) |
-                        ((widthex[textureObject[materialID].textureClass] & 0xF) << 4) |
-                        (ImgModeS << 8)
-                        ));
-
-                    //IDK why but this makes it into what it's supposed to be. 
-                    //byteArray = BitConverter.GetBytes(BitConverter.ToInt32(byteArray, 0) >> 4);
-                    //IDK why but this makes it into what it's supposed to be. 
-
-
-
-                    Array.Reverse(byteArray);
-
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xF2000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes((((ImgFlag2 - 1) << 0xE) | ((ImgFlag1 - 1) << 2)));
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xFD100000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x05000000 | textureObject[materialID].segmentPosition);  //told you we would need this later. you didn't believe me </3 :'(
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xE8000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    ///F5100000 07000000 E6000000 00000000 F3000000 073FF100
-
-                    byteArray = BitConverter.GetBytes(0xF5100000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x07000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xE6000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0xF3000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    if (textureObject[materialID].textureClass == 0)
-                    {
-                        byteArray = BitConverter.GetBytes(0x073FF100);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-                    }
-                    else if (textureObject[materialID].textureClass == 1)
-                    {
-                        byteArray = BitConverter.GetBytes(0x077FF080);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-
-                    }
-                    else if (textureObject[materialID].textureClass == 2)
-                    {
-                        byteArray = BitConverter.GetBytes(0x077FF100);
-                        Array.Reverse(byteArray);
-                        seg7w.Write(byteArray);
-                    }
-
-
-
-                    ///load the first set of verts from the relativeZero position;
-
-                    byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-
-                    byteArray = BitConverter.GetBytes(0x04000000 | (relativeZero) * 16);  ///from segment 4 at offset relativeZero
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-
-                    int indexA;
-                    int indexB;
-                    int indexC;
-
-
-                    for (int faceIndex = 0; faceIndex < facecount;)
-                    {
-
-
-
-                        if (faceIndex + 2 <= facecount)
-                        {
-
-
-                            /// draw 2 triangles, check for additional verts in both.
-                            if (relativeIndex >= 26)
+                        case 0:
                             {
-                                relativeZero += relativeIndex;
-                                relativeIndex = 0;
-
-                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
-                                Array.Reverse(byteArray);
-                                seg7w.Write(byteArray);
-
-
-                                byteArray = BitConverter.GetBytes(0x04000000 | ((relativeZero) * 16));  ///from segment 4 at offset relativeZero
-                                Array.Reverse(byteArray);
-                                seg7w.Write(byteArray);
-
-
+                                seg7w.Write(RGBA(textureObject[materialID], Convert.ToInt32(seg7w.BaseStream.Position + vertMagic), SegmentByte));
+                                break;
                             }
-
-
-
-                            ///end vert check
-
-
-
-
-                            indexA = relativeIndex;
-                            indexB = relativeIndex + 2;
-                            indexC = relativeIndex + 1;
-
-                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xB1000000 | (indexC << 17) | (indexB << 9) | indexA << 1));
-                            Array.Reverse(byteArray);
-                            seg7w.Write(byteArray);
-
-                            indexA = relativeIndex + 3;
-                            indexB = relativeIndex + 5;
-                            indexC = relativeIndex + 4;
-
-                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
-                            Array.Reverse(byteArray);
-                            seg7w.Write(byteArray);
-
-
-                            for (int f = 0; f < 2; f++)
+                        case 1:
                             {
-                                for (int v = 0; v < 3; v++)
-                                {
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.x));
-                                    Array.Reverse(byteArray);
-                                    seg4w.Write(byteArray);
-
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.z));
-                                    Array.Reverse(byteArray);
-                                    seg4w.Write(byteArray);
-
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[f + faceIndex].VertData[v].position.y));
-                                    Array.Reverse(byteArray);
-                                    seg4w.Write(byteArray);
-
-
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.s));
-                                    Array.Reverse(byteArray);
-                                    seg4w.Write(byteArray);
-
-                                    byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[f + faceIndex].VertData[v].position.t));
-                                    Array.Reverse(byteArray);
-                                    seg4w.Write(byteArray);
-
-
-                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.R);
-                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.G);
-                                    seg4w.Write(cObj.modelGeometry[f + faceIndex].VertData[v].color.B);
-                                    seg4w.Write(Convert.ToByte(textureObject[cObj.materialID].vertAlpha));
-                                }
+                                seg7w.Write(CI(textureObject[materialID], Convert.ToInt32(seg7w.BaseStream.Position + vertMagic), SegmentByte));
+                                break;
                             }
-
-
-                            faceIndex += 2;
-                            relativeIndex += 6;
-
-                        }
-                        else
-                        {
-
-                            if (relativeIndex >= 26)
+                        case 2:
                             {
-                                relativeZero += relativeIndex;
-                                relativeIndex = 0;
-
-                                byteArray = BitConverter.GetBytes(0x040081FF);  ///load 32 vertices at index 0
-                                Array.Reverse(byteArray);
-                                seg7w.Write(byteArray);
-
-
-                                byteArray = BitConverter.GetBytes(0x04000000 | ((relativeZero) * 16));  ///from segment 4 at offset relativeZero
-                                Array.Reverse(byteArray);
-                                seg7w.Write(byteArray);
-
-
+                                seg7w.Write(IA(textureObject[materialID], Convert.ToInt32(seg7w.BaseStream.Position + vertMagic), SegmentByte));
+                                break;
                             }
-
-
-
-
-
-
-                            ///end vert check
-                            byteArray = BitConverter.GetBytes(Convert.ToUInt32(0xBF000000));
-                            Array.Reverse(byteArray);
-                            seg7w.Write(byteArray);
-
-                            indexA = relativeIndex;
-                            indexB = relativeIndex + 2;
-                            indexC = relativeIndex + 1;
-
-
-                            byteArray = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
-                            Array.Reverse(byteArray);
-                            seg7w.Write(byteArray);
-
-
-                            //create the vert array for the current face, write it to Segment 4. 
-
-
-
-
-                            for (int v = 0; v < 3; v++)
-                            {
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.x));
-                                Array.Reverse(byteArray);
-                                seg4w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.z));
-                                Array.Reverse(byteArray);
-                                seg4w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(-1 * cObj.modelGeometry[faceIndex].VertData[v].position.y));
-                                Array.Reverse(byteArray);
-                                seg4w.Write(byteArray);
-
-
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.s));
-                                Array.Reverse(byteArray);
-                                seg4w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(Convert.ToInt16(cObj.modelGeometry[faceIndex].VertData[v].position.t));
-                                Array.Reverse(byteArray);
-                                seg4w.Write(byteArray);
-
-
-                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.R);
-                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.G);
-                                seg4w.Write(cObj.modelGeometry[faceIndex].VertData[v].color.B);
-                                seg4w.Write(Convert.ToByte(textureObject[cObj.materialID].vertAlpha));
-                            }
-
-                            faceIndex++;
-                            relativeIndex += 3;
-
-                        }
-
-
-
                     }
-
-
-                    byteArray = BitConverter.GetBytes(0xB8000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    relativeZero += relativeIndex;
-                    relativeIndex = 0;
-                }
-
-
-
-
-
-            }
-
-            outDLOffset = Convert.ToInt32(seg7w.BaseStream.Position);
-
-            foreach (var cObj in courseObject)
-            {
-                foreach (var objposition in cObj.meshPosition)
-                {
-                    
-                    byteArray = BitConverter.GetBytes(0x06000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-
-                    byteArray = BitConverter.GetBytes(objposition | 0x07000000);
-                    Array.Reverse(byteArray);
-                    seg7w.Write(byteArray);
-                    
                 }
             }
-
-            outseg4 = seg4m.ToArray();
-            outseg7 = seg7m.ToArray();
-
-            outMagic = relativeZero;
+            return seg7m.ToArray();
         }
 
-
-        public byte[] compileObjectList(ref int outMagic, Assimp.Scene fbx, byte[] OutputData, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int SegmentID)
+        public byte[] compileObjectList(byte[] OutputData, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int SegmentID)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -3722,13 +3905,12 @@ namespace Tarmac64_Library
             Array.Reverse(byteArray);
             seg6w.Write(byteArray);
 
-            outMagic = seg6m.ToArray().Length;
             return seg6m.ToArray();
             
         }
 
 
-        public byte[] compileF3DList(ref OK64SectionList[] sectionOut, Assimp.Scene fbx, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, OK64Texture[] textureObject)
+        public byte[] compileF3DList(ref OK64SectionList[] sectionOut, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, OK64Texture[] textureObject)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -3758,54 +3940,91 @@ namespace Tarmac64_Library
                     //opaque 
                     bool textureWritten = false;
                     bool opaqueWritten = false;
+                    bool doubleWritten = false;
+                    bool translucentwritten = false;
+                    bool transparentWritten = false;
+                    bool Gourardwritten = false;
+
+
                     for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
                     {
+
+                        //DOUBLE SIDED OPAQUE
                         textureWritten = false;
                         if (textureObject[currentTexture].textureTransparent == 0)
                         {
 
-                            if (!opaqueWritten)
-                            {
-                                opaqueWritten = true;
-                                //B900031D00552078
-                                //enable opacity.
-                                byteArray = BitConverter.GetBytes(0xB900031D);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(0x00552078);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-                            }
+                            
 
                             for (int currentObject = 0; currentObject < objectCount; currentObject++)
                             {
-
                                 int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
                                 if (courseObject[objectIndex].materialID == currentTexture)
                                 {
-                                    if (!textureWritten)
-                                    {
-                                        textureWritten = true;
-                                        byteArray = BitConverter.GetBytes(0x06000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
 
-                                        byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
-                                        textureWritten = true;
-                                    }
-                                    for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
-                                    {
-                                        byteArray = BitConverter.GetBytes(0x06000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
 
-                                        byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
+                                    if (textureObject[currentTexture].textureDoubleSide)
+                                    {
+
+                                        if (!doubleWritten)
+                                        {
+                                            //disable backface cull.
+                                            byteArray = BitConverter.GetBytes(0xB6000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00002000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            doubleWritten = true;
+                                        }
+
+
+
+
+                                        if (!opaqueWritten)
+                                        {
+
+                                            //B900031D00552078
+                                            //enable opacity.
+                                            byteArray = BitConverter.GetBytes(0xB900031D);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00552078);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            opaqueWritten = true;
+
+                                        }
+
+
+
+                                        if (!textureWritten)
+                                        {
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            textureWritten = true;
+                                        }
+
+                                        for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                        {
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                        }
                                     }
                                 }
                             }
@@ -3814,47 +4033,104 @@ namespace Tarmac64_Library
                     }
 
 
+                    doubleWritten = false;
+
+                    //cull backface
+                    for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+                    {
+                        //CULLED OPAQUE
+                        textureWritten = false;
+                        if (textureObject[currentTexture].textureTransparent == 0)
+                        {
+
+                           
+
+                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                            {                                
+                                int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
+                                if (courseObject[objectIndex].materialID == currentTexture)
+                                {
+
+
+                                    if (!textureObject[currentTexture].textureDoubleSide)
+                                    {
+                                        if (!doubleWritten)
+                                        {
+                                            //enable backface cull.
+                                            byteArray = BitConverter.GetBytes(0xB7000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00002000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            doubleWritten = true;
+                                        }
+
+
+
+                                        if (!opaqueWritten)
+                                        {
+                                            opaqueWritten = true;
+                                            //B900031D00552078
+                                            //enable opacity.
+                                            byteArray = BitConverter.GetBytes(0xB900031D);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00552078);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                        }
+
+
+
+                                        if (!textureWritten)
+                                        {
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            textureWritten = true;
+                                        }
+                                        for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                        {
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+
+                    //end opaque
+
+
                     //translucent
 
-                    bool translucentwritten = false;
+                    
+                    doubleWritten = false;
                     for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
                     {
                         textureWritten = false;
-
+                        //DOUBLESIDED TRANSLUCENT
                         if (textureObject[currentTexture].textureTransparent == 2)
                         {
-                            if (!translucentwritten)
-                            {
-                                translucentwritten = true;
-                                //
-                                //enable translucency.
-                                byteArray = BitConverter.GetBytes(0xE7000000);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(0x00000000);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(0xFC121824);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(0xFF33FFFF);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(0xB900031D);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(0x00404DD8);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-
-
-                            }
                             for (int currentObject = 0; currentObject < objectCount; currentObject++)
                             {
 
@@ -3862,27 +4138,181 @@ namespace Tarmac64_Library
 
                                 if (courseObject[objectIndex].materialID == currentTexture)
                                 {
-                                    if (!textureWritten)
-                                    {
-                                        textureWritten = true;
-                                        byteArray = BitConverter.GetBytes(0x06000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
 
-                                        byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
-                                        textureWritten = true;
+
+                                    if (textureObject[currentTexture].textureDoubleSide)
+                                    {
+                                        if (!doubleWritten)
+                                        {
+                                            //disable backface cull.
+                                            byteArray = BitConverter.GetBytes(0xB6000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00002000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            doubleWritten = true;
+                                        }
+
+                                        if (!translucentwritten)
+                                        {
+                                            translucentwritten = true;
+                                            //
+                                            //enable translucency.
+                                            byteArray = BitConverter.GetBytes(0xE7000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xFC121824);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xB900031D);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00404DD8);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+
+
+                                        }
+
+
+                                        if (!textureWritten)
+                                        {
+                                            textureWritten = true;
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                            textureWritten = true;
+                                        }
+                                        for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                        {
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                        }
                                     }
-                                    for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
-                                    {
-                                        byteArray = BitConverter.GetBytes(0x06000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
+                                      
+                                }
+                            }
+                        }
 
-                                        byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
+                    }
+
+                    doubleWritten = false;
+
+                    //translucent cullbackface
+                    for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+                    {
+                        textureWritten = false;
+                        //CULLED TRANSLUCENT
+                        if (textureObject[currentTexture].textureTransparent == 2)
+                        {
+                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                            {
+
+                                int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
+
+                                if (courseObject[objectIndex].materialID == currentTexture)
+                                {
+
+
+
+
+                                    if (!textureObject[currentTexture].textureDoubleSide)
+                                    {
+                                        if (!doubleWritten)
+                                        {
+                                            //enable backface cull.
+                                            byteArray = BitConverter.GetBytes(0xB7000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00002000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            doubleWritten = true;
+                                        }
+
+
+                                        if (!translucentwritten)
+                                        {
+                                            translucentwritten = true;
+                                            //
+                                            //enable translucency.
+                                            byteArray = BitConverter.GetBytes(0xE7000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xFC121824);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xB900031D);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00404DD8);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+
+
+                                        }
+
+
+                                        if (!textureWritten)
+                                        {
+                                            textureWritten = true;
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                            textureWritten = true;
+                                        }
+                                        for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                        {
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                        }
                                     }
                                 }
                             }
@@ -3913,39 +4343,26 @@ namespace Tarmac64_Library
 
                     }
 
-                    byteArray = BitConverter.GetBytes(0xB8000000);
-                    Array.Reverse(byteArray);
-                    seg6w.Write(byteArray);
+                    //end translucent
 
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    seg6w.Write(byteArray);
+
 
 
 
                     //transparent
 
-                    bool transparentWritten = false;
+
+                    doubleWritten = false;
+                    
+
+
+
                     for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
                     {
                         textureWritten = false;
-
+                        //DOUBLESIDED TRANSPARENT
                         if (textureObject[currentTexture].textureTransparent == 1)
                         {
-                            if (!transparentWritten)
-                            {
-                                transparentWritten = true;
-                                //B900031D00553078
-                                //enable transparency.
-                                byteArray = BitConverter.GetBytes(0xB900031D);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-                                byteArray = BitConverter.GetBytes(0x00553078);
-                                Array.Reverse(byteArray);
-                                seg6w.Write(byteArray);
-
-                            }
                             for (int currentObject = 0; currentObject < objectCount; currentObject++)
                             {
                                 
@@ -3953,33 +4370,170 @@ namespace Tarmac64_Library
 
                                 if (courseObject[objectIndex].materialID == currentTexture)
                                 {
-                                    if (!textureWritten)
-                                    {
-                                        textureWritten = true;
-                                        byteArray = BitConverter.GetBytes(0x06000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
 
-                                        byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
-                                        textureWritten = true;
-                                    }
-                                    for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
-                                    {
-                                        byteArray = BitConverter.GetBytes(0x06000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
 
-                                        byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
-                                        Array.Reverse(byteArray);
-                                        seg6w.Write(byteArray);
+
+                                    if (textureObject[currentTexture].textureDoubleSide)
+                                    {
+                                        if (!doubleWritten)
+                                        {
+                                            //disable backface cull.
+                                            byteArray = BitConverter.GetBytes(0xB6000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00002000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            doubleWritten = true;
+                                        }
+
+
+                                        if (!transparentWritten)
+                                        {
+                                            transparentWritten = true;
+                                            //B900031D00553078
+                                            //enable transparency.
+                                            byteArray = BitConverter.GetBytes(0xB900031D);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00553078);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xFC121824);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+
+                                        }
+
+
+                                        if (!textureWritten)
+                                        {
+                                            textureWritten = true;
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                            textureWritten = true;
+                                        }
+                                        for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                        {
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                        }
+
                                     }
                                 }
                             }
                         }
 
                     }
+
+
+                    //transparent backcull
+                    doubleWritten = false;
+                    for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+                    {
+                        textureWritten = false;
+                        //CULLED TRANSPARENT
+                        if (textureObject[currentTexture].textureTransparent == 1)
+                        {
+                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                            {
+
+                                int objectIndex = sectionList[currentSection].viewList[currentView].objectList[currentObject];
+
+                                if (courseObject[objectIndex].materialID == currentTexture)
+                                {
+
+
+
+                                    if (!textureObject[currentTexture].textureDoubleSide)
+                                    {
+                                        if (!doubleWritten)
+                                        {
+                                            //enable backface cull.
+                                            byteArray = BitConverter.GetBytes(0xB7000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00002000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            doubleWritten = true;
+                                        }
+
+
+                                        if (!transparentWritten)
+                                        {
+                                            transparentWritten = true;
+                                            //B900031D00553078
+                                            //enable transparency.
+                                            byteArray = BitConverter.GetBytes(0xB900031D);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0x00553078);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xFC121824);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                        }
+
+
+                                        if (!textureWritten)
+                                        {
+                                            textureWritten = true;
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                            textureWritten = true;
+                                        }
+                                        for (int subObject = 0; subObject < courseObject[objectIndex].meshPosition.Length; subObject++)
+                                        {
+                                            byteArray = BitConverter.GetBytes(0x06000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+
+                                            byteArray = BitConverter.GetBytes(courseObject[objectIndex].meshPosition[subObject] | 0x07000000);
+                                            Array.Reverse(byteArray);
+                                            seg6w.Write(byteArray);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
 
                     if (transparentWritten)
                     {
@@ -3996,6 +4550,20 @@ namespace Tarmac64_Library
 
                     }
 
+
+
+
+
+
+                    //Gourard
+
+
+
+
+
+
+
+
                     byteArray = BitConverter.GetBytes(0xB8000000);
                     Array.Reverse(byteArray);
                     seg6w.Write(byteArray);
@@ -4006,6 +4574,639 @@ namespace Tarmac64_Library
                 }
             }
             sectionOut = sectionList;
+            return seg6m.ToArray();
+        }
+
+
+        public byte[] CompileBattleList(OK64F3DObject[] courseObject, OK64Texture[] textureObject)
+        {
+            //this function will create display lists for each of the section views based on the OK64F3DObject array.
+            //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
+            // were stored into courseObject[index].meshPosition[] for this process.
+
+
+            //magic is the offset of the data preceding this in the segment based on the current organization method,
+
+
+            MemoryStream seg6m = new MemoryStream();
+            BinaryReader seg6r = new BinaryReader(seg6m);
+            BinaryWriter seg6w = new BinaryWriter(seg6m);
+
+            byte[] byteArray = new byte[0];
+            int objectCount = courseObject.Length;
+
+
+
+            //opaque 
+            bool textureWritten = false;
+            bool opaqueWritten = false;
+            bool doubleWritten = false;
+            bool translucentwritten = false;
+            bool transparentWritten = false;
+            bool Gourardwritten = false;
+
+             
+            for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+            {
+                textureWritten = false;
+                if (textureObject[currentTexture].textureTransparent == 0)
+                {
+                    for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                    {                        
+                        if (courseObject[currentObject].materialID == currentTexture)
+                        {
+                            if (textureObject[currentTexture].textureDoubleSide)
+                            {
+
+                                if (!doubleWritten)
+                                {
+                                    //disable backface cull.
+                                    byteArray = BitConverter.GetBytes(0xB6000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00002000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    doubleWritten = true;
+                                }
+
+
+
+
+                                if (!opaqueWritten)
+                                {
+
+                                    //B900031D00552078
+                                    //enable opacity.
+                                    byteArray = BitConverter.GetBytes(0xB900031D);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00552078);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    opaqueWritten = true;
+
+                                }
+
+
+
+                                if (!textureWritten)
+                                {
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    textureWritten = true;
+                                }
+
+                                for (int subObject = 0; subObject < courseObject[currentObject].meshPosition.Length; subObject++)
+                                {
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(courseObject[currentObject].meshPosition[subObject] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+
+            doubleWritten = false;
+
+            //cull backface
+            for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+            {
+                textureWritten = false;
+                if (textureObject[currentTexture].textureTransparent == 0)
+                {
+
+
+
+                    for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                    {
+                        
+                        if (courseObject[currentObject].materialID == currentTexture)
+                        {
+
+
+                            if (!textureObject[currentTexture].textureDoubleSide)
+                            {
+                                if (!doubleWritten)
+                                {
+                                    //enable backface cull.
+                                    byteArray = BitConverter.GetBytes(0xB7000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00002000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    doubleWritten = true;
+                                }
+
+
+
+                                if (!opaqueWritten)
+                                {
+                                    opaqueWritten = true;
+                                    //B900031D00552078
+                                    //enable opacity.
+                                    byteArray = BitConverter.GetBytes(0xB900031D);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00552078);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                }
+
+
+
+                                if (!textureWritten)
+                                {
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    textureWritten = true;
+                                }
+                                for (int subObject = 0; subObject < courseObject[currentObject].meshPosition.Length; subObject++)
+                                {
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(courseObject[currentObject].meshPosition[subObject] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+            }
+
+
+            //translucent
+
+
+            doubleWritten = false;
+            for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+            {
+                textureWritten = false;
+
+                if (textureObject[currentTexture].textureTransparent == 2)
+                {
+                    for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                    {
+
+                       
+
+                        if (courseObject[currentObject].materialID == currentTexture)
+                        {
+
+
+                            if (textureObject[currentTexture].textureDoubleSide)
+                            {
+                                if (!doubleWritten)
+                                {
+                                    //disable backface cull.
+                                    byteArray = BitConverter.GetBytes(0xB6000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00002000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    doubleWritten = true;
+                                }
+
+                                if (!translucentwritten)
+                                {
+                                    translucentwritten = true;
+                                    //
+                                    //enable translucency.
+                                    byteArray = BitConverter.GetBytes(0xE7000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xFC121824);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xB900031D);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00404DD8);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+
+
+                                }
+
+
+                                if (!textureWritten)
+                                {
+                                    textureWritten = true;
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                    textureWritten = true;
+                                }
+                                for (int subObject = 0; subObject < courseObject[currentObject].meshPosition.Length; subObject++)
+                                {
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(courseObject[currentObject].meshPosition[subObject] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+            }
+
+            doubleWritten = false;
+
+
+            for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+            {
+                textureWritten = false;
+
+                if (textureObject[currentTexture].textureTransparent == 2)
+                {
+                    for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                    {
+
+                        
+
+                        if (courseObject[currentObject].materialID == currentTexture)
+                        {
+
+
+
+
+                            if (!textureObject[currentTexture].textureDoubleSide)
+                            {
+                                if (!doubleWritten)
+                                {
+                                    //enable backface cull.
+                                    byteArray = BitConverter.GetBytes(0xB7000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00002000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    doubleWritten = true;
+                                }
+
+
+                                if (!translucentwritten)
+                                {
+                                    translucentwritten = true;
+                                    //
+                                    //enable translucency.
+                                    byteArray = BitConverter.GetBytes(0xE7000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xFC121824);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xB900031D);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00404DD8);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+
+
+                                }
+
+
+                                if (!textureWritten)
+                                {
+                                    textureWritten = true;
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                    textureWritten = true;
+                                }
+                                for (int subObject = 0; subObject < courseObject[currentObject].meshPosition.Length; subObject++)
+                                {
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(courseObject[currentObject].meshPosition[subObject] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            if (translucentwritten)
+            {
+
+                //B900031D00552078
+                //disable translucency
+                byteArray = BitConverter.GetBytes(0xFC127E24);
+                Array.Reverse(byteArray);
+                seg6w.Write(byteArray);
+
+                byteArray = BitConverter.GetBytes(0xFFFFF3F9);
+                Array.Reverse(byteArray);
+                seg6w.Write(byteArray);
+
+                byteArray = BitConverter.GetBytes(0xB900031D);
+                Array.Reverse(byteArray);
+                seg6w.Write(byteArray);
+
+                byteArray = BitConverter.GetBytes(0x00442D58);
+                Array.Reverse(byteArray);
+                seg6w.Write(byteArray);
+
+            }
+            //transparent
+
+
+            doubleWritten = false;
+
+            for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+            {
+                textureWritten = false;
+
+                if (textureObject[currentTexture].textureTransparent == 1)
+                {
+                    for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                    {
+
+                        
+
+                        if (courseObject[currentObject].materialID == currentTexture)
+                        {
+
+
+
+                            if (textureObject[currentTexture].textureDoubleSide)
+                            {
+                                if (!doubleWritten)
+                                {
+                                    //disable backface cull.
+                                    byteArray = BitConverter.GetBytes(0xB6000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00002000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    doubleWritten = true;
+                                }
+
+
+                                if (!transparentWritten)
+                                {
+                                    transparentWritten = true;
+                                    //B900031D00553078
+                                    //enable transparency.
+                                    byteArray = BitConverter.GetBytes(0xB900031D);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00553078);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xFC121824);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+
+                                }
+
+
+                                if (!textureWritten)
+                                {
+                                    textureWritten = true;
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                    textureWritten = true;
+                                }
+                                for (int subObject = 0; subObject < courseObject[currentObject].meshPosition.Length; subObject++)
+                                {
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(courseObject[currentObject].meshPosition[subObject] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            doubleWritten = false;
+            for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
+            {
+                textureWritten = false;
+
+                if (textureObject[currentTexture].textureTransparent == 1)
+                {
+                    for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                    {
+
+                        
+
+                        if (courseObject[currentObject].materialID == currentTexture)
+                        {
+
+
+
+                            if (!textureObject[currentTexture].textureDoubleSide)
+                            {
+                                if (!doubleWritten)
+                                {
+                                    //enable backface cull.
+                                    byteArray = BitConverter.GetBytes(0xB7000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00002000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    doubleWritten = true;
+                                }
+
+
+                                if (!transparentWritten)
+                                {
+                                    transparentWritten = true;
+                                    //B900031D00553078
+                                    //enable transparency.
+                                    byteArray = BitConverter.GetBytes(0xB900031D);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0x00553078);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xFC121824);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(0xFF33FFFF);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                }
+
+
+                                if (!textureWritten)
+                                {
+                                    textureWritten = true;
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                    textureWritten = true;
+                                }
+                                for (int subObject = 0; subObject < courseObject[currentObject].meshPosition.Length; subObject++)
+                                {
+                                    byteArray = BitConverter.GetBytes(0x06000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+
+                                    byteArray = BitConverter.GetBytes(courseObject[currentObject].meshPosition[subObject] | 0x07000000);
+                                    Array.Reverse(byteArray);
+                                    seg6w.Write(byteArray);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+
+            if (transparentWritten)
+            {
+
+                //B900031D00552078
+                //enable opacity.
+                byteArray = BitConverter.GetBytes(0xB900031D);
+                Array.Reverse(byteArray);
+                seg6w.Write(byteArray);
+
+                byteArray = BitConverter.GetBytes(0x00552078);
+                Array.Reverse(byteArray);
+                seg6w.Write(byteArray);
+
+            }
+
+
+
+
+
+
+            //Gourard
+
+
+
+
+
+
+
+
+            byteArray = BitConverter.GetBytes(0xB8000000);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
+
+            byteArray = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(byteArray);
+            seg6w.Write(byteArray);
             return seg6m.ToArray();
         }
 

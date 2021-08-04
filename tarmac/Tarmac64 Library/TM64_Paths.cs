@@ -259,7 +259,7 @@ namespace Tarmac64_Library
                         //custom Path Flag routine
                         //uses surfaceObjects and raycasts to determine appropriate surface section.
                         Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
-                        Vector3D rayTarget = new Vector3D(Convert.ToSingle(pointB[0]), Convert.ToSingle(pointB[1]), Convert.ToSingle(pointB[2] * -1));
+                        Vector3D rayTarget = new Vector3D(Convert.ToSingle(pointB[0]), Convert.ToSingle(pointB[1]), Convert.ToSingle(pointB[2]));
 
 
                         float objectDistance = -1;
@@ -619,91 +619,86 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] popBattle(string popFile)
+        public byte[] popMarker(Pathlist ThisList, int PaddingLength)
         {
 
 
             //popMarkers is used by the geometry compiler, not to add objects to existing courses.
-            Pathgroup[] pathgroup = loadBattlePOP(popFile);
-
-
+            
             memoryStream = new MemoryStream();
             binaryWriter = new BinaryWriter(memoryStream);
             binaryReader = new BinaryReader(memoryStream);
 
-            int groupCount = pathgroup.Length;
-            if (groupCount == 2)
+
+
+            int markerCount = ThisList.pathmarker.Count;
+
+
+            for (int currentMarker = 0; currentMarker < markerCount; currentMarker++)
             {
-                
-                // skip group 1 which is spawn points for future update.
-                for (int currentGroup = 1; currentGroup < groupCount; currentGroup++)
-                {
 
-                    int markerCount = pathgroup[currentGroup].pathList[0].pathmarker.Count;
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(ThisList.pathmarker[currentMarker].xval));
+                Array.Reverse(dataBytes);
+                binaryWriter.Write(dataBytes);  //x
 
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(ThisList.pathmarker[currentMarker].zval));
+                Array.Reverse(dataBytes);
+                binaryWriter.Write(dataBytes);  //z
 
-                    for (int currentMarker = 0; currentMarker < markerCount; currentMarker++)
-                    {
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(-1 * ThisList.pathmarker[currentMarker].yval));
+                Array.Reverse(dataBytes);
+                binaryWriter.Write(dataBytes);  //y 
 
-                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(pathgroup[currentGroup].pathList[0].pathmarker[currentMarker].xval));
-                        Array.Reverse(dataBytes);
-                        binaryWriter.Write(dataBytes);  //x
+                dataBytes = BitConverter.GetBytes(Convert.ToUInt16(ThisList.pathmarker[currentMarker].flag));
+                Array.Reverse(dataBytes);
+                binaryWriter.Write(dataBytes);  //flag
 
-                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(pathgroup[currentGroup].pathList[0].pathmarker[currentMarker].zval));
-                        Array.Reverse(dataBytes);
-                        binaryWriter.Write(dataBytes);  //z
-
-                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(-1 * pathgroup[currentGroup].pathList[0].pathmarker[currentMarker].yval));
-                        Array.Reverse(dataBytes);
-                        binaryWriter.Write(dataBytes);  //y 
-
-                        dataBytes = BitConverter.GetBytes(Convert.ToUInt16(pathgroup[currentGroup].pathList[0].pathmarker[currentMarker].flag));
-                        Array.Reverse(dataBytes);
-                        binaryWriter.Write(dataBytes);  //flag
-
-                    }
-
-                    dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
-                    Array.Reverse(dataBytes);
-                    binaryWriter.Write(dataBytes);  //end list
-
-                    if (currentGroup == 0)  //group 0 is course paths, groups 1-3 are objects
-                    {
-                        dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
-                        Array.Reverse(dataBytes);
-                        binaryWriter.Write(dataBytes);  //end path
-
-                        dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
-                        Array.Reverse(dataBytes);
-                        binaryWriter.Write(dataBytes);  //end path
-                    }
-                    else
-                    {
-
-                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
-                        Array.Reverse(dataBytes);
-                        binaryWriter.Write(dataBytes);  //end object
-
-                        dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
-                        Array.Reverse(dataBytes);
-                        binaryWriter.Write(dataBytes);  //end object
-                    }
-
-
-                    dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
-                    Array.Reverse(dataBytes);
-                    binaryWriter.Write(dataBytes);  //end flag
-
-
-                }
             }
-            else
+
+            dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
+            Array.Reverse(dataBytes);
+            binaryWriter.Write(dataBytes);  //end list
+
+            dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
+            Array.Reverse(dataBytes);
+            binaryWriter.Write(dataBytes);  //end path
+
+            dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0x8000));
+            Array.Reverse(dataBytes);
+            binaryWriter.Write(dataBytes);  //end path
+           
+            dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
+            Array.Reverse(dataBytes);
+            binaryWriter.Write(dataBytes);  //end flag
+
+
+
+            int localPad = PaddingLength - markerCount;
+            for (int currentMarker = 0; currentMarker < localPad; currentMarker++)
             {
-                MessageBox.Show("ERROR - MORE THAN 4 POP GROUPS");
+
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
+                Array.Reverse(dataBytes);
+                binaryWriter.Write(dataBytes);  //pad
+
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
+                Array.Reverse(dataBytes);
+                binaryWriter.Write(dataBytes);  //pad
+
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(0));
+                Array.Reverse(dataBytes);
+                binaryWriter.Write(dataBytes);  //pad
+
+                dataBytes = BitConverter.GetBytes(Convert.ToUInt16(0));
+                Array.Reverse(dataBytes);
+                binaryWriter.Write(dataBytes);  //pad
             }
+            
             byte[] popBytes = memoryStream.ToArray();
             return popBytes;
 
         }
+
+
     }
 }

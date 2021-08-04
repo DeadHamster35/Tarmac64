@@ -78,6 +78,11 @@
             this.button20 = new System.Windows.Forms.Button();
             this.texturedumpbox = new System.Windows.Forms.TextBox();
             this.texturedumpend = new System.Windows.Forms.TextBox();
+            this.button21 = new System.Windows.Forms.Button();
+            this.BitmapAddress = new System.Windows.Forms.TextBox();
+            this.PaletteAddress = new System.Windows.Forms.TextBox();
+            this.button22 = new System.Windows.Forms.Button();
+            this.button23 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -557,11 +562,60 @@
             this.texturedumpend.Size = new System.Drawing.Size(156, 20);
             this.texturedumpend.TabIndex = 63;
             // 
+            // button21
+            // 
+            this.button21.Location = new System.Drawing.Point(227, 417);
+            this.button21.Name = "button21";
+            this.button21.Size = new System.Drawing.Size(75, 23);
+            this.button21.TabIndex = 64;
+            this.button21.Text = "FBX Fault";
+            this.button21.UseVisualStyleBackColor = true;
+            this.button21.Click += new System.EventHandler(this.button21_Click);
+            // 
+            // BitmapAddress
+            // 
+            this.BitmapAddress.Location = new System.Drawing.Point(319, 420);
+            this.BitmapAddress.Name = "BitmapAddress";
+            this.BitmapAddress.Size = new System.Drawing.Size(156, 20);
+            this.BitmapAddress.TabIndex = 67;
+            // 
+            // PaletteAddress
+            // 
+            this.PaletteAddress.Location = new System.Drawing.Point(319, 394);
+            this.PaletteAddress.Name = "PaletteAddress";
+            this.PaletteAddress.Size = new System.Drawing.Size(156, 20);
+            this.PaletteAddress.TabIndex = 66;
+            // 
+            // button22
+            // 
+            this.button22.Location = new System.Drawing.Point(319, 365);
+            this.button22.Name = "button22";
+            this.button22.Size = new System.Drawing.Size(67, 23);
+            this.button22.TabIndex = 65;
+            this.button22.Text = "RGBA16";
+            this.button22.UseVisualStyleBackColor = true;
+            this.button22.Click += new System.EventHandler(this.button22_Click);
+            // 
+            // button23
+            // 
+            this.button23.Location = new System.Drawing.Point(408, 365);
+            this.button23.Name = "button23";
+            this.button23.Size = new System.Drawing.Size(67, 23);
+            this.button23.TabIndex = 68;
+            this.button23.Text = "CI8";
+            this.button23.UseVisualStyleBackColor = true;
+            this.button23.Click += new System.EventHandler(this.button23_Click);
+            // 
             // DebugTools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(713, 458);
+            this.Controls.Add(this.button23);
+            this.Controls.Add(this.BitmapAddress);
+            this.Controls.Add(this.PaletteAddress);
+            this.Controls.Add(this.button22);
+            this.Controls.Add(this.button21);
             this.Controls.Add(this.texturedumpend);
             this.Controls.Add(this.texturedumpbox);
             this.Controls.Add(this.button20);
@@ -645,5 +699,10 @@
         private System.Windows.Forms.Button button20;
         private System.Windows.Forms.TextBox texturedumpbox;
         private System.Windows.Forms.TextBox texturedumpend;
+        private System.Windows.Forms.Button button21;
+        private System.Windows.Forms.TextBox BitmapAddress;
+        private System.Windows.Forms.TextBox PaletteAddress;
+        private System.Windows.Forms.Button button22;
+        private System.Windows.Forms.Button button23;
     }
 }

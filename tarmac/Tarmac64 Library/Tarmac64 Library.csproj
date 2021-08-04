@@ -94,12 +94,50 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ObjectCompiler.cs">
+    <Compile Include="TMTKMK.cs" />
+    <Compile Include="Controls\CourseSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\CourseSettings.Designer.cs">
+      <DependentUpon>CourseSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TextureEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TextureEditor.Designer.cs">
+      <DependentUpon>TextureEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ObjectEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ObjectEditor.Designer.cs">
+      <DependentUpon>ObjectEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GLViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GLViewer.Designer.cs">
+      <DependentUpon>GLViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GameBuilder.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ObjectCompiler.Designer.cs">
-      <DependentUpon>ObjectCompiler.cs</DependentUpon>
+    <Compile Include="GameBuilder.Designer.cs">
+      <DependentUpon>GameBuilder.cs</DependentUpon>
     </Compile>
+    <Compile Include="ObjectTypeCompiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ObjectTypeCompiler.Designer.cs">
+      <DependentUpon>ObjectTypeCompiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SongExtractor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SongExtractor.Designer.cs">
+      <DependentUpon>SongExtractor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TM64_Sound.cs" />
     <Compile Include="TarmacAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -149,11 +187,26 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\CourseSettings.resx">
+      <DependentUpon>CourseSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TextureEditor.resx">
+      <DependentUpon>TextureEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ObjectEditor.resx">
+      <DependentUpon>ObjectEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\GLViewer.resx">
+      <DependentUpon>GLViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CourseJR.resx">
       <DependentUpon>CourseJR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ObjectCompiler.resx">
-      <DependentUpon>ObjectCompiler.cs</DependentUpon>
+    <EmbeddedResource Include="GameBuilder.resx">
+      <DependentUpon>GameBuilder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ObjectTypeCompiler.resx">
+      <DependentUpon>ObjectTypeCompiler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ModelCompiler.resx">
       <DependentUpon>ModelCompiler.cs</DependentUpon>
@@ -165,6 +218,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SongExtractor.resx">
+      <DependentUpon>SongExtractor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TarmacAbout.resx">
       <DependentUpon>TarmacAbout.cs</DependentUpon>
@@ -186,6 +242,10 @@
     <None Include="Resources\Tree1.bmp" />
     <None Include="Resources\Tree1.png" />
     <None Include="Resources\TextLogo.png" />
+    <None Include="Resources\controls.png" />
+    <Content Include="controls.png" />
+    <None Include="Resources\controls1.png" />
+    <None Include="Resources\controls2.png" />
     <Content Include="SharpGL.ico" />
     <Content Include="SharpGL.png" />
     <Content Include="Tree1.png" />

@@ -52,21 +52,58 @@ namespace Tarmac64_Library
         {
             CourseCompiler f2 = new CourseCompiler();
             
-            f2.Show();
+            f2.ShowDialog();
         }
 
       
         private void modelCompilerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Tarmac64_Library.ModelCompiler f2 = new Tarmac64_Library.ModelCompiler();
-            f2.Show();
+            f2.ShowDialog();
         }
 
         private void textureCompilerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Tarmac64_Library.TextureCompiler f2 = new Tarmac64_Library.TextureCompiler();
-            f2.Show();
+            f2.ShowDialog();
         }
 
+        private void resetFoldersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TM64 Tarmac = new TM64();
+
+            string message = "Reset your Tarmac Folders?";
+            string caption = "Settings Dialog";
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+            DialogResult result;
+            if (MessageBox.Show(message, caption, buttons) == System.Windows.Forms.DialogResult.Yes)
+            {
+                Tarmac.LoadSettings(true);
+            }
+            
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Tarmac64_Library.SongExtractor f2 = new Tarmac64_Library.SongExtractor();
+            f2.ShowDialog();
+        }
+
+        private void courseLoaderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Tarmac64_Library.GameBuilder f2 = new Tarmac64_Library.GameBuilder();
+            f2.ShowDialog();
+        }
+
+        private void extractSongToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void objectTypeCompilerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Tarmac64_Library.ObjectTypeCompiler f2 = new ObjectTypeCompiler();
+            f2.ShowDialog();
+        }
     }
 }
