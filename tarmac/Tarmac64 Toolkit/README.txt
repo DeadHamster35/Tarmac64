@@ -1,1 +1,0 @@
-These files will help with Level Creation and should be included with the download of the compiled file. 

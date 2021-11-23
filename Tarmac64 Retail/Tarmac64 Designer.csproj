@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5D094EE2-1FD1-4E91-8719-1EF35BDD5BAD}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>OverKart64_Retail</RootNamespace>
+    <AssemblyName>Tarmac64 Designer</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\Retail\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\Tarmac64 Developer\Tarmac64.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\Retail\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\OverKart\Tarmac64.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>kart64_tTF_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Tarmac64_Retail.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
+      <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
+    </Reference>
+    <Reference Include="AssimpSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\modified assimp\AssimpSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="AssimpSharp.FBX, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\modified assimp\AssimpSharp.FBX.dll</HintPath>
+    </Reference>
+    <Reference Include="Cereal64.Common">
+      <HintPath>..\cereal64\Cereal64.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Cereal64.Microcodes">
+      <HintPath>..\cereal64\Cereal64.Microcodes.dll</HintPath>
+    </Reference>
+    <Reference Include="F3DSharp">
+      <HintPath>..\..\..\F3DSharp\F3DSharp\bin\Release\F3DSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="SharpDX, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\modified assimp\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\modified assimp\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpGL.2.4.1.2\lib\net40-client\SharpGL.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL.SceneGraph, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpGL.SceneGraph.2.4.1.2\lib\net40\SharpGL.SceneGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL.WinForms, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpGL.WinForms.2.4.1.2\lib\net40\SharpGL.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Windows\CourseCompiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\CourseCompiler.Designer.cs">
+      <DependentUpon>CourseCompiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\GameBuilder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\GameBuilder.Designer.cs">
+      <DependentUpon>GameBuilder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ModelCompiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\ModelCompiler.Designer.cs">
+      <DependentUpon>ModelCompiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ObjectTypeCompiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\ObjectTypeCompiler.Designer.cs">
+      <DependentUpon>ObjectTypeCompiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controls\CourseSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\CourseSettings.Designer.cs">
+      <DependentUpon>CourseSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GLViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GLViewer.Designer.cs">
+      <DependentUpon>GLViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ObjectEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ObjectEditor.Designer.cs">
+      <DependentUpon>ObjectEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TextureEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TextureEditor.Designer.cs">
+      <DependentUpon>TextureEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\SongExtractor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\SongExtractor.Designer.cs">
+      <DependentUpon>SongExtractor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Main.Designer.cs">
+      <DependentUpon>Main.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\TextureCompiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TextureCompiler.Designer.cs">
+      <DependentUpon>TextureCompiler.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Windows\CourseCompiler.resx">
+      <DependentUpon>CourseCompiler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\GameBuilder.resx">
+      <DependentUpon>GameBuilder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\ModelCompiler.resx">
+      <DependentUpon>ModelCompiler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\ObjectTypeCompiler.resx">
+      <DependentUpon>ObjectTypeCompiler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Controls\CourseSettings.resx">
+      <DependentUpon>CourseSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\GLViewer.resx">
+      <DependentUpon>GLViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ObjectEditor.resx">
+      <DependentUpon>ObjectEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TextureEditor.resx">
+      <DependentUpon>TextureEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\SongExtractor.resx">
+      <DependentUpon>SongExtractor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TextureCompiler.resx">
+      <DependentUpon>TextureCompiler.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Resources\NONE_475.FBX" />
+    <None Include="Resources\popResources.bin" />
+    <None Include="Resources\ZONE.FBX" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ok641.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\overkart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\kart64_tTF_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ok64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\overkarttext.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="kart64_tTF_icon.ico" />
+    <None Include="Resources\Tree1.png" />
+    <None Include="Resources\Tree1.bmp" />
+    <None Include="Resources\TextLogo.png" />
+    <None Include="Resources\controls2.png" />
+    <None Include="Resources\controls1.png" />
+    <None Include="Resources\controls.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tarmac64 Library\Tarmac64 Library.csproj">
+      <Project>{bd044bbd-727b-40ac-b6ba-087e81864333}</Project>
+      <Name>Tarmac64 Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <MoveToLibFolder Include="$(OutputPath)*.dll ; $(OutputPath)*.pdb ; $(OutputPath)*.xml" />
+    </ItemGroup>
+    <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)lib" OverwriteReadOnlyFiles="true" />
+  </Target>
+  <Import Project="..\packages\AssimpNet.4.1.0\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.4.1.0\build\AssimpNet.targets'))" />
+  </Target>
+</Project>
