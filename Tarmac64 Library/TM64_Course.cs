@@ -67,6 +67,8 @@ namespace Tarmac64_Library
             public int XLUPosition { get; set; }
             public int ModelCount { get; set; }
             public int XLUCount { get; set; }
+            public byte GravityToggle { get; set; }
+            public byte CameraAlligned { get; set; }
             public OKPathfinding[] PathfindingData { get; set; }
             public string Name { get; set; }
             
@@ -351,6 +353,8 @@ namespace Tarmac64_Library
             NewType.SoundType = binaryReader.ReadInt16();
             NewType.Hitbox = binaryReader.ReadInt16();
             NewType.RenderRadius = binaryReader.ReadInt16();
+            NewType.GravityToggle = binaryReader.ReadByte();
+            NewType.CameraAlligned = binaryReader.ReadByte();
 
 
             int TextureCount = binaryReader.ReadInt32();
@@ -500,6 +504,8 @@ namespace Tarmac64_Library
             binaryWriter.Write(SaveData.SoundType);
             binaryWriter.Write(SaveData.Hitbox);
             binaryWriter.Write(SaveData.RenderRadius);
+            binaryWriter.Write(SaveData.GravityToggle);
+            binaryWriter.Write(SaveData.CameraAlligned);
 
             binaryWriter.Write(TarmacGeometry.WriteTextureObjects(SaveData.TextureData));
             binaryWriter.Write(TarmacGeometry.WriteMasterObjects(SaveData.ModelData));
@@ -870,12 +876,12 @@ namespace Tarmac64_Library
                 flip = BitConverter.GetBytes(Convert.ToInt16(SaveData[ThisType].SoundType));//
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
-                flip = BitConverter.GetBytes(Convert.ToInt16(SaveData[ThisType].ModelCount));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-                flip = BitConverter.GetBytes(Convert.ToInt16(SaveData[ThisType].XLUCount));//
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
+                //
+                binaryWriter.Write(Convert.ToByte(SaveData[ThisType].ModelCount));
+                binaryWriter.Write(Convert.ToByte(SaveData[ThisType].XLUCount));
+                binaryWriter.Write(Convert.ToByte(SaveData[ThisType].GravityToggle));
+                binaryWriter.Write(Convert.ToByte(SaveData[ThisType].CameraAlligned));
+
                 flip = BitConverter.GetBytes(SaveData[ThisType].SoundID);//
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);

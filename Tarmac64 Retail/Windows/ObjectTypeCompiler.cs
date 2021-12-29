@@ -15,8 +15,17 @@ namespace Tarmac64_Retail
 {
     public partial class ObjectTypeCompiler : Form
     {
-        string[] BehaviorNames = new string[] { "DEAD", "EXIST", "FLOAT", "PATH", "WANDER", "SEARCH", "BOUNCE" };
-        int[] BehaviorValues = new int[] { -1, 0, 1, 2, 3, 4 };
+        string[] BehaviorNames = new string[] { "DEAD", "EXIST", "FLOAT", "PATH", "WANDER", "SEARCH", "BOUNCE", "BEHAVIOR 7", "BEHAVIOR 8", "BEHAVIOR 9", 
+            "BEHAVIOR 10", "BEHAVIOR 11", "BEHAVIOR 12", "BEHAVIOR 13", "BEHAVIOR 14", "BEHAVIOR 15", "BEHAVIOR 16", "BEHAVIOR 17", "BEHAVIOR 18", "BEHAVIOR 19", 
+            "BEHAVIOR 20", "BEHAVIOR 21", "BEHAVIOR 22", "BEHAVIOR 23", "BEHAVIOR 24", "BEHAVIOR 25", "BEHAVIOR 26", "BEHAVIOR 27", "BEHAVIOR 28", "BEHAVIOR 29",
+            "BEHAVIOR 30", "BEHAVIOR 31", "BEHAVIOR 32", "BEHAVIOR 33", "BEHAVIOR 34", "BEHAVIOR 35", "BEHAVIOR 36", "BEHAVIOR 37", "BEHAVIOR 38", "BEHAVIOR 39",
+            "BEHAVIOR 40", "BEHAVIOR 41", "BEHAVIOR 42", "BEHAVIOR 43", "BEHAVIOR 44", "BEHAVIOR 45", "BEHAVIOR 46", "BEHAVIOR 47", "BEHAVIOR 48", "BEHAVIOR 49",
+            "BEHAVIOR 50", "BEHAVIOR 51", "BEHAVIOR 52", "BEHAVIOR 53", "BEHAVIOR 54", "BEHAVIOR 55", "BEHAVIOR 56", "BEHAVIOR 57", "BEHAVIOR 58", "BEHAVIOR 59",
+            "BEHAVIOR 60", "BEHAVIOR 61", "BEHAVIOR 62", "BEHAVIOR 63", "BEHAVIOR 64", "BEHAVIOR 65", "BEHAVIOR 66", "BEHAVIOR 67", "BEHAVIOR 68", "BEHAVIOR 69",
+            "BEHAVIOR 70", "BEHAVIOR 71", "BEHAVIOR 72", "BEHAVIOR 73", "BEHAVIOR 74", "BEHAVIOR 75", "BEHAVIOR 76", "BEHAVIOR 77", "BEHAVIOR 78", "BEHAVIOR 79",
+            "BEHAVIOR 80", "BEHAVIOR 81", "BEHAVIOR 82", "BEHAVIOR 83", "BEHAVIOR 84", "BEHAVIOR 85", "BEHAVIOR 86", "BEHAVIOR 87", "BEHAVIOR 88", "BEHAVIOR 89",
+            "BEHAVIOR 90", "BEHAVIOR 91", "BEHAVIOR 92", "BEHAVIOR 93", "BEHAVIOR 94", "BEHAVIOR 95", "BEHAVIOR 96", "BEHAVIOR 97", "BEHAVIOR 98", "BEHAVIOR 99",
+        };
         string[] StatusNames = new string[] { "None", "MapObjectHit", "LightningHit", "BooTranslucent", "BecomeBombOn", "BecomeBombOff", "FlattenedOn", "FlattenedOff", "MushroomBoost", "SpinOutSaveable", "SpinOut", "GreenShellHit", "RedShellHit", "Bonk", "StarOn", "GhostOn", "StarOff", "GhostOff" };
         int[] StatusValues = new int[] { -1, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
         string[] EffectNames = new string[] { "None", "StateAnimMusicNote", "StateAnimCrash", "StateAnimPoomp", "StateAnimBoing", "StateAnimExplosion", "StateAnimBonkStars", "StateAnimLandingDust" };
@@ -107,7 +116,7 @@ namespace Tarmac64_Retail
 
 
                 NewType.ModelScale = Convert.ToSingle(ScaleBox.Text);
-                NewType.BehaviorClass = Convert.ToInt16(BehaviorValues[BehaviorBox.SelectedIndex]);
+                NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex -1);
                 NewType.StatusClass = Convert.ToInt16(StatusValues[StatusBox.SelectedIndex]);
                 NewType.EffectClass = Convert.ToInt16(EffectValues[EffectBox.SelectedIndex]);
                 NewType.Range = Convert.ToInt16(RangeBox.Text);
@@ -120,6 +129,22 @@ namespace Tarmac64_Retail
                 NewType.SoundType = Convert.ToInt16(SoundTypeBox.SelectedIndex);
                 NewType.RenderRadius = Convert.ToInt16(RenderBox.Text);
                 NewType.Hitbox = Convert.ToInt16(Convert.ToInt16(HitBox.Text) * 100);
+                if (GravityBox.Checked)
+                {
+                    NewType.GravityToggle = 1;
+                }
+                else 
+                {
+                    NewType.GravityToggle = 0;
+                }
+                if (CameraAlignBox.Checked)
+                {
+                    NewType.CameraAlligned = 1;
+                }
+                else
+                {
+                    NewType.CameraAlligned = 0;
+                }
 
                 File.WriteAllBytes(FileSave.FileName, Tarmac.CompressMIO0(TarmacCourse.SaveObjectType(NewType)));
 
@@ -175,6 +200,14 @@ namespace Tarmac64_Retail
 
         private void BehaviorBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (BehaviorBox.SelectedIndex == 3)
+            {
+                RangeLabel.Text = "Path";
+            }
+            else
+            {
+                RangeLabel.Text = "Range";
+            }
 
         }
 

@@ -116,6 +116,28 @@ namespace Tarmac64_Retail
             OKObjectTypeList.Add(NewItem);
             ObjectIndexBox.Items.Add(NewItem.Name);
             ObjectIndexBox.SelectedIndex = 0;
+
+            NewItem = new TM64_Course.OKObjectType();
+            NewItem.Name = "Battle Spawn";
+            NewItem.ModelData = new TM64_Geometry.OK64F3DObject[1];
+            NewItem.ModelData[0] = new TM64_Geometry.OK64F3DObject();
+            NewItem.ModelData[0].modelGeometry = TarmacGeometry.CreateStandard(4.0f);
+            NewItem.ModelData[0].objectColor = new float[] { 1.0f, 0f, 0.75f };
+            NewItem.ModelScale = 1.0f;
+            OKObjectTypeList.Add(NewItem);
+            ObjectIndexBox.Items.Add(NewItem.Name);
+            ObjectIndexBox.SelectedIndex = 0;
+
+            NewItem = new TM64_Course.OKObjectType();
+            NewItem.Name = "Battle Objective";
+            NewItem.ModelData = new TM64_Geometry.OK64F3DObject[1];
+            NewItem.ModelData[0] = new TM64_Geometry.OK64F3DObject();
+            NewItem.ModelData[0].modelGeometry = TarmacGeometry.CreateStandard(4.0f);
+            NewItem.ModelData[0].objectColor = new float[] { 0f, 1.0f, 0.75f };
+            NewItem.ModelScale = 1.0f;
+            OKObjectTypeList.Add(NewItem);
+            ObjectIndexBox.Items.Add(NewItem.Name);
+            ObjectIndexBox.SelectedIndex = 0;
         }
         public void UpdateObjectUI()
         {
@@ -219,8 +241,8 @@ namespace Tarmac64_Retail
         {
             List<string> Output = new List<string>();
 
-            Output.Add((OKObjectTypeList.Count - 4).ToString());
-            for (int This = 4; This < OKObjectTypeList.Count; This++)
+            Output.Add((OKObjectTypeList.Count - 6).ToString());
+            for (int This = 6; This < OKObjectTypeList.Count; This++)
             {
                 Output.Add(OKObjectTypeList[This].Path);
             }

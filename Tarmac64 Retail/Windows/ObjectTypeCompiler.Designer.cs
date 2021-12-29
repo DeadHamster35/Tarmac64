@@ -28,13 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ObjectTypeCompiler));
             this.LoadBtn = new System.Windows.Forms.Button();
             this.ModelBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.NameBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.RangeLabel = new System.Windows.Forms.Label();
             this.RangeBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.SightBox = new System.Windows.Forms.TextBox();
@@ -76,8 +75,12 @@
             this.WalkBox = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.TextureControl = new Tarmac64_Retail.TextureEditor();
+            this.GravityBox = new System.Windows.Forms.CheckBox();
+            this.CameraAlignBox = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // LoadBtn
@@ -128,14 +131,14 @@
             this.label2.Text = "Name";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label3
+            // RangeLabel
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(74, 345);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(39, 13);
-            this.label3.TabIndex = 209;
-            this.label3.Text = "Range";
+            this.RangeLabel.AutoSize = true;
+            this.RangeLabel.Location = new System.Drawing.Point(74, 345);
+            this.RangeLabel.Name = "RangeLabel";
+            this.RangeLabel.Size = new System.Drawing.Size(39, 13);
+            this.RangeLabel.TabIndex = 209;
+            this.RangeLabel.Text = "Range";
             // 
             // RangeBox
             // 
@@ -227,7 +230,7 @@
             // 
             // BuildBtn
             // 
-            this.BuildBtn.Location = new System.Drawing.Point(12, 502);
+            this.BuildBtn.Location = new System.Drawing.Point(149, 574);
             this.BuildBtn.Name = "BuildBtn";
             this.BuildBtn.Size = new System.Drawing.Size(85, 26);
             this.BuildBtn.TabIndex = 218;
@@ -425,6 +428,7 @@
             this.groupBox1.Controls.Add(this.label17);
             this.groupBox1.Controls.Add(this.WalkBox);
             this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Enabled = false;
             this.groupBox1.Location = new System.Drawing.Point(14, 86);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(220, 137);
@@ -538,11 +542,46 @@
             this.TextureControl.Size = new System.Drawing.Size(292, 780);
             this.TextureControl.TabIndex = 227;
             // 
+            // GravityBox
+            // 
+            this.GravityBox.AutoSize = true;
+            this.GravityBox.Location = new System.Drawing.Point(8, 23);
+            this.GravityBox.Margin = new System.Windows.Forms.Padding(5);
+            this.GravityBox.Name = "GravityBox";
+            this.GravityBox.Size = new System.Drawing.Size(101, 17);
+            this.GravityBox.TabIndex = 254;
+            this.GravityBox.Text = "Gravity Enabled";
+            this.GravityBox.UseVisualStyleBackColor = true;
+            // 
+            // CameraAlignBox
+            // 
+            this.CameraAlignBox.AutoSize = true;
+            this.CameraAlignBox.Location = new System.Drawing.Point(8, 50);
+            this.CameraAlignBox.Margin = new System.Windows.Forms.Padding(5);
+            this.CameraAlignBox.Name = "CameraAlignBox";
+            this.CameraAlignBox.Size = new System.Drawing.Size(97, 17);
+            this.CameraAlignBox.TabIndex = 255;
+            this.CameraAlignBox.Text = "Camera Facing";
+            this.CameraAlignBox.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.GravityBox);
+            this.groupBox2.Controls.Add(this.CameraAlignBox);
+            this.groupBox2.Enabled = false;
+            this.groupBox2.Location = new System.Drawing.Point(14, 489);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(220, 79);
+            this.groupBox2.TabIndex = 254;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Options";
+            // 
             // ObjectTypeCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(559, 612);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label16);
@@ -572,14 +611,13 @@
             this.Controls.Add(this.Viewconebox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.SightBox);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.RangeLabel);
             this.Controls.Add(this.RangeBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.NameBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.LoadBtn);
             this.Controls.Add(this.ModelBox);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(575, 650);
             this.MinimumSize = new System.Drawing.Size(575, 650);
@@ -589,6 +627,8 @@
             this.panel1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -601,7 +641,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox NameBox;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label RangeLabel;
         private System.Windows.Forms.TextBox RangeBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox SightBox;
@@ -630,7 +670,6 @@
         private System.Windows.Forms.TextBox HitBox;
         private System.Windows.Forms.TextBox RenderBox;
         private System.Windows.Forms.Label label16;
-        private TextureEditor TextureControl;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label20;
@@ -643,5 +682,9 @@
         private System.Windows.Forms.TextBox WalkBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox AToggleBox;
+        private TextureEditor TextureControl;
+        private System.Windows.Forms.CheckBox GravityBox;
+        private System.Windows.Forms.CheckBox CameraAlignBox;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }

@@ -161,6 +161,7 @@ namespace Tarmac64_Library
             byte[] HeaderData = new byte[0];
             string asmText = "";
             string hText = "";
+            string cText = "";
             string filename = "";
 
             int SegmentID = Convert.ToInt32(SegmentBox.SelectedIndex);
@@ -180,8 +181,8 @@ namespace Tarmac64_Library
                 HeaderData = TarmacGeo.compileF3DHeader(SegmentPosition, HeaderData);
 
                 asmText += ".definelabel " + MasterObjects[currentItem][0].objectName + ", 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
-                hText += "extern long " + MasterObjects[currentItem][0].objectName + "; //0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
-
+                hText += "extern const int " + MasterObjects[currentItem][0].objectName + "; //0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
+                cText += "const int " + MasterObjects[currentItem][0].objectName + "= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0')+";"+ Environment.NewLine;
                 OutputData = TarmacGeo.compileObjectList(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], SegmentID);
 
 
@@ -205,6 +206,7 @@ namespace Tarmac64_Library
                 File.WriteAllBytes(Path.Combine(savePath, fileName + ".raw"), FinalData);                
                 File.WriteAllText(Path.Combine(savePath, fileName + ".asm"), asmText);
                 File.WriteAllText(Path.Combine(savePath, fileName + ".h"), hText);
+                File.WriteAllText(Path.Combine(savePath, fileName + ".c"), cText);
             }
         }
 

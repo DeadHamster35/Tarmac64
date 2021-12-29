@@ -414,17 +414,93 @@ namespace Tarmac64_Library
             {
                 int garbage = 0;
 
-                PathListData = tm64Path.popMarker(pathGroups[0].pathList[0], 0);
+                //
 
-                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + PathListData.Length);
+
+
+                //items trees and piranhas
+                int ObjectCount = 0;
+                TM64_Paths.Pathlist[] ThisList = new TM64_Paths.Pathlist[3];
+
+                ThisList[0] = new TM64_Paths.Pathlist();
+                ThisList[0].pathmarker = new List<TM64_Paths.Marker>();
+                for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
+                {
+                    if (OKObjectList[ThisObject].ObjectIndex == 0)
+                    {
+                        TM64_Paths.Marker ThisSpot = new TM64_Paths.Marker();
+                        ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
+                        ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
+                        ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
+                        ThisList[0].pathmarker.Add(ThisSpot);
+                        if (ThisList[0].pathmarker.Count > 63)
+                        {
+                            MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[0].Name + " Too many objects! Max count 64");
+                            return;
+                        }
+                    }
+                }
+                ObjectCount += ThisList[0].pathmarker.Count;
+
+                ThisList[1] = new TM64_Paths.Pathlist();
+                ThisList[1].pathmarker = new List<TM64_Paths.Marker>();
+                for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
+                {
+                    if (OKObjectList[ThisObject].ObjectIndex == 4)
+                    {
+                        TM64_Paths.Marker ThisSpot = new TM64_Paths.Marker();
+                        ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
+                        ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
+                        ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
+                        ThisList[1].pathmarker.Add(ThisSpot);
+                        if (ThisList[1].pathmarker.Count > 4)
+                        {
+                            MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[4].Name + " Too many objects! Max count 4");
+                            return;
+                        }
+                    }
+                }
+                ThisList[2] = new TM64_Paths.Pathlist();
+                ThisList[2].pathmarker = new List<TM64_Paths.Marker>();
+                for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
+                {
+                    if (OKObjectList[ThisObject].ObjectIndex == 5)
+                    {
+                        TM64_Paths.Marker ThisSpot = new TM64_Paths.Marker();
+                        ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
+                        ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
+                        ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
+                        ThisList[2].pathmarker.Add(ThisSpot);
+                        if (ThisList[2].pathmarker.Count > 64)
+                        {
+                            MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[5].Name + " Too many objects! Max count 64");
+                            return;
+                        }
+                    }
+                }
+                courseData.PathOffsets = new UInt32[4] { 0x800DC778, 0x800DC778, 0x800DC778, 0x800DC778 };
+
+                MemoryStream ListStream = new MemoryStream();
+
+                byte[] ThisData = tm64Path.popMarker(ThisList[1], 4);
+                ListStream.Write(ThisData, 0, ThisData.Length);
+
+                ThisData = tm64Path.popMarker(ThisList[2], 64);
+                ListStream.Write(ThisData, 0, ThisData.Length);
+
+                ThisData = tm64Path.popMarker(ThisList[0], 64);
+                ListStream.Write(ThisData, 0, ThisData.Length);
+
+                ListData = ListStream.ToArray();
+
+
+                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + + ListData.Length);
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
 
                 renderList = TarmacGeometry.CompileBattleList(masterObjects, textureArray);
                 XLUList = TarmacGeometry.CompileBattleXLU(masterObjects, textureArray);
                 surfaceTable = TarmacGeometry.compilesurfaceTable(surfaceObjects);
-
-
 
 
                 bs = new MemoryStream();
@@ -436,7 +512,7 @@ namespace Tarmac64_Library
                 byteArray = BitConverter.GetBytes(0x00000000);
                 Array.Reverse(byteArray);
                 bw.Write(byteArray);
-                bw.Write(PathListData);
+                bw.Write(ListData);
 
                 bw.Write(textureList);
                 courseData.OK64HeaderData.SectionViewPosition = Convert.ToInt32(bw.BaseStream.Position);
@@ -466,14 +542,14 @@ namespace Tarmac64_Library
 
             
             List<TM64_Course.OKObjectType> TypeList = new List<TM64_Course.OKObjectType>();
-            for (int This = 4; This < OKObjectTypeList.Count; This++)
+            for (int This = 6; This < OKObjectTypeList.Count; This++)
             {
                 TypeList.Add(OKObjectTypeList[This]);
             }
             List<TM64_Course.OKObject> CustomObjectList = new List<TM64_Course.OKObject>();
             for (int This = 0; This < OKObjectList.Count; This++)
             {
-                if (OKObjectList[This].ObjectIndex >= 4)
+                if (OKObjectList[This].ObjectIndex >= 6)
                 {
                     CustomObjectList.Add(OKObjectList[This]);
                 }
@@ -808,59 +884,70 @@ namespace Tarmac64_Library
                     if (levelFormat == 0)
                     {
                         pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);
-                        foreach (var ItemBox in pathGroups[1].pathList[0].pathmarker)
+                        if (pathGroups[1].pathList.Length != 0)
                         {
-                            TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+                            foreach (var ItemBox in pathGroups[1].pathList[0].pathmarker)
+                            {
+                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
 
-                            NewObject.ObjectIndex = 0;
-                            NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
-                            NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
-                            NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
+                                NewObject.ObjectIndex = 0;
+                                NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
+                                NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
+                                NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
 
-                            OKObjectList.Add(NewObject);
-                            int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-                            
+                                OKObjectList.Add(NewObject);
+                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+
+                            }
                         }
-                        foreach (var Tree in pathGroups[2].pathList[0].pathmarker)
+                        if (pathGroups[2].pathList.Length != 0)
                         {
-                            TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+                            foreach (var Tree in pathGroups[2].pathList[0].pathmarker)
+                            {
+                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
 
-                            NewObject.ObjectIndex = 1;
-                            NewObject.OriginPosition[0] = Convert.ToInt16(Tree.xval);
-                            NewObject.OriginPosition[1] = Convert.ToInt16(Tree.yval);
-                            NewObject.OriginPosition[2] = Convert.ToInt16(Tree.zval);
+                                NewObject.ObjectIndex = 1;
+                                NewObject.OriginPosition[0] = Convert.ToInt16(Tree.xval);
+                                NewObject.OriginPosition[1] = Convert.ToInt16(Tree.yval);
+                                NewObject.OriginPosition[2] = Convert.ToInt16(Tree.zval);
 
-                            OKObjectList.Add(NewObject);
-                            int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " "+ ObjectControl.ObjectListBox.Items.Count.ToString());
+                                OKObjectList.Add(NewObject);
+                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
+                            }
                         }
-                        foreach (var Plant in pathGroups[3].pathList[0].pathmarker)
+                        if (pathGroups[3].pathList.Length != 0)
                         {
-                            TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+                            foreach (var Plant in pathGroups[3].pathList[0].pathmarker)
+                            {
+                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
 
-                            NewObject.ObjectIndex = 2;
-                            NewObject.OriginPosition[0] = Convert.ToInt16(Plant.xval);
-                            NewObject.OriginPosition[1] = Convert.ToInt16(Plant.yval);
-                            NewObject.OriginPosition[2] = Convert.ToInt16(Plant.zval);
+                                NewObject.ObjectIndex = 2;
+                                NewObject.OriginPosition[0] = Convert.ToInt16(Plant.xval);
+                                NewObject.OriginPosition[1] = Convert.ToInt16(Plant.yval);
+                                NewObject.OriginPosition[2] = Convert.ToInt16(Plant.zval);
 
-                            OKObjectList.Add(NewObject);
-                            int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                OKObjectList.Add(NewObject);
+                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
+                            }
                         }
-                        foreach (var Coin in pathGroups[4].pathList[0].pathmarker)
+                        if (pathGroups[4].pathList.Length != 0)
                         {
-                            TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+                            foreach (var Coin in pathGroups[4].pathList[0].pathmarker)
+                            {
+                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
 
-                            NewObject.ObjectIndex = 3;
-                            NewObject.OriginPosition[0] = Convert.ToInt16(Coin.xval);
-                            NewObject.OriginPosition[1] = Convert.ToInt16(Coin.yval);
-                            NewObject.OriginPosition[2] = Convert.ToInt16(Coin.zval);
+                                NewObject.ObjectIndex = 3;
+                                NewObject.OriginPosition[0] = Convert.ToInt16(Coin.xval);
+                                NewObject.OriginPosition[1] = Convert.ToInt16(Coin.yval);
+                                NewObject.OriginPosition[2] = Convert.ToInt16(Coin.zval);
 
-                            OKObjectList.Add(NewObject);
-                            int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                OKObjectList.Add(NewObject);
+                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
+                            }
                         }
-
 
 
 
@@ -868,6 +955,23 @@ namespace Tarmac64_Library
                     else
                     {
                         pathGroups = tm64Path.loadBattlePOP(popFile);
+
+                        if (pathGroups[0].pathList.Length != 0)
+                        {
+                            foreach (var ItemBox in pathGroups[0].pathList[0].pathmarker)
+                            {
+                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+
+                                NewObject.ObjectIndex = 0;
+                                NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
+                                NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
+                                NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
+
+                                OKObjectList.Add(NewObject);
+                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+
+                            }
+                        }
                     }
                 }
                 UpdateGLView();
@@ -1364,7 +1468,10 @@ namespace Tarmac64_Library
                 }
                 GLControl.UpdateDraw = true;
                 GLControl.TextureObjects = textureArray;
-                GLControl.PathMarker = pathGroups[0].pathList;
+                if (levelFormat == 0)
+                {
+                    GLControl.PathMarker = pathGroups[0].pathList;
+                }
             }
         }
 
