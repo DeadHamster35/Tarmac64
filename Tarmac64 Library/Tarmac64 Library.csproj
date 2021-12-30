@@ -106,12 +106,6 @@
     <Compile Include="TMTKMK.cs" />
     <Compile Include="TM64_Sound.cs" />
     <Compile Include="TM64_GL.cs" />
-    <Compile Include="CourseJR.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CourseJR.Designer.cs">
-      <DependentUpon>CourseJR.cs</DependentUpon>
-    </Compile>
     <Compile Include="TM64.cs" />
     <Compile Include="TM64_Course.cs" />
     <Compile Include="TM64_Paths.cs" />
@@ -125,9 +119,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CourseJR.resx">
-      <DependentUpon>CourseJR.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>

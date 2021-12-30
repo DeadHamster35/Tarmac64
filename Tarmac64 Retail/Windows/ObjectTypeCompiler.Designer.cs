@@ -63,6 +63,7 @@
             this.RenderBox = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.AToggleBox = new System.Windows.Forms.CheckBox();
             this.label20 = new System.Windows.Forms.Label();
@@ -74,7 +75,6 @@
             this.label17 = new System.Windows.Forms.Label();
             this.WalkBox = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.GravityBox = new System.Windows.Forms.CheckBox();
             this.CameraAlignBox = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -416,6 +416,14 @@
             this.panel1.Size = new System.Drawing.Size(314, 588);
             this.panel1.TabIndex = 239;
             // 
+            // TextureControl
+            // 
+            this.TextureControl.AutoScroll = true;
+            this.TextureControl.Location = new System.Drawing.Point(3, 3);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(292, 780);
+            this.TextureControl.TabIndex = 227;
+            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.AToggleBox);
@@ -428,7 +436,6 @@
             this.groupBox1.Controls.Add(this.label17);
             this.groupBox1.Controls.Add(this.WalkBox);
             this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Enabled = false;
             this.groupBox1.Location = new System.Drawing.Point(14, 86);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(220, 137);
@@ -534,14 +541,6 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // TextureControl
-            // 
-            this.TextureControl.AutoScroll = true;
-            this.TextureControl.Location = new System.Drawing.Point(3, 3);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(292, 780);
-            this.TextureControl.TabIndex = 227;
-            // 
             // GravityBox
             // 
             this.GravityBox.AutoSize = true;
@@ -568,7 +567,6 @@
             // 
             this.groupBox2.Controls.Add(this.GravityBox);
             this.groupBox2.Controls.Add(this.CameraAlignBox);
-            this.groupBox2.Enabled = false;
             this.groupBox2.Location = new System.Drawing.Point(14, 489);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(220, 79);

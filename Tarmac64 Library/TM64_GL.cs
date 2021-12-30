@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Assimp;
 using SharpGL;
 using SharpGL.SceneGraph.Assets;
 using Tarmac64_Library;
+using System.Windows.Media.Media3D;
+using Assimp;
 
 namespace Tarmac64_Library
 {
@@ -18,10 +19,10 @@ namespace Tarmac64_Library
 
         public class TMCamera
         {
-            public Vector3D position { get; set; }
+            public Assimp.Vector3D position { get; set; }
             public float TargetHeight { get; set; }
-            public Vector3D target { get; set; }
-            public Vector3D marker { get; set; }
+            public Assimp.Vector3D target { get; set; }
+            public Assimp.Vector3D marker { get; set; }
             public double rotation { get; set; }
             public float[] flashRed { get; set; }
             public float[] flashWhite { get; set; }
@@ -110,6 +111,14 @@ namespace Tarmac64_Library
             return outputColor;
         }
 
+        public Point3D RotatePoint(Point3D Point, float[] ObjectAngles)
+        {
+            var id = Matrix3D.Identity;
+            id.Rotate(new System.Windows.Media.Media3D.Quaternion(new System.Windows.Media.Media3D.Vector3D(1, 0, 0), ObjectAngles[0]));
+            id.Rotate(new System.Windows.Media.Media3D.Quaternion(new System.Windows.Media.Media3D.Vector3D(0, 1, 0), ObjectAngles[1]));
+            id.Rotate(new System.Windows.Media.Media3D.Quaternion(new System.Windows.Media.Media3D.Vector3D(0, 0, 1), ObjectAngles[2]));
+            return id.Transform(Point);
+        }
 
         private void DrawFace(OpenGL gl, TM64_Geometry.Face subFace, int[] Zone)
         {
@@ -129,7 +138,7 @@ namespace Tarmac64_Library
             gl.Begin(OpenGL.GL_TRIANGLES);
 
             
-            float[] targetPosition = new float[3] { LocalCamera.target.X, LocalCamera.target.Y, LocalCamera.target.Z + 60 };
+            float[] targetPosition = new float[3] { Convert.ToSingle(LocalCamera.target.X), Convert.ToSingle(LocalCamera.target.Y), Convert.ToSingle(LocalCamera.target.Z + 60) };
 
             gl.Color(1.0f, 0.0f, 0.0f);
             gl.Vertex(targetPosition[0] + 0.0f, targetPosition[1] + 2.0f, targetPosition[2] + 0.0f);
@@ -188,16 +197,24 @@ namespace Tarmac64_Library
                     {
                         foreach (var subVert in Face.VertData)
                         {
+                            Point3D VertexPoint = new Point3D() { X = subVert.position.x, Y = subVert.position.y, Z = subVert.position.z };
+                            float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[1], TargetObject.OriginAngle[2] };
+                            Point3D ThreeDPoint = RotatePoint(VertexPoint, ObjectAngle);
+
                             gl.Color(ObjectColor[0], ObjectColor[1], ObjectColor[2], ObjectColor[3]);
-                            gl.Vertex((subVert.position.x * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (subVert.position.y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (subVert.position.z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
+                            gl.Vertex((ThreeDPoint.X * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (ThreeDPoint.Y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (ThreeDPoint.Z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
                         }
                     }
                     else
                     {
                         foreach (var subVert in Face.VertData)
                         {
+                            Point3D VertexPoint = new Point3D() { X = subVert.position.x, Y = subVert.position.y, Z = subVert.position.z };
+                            float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[1], TargetObject.OriginAngle[2] };
+                            Point3D ThreeDPoint = RotatePoint(VertexPoint, ObjectAngle);
+
                             gl.Color(ObjectColor[0], ObjectColor[1], ObjectColor[2], 1.0f);
-                            gl.Vertex((subVert.position.x * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (subVert.position.y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (subVert.position.z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
+                            gl.Vertex((ThreeDPoint.X * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (ThreeDPoint.Y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (ThreeDPoint.Z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
                         }
                     }
                 }
@@ -210,6 +227,10 @@ namespace Tarmac64_Library
             gl.End();
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            if (TargetObjectType.Name == "Spooky")
+            {
+                int x = 0;
+            }
             gl.Enable(OpenGL.GL_BLEND);
             glTexture.Destroy(gl);
             gl.Begin(OpenGL.GL_TRIANGLES);
@@ -222,16 +243,24 @@ namespace Tarmac64_Library
                     {
                         foreach (var subVert in Face.VertData)
                         {
+                            Point3D VertexPoint = new Point3D() { X = subVert.position.x, Y = subVert.position.y, Z = subVert.position.z };
+                            float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[1], TargetObject.OriginAngle[2] };
+                            Point3D ThreeDPoint = RotatePoint(VertexPoint, ObjectAngle);
+
                             gl.Color(ObjectColor[0], ObjectColor[1], ObjectColor[2], ObjectColor[3]);
-                            gl.Vertex((subVert.position.x * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (subVert.position.y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (subVert.position.z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
+                            gl.Vertex((ThreeDPoint.X * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (ThreeDPoint.Y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (ThreeDPoint.Z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
                         }
                     }
                     else
                     {
                         foreach (var subVert in Face.VertData)
                         {
+                            Point3D VertexPoint = new Point3D() { X = subVert.position.x, Y = subVert.position.y, Z = subVert.position.z };
+                            float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[1], TargetObject.OriginAngle[2] };
+                            Point3D ThreeDPoint = RotatePoint(VertexPoint, ObjectAngle);
+
                             gl.Color(ObjectColor[0], ObjectColor[1], ObjectColor[2], 1.0f);
-                            gl.Vertex((subVert.position.x * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (subVert.position.y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (subVert.position.z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
+                            gl.Vertex((ThreeDPoint.X * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (ThreeDPoint.Y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (ThreeDPoint.Z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
                         }
                     }
                 }
@@ -258,9 +287,13 @@ namespace Tarmac64_Library
                 {                    
                     foreach (var subVert in Face.VertData)
                     {
+                        Point3D VertexPoint = new Point3D() { X = subVert.position.x, Y = subVert.position.y, Z = subVert.position.z };
+                        float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[1], TargetObject.OriginAngle[2] };
+                        Point3D ThreeDPoint = RotatePoint(VertexPoint, ObjectAngle);
+
                         gl.Color(subVert.color.R, subVert.color.G, subVert.color.B, 1.0f);
                         gl.TexCoord(subVert.position.u, subVert.position.v);
-                        gl.Vertex((subVert.position.x * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (subVert.position.y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (subVert.position.z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
+                        gl.Vertex((ThreeDPoint.X * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (ThreeDPoint.Y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (ThreeDPoint.Z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
                     }                    
                 }
 
@@ -378,8 +411,8 @@ namespace Tarmac64_Library
             
             localCoord[0] = Convert.ToSingle(LocalCamera.position.X + 50 * Math.Cos(hAngle));
             localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + 50 * Math.Sin(hAngle));
-            localCoord[2] = LocalCamera.position.Z;
-            LocalCamera.target = new Vector3D(localCoord[0], localCoord[1], localCoord[2] + LocalCamera.TargetHeight);
+            localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
+            LocalCamera.target = new Assimp.Vector3D(localCoord[0], localCoord[1], localCoord[2] + LocalCamera.TargetHeight);
         }
 
         public void MoveCamera(int direction, TMCamera LocalCamera, float moveDistance)
@@ -394,8 +427,9 @@ namespace Tarmac64_Library
                         
                         localCoord[0] = Convert.ToSingle(LocalCamera.position.X + moveDistance * Math.Cos(hAngle));
                         localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + moveDistance * Math.Sin(hAngle));
-                        localCoord[2] = LocalCamera.position.Z;
-                        
+                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
+
+
 
                         break;
                     }
@@ -406,7 +440,7 @@ namespace Tarmac64_Library
                         
                         localCoord[0] = Convert.ToSingle(LocalCamera.position.X - moveDistance * Math.Cos(hAngle));
                         localCoord[1] = Convert.ToSingle(LocalCamera.position.Y - moveDistance * Math.Sin(hAngle));
-                        localCoord[2] = LocalCamera.position.Z;
+                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
                         
                         break;
                     }
@@ -415,9 +449,9 @@ namespace Tarmac64_Library
                         //up
                         float hAngle = Convert.ToSingle(LocalCamera.rotation * (Math.PI / 180));
                         
-                        localCoord[0] = LocalCamera.position.X;
-                        localCoord[1] = LocalCamera.position.Y;
-                        localCoord[2] = LocalCamera.position.Z + moveDistance;
+                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X);
+                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y);
+                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z + moveDistance);
                         
                         break;
                     }
@@ -426,9 +460,9 @@ namespace Tarmac64_Library
                         //down
                         float hAngle = Convert.ToSingle(LocalCamera.rotation * (Math.PI / 180));
                         
-                        localCoord[0] = LocalCamera.position.X;
-                        localCoord[1] = LocalCamera.position.Y;
-                        localCoord[2] = LocalCamera.position.Z - moveDistance;
+                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X);
+                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y);
+                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z - moveDistance);
                         
 
                         break;
@@ -443,7 +477,7 @@ namespace Tarmac64_Library
                         
                         localCoord[0] = Convert.ToSingle(LocalCamera.position.X + moveDistance * Math.Cos(hAngle));
                         localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + moveDistance * Math.Sin(hAngle));
-                        localCoord[2] = LocalCamera.position.Z;
+                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
                         
 
                         break;
@@ -458,14 +492,14 @@ namespace Tarmac64_Library
                         
                         localCoord[0] = Convert.ToSingle(LocalCamera.position.X + moveDistance * Math.Cos(hAngle));
                         localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + moveDistance * Math.Sin(hAngle));
-                        localCoord[2] = LocalCamera.position.Z;
+                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
                         
                         break;
                     }
             }
 
 
-            LocalCamera.position = new Vector3D(localCoord[0], localCoord[1], localCoord[2]);
+            LocalCamera.position = new Assimp.Vector3D(localCoord[0], localCoord[1], localCoord[2]);
             UpdateTarget(LocalCamera);
 
         }
@@ -526,7 +560,7 @@ namespace Tarmac64_Library
                 foreach (var subVert in Face.VertData)
                 {
                     gl.Color(1.0f, 0.5f, 0f, 1.0f);
-                    gl.Vertex(subVert.position.x + LocalCamera.marker[0], subVert.position.y + LocalCamera.marker[1], subVert.position.z + LocalCamera.marker[2]);
+                    gl.Vertex(subVert.position.x + LocalCamera.marker.X, subVert.position.y + LocalCamera.marker.X, subVert.position.z + LocalCamera.marker.X);
                 }
             }
 

@@ -428,14 +428,14 @@ namespace Tarmac64_Retail
                 if (e.Button == MouseButtons.Right)
                 {
                     TM64_Course.OKObject ThisObject = TarmacCourse.NewOKObject();
-                    ThisObject.OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker[0]), Convert.ToInt16(LocalCamera.marker[1]), Convert.ToInt16(LocalCamera.marker[2] + 3) };
+                    ThisObject.OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker.X), Convert.ToInt16(LocalCamera.marker.Y), Convert.ToInt16(LocalCamera.marker.Z + 3) };
                     ThisObject.ObjectIndex = Convert.ToInt16(OKObjectIndex);
                     CourseObjects.Add(ThisObject);
                     RequestMode = 1;
                 }
                 else if ((Keyboard.IsKeyDown(Key.LeftShift)) && (OKSelectedObject != -1))
                 {
-                    CourseObjects[OKSelectedObject].OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker[0]), Convert.ToInt16(LocalCamera.marker[1]), Convert.ToInt16(LocalCamera.marker[2]) };
+                    CourseObjects[OKSelectedObject].OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker.X), Convert.ToInt16(LocalCamera.marker.Y), Convert.ToInt16(LocalCamera.marker.Z) };
                     RequestMode = 2;
                 }
                 else
@@ -568,7 +568,7 @@ namespace Tarmac64_Retail
 
             if (objectDistance != -1)
             {
-                LocalCamera.marker = new Vector3D(RayOrigin.X + (RayTarget.X * objectDistance), RayOrigin.Y + (RayTarget.Y * objectDistance), RayOrigin.Z + (RayTarget.Z * objectDistance));
+                LocalCamera.marker = new Assimp.Vector3D() { X = RayOrigin.X + (RayTarget.X * objectDistance), Y = RayOrigin.Y + (RayTarget.Y * objectDistance), Z = RayOrigin.Z + (RayTarget.Z * objectDistance) };
             }
 
         }
