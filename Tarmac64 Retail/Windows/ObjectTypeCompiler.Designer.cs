@@ -78,6 +78,7 @@
             this.GravityBox = new System.Windows.Forms.CheckBox();
             this.CameraAlignBox = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.ZSortBox = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -544,6 +545,8 @@
             // GravityBox
             // 
             this.GravityBox.AutoSize = true;
+            this.GravityBox.Checked = true;
+            this.GravityBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.GravityBox.Location = new System.Drawing.Point(8, 23);
             this.GravityBox.Margin = new System.Windows.Forms.Padding(5);
             this.GravityBox.Name = "GravityBox";
@@ -555,16 +558,17 @@
             // CameraAlignBox
             // 
             this.CameraAlignBox.AutoSize = true;
-            this.CameraAlignBox.Location = new System.Drawing.Point(8, 50);
+            this.CameraAlignBox.Location = new System.Drawing.Point(119, 23);
             this.CameraAlignBox.Margin = new System.Windows.Forms.Padding(5);
             this.CameraAlignBox.Name = "CameraAlignBox";
-            this.CameraAlignBox.Size = new System.Drawing.Size(97, 17);
+            this.CameraAlignBox.Size = new System.Drawing.Size(89, 17);
             this.CameraAlignBox.TabIndex = 255;
-            this.CameraAlignBox.Text = "Camera Facing";
+            this.CameraAlignBox.Text = "Face Camera";
             this.CameraAlignBox.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.ZSortBox);
             this.groupBox2.Controls.Add(this.GravityBox);
             this.groupBox2.Controls.Add(this.CameraAlignBox);
             this.groupBox2.Location = new System.Drawing.Point(14, 489);
@@ -573,6 +577,17 @@
             this.groupBox2.TabIndex = 254;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Options";
+            // 
+            // ZSortBox
+            // 
+            this.ZSortBox.AutoSize = true;
+            this.ZSortBox.Location = new System.Drawing.Point(8, 50);
+            this.ZSortBox.Margin = new System.Windows.Forms.Padding(5);
+            this.ZSortBox.Name = "ZSortBox";
+            this.ZSortBox.Size = new System.Drawing.Size(111, 17);
+            this.ZSortBox.TabIndex = 256;
+            this.ZSortBox.Text = "Z-Sort XLU (Slow)";
+            this.ZSortBox.UseVisualStyleBackColor = true;
             // 
             // ObjectTypeCompiler
             // 
@@ -684,5 +699,6 @@
         private System.Windows.Forms.CheckBox GravityBox;
         private System.Windows.Forms.CheckBox CameraAlignBox;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox ZSortBox;
     }
 }

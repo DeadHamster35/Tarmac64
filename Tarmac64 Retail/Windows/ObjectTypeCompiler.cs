@@ -137,6 +137,7 @@ namespace Tarmac64_Retail
                 {
                     NewType.GravityToggle = 0;
                 }
+                //
                 if (CameraAlignBox.Checked)
                 {
                     NewType.CameraAlligned = 1;
@@ -144,6 +145,15 @@ namespace Tarmac64_Retail
                 else
                 {
                     NewType.CameraAlligned = 0;
+                }
+                //
+                if (ZSortBox.Checked)
+                {
+                    NewType.ZSortToggle = 1;
+                }
+                else
+                {
+                    NewType.ZSortToggle = 0;
                 }
 
                 File.WriteAllBytes(FileSave.FileName, Tarmac.CompressMIO0(TarmacCourse.SaveObjectType(NewType)));

@@ -69,6 +69,7 @@ namespace Tarmac64_Library
             public int XLUCount { get; set; }
             public byte GravityToggle { get; set; }
             public byte CameraAlligned { get; set; }
+            public byte ZSortToggle { get; set; }
             public OKPathfinding[] PathfindingData { get; set; }
             public string Name { get; set; }
             
@@ -278,7 +279,7 @@ namespace Tarmac64_Library
 
             for (int ThisObject = 0; ThisObject < ObjectList.Length; ThisObject++)
             {
-                flip = BitConverter.GetBytes(Convert.ToInt16(ObjectList[ThisObject].ObjectIndex - 4));
+                flip = BitConverter.GetBytes(Convert.ToInt16(ObjectList[ThisObject].ObjectIndex - 6));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
                 flip = BitConverter.GetBytes(Convert.ToInt16(0)); //padding
@@ -355,6 +356,7 @@ namespace Tarmac64_Library
             NewType.RenderRadius = binaryReader.ReadInt16();
             NewType.GravityToggle = binaryReader.ReadByte();
             NewType.CameraAlligned = binaryReader.ReadByte();
+            NewType.ZSortToggle = binaryReader.ReadByte();
 
 
             int TextureCount = binaryReader.ReadInt32();
@@ -506,6 +508,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(SaveData.RenderRadius);
             binaryWriter.Write(SaveData.GravityToggle);
             binaryWriter.Write(SaveData.CameraAlligned);
+            binaryWriter.Write(SaveData.ZSortToggle);
 
             binaryWriter.Write(TarmacGeometry.WriteTextureObjects(SaveData.TextureData));
             binaryWriter.Write(TarmacGeometry.WriteMasterObjects(SaveData.ModelData));
@@ -636,7 +639,7 @@ namespace Tarmac64_Library
                         }
 
                     }
-
+                    
                     SaveData[currentItem].XLUCount = ModelCount;
                 }
 
@@ -873,7 +876,10 @@ namespace Tarmac64_Library
                 flip = BitConverter.GetBytes(Convert.ToInt16(SaveData[ThisType].SoundRadius));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
-                flip = BitConverter.GetBytes(Convert.ToInt16(SaveData[ThisType].SoundType));//
+                flip = BitConverter.GetBytes(Convert.ToSByte(SaveData[ThisType].SoundType));//
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+                flip = BitConverter.GetBytes(Convert.ToSByte(SaveData[ThisType].ZSortToggle));//
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
                 //
