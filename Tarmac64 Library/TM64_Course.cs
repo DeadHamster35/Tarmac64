@@ -876,12 +876,9 @@ namespace Tarmac64_Library
                 flip = BitConverter.GetBytes(Convert.ToInt16(SaveData[ThisType].SoundRadius));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
-                flip = BitConverter.GetBytes(Convert.ToSByte(SaveData[ThisType].SoundType));//
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-                flip = BitConverter.GetBytes(Convert.ToSByte(SaveData[ThisType].ZSortToggle));//
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
+
+                binaryWriter.Write(Convert.ToByte(SaveData[ThisType].SoundType));
+                binaryWriter.Write(Convert.ToByte(SaveData[ThisType].ZSortToggle));
                 //
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].ModelCount));
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].XLUCount));
