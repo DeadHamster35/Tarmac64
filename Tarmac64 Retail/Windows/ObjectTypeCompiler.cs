@@ -15,6 +15,9 @@ namespace Tarmac64_Retail
 {
     public partial class ObjectTypeCompiler : Form
     {
+
+
+        string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP"};
         string[] BehaviorNames = new string[] { "DEAD", "EXIST", "FLOAT", "PATH", "WANDER", "SEARCH", "BOUNCE", "BEHAVIOR 7", "BEHAVIOR 8", "BEHAVIOR 9", 
             "BEHAVIOR 10", "BEHAVIOR 11", "BEHAVIOR 12", "BEHAVIOR 13", "BEHAVIOR 14", "BEHAVIOR 15", "BEHAVIOR 16", "BEHAVIOR 17", "BEHAVIOR 18", "BEHAVIOR 19", 
             "BEHAVIOR 20", "BEHAVIOR 21", "BEHAVIOR 22", "BEHAVIOR 23", "BEHAVIOR 24", "BEHAVIOR 25", "BEHAVIOR 26", "BEHAVIOR 27", "BEHAVIOR 28", "BEHAVIOR 29",
@@ -119,6 +122,8 @@ namespace Tarmac64_Retail
                 NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex -1);
                 NewType.StatusClass = Convert.ToInt16(StatusValues[StatusBox.SelectedIndex]);
                 NewType.EffectClass = Convert.ToInt16(EffectValues[EffectBox.SelectedIndex]);
+                NewType.CollisionResult = Convert.ToInt16(ColResultBox.SelectedIndex);
+                NewType.DamageResult = Convert.ToInt16(DmgResultBox.SelectedIndex);
                 NewType.Range = Convert.ToInt16(RangeBox.Text);
                 NewType.Sight = Convert.ToInt16(SightBox.Text);
                 NewType.Viewcone = Convert.ToInt16(Viewconebox.Text);
@@ -165,6 +170,11 @@ namespace Tarmac64_Retail
 
         private void ObjectTypeCompiler_Load(object sender, EventArgs e)
         {
+            foreach(var Reaction in CollisionNames)
+            {
+                ColResultBox.Items.Add(Reaction);
+                DmgResultBox.Items.Add(Reaction);
+            }
             foreach(var Behavior in BehaviorNames)
             {
                 BehaviorBox.Items.Add(Behavior);

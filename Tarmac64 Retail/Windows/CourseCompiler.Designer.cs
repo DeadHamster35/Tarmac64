@@ -55,18 +55,18 @@
             this.sectionBox = new System.Windows.Forms.ComboBox();
             this.viewBox = new System.Windows.Forms.ComboBox();
             this.TextureData = new System.Windows.Forms.TabPage();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.Settings = new System.Windows.Forms.TabPage();
-            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Object = new System.Windows.Forms.TabPage();
-            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.raycastBox = new System.Windows.Forms.CheckBox();
             this.ExportBtn = new System.Windows.Forms.Button();
             this.ImportBtn = new System.Windows.Forms.Button();
             this.TypeBox = new System.Windows.Forms.ComboBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.GLControl = new Tarmac64_Retail.GLViewer();
+            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
+            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
@@ -380,13 +380,6 @@
             this.TextureData.UseVisualStyleBackColor = true;
             this.TextureData.Click += new System.EventHandler(this.TextureData_Click);
             // 
-            // TextureControl
-            // 
-            this.TextureControl.Location = new System.Drawing.Point(0, 0);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 780);
-            this.TextureControl.TabIndex = 0;
-            // 
             // Settings
             // 
             this.Settings.AutoScroll = true;
@@ -398,14 +391,6 @@
             this.Settings.Text = "Settings";
             this.Settings.UseVisualStyleBackColor = true;
             this.Settings.Click += new System.EventHandler(this.CourseInfo_Click);
-            // 
-            // SettingsControl
-            // 
-            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
-            this.SettingsControl.Name = "SettingsControl";
-            this.SettingsControl.Size = new System.Drawing.Size(289, 950);
-            this.SettingsControl.TabIndex = 0;
-            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 
             // tabControl1
             // 
@@ -433,16 +418,6 @@
             this.Object.TabIndex = 4;
             this.Object.Text = "Objects";
             this.Object.UseVisualStyleBackColor = true;
-            // 
-            // ObjectControl
-            // 
-            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.ObjectControl.Location = new System.Drawing.Point(-2, 2);
-            this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 597);
-            this.ObjectControl.TabIndex = 1;
-            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
             // raycastBox
             // 
@@ -494,6 +469,7 @@
             this.TypeBox.Name = "TypeBox";
             this.TypeBox.Size = new System.Drawing.Size(109, 21);
             this.TypeBox.TabIndex = 98;
+            this.TypeBox.Visible = false;
             // 
             // pictureBox2
             // 
@@ -514,6 +490,31 @@
             this.GLControl.Name = "GLControl";
             this.GLControl.Size = new System.Drawing.Size(915, 659);
             this.GLControl.TabIndex = 3;
+            // 
+            // SettingsControl
+            // 
+            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
+            this.SettingsControl.Name = "SettingsControl";
+            this.SettingsControl.Size = new System.Drawing.Size(289, 950);
+            this.SettingsControl.TabIndex = 0;
+            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
+            // 
+            // TextureControl
+            // 
+            this.TextureControl.Location = new System.Drawing.Point(0, 0);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(289, 780);
+            this.TextureControl.TabIndex = 0;
+            // 
+            // ObjectControl
+            // 
+            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ObjectControl.Location = new System.Drawing.Point(-2, 2);
+            this.ObjectControl.Name = "ObjectControl";
+            this.ObjectControl.Size = new System.Drawing.Size(289, 597);
+            this.ObjectControl.TabIndex = 1;
+            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
             // CourseCompiler
             // 

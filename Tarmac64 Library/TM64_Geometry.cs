@@ -148,11 +148,10 @@ namespace Tarmac64_Library
             public int FrameCount { get; set; }
             public short[] Origin { get; set; }
             public OK64Bone[] Children { get; set; }
+            public int MeshCount { get; set; }       
             public OK64Animation Animation { get; set; }
-            public int[] RotationOffset { get; set; }
-            public int[] TranslationOffset { get; set; }
-            public int BoneOffset { get; set; }
-            public int HeaderOffset { get; set; }
+            public int TranslationOffset { get; set; }
+            public int MeshListOffset { get; set; }
 
         }
 
@@ -1133,8 +1132,6 @@ namespace Tarmac64_Library
 
 
             Skeleton.Animation = new OK64Animation();
-            Skeleton.TranslationOffset = new int[3];
-            Skeleton.RotationOffset = new int[3];
             //
             DataLength = binaryReader.ReadInt32();
             Skeleton.Animation.RotationData = new short[DataLength][];
@@ -4333,8 +4330,6 @@ namespace Tarmac64_Library
             NewBone.Origin[0] = Convert.ToInt16(OPrime.A4);
             NewBone.Origin[2] = Convert.ToInt16(OPrime.B4);
             NewBone.Origin[1] = Convert.ToInt16(OPrime.C4 * -1);
-            NewBone.TranslationOffset = new int[3];
-            NewBone.RotationOffset = new int[3];
 
             //Base.Transform.
             for (int ThisChild = 0; ThisChild < Base.ChildCount; ThisChild++)
@@ -4382,19 +4377,59 @@ namespace Tarmac64_Library
             return Angle;
         }
 
-        public byte[] BuildAnimationData(OK64Bone Skeleton)
+
+
+
+        public byte[] WriteAnimationModels(OK64Bone Skeleton, TM64_Course.OKObjectType SaveObject, int Magic)
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
             byte[] flip2 = new byte[2];
             List<byte> AnimationData = new List<byte>();
 
-            Skeleton.TranslationOffset[0] = 0;
-            flip2 = BitConverter.GetBytes(Skeleton.Animation.TranslationData[0][0]);
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
+            Skeleton.MeshListOffset = Convert.ToInt32(binaryWriter.BaseStream.Position + Magic);
+            int MeshCount = 0;
+            for (int ThisObject = 0; ThisObject < SaveObject.ModelData.Length; ThisObject++)
+            {
+                if (SaveObject.ModelData[ThisObject].BoneName == Skeleton.Name)
+                {
+                    MeshCount++;
+                }
+            }
 
-            flip2 = BitConverter.GetBytes(Skeleton.Animation.TranslationData[0][1]);
+            Skeleton.MeshCount = MeshCount;
+
+            for (int ThisObject = 0; ThisObject < SaveObject.ModelData.Length; ThisObject++)
+            {
+                if (SaveObject.ModelData[ThisObject].BoneName == Skeleton.Name)
+                {
+                    flip2 = BitConverter.GetBytes(SaveObject.TextureData[SaveObject.ModelData[ThisObject].materialID].f3dexPosition[0]);
+                    Array.Reverse(flip2);
+                    binaryWriter.Write(flip2);
+                    flip2 = BitConverter.GetBytes(Convert.ToInt32(SaveObject.ModelData[ThisObject].ListPosition | 0x0A000000));
+                    Array.Reverse(flip2);
+                    binaryWriter.Write(flip2);
+                    binaryWriter.Write();
+                }
+            }
+
+            for (int ThisChild = 0; ThisChild < Skeleton.Children.Length; ThisChild++)
+            {
+                binaryWriter.Write(WriteAnimationModels(Skeleton.Children[ThisChild], SaveObject, Magic));
+            }
+
+            return memoryStream.ToArray();
+        }
+
+        public byte[] WriteAnimationData(OK64Bone Skeleton, int Magic)
+        {
+
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+            byte[] flip2 = new byte[2];
+            List<byte> AnimationData = new List<byte>();
+
+            flip2 = BitConverter.GetBytes(Skeleton.Animation.TranslationData[0][0]);
             Array.Reverse(flip2);
             binaryWriter.Write(flip2);
 
@@ -4402,95 +4437,103 @@ namespace Tarmac64_Library
             Array.Reverse(flip2);
             binaryWriter.Write(flip2);
 
-            for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+            flip2 = BitConverter.GetBytes(Skeleton.Animation.TranslationData[0][1] * -1);
+            Array.Reverse(flip2);
+            binaryWriter.Write(flip2);
+
+            binaryWriter.Write(Convert.ToInt16(0));
+
+            for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.RotationData.Length; ThisFrame++)
             {
-                Skeleton.RotationOffset[ThisVector] = Convert.ToInt32(binaryWriter.BaseStream.Position / 2);
-                for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.RotationData.Length; ThisFrame++)
-                {
-                    flip2 = BitConverter.GetBytes(Skeleton.Animation.RotationData[ThisFrame][ThisVector]);
-                    Array.Reverse(flip2);
-                    binaryWriter.Write(flip2);
-                }
+                flip2 = BitConverter.GetBytes(Skeleton.Animation.RotationData[ThisFrame][0]);
+                Array.Reverse(flip2);
+                binaryWriter.Write(flip2);
+
+                flip2 = BitConverter.GetBytes(Skeleton.Animation.RotationData[ThisFrame][2]);
+                Array.Reverse(flip2);
+                binaryWriter.Write(flip2);
+
+                flip2 = BitConverter.GetBytes(Skeleton.Animation.RotationData[ThisFrame][1]);
+                Array.Reverse(flip2);
+                binaryWriter.Write(flip2);
             }
-               
+
+
             foreach (var ChildBone in Skeleton.Children)
             {
-                
-                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                {
-                    ChildBone.RotationOffset[ThisVector] = Convert.ToInt32(binaryWriter.BaseStream.Position / 2);
-                    for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.RotationData.Length; ThisFrame++)
-                    {
-                        flip2 = BitConverter.GetBytes(ChildBone.Animation.RotationData[ThisFrame][ThisVector]);
-                        Array.Reverse(flip2);
-                        binaryWriter.Write(flip2);
-                    }
-                }
+
+                ChildBone.TranslationOffset = Convert.ToInt32(binaryWriter.BaseStream.Position + Skeleton.TranslationOffset);
+                binaryWriter.Write(WriteAnimationData(ChildBone, ChildBone.TranslationOffset));
+            }
+            return memoryStream.ToArray();
+        }
+
+        public byte[] BuildAnimationData(OK64Bone Skeleton)
+        {
+
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+            byte[] flip2 = new byte[2];
+            List<byte> AnimationData = new List<byte>();
+
+            Skeleton.TranslationOffset = 0;
+
+            binaryWriter.Write(WriteAnimationData(Skeleton, 0));
+
+            foreach (var ChildBone in Skeleton.Children)
+            {
+                ChildBone.TranslationOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(WriteAnimationData(ChildBone, ChildBone.TranslationOffset));
             }
 
             return memoryStream.ToArray();
         }
 
-        public byte[] WriteAnimationTableData(OK64Bone Skeleton)
+        public byte[] WriteAnimationTableData(OK64Bone Skeleton, TM64_Course.OKObjectType SaveObject)
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
-            for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-            {
-                flip2 = BitConverter.GetBytes(Skeleton.FrameCount);
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
+            flip2 = BitConverter.GetBytes(Skeleton.TranslationOffset);
+            Array.Reverse(flip2);
+            binaryWriter.Write(flip2);
 
-                flip2 = BitConverter.GetBytes(Skeleton.RotationOffset[ThisVector]);
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
+            flip2 = BitConverter.GetBytes(Skeleton.MeshCount);
+            Array.Reverse(flip2);
+            binaryWriter.Write(flip2);
+
+            flip2 = BitConverter.GetBytes(Skeleton.MeshListOffset);
+            Array.Reverse(flip2);
+            binaryWriter.Write(flip2);
+
+            flip2 = BitConverter.GetBytes(Skeleton.Children.Length);
+            Array.Reverse(flip2);
+            binaryWriter.Write(flip2);
+
+            foreach (var ChildBone in Skeleton.Children)
+            {
+                binaryWriter.Write(WriteAnimationTableData(ChildBone, SaveObject));
             }
+
             return memoryStream.ToArray();
         }
 
 
-        public byte[] BuildAnimationTable(OK64Bone Skeleton)
+        public byte[] BuildAnimationTable(OK64Bone Skeleton, TM64_Course.OKObjectType SaveData)
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
             List<byte> AnimationData = new List<byte>();
 
-            flip2 = BitConverter.GetBytes(Convert.ToInt16(1));
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
-            binaryWriter.Write(Convert.ToInt16(0));
 
-            flip2 = BitConverter.GetBytes(Convert.ToInt16(1));
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
-            flip2 = BitConverter.GetBytes(Convert.ToInt16(1));
+
+
+
+            flip2 = BitConverter.GetBytes(Skeleton.FrameCount);
             Array.Reverse(flip2);
             binaryWriter.Write(flip2);
 
-            flip2 = BitConverter.GetBytes(Convert.ToInt16(1));
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
-            flip2 = BitConverter.GetBytes(Convert.ToInt16(2));
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
-
-            binaryWriter.Write(WriteAnimationTableData(Skeleton));
-            
-
-            foreach (var ChildBone in Skeleton.Children)
-            {
-                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                {
-                    flip2 = BitConverter.GetBytes(Skeleton.FrameCount);
-                    Array.Reverse(flip2);
-                    binaryWriter.Write(flip2);
-
-                    flip2 = BitConverter.GetBytes(ChildBone.RotationOffset[ThisVector]);
-                    Array.Reverse(flip2);
-                    binaryWriter.Write(flip2);
-                }
-            }
+            binaryWriter.Write(WriteAnimationTableData(Skeleton, SaveData));           
             
 
             return memoryStream.ToArray();
@@ -4619,18 +4662,6 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
         }
 
-
-        public byte[] BuildBoneStructure(OK64Bone Skeleton, TM64_Course.OKObjectType SaveObject, int Magic)
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            byte[] flip2 = new byte[2];
-            Skeleton.HeaderOffset = Convert.ToInt32(memoryStream.Length + Magic);
-
-            binaryWriter.Write(WriteBoneHeader(Skeleton, SaveObject));
-            binaryWriter.Write(HMSExit());
-            return memoryStream.ToArray();
-        }
 
 
         public OK64Animation LoadAnimation(NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
