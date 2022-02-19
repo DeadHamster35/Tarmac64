@@ -62,8 +62,11 @@ namespace Tarmac64_Retail
 
         public void RemoveObject(int ObjectIndex)
         {
-            OKObjectList.RemoveAt(ObjectIndex);
-            ObjectListBox.Items.RemoveAt(ObjectIndex);
+            if (ObjectIndex > 0)
+            {
+                OKObjectList.RemoveAt(ObjectIndex);
+                ObjectListBox.Items.RemoveAt(ObjectIndex);
+            }
         }
 
         public void AddType(string OKTypePath)
@@ -396,7 +399,9 @@ namespace Tarmac64_Retail
             {
                 OKObjectTypeList.RemoveAt(ObjectIndexBox.SelectedIndex);
                 ObjectIndexBox.Items.RemoveAt(ObjectIndexBox.SelectedIndex);
+                ObjectIndexBox.SelectedIndex = ObjectIndexBox.Items.Count - 1;
             }
+
         }
     }
 }

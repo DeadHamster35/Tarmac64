@@ -172,6 +172,7 @@ namespace Tarmac64_Library
             FolderOpen.InitialDirectory = okSettings.ProjectDirectory;
             FolderOpen.IsFolderPicker = false;
             string FileName = "";
+            uint HeaderOffset = Convert.ToUInt32(HeaderBox.Text, 16);
             MessageBox.Show("Select Patched ROM");
 
 

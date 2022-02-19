@@ -33,6 +33,8 @@
             this.KeyBox = new System.Windows.Forms.TextBox();
             this.NameBox = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
+            this.HeaderBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -47,7 +49,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(418, 12);
+            this.button2.Location = new System.Drawing.Point(337, 41);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 56;
@@ -57,7 +59,7 @@
             // 
             // KeyBox
             // 
-            this.KeyBox.Location = new System.Drawing.Point(251, 14);
+            this.KeyBox.Location = new System.Drawing.Point(251, 15);
             this.KeyBox.Name = "KeyBox";
             this.KeyBox.Size = new System.Drawing.Size(161, 20);
             this.KeyBox.TabIndex = 57;
@@ -83,11 +85,32 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button1_Click);
             // 
+            // HeaderBox
+            // 
+            this.HeaderBox.Location = new System.Drawing.Point(170, 44);
+            this.HeaderBox.Name = "HeaderBox";
+            this.HeaderBox.Size = new System.Drawing.Size(161, 20);
+            this.HeaderBox.TabIndex = 60;
+            this.HeaderBox.Text = "BE9178";
+            this.HeaderBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(56, 46);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(108, 13);
+            this.label1.TabIndex = 61;
+            this.label1.Text = "Course Header Table";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // GameBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(501, 45);
+            this.ClientSize = new System.Drawing.Size(420, 76);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.HeaderBox);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.NameBox);
             this.Controls.Add(this.KeyBox);
@@ -108,5 +131,7 @@
         private System.Windows.Forms.TextBox KeyBox;
         private System.Windows.Forms.ComboBox NameBox;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.TextBox HeaderBox;
+        private System.Windows.Forms.Label label1;
     }
 }

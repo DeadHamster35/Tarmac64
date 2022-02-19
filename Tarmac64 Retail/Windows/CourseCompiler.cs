@@ -881,6 +881,7 @@ namespace Tarmac64_Library
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     popFile = dialog.FileName;
+                    
                     if (levelFormat == 0)
                     {
                         pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);

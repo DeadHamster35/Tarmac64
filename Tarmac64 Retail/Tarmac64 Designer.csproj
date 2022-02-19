@@ -142,11 +142,17 @@
     <Compile Include="Windows\GameBuilder.Designer.cs">
       <DependentUpon>GameBuilder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ModelCompiler.cs">
+    <Compile Include="Windows\AnimationCompiler.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Windows\ModelCompiler.Designer.cs">
-      <DependentUpon>ModelCompiler.cs</DependentUpon>
+    <Compile Include="Windows\AnimationCompiler.Designer.cs">
+      <DependentUpon>AnimationCompiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Model Compiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\Model Compiler.Designer.cs">
+      <DependentUpon>Model Compiler.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\ObjectTypeCompiler.cs">
       <SubType>Form</SubType>
@@ -207,8 +213,11 @@
     <EmbeddedResource Include="Windows\GameBuilder.resx">
       <DependentUpon>GameBuilder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Windows\ModelCompiler.resx">
-      <DependentUpon>ModelCompiler.cs</DependentUpon>
+    <EmbeddedResource Include="Windows\AnimationCompiler.resx">
+      <DependentUpon>AnimationCompiler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\Model Compiler.resx">
+      <DependentUpon>Model Compiler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\ObjectTypeCompiler.resx">
       <DependentUpon>ObjectTypeCompiler.cs</DependentUpon>

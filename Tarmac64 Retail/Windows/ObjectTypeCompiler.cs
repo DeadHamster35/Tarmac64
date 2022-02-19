@@ -203,6 +203,7 @@ namespace Tarmac64_Retail
             WalkBox.Enabled = false;
             TargetBox.Enabled = false;
             DeathBox.Enabled = false;
+            NameBox.Focus();
         }
 
         private void SoundNameBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -263,6 +264,13 @@ namespace Tarmac64_Retail
             {
                 DeathBox.Text = FileOpen.FileName;
             }
+        }
+
+        private void AToggleBox_CheckedChanged_1(object sender, EventArgs e)
+        {
+            WalkBox.Enabled = AToggleBox.Checked;
+            TargetBox.Enabled = AToggleBox.Checked;
+            DeathBox.Enabled = AToggleBox.Checked;
         }
     }
 }

@@ -149,7 +149,8 @@ namespace Tarmac64_Library
 
             TM64_Geometry tm64Geo = new TM64_Geometry();
 
-            List<Pathgroup> pathgroup = new List<Pathgroup>(); ;
+            List<Pathgroup> pathgroup = new List<Pathgroup>();
+            
             string[] reader = File.ReadAllLines(popFile);
             string[] positions = new string[3];
 

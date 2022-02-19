@@ -653,7 +653,7 @@ namespace Tarmac64_Library
                     if (SaveData[ThisObject].ObjectAnimations.WalkAnimation != null)
                     {
                         
-                        binaryWriter.Write(TarmacGeometry.BuildAnimationData(SaveData[ThisObject].ObjectAnimations.WalkAnimation));
+                        binaryWriter.Write(TarmacGeometry.BuildAnimationData(SaveData[ThisObject].ObjectAnimations.WalkAnimation, Convert.ToInt32(Magic + binaryWriter.BaseStream.Position)));
 
                         int addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
                         if (addressAlign == 16)
@@ -662,7 +662,7 @@ namespace Tarmac64_Library
                         {
                             binaryWriter.Write(Convert.ToByte(0x00));
                         }
-                        binaryWriter.Write(TarmacGeometry.WriteAnimationModels(SaveData[ThisObject].ObjectAnimations.WalkAnimation, SaveData[ThisObject], Convert.ToInt32(binaryWriter.BaseStream.Position)));
+                        binaryWriter.Write(TarmacGeometry.WriteAnimationModels(SaveData[ThisObject].ObjectAnimations.WalkAnimation, SaveData[ThisObject], Convert.ToInt32(Magic + binaryWriter.BaseStream.Position)));
 
                         SaveData[ThisObject].ObjectAnimations.WalkPosition = Convert.ToInt32(binaryWriter.BaseStream.Position + Magic);
                         binaryWriter.Write(TarmacGeometry.BuildAnimationTable(SaveData[ThisObject].ObjectAnimations.WalkAnimation, SaveData[ThisObject]));
@@ -683,7 +683,7 @@ namespace Tarmac64_Library
                     if (SaveData[ThisObject].ObjectAnimations.TargetAnimation != null)
                     {
                         
-                        binaryWriter.Write(TarmacGeometry.BuildAnimationData(SaveData[ThisObject].ObjectAnimations.TargetAnimation));
+                        binaryWriter.Write(TarmacGeometry.BuildAnimationData(SaveData[ThisObject].ObjectAnimations.TargetAnimation, Convert.ToInt32(Magic + binaryWriter.BaseStream.Position)));
                         int addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
                         if (addressAlign == 16)
                             addressAlign = 0;
@@ -691,7 +691,7 @@ namespace Tarmac64_Library
                         {
                             binaryWriter.Write(Convert.ToByte(0x00));
                         }
-                        binaryWriter.Write(TarmacGeometry.WriteAnimationModels(SaveData[ThisObject].ObjectAnimations.TargetAnimation, SaveData[ThisObject], Convert.ToInt32(binaryWriter.BaseStream.Position)));
+                        binaryWriter.Write(TarmacGeometry.WriteAnimationModels(SaveData[ThisObject].ObjectAnimations.TargetAnimation, SaveData[ThisObject], Convert.ToInt32(Magic + binaryWriter.BaseStream.Position)));
                         
                         SaveData[ThisObject].ObjectAnimations.TargetPosition = Convert.ToInt32(binaryWriter.BaseStream.Position + Magic);
                         binaryWriter.Write(TarmacGeometry.BuildAnimationTable(SaveData[ThisObject].ObjectAnimations.TargetAnimation, SaveData[ThisObject]));
@@ -713,7 +713,7 @@ namespace Tarmac64_Library
                     if (SaveData[ThisObject].ObjectAnimations.DeathAnimation != null)
                     {
                         
-                        binaryWriter.Write(TarmacGeometry.BuildAnimationData(SaveData[ThisObject].ObjectAnimations.DeathAnimation));
+                        binaryWriter.Write(TarmacGeometry.BuildAnimationData(SaveData[ThisObject].ObjectAnimations.DeathAnimation, Convert.ToInt32(Magic + binaryWriter.BaseStream.Position)));
                         int addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
                         if (addressAlign == 16)
                             addressAlign = 0;
@@ -721,7 +721,7 @@ namespace Tarmac64_Library
                         {
                             binaryWriter.Write(Convert.ToByte(0x00));
                         }
-                        binaryWriter.Write(TarmacGeometry.WriteAnimationModels(SaveData[ThisObject].ObjectAnimations.DeathAnimation, SaveData[ThisObject], Convert.ToInt32(binaryWriter.BaseStream.Position)));
+                        binaryWriter.Write(TarmacGeometry.WriteAnimationModels(SaveData[ThisObject].ObjectAnimations.DeathAnimation, SaveData[ThisObject], Convert.ToInt32(Magic + binaryWriter.BaseStream.Position)));
 
 
 
@@ -756,6 +756,46 @@ namespace Tarmac64_Library
 
             return memoryStream.ToArray();
         }
+
+        /*
+        public byte[] CompileSingleAnimation(OKObjectAnimations ObjectAnimations, int Magic, bool WriteModels)
+        {
+            byte[] flip = new byte[0];
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+
+            binaryWriter.Write(TarmacGeometry.BuildAnimationData(ObjectAnimations.WalkAnimation, Convert.ToInt32(Magic + binaryWriter.BaseStream.Position)));
+
+            int addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            binaryWriter.Write(TarmacGeometry.WriteAnimationModels(ObjectAnimations.WalkAnimation, SaveData[ThisObject], Convert.ToInt32(Magic + binaryWriter.BaseStream.Position)));
+
+            ObjectAnimations.WalkPosition = Convert.ToInt32(binaryWriter.BaseStream.Position + Magic);
+            binaryWriter.Write(TarmacGeometry.BuildAnimationTable(ObjectAnimations.WalkAnimation, SaveData[ThisObject]));
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+                    
+
+        SaveData[ThisObject].AnimationPosition = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
+        binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(0x0A000000 | SaveData[ThisObject].ObjectAnimations.WalkPosition)));
+                    
+
+
+            return memoryStream.ToArray();
+        }
+        */
         public byte[] SaveObjectTypeList(OKObjectType[] SaveData)
         {
             byte[] flip = new byte[0];

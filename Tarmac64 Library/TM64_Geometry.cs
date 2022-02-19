@@ -22,7 +22,7 @@ using System.Windows;
 using Tarmac64_Library;
 using F3DSharp;
 using System.Windows.Media;
-
+using System.Windows.Media.Media3D;
 
 namespace Tarmac64_Library
 {
@@ -48,7 +48,7 @@ namespace Tarmac64_Library
             public VertIndex VertIndex { get; set; }
             public int Material { get; set; }
             public Vertex[] VertData { get; set; }
-            public Vector3D CenterPosition { get; set; }
+            public Assimp.Vector3D CenterPosition { get; set; }
             public float HighX { get; set; }
             public float HighY { get; set; }
             public float LowX { get; set; }
@@ -353,10 +353,10 @@ namespace Tarmac64_Library
             return StandardGeometry;
         }
 
-        public Vector3D testIntersect(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC)
+        public Assimp.Vector3D testIntersect(Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC)
         {
-            
-            Vector3D vert0, vert1, vert2;
+
+            Assimp.Vector3D vert0, vert1, vert2;
 
             vert0.X = vertA.position.x;
             vert0.Y = vertA.position.y;
@@ -379,7 +379,7 @@ namespace Tarmac64_Library
 
             if (det > -Epsilon && det < Epsilon)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
@@ -391,7 +391,7 @@ namespace Tarmac64_Library
 
             if (u < 0 || u > 1)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
@@ -401,20 +401,20 @@ namespace Tarmac64_Library
 
             if (v < 0 || u + v > 1)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
             var t = Dot(edge2, qvec) * invDet;
 
-            return new Vector3D((float)t, (float)u, (float)v);
+            return new Assimp.Vector3D((float)t, (float)u, (float)v);
         }
 
 
-        public Vector3D testIntersect(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, float[] Origin)
+        public Assimp.Vector3D testIntersect(Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, float[] Origin)
         {
 
-            Vector3D vert0, vert1, vert2;
+            Assimp.Vector3D vert0, vert1, vert2;
 
             vert0.X = vertA.position.x + Origin[0];
             vert0.Y = vertA.position.y + Origin[1];
@@ -437,7 +437,7 @@ namespace Tarmac64_Library
 
             if (det > -Epsilon && det < Epsilon)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
@@ -449,7 +449,7 @@ namespace Tarmac64_Library
 
             if (u < 0 || u > 1)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
@@ -459,19 +459,19 @@ namespace Tarmac64_Library
 
             if (v < 0 || u + v > 1)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
             var t = Dot(edge2, qvec) * invDet;
 
-            return new Vector3D((float)t, (float)u, (float)v);
+            return new Assimp.Vector3D((float)t, (float)u, (float)v);
         }
 
-        public Vector3D testIntersectScale(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, float[] Origin, float[] Scale)
+        public Assimp.Vector3D testIntersectScale(Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, float[] Origin, float[] Scale)
         {
 
-            Vector3D vert0, vert1, vert2;
+            Assimp.Vector3D vert0, vert1, vert2;
 
             vert0.X = (vertA.position.x * Scale[0]) + Origin[0];
             vert0.Y = (vertA.position.y * Scale[1]) + Origin[1];
@@ -494,7 +494,7 @@ namespace Tarmac64_Library
 
             if (det > -Epsilon && det < Epsilon)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
@@ -506,7 +506,7 @@ namespace Tarmac64_Library
 
             if (u < 0 || u > 1)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
@@ -516,19 +516,19 @@ namespace Tarmac64_Library
 
             if (v < 0 || u + v > 1)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
             var t = Dot(edge2, qvec) * invDet;
 
-            return new Vector3D((float)t, (float)u, (float)v);
+            return new Assimp.Vector3D((float)t, (float)u, (float)v);
         }
 
-        public Vector3D testIntersect(Vector3D rayOrigin, Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, int[] ZoneIndex)
+        public Assimp.Vector3D testIntersect(Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, int[] ZoneIndex)
         {
 
-            Vector3D vert0, vert1, vert2;
+            Assimp.Vector3D vert0, vert1, vert2;
 
             vert0.X = vertA.position.x + (ZoneIndex[0] * 500);
             vert0.Y = vertA.position.y + (ZoneIndex[1] * 500);
@@ -551,7 +551,7 @@ namespace Tarmac64_Library
 
             if (det > -Epsilon && det < Epsilon)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
@@ -563,7 +563,7 @@ namespace Tarmac64_Library
 
             if (u < 0 || u > 1)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
@@ -573,24 +573,24 @@ namespace Tarmac64_Library
 
             if (v < 0 || u + v > 1)
             {
-                Vector3D returnVector = new Vector3D();
+                Assimp.Vector3D returnVector = new Assimp.Vector3D();
                 return returnVector;
             }
 
             var t = Dot(edge2, qvec) * invDet;
 
-            return new Vector3D((float)t, (float)u, (float)v);
+            return new Assimp.Vector3D((float)t, (float)u, (float)v);
         }
 
 
-        private static double Dot(Vector3D v1, Vector3D v2)
+        private static double Dot(Assimp.Vector3D v1, Assimp.Vector3D v2)
         {
             return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
         }
 
-        private static Vector3D Cross(Vector3D v1, Vector3D v2)
+        private static Assimp.Vector3D Cross(Assimp.Vector3D v1, Assimp.Vector3D v2)
         {
-            Vector3D dest;
+            Assimp.Vector3D dest;
 
             dest.X = v1.Y * v2.Z - v1.Z * v2.Y;
             dest.Y = v1.Z * v2.X - v1.X * v2.Z;
@@ -599,7 +599,7 @@ namespace Tarmac64_Library
             return dest;
         }
 
-        public static Vector3D GetTrilinearCoordinateOfTheHit(float t, Vector3D rayOrigin, Vector3D rayDirection)
+        public static Assimp.Vector3D GetTrilinearCoordinateOfTheHit(float t, Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection)
         {
             return rayDirection * t + rayOrigin;
         }
@@ -1193,34 +1193,72 @@ namespace Tarmac64_Library
             {
                 binaryWriter.Write(Skeleton.Origin[ThisVector]);
             }
-
-            binaryWriter.Write(Skeleton.Animation.RotationData.Length);
-
-
-
-            for (int ThisRot = 0; ThisRot < Skeleton.Animation.RotationData.Length; ThisRot++)
+            if (Skeleton.Animation == null)
             {
-                for(int ThisVector = 0; ThisVector < 3; ThisVector++)
-                {
-                    binaryWriter.Write(Skeleton.Animation.RotationData[ThisRot][ThisVector]);
-                }  
+                binaryWriter.Write(0);
+                binaryWriter.Write(0);
+                binaryWriter.Write(0);
             }
-            binaryWriter.Write(Skeleton.Animation.TranslationData.Length);
-            for (int ThisRot = 0; ThisRot < Skeleton.Animation.TranslationData.Length; ThisRot++)
+            else
             {
-                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+
+                if (Skeleton.Animation.RotationData != null)
                 {
-                    binaryWriter.Write(Skeleton.Animation.TranslationData[ThisRot][ThisVector]);
+                    binaryWriter.Write(Skeleton.Animation.RotationData.Length);
+
+
+                    for (int ThisRot = 0; ThisRot < Skeleton.Animation.RotationData.Length; ThisRot++)
+                    {
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            binaryWriter.Write(Skeleton.Animation.RotationData[ThisRot][ThisVector]);
+                        }
+                    }
                 }
+                else
+                {
+                    binaryWriter.Write(0);
+                }
+
+
+                if (Skeleton.Animation.TranslationData != null)
+                {
+
+                    binaryWriter.Write(Skeleton.Animation.TranslationData.Length);
+
+                    for (int ThisRot = 0; ThisRot < Skeleton.Animation.TranslationData.Length; ThisRot++)
+                    {
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            binaryWriter.Write(Skeleton.Animation.TranslationData[ThisRot][ThisVector]);
+                        }
+                    }
+                }
+                else
+                {
+                    binaryWriter.Write(0);
+                }
+
+                if (Skeleton.Animation.ScalingData != null)
+                {
+                    binaryWriter.Write(Skeleton.Animation.ScalingData.Length);
+
+                    for (int ThisRot = 0; ThisRot < Skeleton.Animation.ScalingData.Length; ThisRot++)
+                    {
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            binaryWriter.Write(Skeleton.Animation.ScalingData[ThisRot][ThisVector]);
+                        }
+                    }
+                }
+                else
+                {
+                    binaryWriter.Write(0);
+                }
+
             }
-            binaryWriter.Write(Skeleton.Animation.ScalingData.Length);
-            for (int ThisRot = 0; ThisRot < Skeleton.Animation.ScalingData.Length; ThisRot++)
-            {
-                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                {
-                    binaryWriter.Write(Skeleton.Animation.ScalingData[ThisRot][ThisVector]);
-                }
-            }            
+
+
             binaryWriter.Write(Skeleton.Children.Length);
 
 
@@ -1480,7 +1518,7 @@ namespace Tarmac64_Library
                     float centerY = (l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3;
                     float centerZ = (l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3;
 
-                    newObject.modelGeometry[currentFace].CenterPosition = new Vector3D(centerX, centerY, centerZ);
+                    newObject.modelGeometry[currentFace].CenterPosition = new Assimp.Vector3D(centerX, centerY, centerZ);
 
 
 
@@ -1619,7 +1657,7 @@ namespace Tarmac64_Library
                             else
                             {
                                 newObject.modelGeometry[currentFace].VertData[currentVert].position.sPure = fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[currentVert]][0] * 32;
-                                newObject.modelGeometry[currentFace].VertData[currentVert].position.tPure = (1 - fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[currentVert]][1]) * 32;
+                                newObject.modelGeometry[currentFace].VertData[currentVert].position.tPure = (fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[currentVert]][1]) * -32;
                             }
                             newObject.modelGeometry[currentFace].VertData[currentVert].position.u = u_offset[currentVert];
                             newObject.modelGeometry[currentFace].VertData[currentVert].position.v = v_offset[currentVert] * -1;
@@ -2107,7 +2145,7 @@ namespace Tarmac64_Library
         }
 
 
-        public List<int> RayTest (int resolution, int currentView, List<int> raycastList, List<int> searchList, Vector3D raycastOrigin, OK64F3DObject[] masterObjects)
+        public List<int> RayTest (int resolution, int currentView, List<int> raycastList, List<int> searchList, Assimp.Vector3D raycastOrigin, OK64F3DObject[] masterObjects)
         {
             int screenWidth = 180;
             int screenHeight = 160;
@@ -2126,7 +2164,7 @@ namespace Tarmac64_Library
                 for (int hPixel = 0; hPixel < screenWidth;)
                 {
 
-                    Vector3D raycastVector = new Vector3D();
+                    Assimp.Vector3D raycastVector = new Assimp.Vector3D();
                     float hAngle = new float();
                     int tempV = vPixel - 90;
                     if (tempV < 0)
@@ -2179,7 +2217,7 @@ namespace Tarmac64_Library
                                     {
                                         if (masterObjects[currentSearch].pathfindingObject.highY > raycastOrigin.Y)
                                         {
-                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+                                            Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                             if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
                                             {
@@ -2193,7 +2231,7 @@ namespace Tarmac64_Library
                                     {
                                         if (masterObjects[currentSearch].pathfindingObject.highX > raycastOrigin.X)
                                         {
-                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+                                            Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                             if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
                                             {
@@ -2207,7 +2245,7 @@ namespace Tarmac64_Library
                                     {
                                         if (masterObjects[currentSearch].pathfindingObject.lowY < raycastOrigin.Y)
                                         {
-                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+                                            Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                             if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
                                             {
@@ -2221,7 +2259,7 @@ namespace Tarmac64_Library
                                     {
                                         if (masterObjects[currentSearch].pathfindingObject.lowX < raycastOrigin.X)
                                         {
-                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+                                            Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                             if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
                                             {
@@ -2253,8 +2291,8 @@ namespace Tarmac64_Library
             int screenHeight = 160;
             int rayDepth = 30000;
             List<int> tempList = new List<int>();
-            Vector3D raycastOrigin = new Vector3D();
-            Vector3D raycastVector = new Vector3D();
+            Assimp.Vector3D raycastOrigin = new Assimp.Vector3D();
+            Assimp.Vector3D raycastVector = new Assimp.Vector3D();
 
             List<int> checkList = searchList;
             int closestMaster = 0;
@@ -2279,7 +2317,7 @@ namespace Tarmac64_Library
                             foreach (var targetFace in masterObjects[searchList[currentSearch]].modelGeometry)
                             {
                                 raycastVector = targetFace.CenterPosition;
-                                Vector3D targetPoint = testIntersect(raycastOrigin, raycastVector, targetFace.VertData[0], targetFace.VertData[1], targetFace.VertData[2]);
+                                Assimp.Vector3D targetPoint = testIntersect(raycastOrigin, raycastVector, targetFace.VertData[0], targetFace.VertData[1], targetFace.VertData[2]);
                                 if (masterObjects[searchList[currentSearch]].objectName == "CourseObject_part63");
                                 {
                                     int x = 0;
@@ -2293,7 +2331,7 @@ namespace Tarmac64_Library
                                     {
                                         foreach (var searchFace in masterObjects[checkList[currentCheck]].modelGeometry)
                                         {
-                                            Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+                                            Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                             if (Math.Abs(intersectionPoint.X) > 0)
                                             {
@@ -2309,7 +2347,7 @@ namespace Tarmac64_Library
 
                                 for (int TargetVert = 0; TargetVert < 3; TargetVert++)
                                 {
-                                    raycastVector = new Vector3D(targetFace.VertData[TargetVert].position.x, targetFace.VertData[TargetVert].position.y, targetFace.VertData[TargetVert].position.z);
+                                    raycastVector = new Assimp.Vector3D(targetFace.VertData[TargetVert].position.x, targetFace.VertData[TargetVert].position.y, targetFace.VertData[TargetVert].position.z);
                                     targetPoint = testIntersect(raycastOrigin, raycastVector, targetFace.VertData[0], targetFace.VertData[1], targetFace.VertData[2]);
 
                                     if (Math.Abs(targetPoint.X) > 0)
@@ -2321,7 +2359,7 @@ namespace Tarmac64_Library
                                         {
                                             foreach (var searchFace in masterObjects[checkList[currentCheck]].modelGeometry)
                                             {
-                                                Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
+                                                Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
 
                                                 if (Math.Abs(intersectionPoint.X) > 0)
                                                 {
@@ -4327,9 +4365,9 @@ namespace Tarmac64_Library
 
             Matrix4x4 OPrime = GetTotalTransform(Base, FBX);
             NewBone.Origin = new short[3];
-            NewBone.Origin[0] = Convert.ToInt16(OPrime.A4);
-            NewBone.Origin[2] = Convert.ToInt16(OPrime.B4);
-            NewBone.Origin[1] = Convert.ToInt16(OPrime.C4 * -1);
+            NewBone.Origin[0] = Convert.ToInt16(OPrime.A4 * 100);
+            NewBone.Origin[1] = Convert.ToInt16(OPrime.C4 * 100);
+            NewBone.Origin[2] = Convert.ToInt16(OPrime.B4 * 100);
 
             //Base.Transform.
             for (int ThisChild = 0; ThisChild < Base.ChildCount; ThisChild++)
@@ -4406,16 +4444,20 @@ namespace Tarmac64_Library
                     flip2 = BitConverter.GetBytes(SaveObject.TextureData[SaveObject.ModelData[ThisObject].materialID].f3dexPosition[0]);
                     Array.Reverse(flip2);
                     binaryWriter.Write(flip2);
+
+                    flip2 = BitConverter.GetBytes(Convert.ToInt32(SaveObject.ModelData[ThisObject].meshPosition.Length));
+                    Array.Reverse(flip2);
+                    binaryWriter.Write(flip2);
+
                     flip2 = BitConverter.GetBytes(Convert.ToInt32(SaveObject.ModelData[ThisObject].ListPosition | 0x0A000000));
                     Array.Reverse(flip2);
                     binaryWriter.Write(flip2);
-                    binaryWriter.Write();
                 }
             }
 
             for (int ThisChild = 0; ThisChild < Skeleton.Children.Length; ThisChild++)
             {
-                binaryWriter.Write(WriteAnimationModels(Skeleton.Children[ThisChild], SaveObject, Magic));
+                binaryWriter.Write(WriteAnimationModels(Skeleton.Children[ThisChild], SaveObject, Convert.ToInt32(binaryWriter.BaseStream.Length + Magic)));
             }
 
             return memoryStream.ToArray();
@@ -4429,15 +4471,15 @@ namespace Tarmac64_Library
             byte[] flip2 = new byte[2];
             List<byte> AnimationData = new List<byte>();
 
-            flip2 = BitConverter.GetBytes(Skeleton.Animation.TranslationData[0][0]);
+            flip2 = BitConverter.GetBytes(Skeleton.Origin[0]);
             Array.Reverse(flip2);
             binaryWriter.Write(flip2);
 
-            flip2 = BitConverter.GetBytes(Skeleton.Animation.TranslationData[0][2]);
+            flip2 = BitConverter.GetBytes(Skeleton.Origin[2]);
             Array.Reverse(flip2);
             binaryWriter.Write(flip2);
 
-            flip2 = BitConverter.GetBytes(Skeleton.Animation.TranslationData[0][1] * -1);
+            flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Origin[1] * -1));
             Array.Reverse(flip2);
             binaryWriter.Write(flip2);
 
@@ -4445,30 +4487,80 @@ namespace Tarmac64_Library
 
             for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.RotationData.Length; ThisFrame++)
             {
-                flip2 = BitConverter.GetBytes(Skeleton.Animation.RotationData[ThisFrame][0]);
+                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][0]));
                 Array.Reverse(flip2);
                 binaryWriter.Write(flip2);
 
-                flip2 = BitConverter.GetBytes(Skeleton.Animation.RotationData[ThisFrame][2]);
+                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][2]));
                 Array.Reverse(flip2);
                 binaryWriter.Write(flip2);
 
-                flip2 = BitConverter.GetBytes(Skeleton.Animation.RotationData[ThisFrame][1]);
+                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][1]));
                 Array.Reverse(flip2);
                 binaryWriter.Write(flip2);
+            }
+
+
+            if (Skeleton.FrameCount % 2 == 1)
+            {
+                binaryWriter.Write(Convert.ToInt16(0));
+            }
+
+
+            for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.TranslationData.Length; ThisFrame++)
+            {
+                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][0]));
+                Array.Reverse(flip2);
+                binaryWriter.Write(flip2);
+
+                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][2]));
+                Array.Reverse(flip2);
+                binaryWriter.Write(flip2);
+
+                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][1] * -1));
+                Array.Reverse(flip2);
+                binaryWriter.Write(flip2);
+            }
+
+
+            if (Skeleton.FrameCount % 2 == 1)
+            {
+                binaryWriter.Write(Convert.ToInt16(0));
+            }
+
+
+            for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.ScalingData.Length; ThisFrame++)
+            {
+                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][0]));
+                Array.Reverse(flip2);
+                binaryWriter.Write(flip2);
+
+                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][2]));
+                Array.Reverse(flip2);
+                binaryWriter.Write(flip2);
+
+                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][1]));
+                Array.Reverse(flip2);
+                binaryWriter.Write(flip2);
+            }
+
+
+            if (Skeleton.FrameCount % 2 == 1)
+            {
+                binaryWriter.Write(Convert.ToInt16(0));
             }
 
 
             foreach (var ChildBone in Skeleton.Children)
             {
 
-                ChildBone.TranslationOffset = Convert.ToInt32(binaryWriter.BaseStream.Position + Skeleton.TranslationOffset);
+                ChildBone.TranslationOffset = Convert.ToInt32(Magic + binaryWriter.BaseStream.Position + Skeleton.TranslationOffset);
                 binaryWriter.Write(WriteAnimationData(ChildBone, ChildBone.TranslationOffset));
             }
             return memoryStream.ToArray();
         }
 
-        public byte[] BuildAnimationData(OK64Bone Skeleton)
+        public byte[] BuildAnimationData(OK64Bone Skeleton, int Magic)
         {
 
             MemoryStream memoryStream = new MemoryStream();
@@ -4476,13 +4568,13 @@ namespace Tarmac64_Library
             byte[] flip2 = new byte[2];
             List<byte> AnimationData = new List<byte>();
 
-            Skeleton.TranslationOffset = 0;
+            Skeleton.TranslationOffset = Magic;
 
-            binaryWriter.Write(WriteAnimationData(Skeleton, 0));
+            binaryWriter.Write(WriteAnimationData(Skeleton, Magic));
 
             foreach (var ChildBone in Skeleton.Children)
             {
-                ChildBone.TranslationOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                ChildBone.TranslationOffset = Convert.ToInt32(Magic + binaryWriter.BaseStream.Position);
                 binaryWriter.Write(WriteAnimationData(ChildBone, ChildBone.TranslationOffset));
             }
 
@@ -4499,6 +4591,10 @@ namespace Tarmac64_Library
             binaryWriter.Write(flip2);
 
             flip2 = BitConverter.GetBytes(Skeleton.MeshCount);
+            Array.Reverse(flip2);
+            binaryWriter.Write(flip2);
+
+            flip2 = BitConverter.GetBytes(SaveObject.ModelScale);
             Array.Reverse(flip2);
             binaryWriter.Write(flip2);
 
@@ -4679,7 +4775,7 @@ namespace Tarmac64_Library
                     NewAnime.TranslationData[ThisFrame] = new short[3];
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                     {
-                        NewAnime.TranslationData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Value[ThisVector]);
+                        NewAnime.TranslationData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Value[ThisVector] * 100);
                     }
                 }
                 else
@@ -4747,13 +4843,63 @@ namespace Tarmac64_Library
 
             return NewAnime;
         }
-        public OK64Bone ParseAnimation(Scene FBX, NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
+
+
+        public Point3D RotatePoint(Point3D Point, float[] ObjectAngles)
+        {
+            var id = Matrix3D.Identity;
+            id.Rotate(new System.Windows.Media.Media3D.Quaternion(new System.Windows.Media.Media3D.Vector3D(1, 0, 0), ObjectAngles[0]));
+            id.Rotate(new System.Windows.Media.Media3D.Quaternion(new System.Windows.Media.Media3D.Vector3D(0, 1, 0), ObjectAngles[1]));
+            id.Rotate(new System.Windows.Media.Media3D.Quaternion(new System.Windows.Media.Media3D.Vector3D(0, 0, 1), ObjectAngles[2]));
+            return id.Transform(Point);
+        }
+
+        public OK64Bone TransformBone(OK64Bone Bone, OK64Bone Parent, int FrameCount)
         {
             
+            for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
+            {
+                Point3D Root = new Point3D() { X = Bone.Origin[0] - Parent.Origin[0], Y = Bone.Origin[1] - Parent.Origin[1], Z = Bone.Origin[2] - Parent.Origin[2] };
+                float[] Angle = new float[3]{
+                    Convert.ToSingle(Parent.Animation.RotationData[ThisFrame][0]),
+                    Convert.ToSingle(Parent.Animation.RotationData[ThisFrame][1]),
+                    Convert.ToSingle(Parent.Animation.RotationData[ThisFrame][2]),
+                };
+                Point3D Branch = RotatePoint(Root, Angle);
+                
+                Bone.Animation.TranslationData[ThisFrame][0] += Convert.ToInt16((Branch.X - Root.X) + Parent.Animation.TranslationData[ThisFrame][0]);
+                Bone.Animation.TranslationData[ThisFrame][1] += Convert.ToInt16((Branch.Y - Root.Y) + Parent.Animation.TranslationData[ThisFrame][1]);
+                Bone.Animation.TranslationData[ThisFrame][2] += Convert.ToInt16((Branch.Z - Root.Z) + Parent.Animation.TranslationData[ThisFrame][2]);
+
+            }
+
+
+            Bone.Origin[0] += Parent.Origin[0];
+            Bone.Origin[1] += Parent.Origin[1];
+            Bone.Origin[2] += Parent.Origin[2];
+            return Bone;
+        }
+        public OK64Bone GetTransforms(OK64Bone Skeleton, int FrameCount)
+        {
+            foreach (var Child in Skeleton.Children)
+            {
+                TransformBone(Child, Skeleton, FrameCount);
+            }
+
+            foreach (var Child in Skeleton.Children)
+            {
+                GetTransforms(Child, FrameCount);
+            }
+            return Skeleton;
+        }
+
+        public OK64Bone ParseAnimation(Scene FBX, NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
+        {
+
             if (Bone.Name == AnimeChannel.NodeName)
             {
-                Bone.Animation = LoadAnimation(AnimeChannel, Bone, FrameCount);    
-                
+                Bone.Animation = LoadAnimation(AnimeChannel, Bone, FrameCount);
+
             }
             foreach (var Child in Bone.Children)
             {
@@ -4773,7 +4919,7 @@ namespace Tarmac64_Library
             {
                 ParseAnimation(FBX, Anime.NodeAnimationChannels[ThisNode], Skeleton, Skeleton.FrameCount);
             }
-            
+            GetTransforms(Skeleton, Skeleton.FrameCount);
             return Skeleton;
         }
         
