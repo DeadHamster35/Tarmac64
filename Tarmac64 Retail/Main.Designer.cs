@@ -28,15 +28,19 @@
             this.label4 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.ToolsStripMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.textureListsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.ObjectToolstrip = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.courseLoaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetFoldersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label5 = new System.Windows.Forms.Label();
-            this.extrasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textureCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modelCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.songExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ghostExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compilersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textureCompilerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelCompilerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.courseCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.objectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.objectTypeCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hitboxCompilerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,8 +90,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolsStripMenu,
-            this.resetFoldersToolStripMenuItem,
-            this.extrasToolStripMenuItem});
+            this.resetFoldersToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(426, 24);
@@ -97,39 +100,17 @@
             // ToolsStripMenu
             // 
             this.ToolsStripMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.textureListsToolStripMenuItem1,
-            this.ObjectToolstrip,
-            this.toolStripMenuItem1,
+            this.compilersToolStripMenuItem,
+            this.extractorsToolStripMenuItem,
             this.courseLoaderToolStripMenuItem});
             this.ToolsStripMenu.Name = "ToolsStripMenu";
-            this.ToolsStripMenu.Size = new System.Drawing.Size(48, 20);
-            this.ToolsStripMenu.Text = "Tools";
-            // 
-            // textureListsToolStripMenuItem1
-            // 
-            this.textureListsToolStripMenuItem1.Name = "textureListsToolStripMenuItem1";
-            this.textureListsToolStripMenuItem1.Size = new System.Drawing.Size(190, 22);
-            this.textureListsToolStripMenuItem1.Text = "Course Compiler";
-            this.textureListsToolStripMenuItem1.Click += new System.EventHandler(this.GeometryToolStripMenuItem1_Click);
-            // 
-            // ObjectToolstrip
-            // 
-            this.ObjectToolstrip.Name = "ObjectToolstrip";
-            this.ObjectToolstrip.Size = new System.Drawing.Size(190, 22);
-            this.ObjectToolstrip.Text = "Object Type Compiler";
-            this.ObjectToolstrip.Click += new System.EventHandler(this.objectTypeCompilerToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(190, 22);
-            this.toolStripMenuItem1.Text = "Song Extractor";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            this.ToolsStripMenu.Size = new System.Drawing.Size(89, 20);
+            this.ToolsStripMenu.Text = "Tools           +";
             // 
             // courseLoaderToolStripMenuItem
             // 
             this.courseLoaderToolStripMenuItem.Name = "courseLoaderToolStripMenuItem";
-            this.courseLoaderToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.courseLoaderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.courseLoaderToolStripMenuItem.Text = "Game Builder";
             this.courseLoaderToolStripMenuItem.Click += new System.EventHandler(this.courseLoaderToolStripMenuItem_Click);
             // 
@@ -149,28 +130,83 @@
             this.label5.TabIndex = 32;
             this.label5.Text = "Triclon\r\nqueueRAM\r\nRain\r\nHootHoot\r\nshygoo\r\nDaniel McCarthy\r\ndwmkerr\r\n";
             // 
-            // extrasToolStripMenuItem
+            // extractorsToolStripMenuItem
             // 
-            this.extrasToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.textureCompilerToolStripMenuItem,
-            this.modelCompilerToolStripMenuItem});
-            this.extrasToolStripMenuItem.Name = "extrasToolStripMenuItem";
-            this.extrasToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
-            this.extrasToolStripMenuItem.Text = "Extras";
+            this.extractorsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.songExtractorToolStripMenuItem,
+            this.ghostExtractorToolStripMenuItem});
+            this.extractorsToolStripMenuItem.Name = "extractorsToolStripMenuItem";
+            this.extractorsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractorsToolStripMenuItem.Text = "Extractors";
             // 
-            // textureCompilerToolStripMenuItem
+            // songExtractorToolStripMenuItem
             // 
-            this.textureCompilerToolStripMenuItem.Name = "textureCompilerToolStripMenuItem";
-            this.textureCompilerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.textureCompilerToolStripMenuItem.Text = "Texture Compiler";
-            this.textureCompilerToolStripMenuItem.Click += new System.EventHandler(this.textureCompilerToolStripMenuItem_Click_1);
+            this.songExtractorToolStripMenuItem.Name = "songExtractorToolStripMenuItem";
+            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.songExtractorToolStripMenuItem.Text = "Song Extractor";
+            this.songExtractorToolStripMenuItem.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
-            // modelCompilerToolStripMenuItem
+            // ghostExtractorToolStripMenuItem
             // 
-            this.modelCompilerToolStripMenuItem.Name = "modelCompilerToolStripMenuItem";
-            this.modelCompilerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.modelCompilerToolStripMenuItem.Text = "Model Compiler";
-            this.modelCompilerToolStripMenuItem.Click += new System.EventHandler(this.modelCompilerToolStripMenuItem_Click_1);
+            this.ghostExtractorToolStripMenuItem.Name = "ghostExtractorToolStripMenuItem";
+            this.ghostExtractorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ghostExtractorToolStripMenuItem.Text = "Ghost Extractor";
+            this.ghostExtractorToolStripMenuItem.Click += new System.EventHandler(this.ghostExtractorToolStripMenuItem_Click);
+            // 
+            // compilersToolStripMenuItem
+            // 
+            this.compilersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.courseCompilerToolStripMenuItem,
+            this.objectsToolStripMenuItem,
+            this.textureCompilerToolStripMenuItem1,
+            this.modelCompilerToolStripMenuItem1});
+            this.compilersToolStripMenuItem.Name = "compilersToolStripMenuItem";
+            this.compilersToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.compilersToolStripMenuItem.Text = "Compilers";
+            // 
+            // textureCompilerToolStripMenuItem1
+            // 
+            this.textureCompilerToolStripMenuItem1.Name = "textureCompilerToolStripMenuItem1";
+            this.textureCompilerToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.textureCompilerToolStripMenuItem1.Text = "Texture Compiler";
+            this.textureCompilerToolStripMenuItem1.Click += new System.EventHandler(this.textureCompilerToolStripMenuItem_Click_1);
+            // 
+            // modelCompilerToolStripMenuItem1
+            // 
+            this.modelCompilerToolStripMenuItem1.Name = "modelCompilerToolStripMenuItem1";
+            this.modelCompilerToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.modelCompilerToolStripMenuItem1.Text = "Model Compiler";
+            this.modelCompilerToolStripMenuItem1.Click += new System.EventHandler(this.modelCompilerToolStripMenuItem_Click);
+            // 
+            // courseCompilerToolStripMenuItem
+            // 
+            this.courseCompilerToolStripMenuItem.Name = "courseCompilerToolStripMenuItem";
+            this.courseCompilerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.courseCompilerToolStripMenuItem.Text = "Course Compiler";
+            this.courseCompilerToolStripMenuItem.Click += new System.EventHandler(this.GeometryToolStripMenuItem1_Click);
+            // 
+            // objectsToolStripMenuItem
+            // 
+            this.objectsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.objectTypeCompilerToolStripMenuItem,
+            this.hitboxCompilerToolStripMenuItem1});
+            this.objectsToolStripMenuItem.Name = "objectsToolStripMenuItem";
+            this.objectsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.objectsToolStripMenuItem.Text = "Objects";
+            // 
+            // objectTypeCompilerToolStripMenuItem
+            // 
+            this.objectTypeCompilerToolStripMenuItem.Name = "objectTypeCompilerToolStripMenuItem";
+            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.objectTypeCompilerToolStripMenuItem.Text = "Object Type Compiler";
+            this.objectTypeCompilerToolStripMenuItem.Click += new System.EventHandler(this.objectTypeCompilerToolStripMenuItem_Click);
+            // 
+            // hitboxCompilerToolStripMenuItem1
+            // 
+            this.hitboxCompilerToolStripMenuItem1.Name = "hitboxCompilerToolStripMenuItem1";
+            this.hitboxCompilerToolStripMenuItem1.Size = new System.Drawing.Size(190, 22);
+            this.hitboxCompilerToolStripMenuItem1.Text = "Hitbox Compiler";
+            this.hitboxCompilerToolStripMenuItem1.Click += new System.EventHandler(this.hitboxCompilerToolStripMenuItem_Click);
             // 
             // TarmacAbout
             // 
@@ -203,14 +239,18 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem ToolsStripMenu;
-        private System.Windows.Forms.ToolStripMenuItem textureListsToolStripMenuItem1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ToolStripMenuItem resetFoldersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem courseLoaderToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem ObjectToolstrip;
-        private System.Windows.Forms.ToolStripMenuItem extrasToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem textureCompilerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem modelCompilerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem compilersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem courseCompilerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem objectsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem objectTypeCompilerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hitboxCompilerToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem textureCompilerToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem modelCompilerToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem extractorsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem songExtractorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ghostExtractorToolStripMenuItem;
     }
 }

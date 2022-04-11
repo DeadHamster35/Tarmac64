@@ -29,11 +29,13 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label19 = new System.Windows.Forms.Label();
-            this.DmgResultBox = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.FlagBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.ColResultBox = new System.Windows.Forms.ComboBox();
+            this.HitboxBtn = new System.Windows.Forms.Button();
+            this.HitboxBox = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.ZSortBox = new System.Windows.Forms.CheckBox();
             this.GravityBox = new System.Windows.Forms.CheckBox();
@@ -50,8 +52,6 @@
             this.WalkBox = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.HitBox = new System.Windows.Forms.TextBox();
             this.RenderBox = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.SoundTypeBox = new System.Windows.Forms.ComboBox();
@@ -59,12 +59,8 @@
             this.SoundRangeBox = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.SoundNameBox = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.EffectBox = new System.Windows.Forms.ComboBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.StatusBox = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.CollisionBox = new System.Windows.Forms.TextBox();
+            this.LevelBump = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.ScaleBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -83,7 +79,6 @@
             this.LoadBtn = new System.Windows.Forms.Button();
             this.ModelBox = new System.Windows.Forms.TextBox();
             this.BuildBtn = new System.Windows.Forms.Button();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -99,18 +94,25 @@
             this.panel1.Size = new System.Drawing.Size(314, 588);
             this.panel1.TabIndex = 255;
             // 
+            // TextureControl
+            // 
+            this.TextureControl.AutoScroll = true;
+            this.TextureControl.Location = new System.Drawing.Point(3, 3);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(292, 780);
+            this.TextureControl.TabIndex = 269;
+            // 
             // panel2
             // 
             this.panel2.AutoScroll = true;
-            this.panel2.Controls.Add(this.label19);
-            this.panel2.Controls.Add(this.DmgResultBox);
+            this.panel2.Controls.Add(this.label10);
+            this.panel2.Controls.Add(this.FlagBox);
             this.panel2.Controls.Add(this.label3);
-            this.panel2.Controls.Add(this.ColResultBox);
+            this.panel2.Controls.Add(this.HitboxBtn);
+            this.panel2.Controls.Add(this.HitboxBox);
             this.panel2.Controls.Add(this.groupBox2);
             this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Controls.Add(this.label16);
-            this.panel2.Controls.Add(this.label15);
-            this.panel2.Controls.Add(this.HitBox);
             this.panel2.Controls.Add(this.RenderBox);
             this.panel2.Controls.Add(this.label14);
             this.panel2.Controls.Add(this.SoundTypeBox);
@@ -118,12 +120,8 @@
             this.panel2.Controls.Add(this.SoundRangeBox);
             this.panel2.Controls.Add(this.label12);
             this.panel2.Controls.Add(this.SoundNameBox);
-            this.panel2.Controls.Add(this.label11);
-            this.panel2.Controls.Add(this.EffectBox);
-            this.panel2.Controls.Add(this.label10);
-            this.panel2.Controls.Add(this.StatusBox);
             this.panel2.Controls.Add(this.label9);
-            this.panel2.Controls.Add(this.CollisionBox);
+            this.panel2.Controls.Add(this.LevelBump);
             this.panel2.Controls.Add(this.label8);
             this.panel2.Controls.Add(this.ScaleBox);
             this.panel2.Controls.Add(this.label7);
@@ -143,51 +141,64 @@
             this.panel2.Controls.Add(this.ModelBox);
             this.panel2.Location = new System.Drawing.Point(12, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(246, 553);
+            this.panel2.Size = new System.Drawing.Size(246, 562);
             this.panel2.TabIndex = 240;
             // 
-            // label19
+            // label10
             // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(173, 351);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(53, 13);
-            this.label19.TabIndex = 294;
-            this.label19.Text = "Damaged";
-            this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(174, 362);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(27, 13);
+            this.label10.TabIndex = 293;
+            this.label10.Text = "Flag";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // DmgResultBox
+            // FlagBox
             // 
-            this.DmgResultBox.FormattingEnabled = true;
-            this.DmgResultBox.Location = new System.Drawing.Point(4, 348);
-            this.DmgResultBox.Name = "DmgResultBox";
-            this.DmgResultBox.Size = new System.Drawing.Size(162, 21);
-            this.DmgResultBox.TabIndex = 10;
+            this.FlagBox.Location = new System.Drawing.Point(116, 359);
+            this.FlagBox.Margin = new System.Windows.Forms.Padding(5);
+            this.FlagBox.Name = "FlagBox";
+            this.FlagBox.Size = new System.Drawing.Size(50, 20);
+            this.FlagBox.TabIndex = 292;
+            this.FlagBox.Text = "0";
+            this.FlagBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(175, 324);
+            this.label3.Location = new System.Drawing.Point(175, 72);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(45, 13);
-            this.label3.TabIndex = 292;
-            this.label3.Text = "Collision";
+            this.label3.Size = new System.Drawing.Size(37, 13);
+            this.label3.TabIndex = 291;
+            this.label3.Text = "Hitbox";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // ColResultBox
+            // HitboxBtn
             // 
-            this.ColResultBox.FormattingEnabled = true;
-            this.ColResultBox.Location = new System.Drawing.Point(6, 321);
-            this.ColResultBox.Name = "ColResultBox";
-            this.ColResultBox.Size = new System.Drawing.Size(162, 21);
-            this.ColResultBox.TabIndex = 9;
+            this.HitboxBtn.Location = new System.Drawing.Point(143, 67);
+            this.HitboxBtn.Name = "HitboxBtn";
+            this.HitboxBtn.Size = new System.Drawing.Size(25, 23);
+            this.HitboxBtn.TabIndex = 290;
+            this.HitboxBtn.Text = "...";
+            this.HitboxBtn.UseVisualStyleBackColor = true;
+            this.HitboxBtn.Click += new System.EventHandler(this.HitboxBtn_Click);
+            // 
+            // HitboxBox
+            // 
+            this.HitboxBox.Location = new System.Drawing.Point(4, 69);
+            this.HitboxBox.Margin = new System.Windows.Forms.Padding(5);
+            this.HitboxBox.Name = "HitboxBox";
+            this.HitboxBox.Size = new System.Drawing.Size(131, 20);
+            this.HitboxBox.TabIndex = 289;
+            this.HitboxBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.ZSortBox);
             this.groupBox2.Controls.Add(this.GravityBox);
             this.groupBox2.Controls.Add(this.CameraAlignBox);
-            this.groupBox2.Location = new System.Drawing.Point(4, 524);
+            this.groupBox2.Location = new System.Drawing.Point(2, 446);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(220, 77);
             this.groupBox2.TabIndex = 20;
@@ -241,7 +252,7 @@
             this.groupBox1.Controls.Add(this.label17);
             this.groupBox1.Controls.Add(this.WalkBox);
             this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Location = new System.Drawing.Point(4, 67);
+            this.groupBox1.Location = new System.Drawing.Point(4, 97);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(220, 137);
             this.groupBox1.TabIndex = 3;
@@ -348,36 +359,16 @@
             // 
             // label16
             // 
-            this.label16.Location = new System.Drawing.Point(64, 433);
+            this.label16.Location = new System.Drawing.Point(62, 355);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(46, 27);
             this.label16.TabIndex = 288;
             this.label16.Text = "Render Radius";
             this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(175, 440);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(37, 13);
-            this.label15.TabIndex = 287;
-            this.label15.Text = "Hitbox";
-            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // HitBox
-            // 
-            this.HitBox.Location = new System.Drawing.Point(118, 437);
-            this.HitBox.Margin = new System.Windows.Forms.Padding(5);
-            this.HitBox.Name = "HitBox";
-            this.HitBox.Size = new System.Drawing.Size(50, 20);
-            this.HitBox.TabIndex = 16;
-            this.HitBox.Text = "5";
-            this.HitBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // RenderBox
             // 
-            this.RenderBox.Location = new System.Drawing.Point(6, 437);
+            this.RenderBox.Location = new System.Drawing.Point(4, 359);
             this.RenderBox.Margin = new System.Windows.Forms.Padding(5);
             this.RenderBox.Name = "RenderBox";
             this.RenderBox.Size = new System.Drawing.Size(50, 20);
@@ -387,7 +378,7 @@
             // 
             // label14
             // 
-            this.label14.Location = new System.Drawing.Point(176, 551);
+            this.label14.Location = new System.Drawing.Point(173, 413);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(39, 27);
             this.label14.TabIndex = 284;
@@ -397,14 +388,14 @@
             // SoundTypeBox
             // 
             this.SoundTypeBox.FormattingEnabled = true;
-            this.SoundTypeBox.Location = new System.Drawing.Point(107, 495);
+            this.SoundTypeBox.Location = new System.Drawing.Point(105, 417);
             this.SoundTypeBox.Name = "SoundTypeBox";
             this.SoundTypeBox.Size = new System.Drawing.Size(59, 21);
             this.SoundTypeBox.TabIndex = 19;
             // 
             // label13
             // 
-            this.label13.Location = new System.Drawing.Point(62, 492);
+            this.label13.Location = new System.Drawing.Point(60, 414);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(39, 27);
             this.label13.TabIndex = 282;
@@ -413,7 +404,7 @@
             // 
             // SoundRangeBox
             // 
-            this.SoundRangeBox.Location = new System.Drawing.Point(6, 496);
+            this.SoundRangeBox.Location = new System.Drawing.Point(4, 418);
             this.SoundRangeBox.Margin = new System.Windows.Forms.Padding(5);
             this.SoundRangeBox.Name = "SoundRangeBox";
             this.SoundRangeBox.Size = new System.Drawing.Size(50, 20);
@@ -424,7 +415,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(175, 468);
+            this.label12.Location = new System.Drawing.Point(173, 390);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(38, 13);
             this.label12.TabIndex = 280;
@@ -434,71 +425,35 @@
             // SoundNameBox
             // 
             this.SoundNameBox.FormattingEnabled = true;
-            this.SoundNameBox.Location = new System.Drawing.Point(6, 465);
+            this.SoundNameBox.Location = new System.Drawing.Point(4, 387);
             this.SoundNameBox.Name = "SoundNameBox";
             this.SoundNameBox.Size = new System.Drawing.Size(162, 21);
             this.SoundNameBox.TabIndex = 17;
             // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(175, 297);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(35, 13);
-            this.label11.TabIndex = 278;
-            this.label11.Text = "Effect";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // EffectBox
-            // 
-            this.EffectBox.FormattingEnabled = true;
-            this.EffectBox.Location = new System.Drawing.Point(6, 294);
-            this.EffectBox.Name = "EffectBox";
-            this.EffectBox.Size = new System.Drawing.Size(162, 21);
-            this.EffectBox.TabIndex = 8;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(175, 270);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(37, 13);
-            this.label10.TabIndex = 276;
-            this.label10.Text = "Status";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // StatusBox
-            // 
-            this.StatusBox.FormattingEnabled = true;
-            this.StatusBox.Location = new System.Drawing.Point(6, 267);
-            this.StatusBox.Name = "StatusBox";
-            this.StatusBox.Size = new System.Drawing.Size(162, 21);
-            this.StatusBox.TabIndex = 7;
-            // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(175, 403);
+            this.label9.Location = new System.Drawing.Point(173, 325);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(37, 26);
             this.label9.TabIndex = 274;
             this.label9.Text = "Level\r\nHitbox\r\n";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // CollisionBox
+            // LevelBump
             // 
-            this.CollisionBox.Location = new System.Drawing.Point(118, 407);
-            this.CollisionBox.Margin = new System.Windows.Forms.Padding(5);
-            this.CollisionBox.Name = "CollisionBox";
-            this.CollisionBox.Size = new System.Drawing.Size(50, 20);
-            this.CollisionBox.TabIndex = 14;
-            this.CollisionBox.Text = "5";
-            this.CollisionBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.LevelBump.Location = new System.Drawing.Point(116, 329);
+            this.LevelBump.Margin = new System.Windows.Forms.Padding(5);
+            this.LevelBump.Name = "LevelBump";
+            this.LevelBump.Size = new System.Drawing.Size(50, 20);
+            this.LevelBump.TabIndex = 14;
+            this.LevelBump.Text = "5";
+            this.LevelBump.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(52, 215);
+            this.label8.Location = new System.Drawing.Point(52, 245);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(57, 13);
             this.label8.TabIndex = 272;
@@ -506,7 +461,7 @@
             // 
             // ScaleBox
             // 
-            this.ScaleBox.Location = new System.Drawing.Point(4, 212);
+            this.ScaleBox.Location = new System.Drawing.Point(4, 242);
             this.ScaleBox.Margin = new System.Windows.Forms.Padding(5);
             this.ScaleBox.Name = "ScaleBox";
             this.ScaleBox.Size = new System.Drawing.Size(40, 20);
@@ -517,7 +472,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(175, 215);
+            this.label7.Location = new System.Drawing.Point(173, 245);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(38, 13);
             this.label7.TabIndex = 269;
@@ -526,7 +481,7 @@
             // 
             // SpeedBox
             // 
-            this.SpeedBox.Location = new System.Drawing.Point(118, 212);
+            this.SpeedBox.Location = new System.Drawing.Point(118, 242);
             this.SpeedBox.Margin = new System.Windows.Forms.Padding(5);
             this.SpeedBox.Name = "SpeedBox";
             this.SpeedBox.Size = new System.Drawing.Size(50, 20);
@@ -537,7 +492,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(175, 243);
+            this.label6.Location = new System.Drawing.Point(173, 273);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(49, 13);
             this.label6.TabIndex = 267;
@@ -547,7 +502,7 @@
             // BehaviorBox
             // 
             this.BehaviorBox.FormattingEnabled = true;
-            this.BehaviorBox.Location = new System.Drawing.Point(4, 240);
+            this.BehaviorBox.Location = new System.Drawing.Point(4, 270);
             this.BehaviorBox.Name = "BehaviorBox";
             this.BehaviorBox.Size = new System.Drawing.Size(162, 21);
             this.BehaviorBox.TabIndex = 6;
@@ -556,7 +511,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(64, 410);
+            this.label5.Location = new System.Drawing.Point(62, 332);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(30, 13);
             this.label5.TabIndex = 265;
@@ -564,7 +519,7 @@
             // 
             // Viewconebox
             // 
-            this.Viewconebox.Location = new System.Drawing.Point(6, 407);
+            this.Viewconebox.Location = new System.Drawing.Point(4, 329);
             this.Viewconebox.Margin = new System.Windows.Forms.Padding(5);
             this.Viewconebox.Name = "Viewconebox";
             this.Viewconebox.Size = new System.Drawing.Size(50, 20);
@@ -575,7 +530,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(175, 380);
+            this.label4.Location = new System.Drawing.Point(173, 302);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(31, 13);
             this.label4.TabIndex = 263;
@@ -584,7 +539,7 @@
             // 
             // SightBox
             // 
-            this.SightBox.Location = new System.Drawing.Point(118, 377);
+            this.SightBox.Location = new System.Drawing.Point(116, 299);
             this.SightBox.Margin = new System.Windows.Forms.Padding(5);
             this.SightBox.Name = "SightBox";
             this.SightBox.Size = new System.Drawing.Size(50, 20);
@@ -595,7 +550,7 @@
             // RangeLabel
             // 
             this.RangeLabel.AutoSize = true;
-            this.RangeLabel.Location = new System.Drawing.Point(64, 380);
+            this.RangeLabel.Location = new System.Drawing.Point(62, 302);
             this.RangeLabel.Name = "RangeLabel";
             this.RangeLabel.Size = new System.Drawing.Size(39, 13);
             this.RangeLabel.TabIndex = 261;
@@ -603,7 +558,7 @@
             // 
             // RangeBox
             // 
-            this.RangeBox.Location = new System.Drawing.Point(6, 377);
+            this.RangeBox.Location = new System.Drawing.Point(4, 299);
             this.RangeBox.Margin = new System.Windows.Forms.Padding(5);
             this.RangeBox.Name = "RangeBox";
             this.RangeBox.Size = new System.Drawing.Size(50, 20);
@@ -669,14 +624,6 @@
             this.BuildBtn.UseVisualStyleBackColor = true;
             this.BuildBtn.Click += new System.EventHandler(this.BuildBtn_Click);
             // 
-            // TextureControl
-            // 
-            this.TextureControl.AutoScroll = true;
-            this.TextureControl.Location = new System.Drawing.Point(3, 3);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(292, 780);
-            this.TextureControl.TabIndex = 269;
-            // 
             // ObjectTypeCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -722,8 +669,6 @@
         private System.Windows.Forms.TextBox WalkBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.TextBox HitBox;
         private System.Windows.Forms.TextBox RenderBox;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.ComboBox SoundTypeBox;
@@ -731,12 +676,8 @@
         private System.Windows.Forms.TextBox SoundRangeBox;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox SoundNameBox;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ComboBox EffectBox;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ComboBox StatusBox;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox CollisionBox;
+        private System.Windows.Forms.TextBox LevelBump;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox ScaleBox;
         private System.Windows.Forms.Label label7;
@@ -755,9 +696,10 @@
         private System.Windows.Forms.Button LoadBtn;
         private System.Windows.Forms.TextBox ModelBox;
         private System.Windows.Forms.Button BuildBtn;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.ComboBox DmgResultBox;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox ColResultBox;
+        private System.Windows.Forms.Button HitboxBtn;
+        private System.Windows.Forms.TextBox HitboxBox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox FlagBox;
     }
 }

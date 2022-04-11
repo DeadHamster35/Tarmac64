@@ -51,7 +51,8 @@ namespace Tarmac64_Retail
             CourseData.EchoAdjustColor = new TM64_Geometry.OK64Color();
             CourseData.PathEffects = new TM64_Course.PathEffect[0];
             CourseData.BombArray = new TM64_Course.VSBomb[7];
-
+            CourseData.PathSurface = new int[4];
+            
 
 
             SkyRM.Text = "216";
@@ -74,6 +75,12 @@ namespace Tarmac64_Retail
 
             skyBox.SelectedIndex = 0;
             weatherBox.SelectedIndex = 0;
+
+            PathSurfaceSelect.Items.Add("Path 0");
+            PathSurfaceSelect.Items.Add("Path 1");
+            PathSurfaceSelect.Items.Add("Path 2");
+            PathSurfaceSelect.Items.Add("Path 3");
+            PathSurfaceSelect.SelectedIndex = 0;
 
             for (int currentBomb = 0; currentBomb < 7; currentBomb++)
             {
@@ -125,10 +132,19 @@ namespace Tarmac64_Retail
             CourseData.GhostPath = SettingsInfo[ThisLine++];
             CourseData.OK64HeaderData.WaterType = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.OK64HeaderData.WaterLevel = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.GameTempos = new int[4];
             CourseData.GameTempos[0] = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.GameTempos[1] = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.GameTempos[2] = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.GameTempos[3] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.PathSurface = new int[4];
+            CourseData.PathSurface[0] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.PathSurface[1] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.PathSurface[2] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.PathSurface[3] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+
+            CourseData.PathCount = Convert.ToInt16(SettingsInfo[ThisLine++]);
+            CourseData.DistributeBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
 
             int Count = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.PathEffects = new TM64_Course.PathEffect[Count];
@@ -218,6 +234,12 @@ namespace Tarmac64_Retail
             Output.Add(CourseData.GameTempos[1].ToString());
             Output.Add(CourseData.GameTempos[2].ToString());
             Output.Add(CourseData.GameTempos[3].ToString());
+            Output.Add(CourseData.PathSurface[0].ToString());
+            Output.Add(CourseData.PathSurface[1].ToString());
+            Output.Add(CourseData.PathSurface[2].ToString());
+            Output.Add(CourseData.PathSurface[3].ToString());
+            Output.Add(CourseData.PathCount.ToString());
+            Output.Add(CourseData.DistributeBool.ToString());
 
             Output.Add(CourseData.PathEffects.Length.ToString());
             for (int ThisPath = 0; ThisPath < CourseData.PathEffects.Length; ThisPath++)
@@ -292,6 +314,17 @@ namespace Tarmac64_Retail
             CourseData.BannerPath = bannerBox.Text;
             CourseData.GhostPath = ghostBox.Text;
             CourseData.OK64HeaderData.WaterType = WaterTypeBox.SelectedIndex;
+
+            if (int.TryParse(PathSurfaceBox.Text, out ParseInt))
+            {
+                CourseData.PathSurface[PathSurfaceSelect.SelectedIndex] = ParseInt;
+            }
+
+            if (int.TryParse(PathCountBox.Text, out ParseInt))
+            {
+                CourseData.PathCount = Convert.ToInt16(ParseInt);
+            }
+            CourseData.DistributeBool = Convert.ToInt16(DistributeBox.Checked);
 
             if (float.TryParse(waterBox.Text, out ParseFloat))
             {
@@ -931,6 +964,21 @@ namespace Tarmac64_Retail
         private void songBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateCourse();
+        }
+
+        private void UpdateUIHandler(object sender, EventArgs e)
+        {
+            UpdateCourse();
+        }
+
+        private void ghostBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label13_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void WaterTypeBox_SelectedIndexChanged(object sender, EventArgs e)

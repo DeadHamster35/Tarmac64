@@ -337,6 +337,10 @@ namespace Tarmac64_Retail
             {
                 OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[2] = Parse;
             }
+            if (short.TryParse(FlagBox.Text, out Parse))
+            {
+                OKObjectList[ObjectListBox.SelectedIndex].ObjectFlag = Parse;
+            }
         }
 
 
@@ -375,7 +379,7 @@ namespace Tarmac64_Retail
         private void AddTypeBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
-            FileOpen.Filter = "Tarmac Object | *.ok64.OBJECT";
+            FileOpen.Filter = "Tarmac Object (*.ok64.OBJECT)|*.ok64.OBJECT|All Files (*.*)|*.*";
             FileOpen.DefaultExt = ".ok64.OBJECT";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {                

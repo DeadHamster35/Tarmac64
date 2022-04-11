@@ -77,7 +77,7 @@
       <HintPath>..\cereal64\Cereal64.Microcodes.dll</HintPath>
     </Reference>
     <Reference Include="F3DSharp">
-      <HintPath>..\..\F3DSharp\F3DSharp\bin\Release\F3DSharp.dll</HintPath>
+      <HintPath>..\Tarmac64 Library\Resources\F3DSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -130,11 +130,17 @@
     <Compile Include="Windows\CourseCompiler.Designer.cs">
       <DependentUpon>CourseCompiler.cs</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Form1.cs">
+    <Compile Include="Windows\GhostExtractor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Windows\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Windows\GhostExtractor.Designer.cs">
+      <DependentUpon>GhostExtractor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Hitbox Compiler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\Hitbox Compiler.Designer.cs">
+      <DependentUpon>Hitbox Compiler.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\GameBuilder.cs">
       <SubType>Form</SubType>
@@ -207,8 +213,11 @@
     <EmbeddedResource Include="Windows\CourseCompiler.resx">
       <DependentUpon>CourseCompiler.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Windows\Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="Windows\GhostExtractor.resx">
+      <DependentUpon>GhostExtractor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\Hitbox Compiler.resx">
+      <DependentUpon>Hitbox Compiler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\GameBuilder.resx">
       <DependentUpon>GameBuilder.cs</DependentUpon>

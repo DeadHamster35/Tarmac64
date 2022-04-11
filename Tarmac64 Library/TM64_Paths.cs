@@ -258,7 +258,7 @@ namespace Tarmac64_Library
                             {
                                 if (marker > 0)
                                 {
-                                    tempList[pindex].pathmarker[marker].flag = tempList[0].pathmarker[marker - 1].flag;
+                                    tempList[pindex].pathmarker[marker].flag = tempList[pindex].pathmarker[marker - 1].flag;
                                 }
                                 else
                                 {

@@ -137,6 +137,12 @@
             this.oksongBox = new System.Windows.Forms.TextBox();
             this.songBox = new System.Windows.Forms.ComboBox();
             this.label40 = new System.Windows.Forms.Label();
+            this.PathSurfaceSelect = new System.Windows.Forms.ComboBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.PathSurfaceBox = new System.Windows.Forms.TextBox();
+            this.DistributeBox = new System.Windows.Forms.CheckBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.PathCountBox = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -166,17 +172,16 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Enabled = false;
             this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label13.Location = new System.Drawing.Point(208, 133);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(71, 13);
             this.label13.TabIndex = 217;
             this.label13.Text = ".ok64.GHOST";
+            this.label13.Click += new System.EventHandler(this.label13_Click);
             // 
             // ghostBtn
             // 
-            this.ghostBtn.Enabled = false;
             this.ghostBtn.Location = new System.Drawing.Point(177, 128);
             this.ghostBtn.Name = "ghostBtn";
             this.ghostBtn.Size = new System.Drawing.Size(25, 23);
@@ -187,12 +192,12 @@
             // 
             // ghostBox
             // 
-            this.ghostBox.Enabled = false;
             this.ghostBox.Location = new System.Drawing.Point(5, 130);
             this.ghostBox.Margin = new System.Windows.Forms.Padding(5);
             this.ghostBox.Name = "ghostBox";
             this.ghostBox.Size = new System.Drawing.Size(164, 20);
             this.ghostBox.TabIndex = 6;
+            this.ghostBox.TextChanged += new System.EventHandler(this.ghostBox_TextChanged);
             this.ghostBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
             // 
             // label26
@@ -581,7 +586,7 @@
             this.groupBox7.Controls.Add(this.startYBox);
             this.groupBox7.Controls.Add(this.startXBox);
             this.groupBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox7.Location = new System.Drawing.Point(5, 420);
+            this.groupBox7.Location = new System.Drawing.Point(4, 477);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(280, 183);
             this.groupBox7.TabIndex = 15;
@@ -851,7 +856,7 @@
             this.groupBox2.Controls.Add(this.label30);
             this.groupBox2.Controls.Add(this.label31);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox2.Location = new System.Drawing.Point(5, 609);
+            this.groupBox2.Location = new System.Drawing.Point(4, 666);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(280, 169);
             this.groupBox2.TabIndex = 16;
@@ -1237,7 +1242,7 @@
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.BombTypeBox);
             this.groupBox3.Controls.Add(this.BombIndexBox);
-            this.groupBox3.Location = new System.Drawing.Point(4, 874);
+            this.groupBox3.Location = new System.Drawing.Point(3, 931);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(280, 71);
             this.groupBox3.TabIndex = 18;
@@ -1311,7 +1316,7 @@
             this.groupBox9.Controls.Add(this.oksongBox);
             this.groupBox9.Controls.Add(this.songBox);
             this.groupBox9.Controls.Add(this.label40);
-            this.groupBox9.Location = new System.Drawing.Point(4, 784);
+            this.groupBox9.Location = new System.Drawing.Point(3, 841);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(280, 84);
             this.groupBox9.TabIndex = 17;
@@ -1366,10 +1371,79 @@
             this.label40.TabIndex = 195;
             this.label40.Text = "Music";
             // 
+            // PathSurfaceSelect
+            // 
+            this.PathSurfaceSelect.FormattingEnabled = true;
+            this.PathSurfaceSelect.Location = new System.Drawing.Point(6, 422);
+            this.PathSurfaceSelect.Margin = new System.Windows.Forms.Padding(5);
+            this.PathSurfaceSelect.Name = "PathSurfaceSelect";
+            this.PathSurfaceSelect.Size = new System.Drawing.Size(131, 21);
+            this.PathSurfaceSelect.TabIndex = 292;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.Location = new System.Drawing.Point(219, 425);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(68, 13);
+            this.label19.TabIndex = 294;
+            this.label19.Text = "Path Surface";
+            // 
+            // PathSurfaceBox
+            // 
+            this.PathSurfaceBox.Location = new System.Drawing.Point(147, 422);
+            this.PathSurfaceBox.Margin = new System.Windows.Forms.Padding(5);
+            this.PathSurfaceBox.Name = "PathSurfaceBox";
+            this.PathSurfaceBox.Size = new System.Drawing.Size(60, 20);
+            this.PathSurfaceBox.TabIndex = 293;
+            this.PathSurfaceBox.Text = "1";
+            this.PathSurfaceBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.PathSurfaceBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
+            // DistributeBox
+            // 
+            this.DistributeBox.AutoSize = true;
+            this.DistributeBox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.DistributeBox.Location = new System.Drawing.Point(6, 451);
+            this.DistributeBox.Name = "DistributeBox";
+            this.DistributeBox.Size = new System.Drawing.Size(133, 17);
+            this.DistributeBox.TabIndex = 295;
+            this.DistributeBox.Text = "Force Path Distribution";
+            this.DistributeBox.UseVisualStyleBackColor = true;
+            this.DistributeBox.CheckedChanged += new System.EventHandler(this.UpdateUIHandler);
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.Location = new System.Drawing.Point(218, 452);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(60, 13);
+            this.label20.TabIndex = 297;
+            this.label20.Text = "Path Count";
+            // 
+            // PathCountBox
+            // 
+            this.PathCountBox.Location = new System.Drawing.Point(146, 449);
+            this.PathCountBox.Margin = new System.Windows.Forms.Padding(5);
+            this.PathCountBox.Name = "PathCountBox";
+            this.PathCountBox.Size = new System.Drawing.Size(60, 20);
+            this.PathCountBox.TabIndex = 296;
+            this.PathCountBox.Text = "1";
+            this.PathCountBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.PathCountBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
             // CourseSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label20);
+            this.Controls.Add(this.PathCountBox);
+            this.Controls.Add(this.DistributeBox);
+            this.Controls.Add(this.PathSurfaceSelect);
+            this.Controls.Add(this.label19);
+            this.Controls.Add(this.PathSurfaceBox);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.WaterTypeBox);
@@ -1401,7 +1475,7 @@
             this.Controls.Add(this.label15);
             this.Controls.Add(this.CreditsBox);
             this.Name = "CourseSettings";
-            this.Size = new System.Drawing.Size(289, 950);
+            this.Size = new System.Drawing.Size(289, 1150);
             this.Load += new System.EventHandler(this.CourseSettings_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -1528,5 +1602,11 @@
         private System.Windows.Forms.Label label40;
         private System.Windows.Forms.ComboBox weatherBox;
         private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.ComboBox PathSurfaceSelect;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.TextBox PathSurfaceBox;
+        private System.Windows.Forms.CheckBox DistributeBox;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TextBox PathCountBox;
     }
 }

@@ -150,12 +150,12 @@ namespace Tarmac64_Library
             "Dirt Off-Road", "Train Tracks", "Cave Interior", "Rickety Wood Bridge", "Solid Wood Bridge",
             "C-FastOOB", "C-Water", "C-Mushroom Boost","C-Feather Jump", "C-Tornado Jump","C-SpinOut Saveable",
             "C-SpinOut", "C-Failed Start", "C-GreenShell Hit", "C-RedShell Hit", "C-Object Hit", "C-Shrunken",
-            "C-Star Power", "C-Boo", "C-Get Item", "DK Parkyway Boost", "Out-Of-Bounds", "Royal Raceway Boost", "Walls" };
+            "C-Star Power", "C-Boo", "C-Get Item", "C-Trick Jump", "C-Gap Jump", "DK Parkyway Boost", "Out-Of-Bounds", "Royal Raceway Boost", "Walls" };
 
         Byte[] surfaceTypeID = new Byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 
             0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 
             0x10, 0x11, 0xFB, 0xFA, 0xF9, 0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 
-            0xF3, 0xF2, 0xF1, 0xF0, 0xEF, 0xEE, 0xED, 0xFC, 0xFD, 0xFE, 0xFF };
+            0xF3, 0xF2, 0xF1, 0xF0, 0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xFC, 0xFD, 0xFE, 0xFF };
 
         
 
@@ -337,6 +337,7 @@ namespace Tarmac64_Library
 
 
                 courseData.PathOffsets = new UInt32[4] { 0x800DC778, 0x800DC778, 0x800DC778, 0x800DC778 };
+                courseData.PathSurface = new int[4];                
                 courseData.PathOffsets[0] = 0x06000A20;
                 PathListData = tm64Path.popMarker(pathGroups[0].pathList[0], 0);
                 ListStream.Write(PathListData, 0, PathListData.Length);
@@ -535,7 +536,39 @@ namespace Tarmac64_Library
             courseData.Segment7 = segment7;            
             courseData.MasterObjects = masterObjects;
             courseData.SurfaceObjects = surfaceObjects;
-            courseData.OK64HeaderData.PathLength = pathGroups[0].pathList[0].pathmarker.Count;
+
+
+
+            //Read Ghost Data from the GhostPath and 
+            // Set the character. Compressed INput data in the OK64Ghost
+            // //is padded and needs to be cleaned via recompression.
+
+            if (courseData.GhostPath != "")
+            {
+                byte[] TempGhostData = File.ReadAllBytes(courseData.GhostPath);
+                MemoryStream GhostStream = new MemoryStream(TempGhostData);
+                BinaryReader GhostReader = new BinaryReader(GhostStream);
+                GhostReader.BaseStream.Position = 0;
+                courseData.GhostCharacter = GhostReader.ReadInt32();
+                byte[] CleanGhostData = Tarmac.DecompressMIO0(GhostReader.ReadBytes(0x3C00));// Bad MIO0 with Padding
+                courseData.GhostData = Tarmac.CompressMIO0(CleanGhostData); //Make clean
+            }
+            else
+            {
+                courseData.GhostData = new byte[0];
+                courseData.GhostCharacter = -1;
+            }
+
+
+            courseData.OK64HeaderData.PathLength = new short[4];
+            for (int ThisPath = 0; ThisPath < pathGroups[0].pathList.Length; ThisPath++)
+            {
+                courseData.OK64HeaderData.PathLength[ThisPath] = Convert.ToInt16(pathGroups[0].pathList[ThisPath].pathmarker.Count);
+            }
+            for (int ThisPath = pathGroups[0].pathList.Length; ThisPath < 4; ThisPath++)
+            {
+                courseData.OK64HeaderData.PathLength[ThisPath] = Convert.ToInt16(1);
+            }
             courseData.Gametype = levelFormat;
             courseData.SerialNumber = TarmacCourse.OK64Serial(courseData);
 
@@ -558,10 +591,12 @@ namespace Tarmac64_Library
             
             
             courseData.ObjectModelData = TarmacCourse.CompileObjectModels(TypeList.ToArray());
-            int Magic = courseData.ObjectModelData.Length;
+            uint Magic = Convert.ToUInt32(courseData.ObjectModelData.Length);
             courseData.ObjectAnimationData = TarmacCourse.CompileObjectAnimation(TypeList.ToArray(), Magic);
-            courseData.ObjectTypeData = TarmacCourse.SaveObjectTypeList(TypeList.ToArray());
-            courseData.ObjectListData = TarmacCourse.SaveOKObject(CustomObjectList.ToArray());
+            Magic += Convert.ToUInt32(courseData.ObjectAnimationData.Length);
+            courseData.ObjectHitboxData = TarmacCourse.CompileObjectHitbox(TypeList.ToArray(), Magic);
+            courseData.ObjectTypeData = TarmacCourse.SaveObjectTypeRaw(TypeList.ToArray());
+            courseData.ObjectListData = TarmacCourse.SaveOKObjectListRaw(CustomObjectList.ToArray());
             
             
 
@@ -616,7 +651,7 @@ namespace Tarmac64_Library
                 {
                     if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
                     {
-                        flip = BitConverter.GetBytes(Convert.ToInt32(textureObject.f3dexPosition[0] | 0x06000000));
+                        flip = BitConverter.GetBytes(Convert.ToInt32(textureObject.f3dexPosition | 0x06000000));
                         Array.Reverse(flip);
                         binaryWriter.Write(flip);
                         flip = BitConverter.GetBytes(Convert.ToInt16(textureObject.textureScrollS));
@@ -688,12 +723,90 @@ namespace Tarmac64_Library
             binaryWriter = new BinaryWriter(memoryStream);
 
 
+
+            //KillDisplaydata
+            int KDCount = 0;
+            foreach (var CObj in courseData.MasterObjects)
+            {
+                for (int ThisBool = 0; ThisBool < 8; ThisBool++)
+                {
+                    if (!CObj.KillDisplayList[ThisBool])
+                    {
+                        KDCount++;
+                        break;
+                    }
+                }
+            }
+            foreach (var CObj in courseData.SurfaceObjects)
+            {
+                for (int ThisBool = 0; ThisBool < 8; ThisBool++)
+                {
+                    if (!CObj.KillDisplayList[ThisBool])
+                    {
+                        KDCount++;
+                        break;
+                    }
+                }
+            }
+
             
+            binaryWriter.Write(F3D.BigEndian(KDCount));
+            if (KDCount > 0)
+            {
+                foreach (var CObj in courseData.MasterObjects)
+                {
+                    for (int ThisSweep = 0; ThisSweep < 8; ThisSweep++)
+                    {
+                        if (!CObj.KillDisplayList[ThisSweep])
+                        {
+                            for (int ThisBool = 0; ThisBool < 8; ThisBool++)
+                            {
+                                binaryWriter.Write(Convert.ToByte(CObj.KillDisplayList[ThisBool]));
+                            }
+                            binaryWriter.Write(F3D.BigEndian(CObj.meshPosition.Length));
+                            foreach (var Mesh in CObj.meshPosition)
+                            {
+                                binaryWriter.Write(F3D.BigEndian(Mesh));
+                            }
+                            break;
+                        }
+                        
+                    }
+                }
+                foreach (var CObj in courseData.SurfaceObjects)
+                {
+                    for (int ThisSweep = 0; ThisSweep < 8; ThisSweep++)
+                    {
+                        if (!CObj.KillDisplayList[ThisSweep])
+                        {
+                            for (int ThisBool = 0; ThisBool < 8; ThisBool++)
+                            {
+                                binaryWriter.Write(Convert.ToByte(CObj.KillDisplayList[ThisBool]));
+                            }
+                            binaryWriter.Write(F3D.BigEndian(CObj.meshPosition.Length));
+                            foreach (var Mesh in CObj.meshPosition)
+                            {
+                                binaryWriter.Write(F3D.BigEndian(Mesh));
+                            }
+                            break;
+                        }
+                        
+                    }
+                }
+
+            }
+
+            courseData.KillDisplayData = memoryStream.ToArray();
+            memoryStream = new MemoryStream();
+            binaryWriter = new BinaryWriter(memoryStream);
+
+
+
 
             MessageBox.Show("Save .OK64.Course");
             SaveFileDialog FileSave = new SaveFileDialog();
             FileSave.InitialDirectory = okSettings.ProjectDirectory;
-            FileSave.Filter = "Tarmac Course | *.ok64.Course";
+            FileSave.Filter = "Tarmac Course|*.ok64.Course|All Files (*.*)|*.*";
             if (FileSave.ShowDialog() == DialogResult.OK)
             {
                 string SavePath = FileSave.FileName;                    
@@ -1198,6 +1311,18 @@ namespace Tarmac64_Library
 
                 surfvertBox.Text = surfaceObjects[objectIndex].vertCount.ToString();
                 surffaceBox.Text = surfaceObjects[objectIndex].faceCount.ToString();
+
+                CheckStop = false;
+
+                GPBoxC.Checked = surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[0];
+                TTBoxC.Checked = surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[1];
+                VSBoxC.Checked = surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[2];
+                BattleBoxC.Checked = surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[2];
+                FiftyBoxC.Checked = surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[4];
+                HundredBoxC.Checked = surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[5];
+                HundredFiftyBoxC.Checked = surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[6];
+                ExtraBoxC.Checked = surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[7];
+                CheckStop = true;
             }
         }
 
@@ -1322,26 +1447,18 @@ namespace Tarmac64_Library
             surfaceObjects[surfaceobjectBox.SelectedIndex].surfaceProperty = surfpropertybox.SelectedIndex;
         }
 
-        private void updateSectionList(string objectName)
+        private void updateSectionList(string objectName, int Index)
         {
             List<int> objectList = sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList.ToList();
-            int objectIndex = -1;
-            for (int currentObject = 0; currentObject < masterObjects.Length; currentObject++)
-            {                
-                if (masterObjects[currentObject].objectName == objectName)
-                {
-                    objectIndex = currentObject;
-                    break;
-                }
-            }
-            if (objectIndex > -1)
+            
+            if (Index > -1)
             {
                 int objectCount = objectList.Count; //this value is dynamic as we add/remove items.
                 for (int currentObject = 0; currentObject < objectCount; currentObject++)
                 {
                     if (currentObject < objectList.Count) //dynamic
                     {
-                        if (objectList[currentObject] == objectIndex)
+                        if (objectList[currentObject] == Index)
                         {
                             objectList.RemoveAt(currentObject);
                             break;
@@ -1350,7 +1467,7 @@ namespace Tarmac64_Library
                         {
                             if (currentObject + 1 == objectList.Count)
                             {
-                                objectList.Add(objectIndex);
+                                objectList.Add(Index);
                             }
                         }
                     }
@@ -1376,14 +1493,14 @@ namespace Tarmac64_Library
                         {
                             if (childNode.Checked != checkState)
                             {
-                                updateSectionList(childNode.Name);
+                                updateSectionList(childNode.Name, childNode.Index);
                                 childNode.Checked = checkState;
                             }
                         }
                     }
                     else
                     {
-                        updateSectionList(e.Node.Name);
+                        updateSectionList(e.Node.Name, e.Node.Index);
                     }
                     
                     
@@ -1505,7 +1622,7 @@ namespace Tarmac64_Library
             }
             SaveFileDialog FileSave = new SaveFileDialog();
 
-            FileSave.Filter = "Tarmac Backup | *.ok64.Backup";
+            FileSave.Filter = "Tarmac Backup|*.ok64.Backup|All Files (*.*)|*.*";
             if (FileSave.ShowDialog() == DialogResult.OK)
             {
                 File.WriteAllLines(FileSave.FileName, Output.ToArray());
@@ -1516,7 +1633,7 @@ namespace Tarmac64_Library
         {
             MessageBox.Show("Load OK64Backup");
             OpenFileDialog FileOpen = new OpenFileDialog();
-            FileOpen.Filter = "Tarmac Backup | *.ok64.Backup";
+            FileOpen.Filter = "Tarmac Backup|*.ok64.Backup|All Files (*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
                 string[] SettingsFile = File.ReadAllLines(FileOpen.FileName);
@@ -1591,15 +1708,66 @@ namespace Tarmac64_Library
             ObjectRequestUpdate(sender,e);
         }
 
+
         private void CourseInfo_Click(object sender, EventArgs e)
         {
 
         }
 
+        bool CheckStop = true;
+
+        private void GPBoxC_CheckedChanged(object sender, EventArgs e)
+        {
+            if (surfaceobjectBox.SelectedIndex > -1)
+            {
+                if (CheckStop)
+                {
+                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[0] = GPBoxC.Checked;
+                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[1] = TTBoxC.Checked;
+                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[2] = VSBoxC.Checked;
+                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[3] = BattleBoxC.Checked;
+                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[4] = FiftyBoxC.Checked;
+                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[5] = HundredBoxC.Checked;
+                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[6] = HundredFiftyBoxC.Checked;
+                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[7] = ExtraBoxC.Checked;
+                }
+            }
+        }
 
         private void masterBox_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            CheckStop = false;
 
+            GPBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[0];
+            TTBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[1];
+            VSBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[2];
+            BattleBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[3];
+            FiftyBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[4];
+            HundredBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[5];
+            HundredFiftyBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[6];
+            ExtraBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[7];
+            CheckStop = true;
+        }
+
+
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (masterBox.SelectedNode != null)
+            {
+                if (CheckStop)
+                {
+                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[0] = GPBoxR.Checked;
+                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[1] = TTBoxR.Checked;
+                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[2] = VSBoxR.Checked;
+                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[3] = BattleBoxR.Checked;
+                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[4] = FiftyBoxR.Checked;
+                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[5] = HundredBoxR.Checked;
+                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[6] = HundredFiftyBoxR.Checked;
+                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[7] = ExtraBoxR.Checked;
+                }
+            }
+            
         }
 
     }

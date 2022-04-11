@@ -76,7 +76,7 @@ namespace Tarmac64_Library
             okSettings = Tarmac.LoadSettings();
             TM64_Course TarmacCourse = new TM64_Course();
             OpenFileDialog FileOpen = new OpenFileDialog();
-            FileOpen.Filter = "Tarmac Course | *.ok64.Course";
+            FileOpen.Filter = "Tarmac Course|*.ok64.Course|All Files (*.*)|*.*";
             FileOpen.InitialDirectory = okSettings.ProjectDirectory;
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
@@ -215,7 +215,7 @@ namespace Tarmac64_Library
                 binaryWriter.Write(flip);
 
                 SaveFileDialog FileSave = new SaveFileDialog();
-                FileSave.Filter = "Z64 ROM | *.z64";
+                FileSave.Filter = "Z64 ROM|*.z64|All Files (*.*)|*.*";
                 FileSave.DefaultExt = "z64";
                 if (FileSave.ShowDialog() == DialogResult.OK)
                 {

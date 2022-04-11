@@ -33,6 +33,12 @@
             this.SurfaceMap = new System.Windows.Forms.TabPage();
             this.surfaceobjectBox = new System.Windows.Forms.ListBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.ExtraBoxC = new System.Windows.Forms.CheckBox();
+            this.HundredFiftyBoxC = new System.Windows.Forms.CheckBox();
+            this.HundredBoxC = new System.Windows.Forms.CheckBox();
+            this.FiftyBoxC = new System.Windows.Forms.CheckBox();
+            this.TTBoxC = new System.Windows.Forms.CheckBox();
+            this.GPBoxC = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
             this.surfpropertybox = new System.Windows.Forms.ComboBox();
             this.surfmaterialBox = new System.Windows.Forms.ComboBox();
@@ -44,6 +50,13 @@
             this.surfsectionBox = new System.Windows.Forms.ComboBox();
             this.label17 = new System.Windows.Forms.Label();
             this.SectionViews = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.ExtraBoxR = new System.Windows.Forms.CheckBox();
+            this.HundredFiftyBoxR = new System.Windows.Forms.CheckBox();
+            this.HundredBoxR = new System.Windows.Forms.CheckBox();
+            this.FiftyBoxR = new System.Windows.Forms.CheckBox();
+            this.TTBoxR = new System.Windows.Forms.CheckBox();
+            this.GPBoxR = new System.Windows.Forms.CheckBox();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.masterBox = new System.Windows.Forms.TreeView();
@@ -55,21 +68,26 @@
             this.sectionBox = new System.Windows.Forms.ComboBox();
             this.viewBox = new System.Windows.Forms.ComboBox();
             this.TextureData = new System.Windows.Forms.TabPage();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.Settings = new System.Windows.Forms.TabPage();
+            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Object = new System.Windows.Forms.TabPage();
+            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.raycastBox = new System.Windows.Forms.CheckBox();
             this.ExportBtn = new System.Windows.Forms.Button();
             this.ImportBtn = new System.Windows.Forms.Button();
             this.TypeBox = new System.Windows.Forms.ComboBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.GLControl = new Tarmac64_Retail.GLViewer();
-            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
-            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
+            this.VSBoxR = new System.Windows.Forms.CheckBox();
+            this.BattleBoxR = new System.Windows.Forms.CheckBox();
+            this.BattleBoxC = new System.Windows.Forms.CheckBox();
+            this.VSBoxC = new System.Windows.Forms.CheckBox();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.TextureData.SuspendLayout();
             this.Settings.SuspendLayout();
@@ -109,13 +127,21 @@
             this.surfaceobjectBox.FormattingEnabled = true;
             this.surfaceobjectBox.Location = new System.Drawing.Point(3, 10);
             this.surfaceobjectBox.Name = "surfaceobjectBox";
-            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 472);
+            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 420);
             this.surfaceobjectBox.TabIndex = 0;
             this.surfaceobjectBox.SelectedIndexChanged += new System.EventHandler(this.SurfaceobjectBox_SelectedIndexChanged);
             // 
             // groupBox6
             // 
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox6.Controls.Add(this.BattleBoxC);
+            this.groupBox6.Controls.Add(this.VSBoxC);
+            this.groupBox6.Controls.Add(this.ExtraBoxC);
+            this.groupBox6.Controls.Add(this.HundredFiftyBoxC);
+            this.groupBox6.Controls.Add(this.HundredBoxC);
+            this.groupBox6.Controls.Add(this.FiftyBoxC);
+            this.groupBox6.Controls.Add(this.TTBoxC);
+            this.groupBox6.Controls.Add(this.GPBoxC);
             this.groupBox6.Controls.Add(this.label10);
             this.groupBox6.Controls.Add(this.surfpropertybox);
             this.groupBox6.Controls.Add(this.surfmaterialBox);
@@ -126,13 +152,91 @@
             this.groupBox6.Controls.Add(this.label23);
             this.groupBox6.Controls.Add(this.surfsectionBox);
             this.groupBox6.Controls.Add(this.label17);
-            this.groupBox6.Location = new System.Drawing.Point(3, 491);
+            this.groupBox6.Location = new System.Drawing.Point(3, 432);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(281, 108);
+            this.groupBox6.Size = new System.Drawing.Size(281, 167);
             this.groupBox6.TabIndex = 17;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Object Info";
             this.groupBox6.Enter += new System.EventHandler(this.groupBox6_Enter);
+            // 
+            // ExtraBoxC
+            // 
+            this.ExtraBoxC.AutoSize = true;
+            this.ExtraBoxC.Checked = true;
+            this.ExtraBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ExtraBoxC.Location = new System.Drawing.Point(156, 140);
+            this.ExtraBoxC.Name = "ExtraBoxC";
+            this.ExtraBoxC.Size = new System.Drawing.Size(50, 17);
+            this.ExtraBoxC.TabIndex = 33;
+            this.ExtraBoxC.Text = "Extra";
+            this.ExtraBoxC.UseVisualStyleBackColor = true;
+            this.ExtraBoxC.CheckedChanged += new System.EventHandler(this.GPBoxC_CheckedChanged);
+            // 
+            // HundredFiftyBoxC
+            // 
+            this.HundredFiftyBoxC.AutoSize = true;
+            this.HundredFiftyBoxC.Checked = true;
+            this.HundredFiftyBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.HundredFiftyBoxC.Location = new System.Drawing.Point(106, 140);
+            this.HundredFiftyBoxC.Name = "HundredFiftyBoxC";
+            this.HundredFiftyBoxC.Size = new System.Drawing.Size(44, 17);
+            this.HundredFiftyBoxC.TabIndex = 32;
+            this.HundredFiftyBoxC.Text = "150";
+            this.HundredFiftyBoxC.UseVisualStyleBackColor = true;
+            this.HundredFiftyBoxC.CheckedChanged += new System.EventHandler(this.GPBoxC_CheckedChanged);
+            // 
+            // HundredBoxC
+            // 
+            this.HundredBoxC.AutoSize = true;
+            this.HundredBoxC.Checked = true;
+            this.HundredBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.HundredBoxC.Location = new System.Drawing.Point(56, 140);
+            this.HundredBoxC.Name = "HundredBoxC";
+            this.HundredBoxC.Size = new System.Drawing.Size(44, 17);
+            this.HundredBoxC.TabIndex = 31;
+            this.HundredBoxC.Text = "100";
+            this.HundredBoxC.UseVisualStyleBackColor = true;
+            this.HundredBoxC.CheckedChanged += new System.EventHandler(this.GPBoxC_CheckedChanged);
+            // 
+            // FiftyBoxC
+            // 
+            this.FiftyBoxC.AutoSize = true;
+            this.FiftyBoxC.Checked = true;
+            this.FiftyBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.FiftyBoxC.Location = new System.Drawing.Point(12, 140);
+            this.FiftyBoxC.Name = "FiftyBoxC";
+            this.FiftyBoxC.Size = new System.Drawing.Size(38, 17);
+            this.FiftyBoxC.TabIndex = 30;
+            this.FiftyBoxC.Text = "50";
+            this.FiftyBoxC.UseVisualStyleBackColor = true;
+            this.FiftyBoxC.CheckedChanged += new System.EventHandler(this.GPBoxC_CheckedChanged);
+            // 
+            // TTBoxC
+            // 
+            this.TTBoxC.AutoSize = true;
+            this.TTBoxC.Checked = true;
+            this.TTBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.TTBoxC.Location = new System.Drawing.Point(93, 117);
+            this.TTBoxC.Name = "TTBoxC";
+            this.TTBoxC.Size = new System.Drawing.Size(72, 17);
+            this.TTBoxC.TabIndex = 29;
+            this.TTBoxC.Text = "Time Trial";
+            this.TTBoxC.UseVisualStyleBackColor = true;
+            this.TTBoxC.CheckedChanged += new System.EventHandler(this.GPBoxC_CheckedChanged);
+            // 
+            // GPBoxC
+            // 
+            this.GPBoxC.AutoSize = true;
+            this.GPBoxC.Checked = true;
+            this.GPBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.GPBoxC.Location = new System.Drawing.Point(12, 117);
+            this.GPBoxC.Name = "GPBoxC";
+            this.GPBoxC.Size = new System.Drawing.Size(75, 17);
+            this.GPBoxC.TabIndex = 28;
+            this.GPBoxC.Text = "Grand Prix";
+            this.GPBoxC.UseVisualStyleBackColor = true;
+            this.GPBoxC.CheckedChanged += new System.EventHandler(this.GPBoxC_CheckedChanged);
             // 
             // label10
             // 
@@ -239,6 +343,7 @@
             // 
             // SectionViews
             // 
+            this.SectionViews.Controls.Add(this.groupBox2);
             this.SectionViews.Controls.Add(this.button2);
             this.SectionViews.Controls.Add(this.button1);
             this.SectionViews.Controls.Add(this.masterBox);
@@ -253,10 +358,106 @@
             this.SectionViews.Text = "Sections";
             this.SectionViews.UseVisualStyleBackColor = true;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox2.Controls.Add(this.BattleBoxR);
+            this.groupBox2.Controls.Add(this.VSBoxR);
+            this.groupBox2.Controls.Add(this.ExtraBoxR);
+            this.groupBox2.Controls.Add(this.HundredFiftyBoxR);
+            this.groupBox2.Controls.Add(this.HundredBoxR);
+            this.groupBox2.Controls.Add(this.FiftyBoxR);
+            this.groupBox2.Controls.Add(this.TTBoxR);
+            this.groupBox2.Controls.Add(this.GPBoxR);
+            this.groupBox2.Location = new System.Drawing.Point(6, 470);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(279, 69);
+            this.groupBox2.TabIndex = 13;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Object Settings";
+            // 
+            // ExtraBoxR
+            // 
+            this.ExtraBoxR.AutoSize = true;
+            this.ExtraBoxR.Checked = true;
+            this.ExtraBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ExtraBoxR.Location = new System.Drawing.Point(151, 43);
+            this.ExtraBoxR.Name = "ExtraBoxR";
+            this.ExtraBoxR.Size = new System.Drawing.Size(50, 17);
+            this.ExtraBoxR.TabIndex = 5;
+            this.ExtraBoxR.Text = "Extra";
+            this.ExtraBoxR.UseVisualStyleBackColor = true;
+            this.ExtraBoxR.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
+            // HundredFiftyBoxR
+            // 
+            this.HundredFiftyBoxR.AutoSize = true;
+            this.HundredFiftyBoxR.Checked = true;
+            this.HundredFiftyBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.HundredFiftyBoxR.Location = new System.Drawing.Point(101, 43);
+            this.HundredFiftyBoxR.Name = "HundredFiftyBoxR";
+            this.HundredFiftyBoxR.Size = new System.Drawing.Size(44, 17);
+            this.HundredFiftyBoxR.TabIndex = 4;
+            this.HundredFiftyBoxR.Text = "150";
+            this.HundredFiftyBoxR.UseVisualStyleBackColor = true;
+            this.HundredFiftyBoxR.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
+            // HundredBoxR
+            // 
+            this.HundredBoxR.AutoSize = true;
+            this.HundredBoxR.Checked = true;
+            this.HundredBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.HundredBoxR.Location = new System.Drawing.Point(51, 43);
+            this.HundredBoxR.Name = "HundredBoxR";
+            this.HundredBoxR.Size = new System.Drawing.Size(44, 17);
+            this.HundredBoxR.TabIndex = 3;
+            this.HundredBoxR.Text = "100";
+            this.HundredBoxR.UseVisualStyleBackColor = true;
+            this.HundredBoxR.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
+            // FiftyBoxR
+            // 
+            this.FiftyBoxR.AutoSize = true;
+            this.FiftyBoxR.Checked = true;
+            this.FiftyBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.FiftyBoxR.Location = new System.Drawing.Point(7, 43);
+            this.FiftyBoxR.Name = "FiftyBoxR";
+            this.FiftyBoxR.Size = new System.Drawing.Size(38, 17);
+            this.FiftyBoxR.TabIndex = 2;
+            this.FiftyBoxR.Text = "50";
+            this.FiftyBoxR.UseVisualStyleBackColor = true;
+            this.FiftyBoxR.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
+            // TTBoxR
+            // 
+            this.TTBoxR.AutoSize = true;
+            this.TTBoxR.Checked = true;
+            this.TTBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.TTBoxR.Location = new System.Drawing.Point(88, 20);
+            this.TTBoxR.Name = "TTBoxR";
+            this.TTBoxR.Size = new System.Drawing.Size(72, 17);
+            this.TTBoxR.TabIndex = 1;
+            this.TTBoxR.Text = "Time Trial";
+            this.TTBoxR.UseVisualStyleBackColor = true;
+            this.TTBoxR.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
+            // GPBoxR
+            // 
+            this.GPBoxR.AutoSize = true;
+            this.GPBoxR.Checked = true;
+            this.GPBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.GPBoxR.Location = new System.Drawing.Point(7, 20);
+            this.GPBoxR.Name = "GPBoxR";
+            this.GPBoxR.Size = new System.Drawing.Size(75, 17);
+            this.GPBoxR.TabIndex = 0;
+            this.GPBoxR.Text = "Grand Prix";
+            this.GPBoxR.UseVisualStyleBackColor = true;
+            this.GPBoxR.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // button2
             // 
             this.button2.AutoSize = true;
-            this.button2.Location = new System.Drawing.Point(143, 521);
+            this.button2.Location = new System.Drawing.Point(146, 439);
             this.button2.Margin = new System.Windows.Forms.Padding(5);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(65, 23);
@@ -268,7 +469,7 @@
             // button1
             // 
             this.button1.AutoSize = true;
-            this.button1.Location = new System.Drawing.Point(218, 521);
+            this.button1.Location = new System.Drawing.Point(221, 439);
             this.button1.Margin = new System.Windows.Forms.Padding(5);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(64, 23);
@@ -285,7 +486,7 @@
             this.masterBox.HideSelection = false;
             this.masterBox.Location = new System.Drawing.Point(3, 33);
             this.masterBox.Name = "masterBox";
-            this.masterBox.Size = new System.Drawing.Size(279, 480);
+            this.masterBox.Size = new System.Drawing.Size(279, 398);
             this.masterBox.TabIndex = 2;
             this.masterBox.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterCheck);
             this.masterBox.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterSelect);
@@ -380,6 +581,13 @@
             this.TextureData.UseVisualStyleBackColor = true;
             this.TextureData.Click += new System.EventHandler(this.TextureData_Click);
             // 
+            // TextureControl
+            // 
+            this.TextureControl.Location = new System.Drawing.Point(0, 0);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(289, 780);
+            this.TextureControl.TabIndex = 0;
+            // 
             // Settings
             // 
             this.Settings.AutoScroll = true;
@@ -391,6 +599,14 @@
             this.Settings.Text = "Settings";
             this.Settings.UseVisualStyleBackColor = true;
             this.Settings.Click += new System.EventHandler(this.CourseInfo_Click);
+            // 
+            // SettingsControl
+            // 
+            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
+            this.SettingsControl.Name = "SettingsControl";
+            this.SettingsControl.Size = new System.Drawing.Size(289, 950);
+            this.SettingsControl.TabIndex = 0;
+            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 
             // tabControl1
             // 
@@ -418,6 +634,16 @@
             this.Object.TabIndex = 4;
             this.Object.Text = "Objects";
             this.Object.UseVisualStyleBackColor = true;
+            // 
+            // ObjectControl
+            // 
+            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ObjectControl.Location = new System.Drawing.Point(-2, 2);
+            this.ObjectControl.Name = "ObjectControl";
+            this.ObjectControl.Size = new System.Drawing.Size(289, 597);
+            this.ObjectControl.TabIndex = 1;
+            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
             // raycastBox
             // 
@@ -491,30 +717,53 @@
             this.GLControl.Size = new System.Drawing.Size(915, 659);
             this.GLControl.TabIndex = 3;
             // 
-            // SettingsControl
+            // VSBoxR
             // 
-            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
-            this.SettingsControl.Name = "SettingsControl";
-            this.SettingsControl.Size = new System.Drawing.Size(289, 950);
-            this.SettingsControl.TabIndex = 0;
-            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
+            this.VSBoxR.AutoSize = true;
+            this.VSBoxR.Checked = true;
+            this.VSBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.VSBoxR.Location = new System.Drawing.Point(166, 20);
+            this.VSBoxR.Name = "VSBoxR";
+            this.VSBoxR.Size = new System.Drawing.Size(40, 17);
+            this.VSBoxR.TabIndex = 6;
+            this.VSBoxR.Text = "VS";
+            this.VSBoxR.UseVisualStyleBackColor = true;
             // 
-            // TextureControl
+            // BattleBoxR
             // 
-            this.TextureControl.Location = new System.Drawing.Point(0, 0);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 780);
-            this.TextureControl.TabIndex = 0;
+            this.BattleBoxR.AutoSize = true;
+            this.BattleBoxR.Checked = true;
+            this.BattleBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.BattleBoxR.Location = new System.Drawing.Point(212, 20);
+            this.BattleBoxR.Name = "BattleBoxR";
+            this.BattleBoxR.Size = new System.Drawing.Size(53, 17);
+            this.BattleBoxR.TabIndex = 7;
+            this.BattleBoxR.Text = "Battle";
+            this.BattleBoxR.UseVisualStyleBackColor = true;
             // 
-            // ObjectControl
+            // BattleBoxC
             // 
-            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.ObjectControl.Location = new System.Drawing.Point(-2, 2);
-            this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 597);
-            this.ObjectControl.TabIndex = 1;
-            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
+            this.BattleBoxC.AutoSize = true;
+            this.BattleBoxC.Checked = true;
+            this.BattleBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.BattleBoxC.Location = new System.Drawing.Point(217, 117);
+            this.BattleBoxC.Name = "BattleBoxC";
+            this.BattleBoxC.Size = new System.Drawing.Size(53, 17);
+            this.BattleBoxC.TabIndex = 35;
+            this.BattleBoxC.Text = "Battle";
+            this.BattleBoxC.UseVisualStyleBackColor = true;
+            // 
+            // VSBoxC
+            // 
+            this.VSBoxC.AutoSize = true;
+            this.VSBoxC.Checked = true;
+            this.VSBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.VSBoxC.Location = new System.Drawing.Point(171, 117);
+            this.VSBoxC.Name = "VSBoxC";
+            this.VSBoxC.Size = new System.Drawing.Size(40, 17);
+            this.VSBoxC.TabIndex = 34;
+            this.VSBoxC.Text = "VS";
+            this.VSBoxC.UseVisualStyleBackColor = true;
             // 
             // CourseCompiler
             // 
@@ -540,6 +789,8 @@
             this.groupBox6.PerformLayout();
             this.SectionViews.ResumeLayout(false);
             this.SectionViews.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.TextureData.ResumeLayout(false);
@@ -591,5 +842,22 @@
         private Tarmac64_Retail.CourseSettings SettingsControl;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ComboBox TypeBox;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox ExtraBoxR;
+        private System.Windows.Forms.CheckBox HundredFiftyBoxR;
+        private System.Windows.Forms.CheckBox HundredBoxR;
+        private System.Windows.Forms.CheckBox FiftyBoxR;
+        private System.Windows.Forms.CheckBox TTBoxR;
+        private System.Windows.Forms.CheckBox GPBoxR;
+        private System.Windows.Forms.CheckBox ExtraBoxC;
+        private System.Windows.Forms.CheckBox HundredFiftyBoxC;
+        private System.Windows.Forms.CheckBox HundredBoxC;
+        private System.Windows.Forms.CheckBox FiftyBoxC;
+        private System.Windows.Forms.CheckBox TTBoxC;
+        private System.Windows.Forms.CheckBox GPBoxC;
+        private System.Windows.Forms.CheckBox BattleBoxR;
+        private System.Windows.Forms.CheckBox VSBoxR;
+        private System.Windows.Forms.CheckBox BattleBoxC;
+        private System.Windows.Forms.CheckBox VSBoxC;
     }
 }

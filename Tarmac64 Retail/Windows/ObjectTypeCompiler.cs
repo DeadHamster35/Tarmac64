@@ -17,7 +17,7 @@ namespace Tarmac64_Retail
     {
 
 
-        string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP"};
+        string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP", "DAMAGE"};
         string[] BehaviorNames = new string[] { "DEAD", "EXIST", "FLOAT", "PATH", "WANDER", "SEARCH", "BOUNCE", "BEHAVIOR 7", "BEHAVIOR 8", "BEHAVIOR 9", 
             "BEHAVIOR 10", "BEHAVIOR 11", "BEHAVIOR 12", "BEHAVIOR 13", "BEHAVIOR 14", "BEHAVIOR 15", "BEHAVIOR 16", "BEHAVIOR 17", "BEHAVIOR 18", "BEHAVIOR 19", 
             "BEHAVIOR 20", "BEHAVIOR 21", "BEHAVIOR 22", "BEHAVIOR 23", "BEHAVIOR 24", "BEHAVIOR 25", "BEHAVIOR 26", "BEHAVIOR 27", "BEHAVIOR 28", "BEHAVIOR 29",
@@ -67,6 +67,7 @@ namespace Tarmac64_Retail
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
         TM64 Tarmac = new TM64();
         Scene ModelData = new Scene();
+        
         public ObjectTypeCompiler()
         {
             InitializeComponent();
@@ -75,6 +76,8 @@ namespace Tarmac64_Retail
         private void LoadBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.Filter = "FBX File|*.fbx|All Files|*.*";
+            
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
                 ModelBox.Text = FileOpen.FileName;
@@ -90,16 +93,23 @@ namespace Tarmac64_Retail
         {
 
             SaveFileDialog FileSave = new SaveFileDialog();
-            FileSave.Filter = "OK64Object| *.ok64.OBJECT";
+            FileSave.Filter = "OK64Object|*.ok64.OBJECT|All Files(*.*)|*.";
             FileSave.DefaultExt = ".ok64.OBJECT";
             if (FileSave.ShowDialog() == DialogResult.OK)
             {
                 TM64_Course.OKObjectType NewType = new TM64_Course.OKObjectType();
                 NewType.Name = NameBox.Text;
-
                 NewType.TextureData = TextureControl.textureArray;
+                NewType.Flag = Convert.ToInt16(FlagBox.Text);
                 NewType.ModelData = TarmacGeometry.createObjects(ModelData, NewType.TextureData);
-
+                if (HitboxBox.Text != "")
+                {   
+                    NewType.ObjectHitbox = TarmacGeometry.LoadHitboxFile(File.ReadAllBytes(HitboxBox.Text));
+                }
+                else
+                {
+                    NewType.ObjectHitbox = null;
+                }
                 if (AToggleBox.Checked)
                 {
                     NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
@@ -117,23 +127,18 @@ namespace Tarmac64_Retail
                     NewType.ObjectAnimations = null;
                 }
 
-
+                
                 NewType.ModelScale = Convert.ToSingle(ScaleBox.Text);
                 NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex -1);
-                NewType.StatusClass = Convert.ToInt16(StatusValues[StatusBox.SelectedIndex]);
-                NewType.EffectClass = Convert.ToInt16(EffectValues[EffectBox.SelectedIndex]);
-                NewType.CollisionResult = Convert.ToInt16(ColResultBox.SelectedIndex);
-                NewType.DamageResult = Convert.ToInt16(DmgResultBox.SelectedIndex);
                 NewType.Range = Convert.ToInt16(RangeBox.Text);
                 NewType.Sight = Convert.ToInt16(SightBox.Text);
                 NewType.Viewcone = Convert.ToInt16(Viewconebox.Text);
                 NewType.MaxSpeed = Convert.ToSingle(SpeedBox.Text);
-                NewType.CollisionRadius = Convert.ToInt16(Convert.ToInt16(CollisionBox.Text) * 100);
+                NewType.BumpRadius = Convert.ToInt16(Convert.ToInt16(LevelBump.Text) * 100);
                 NewType.SoundID = SoundIDs[SoundNameBox.SelectedIndex];
                 NewType.SoundRadius = Convert.ToInt16(SoundRangeBox.Text);
                 NewType.SoundType = Convert.ToInt16(SoundTypeBox.SelectedIndex);
                 NewType.RenderRadius = Convert.ToInt16(RenderBox.Text);
-                NewType.Hitbox = Convert.ToInt16(Convert.ToInt16(HitBox.Text) * 100);
                 if (GravityBox.Checked)
                 {
                     NewType.GravityToggle = 1;
@@ -170,22 +175,9 @@ namespace Tarmac64_Retail
 
         private void ObjectTypeCompiler_Load(object sender, EventArgs e)
         {
-            foreach(var Reaction in CollisionNames)
+            foreach (var Behavior in BehaviorNames)
             {
-                ColResultBox.Items.Add(Reaction);
-                DmgResultBox.Items.Add(Reaction);
-            }
-            foreach(var Behavior in BehaviorNames)
-            {
-                BehaviorBox.Items.Add(Behavior);
-            }
-            foreach (var Status in StatusNames)
-            {
-                StatusBox.Items.Add(Status);
-            }
-            foreach (var Effect in EffectNames)
-            {
-                EffectBox.Items.Add(Effect);
+                BehaviorBox.Items.Add(Behavior);               
             }
             foreach (var Type in SoundTypes)
             {
@@ -196,10 +188,9 @@ namespace Tarmac64_Retail
                 SoundNameBox.Items.Add(Name);
             }
             BehaviorBox.SelectedIndex = 1;
-            StatusBox.SelectedIndex = 0;
-            EffectBox.SelectedIndex = 0;
             SoundTypeBox.SelectedIndex = 0;
             SoundNameBox.SelectedIndex = 0;
+            
             WalkBox.Enabled = false;
             TargetBox.Enabled = false;
             DeathBox.Enabled = false;
@@ -224,10 +215,12 @@ namespace Tarmac64_Retail
             if (BehaviorBox.SelectedIndex == 3)
             {
                 RangeLabel.Text = "Path";
+                RangeBox.Text = "0";
             }
             else
             {
                 RangeLabel.Text = "Range";
+                RangeBox.Text = "200";
             }
 
         }
@@ -235,6 +228,7 @@ namespace Tarmac64_Retail
         private void button1_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
                 WalkBox.Text = FileOpen.FileName;
@@ -251,6 +245,7 @@ namespace Tarmac64_Retail
         private void button2_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
                 TargetBox.Text = FileOpen.FileName;
@@ -260,6 +255,7 @@ namespace Tarmac64_Retail
         private void button4_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
                 DeathBox.Text = FileOpen.FileName;
@@ -271,6 +267,21 @@ namespace Tarmac64_Retail
             WalkBox.Enabled = AToggleBox.Checked;
             TargetBox.Enabled = AToggleBox.Checked;
             DeathBox.Enabled = AToggleBox.Checked;
+        }
+
+        private void HitboxBtn_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.Filter = "Tarmac Hitbox|*.ok64.HITBOX|All Files(*.*)|*.*";
+            if (FileOpen.ShowDialog() == DialogResult.OK)
+            {
+                HitboxBox.Text = FileOpen.FileName;
+            }
+        }
+
+        private void HitboxBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

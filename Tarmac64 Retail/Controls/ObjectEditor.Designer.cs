@@ -31,6 +31,11 @@
             this.KillObjBtn = new System.Windows.Forms.Button();
             this.AddObjBtn = new System.Windows.Forms.Button();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.FlagBox = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label52 = new System.Windows.Forms.Label();
             this.KillTypeBtn = new System.Windows.Forms.Button();
             this.label65 = new System.Windows.Forms.Label();
             this.RotationYBox = new System.Windows.Forms.TextBox();
@@ -52,11 +57,6 @@
             this.LocationXBox = new System.Windows.Forms.TextBox();
             this.LocationZBox = new System.Windows.Forms.TextBox();
             this.ObjectListBox = new System.Windows.Forms.ListBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
-            this.label52 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,7 +84,7 @@
             // 
             this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox8.Controls.Add(this.label1);
-            this.groupBox8.Controls.Add(this.textBox1);
+            this.groupBox8.Controls.Add(this.FlagBox);
             this.groupBox8.Controls.Add(this.label6);
             this.groupBox8.Controls.Add(this.label24);
             this.groupBox8.Controls.Add(this.label52);
@@ -115,6 +115,66 @@
             this.groupBox8.TabIndex = 3;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Object Information";
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label1.AutoSize = true;
+            this.label1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.label1.Location = new System.Drawing.Point(10, 60);
+            this.label1.Margin = new System.Windows.Forms.Padding(5);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(27, 13);
+            this.label1.TabIndex = 236;
+            this.label1.Text = "Flag";
+            // 
+            // FlagBox
+            // 
+            this.FlagBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.FlagBox.Location = new System.Drawing.Point(51, 57);
+            this.FlagBox.Margin = new System.Windows.Forms.Padding(5);
+            this.FlagBox.Name = "FlagBox";
+            this.FlagBox.Size = new System.Drawing.Size(60, 20);
+            this.FlagBox.TabIndex = 235;
+            this.FlagBox.Text = "0";
+            this.FlagBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FlagBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateLocationHandler);
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label6.Location = new System.Drawing.Point(150, 88);
+            this.label6.Margin = new System.Windows.Forms.Padding(3, 0, 6, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(63, 12);
+            this.label6.TabIndex = 234;
+            this.label6.Text = "Z";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label24
+            // 
+            this.label24.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label24.Location = new System.Drawing.Point(13, 88);
+            this.label24.Margin = new System.Windows.Forms.Padding(3, 0, 8, 0);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(60, 12);
+            this.label24.TabIndex = 233;
+            this.label24.Text = "X";
+            this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label52
+            // 
+            this.label52.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label52.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label52.Location = new System.Drawing.Point(83, 88);
+            this.label52.Margin = new System.Windows.Forms.Padding(3, 0, 8, 0);
+            this.label52.Name = "label52";
+            this.label52.Size = new System.Drawing.Size(60, 12);
+            this.label52.TabIndex = 232;
+            this.label52.Text = "Y";
+            this.label52.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // KillTypeBtn
             // 
@@ -365,65 +425,6 @@
             this.ObjectListBox.TabIndex = 0;
             this.ObjectListBox.SelectedIndexChanged += new System.EventHandler(this.ObjectListBox_SelectedIndexChanged);
             // 
-            // label6
-            // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label6.Location = new System.Drawing.Point(150, 88);
-            this.label6.Margin = new System.Windows.Forms.Padding(3, 0, 6, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(63, 12);
-            this.label6.TabIndex = 234;
-            this.label6.Text = "Z";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label24
-            // 
-            this.label24.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label24.Location = new System.Drawing.Point(13, 88);
-            this.label24.Margin = new System.Windows.Forms.Padding(3, 0, 8, 0);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(60, 12);
-            this.label24.TabIndex = 233;
-            this.label24.Text = "X";
-            this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label52
-            // 
-            this.label52.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label52.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label52.Location = new System.Drawing.Point(83, 88);
-            this.label52.Margin = new System.Windows.Forms.Padding(3, 0, 8, 0);
-            this.label52.Name = "label52";
-            this.label52.Size = new System.Drawing.Size(60, 12);
-            this.label52.TabIndex = 232;
-            this.label52.Text = "Y";
-            this.label52.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label1.AutoSize = true;
-            this.label1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.label1.Location = new System.Drawing.Point(10, 60);
-            this.label1.Margin = new System.Windows.Forms.Padding(5);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(27, 13);
-            this.label1.TabIndex = 236;
-            this.label1.Text = "Flag";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textBox1.Location = new System.Drawing.Point(51, 57);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(5);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(60, 20);
-            this.textBox1.TabIndex = 235;
-            this.textBox1.Text = "0";
-            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // ObjectEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -468,7 +469,7 @@
         public System.Windows.Forms.ListBox ObjectListBox;
         public System.Windows.Forms.ComboBox ObjectIndexBox;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox FlagBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label52;

@@ -117,5 +117,17 @@ namespace Tarmac64_Retail
             ModelCompiler f2 = new ModelCompiler();
             f2.Show();
         }
+
+        private void hitboxCompilerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Tarmac64_Retail.HitboxCompiler f2 = new HitboxCompiler();
+            f2.Show();
+        }
+
+        private void ghostExtractorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GhostExtractor f2 = new GhostExtractor();
+            f2.Show();
+        }
     }
 }

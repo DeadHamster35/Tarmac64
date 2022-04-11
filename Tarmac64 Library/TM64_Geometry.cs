@@ -129,7 +129,7 @@ namespace Tarmac64_Library
             public int palettePosition { get; set; }
             public int paletteSize { get; set; }
             public int romPosition { get; set; }
-            public int[] f3dexPosition { get; set; }
+            public int f3dexPosition { get; set; }
             public int vertAlpha { get; set; }
 
         }
@@ -141,6 +141,29 @@ namespace Tarmac64_Library
 
         }
 
+        public class OK64Collide
+        {
+
+            //Internal Name in Tarmac
+            public string Name { get; set; }
+            //Cube or Sphere type. 
+            public short Type { get; set; }
+            
+            //Various result values for hits
+            public short Status { get; set; }
+            public short Effect { get; set; }
+            public short Scale { get; set; }
+            public short CollideResult { get; set; }
+            public short HitResult { get; set; }
+
+            // Sizes. Uses FixedStorage in ROM. x10
+            //Cubetype uses 3 element XYZ size. Z-up in Tarmac Y-up in ROM.
+            //Spheretype uses first size element for Radius.
+            public short[] Origin { get; set; }
+            public short[] Size { get; set; }
+            //
+        }
+
 
         public class OK64Bone
         {
@@ -150,8 +173,8 @@ namespace Tarmac64_Library
             public OK64Bone[] Children { get; set; }
             public int MeshCount { get; set; }       
             public OK64Animation Animation { get; set; }
-            public int TranslationOffset { get; set; }
-            public int MeshListOffset { get; set; }
+            public UInt32 TranslationOffset { get; set; }
+            public UInt32 MeshListOffset { get; set; }
 
         }
 
@@ -174,15 +197,13 @@ namespace Tarmac64_Library
             public Byte surfaceMaterial { get; set; }
             public int[] meshID { get; set; }
             public int[] meshPosition { get; set; }
-            public bool flagA { get; set; }
-            public bool flagB { get; set; }
-            public bool flagC { get; set; }
             public Face[] modelGeometry { get; set; }
             public float[] objectColor { get; set; }
             public int surfaceProperty { get; set; }
             public PathfindingObject pathfindingObject { get; set; }
             public string BoneName { get; set; }
             public int ListPosition { get; set; }
+            public bool[] KillDisplayList { get; set; }
 
         }
         public class PathfindingObject
@@ -1332,6 +1353,10 @@ namespace Tarmac64_Library
                 binaryWriter.Write(ModelData[ThisModel].materialID);
                 binaryWriter.Write(ModelData[ThisModel].vertCount);
                 binaryWriter.Write(ModelData[ThisModel].faceCount);
+                for (int ThisBool = 0; ThisBool < 6; ThisBool++)
+                {
+                    binaryWriter.Write(ModelData[ThisModel].KillDisplayList[ThisBool]);
+                }
 
                 binaryWriter.Write(ModelData[ThisModel].meshID.Length);
                 for (int ThisMesh = 0; ThisMesh < ModelData[ThisModel].meshID.Length; ThisMesh++)
@@ -1386,7 +1411,8 @@ namespace Tarmac64_Library
             newObject.objectColor[1] = rValue.NextFloat(0.3f, 1);
             newObject.objectColor[2] = rValue.NextFloat(0.3f, 1);
             newObject.objectName = objectNode.Name;
-            newObject.meshID = objectNode.MeshIndices.ToArray();            
+            newObject.meshID = objectNode.MeshIndices.ToArray();
+            newObject.KillDisplayList = new bool[8] { true, true, true, true, true, true, true, true };
 
             if (newObject.meshID.Length == 0)
             {
@@ -1657,7 +1683,7 @@ namespace Tarmac64_Library
                             else
                             {
                                 newObject.modelGeometry[currentFace].VertData[currentVert].position.sPure = fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[currentVert]][0] * 32;
-                                newObject.modelGeometry[currentFace].VertData[currentVert].position.tPure = (fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[currentVert]][1]) * -32;
+                                newObject.modelGeometry[currentFace].VertData[currentVert].position.tPure = (1 - fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[currentVert]][1]) * 32;
                             }
                             newObject.modelGeometry[currentFace].VertData[currentVert].position.u = u_offset[currentVert];
                             newObject.modelGeometry[currentFace].VertData[currentVert].position.v = v_offset[currentVert] * -1;
@@ -3773,8 +3799,7 @@ namespace Tarmac64_Library
             {
                 if ((textureObject[materialID].textureName != null) && (textureObject[materialID].textureName != "NULL"))
                 {
-                    textureObject[materialID].f3dexPosition = new int[2];
-                    textureObject[materialID].f3dexPosition[0] = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
+                    textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
                     seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), true));
                 }
             }
@@ -3821,8 +3846,7 @@ namespace Tarmac64_Library
             {
                 if ((textureObject[materialID].textureName != null) && (textureObject[materialID].textureName != "NULL"))
                 {
-                    textureObject[materialID].f3dexPosition = new int[2];
-                    textureObject[materialID].f3dexPosition[0] = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
+                    textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
                     seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode));
                 }                    
             }
@@ -3865,7 +3889,7 @@ namespace Tarmac64_Library
                             Array.Reverse(byteArray);
                             seg6w.Write(byteArray);
 
-                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | (SegmentID << 24));
+                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | (SegmentID << 24));
                             Array.Reverse(byteArray);
                             seg6w.Write(byteArray);
 
@@ -3951,7 +3975,7 @@ namespace Tarmac64_Library
                                             Array.Reverse(byteArray);
                                             seg6w.Write(byteArray);
 
-                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | 0x06000000);
                                             Array.Reverse(byteArray);
                                             seg6w.Write(byteArray);
 
@@ -4047,7 +4071,7 @@ namespace Tarmac64_Library
                                             Array.Reverse(byteArray);
                                             seg6w.Write(byteArray);
 
-                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | 0x06000000);
                                             Array.Reverse(byteArray);
                                             seg6w.Write(byteArray);
 
@@ -4119,7 +4143,7 @@ namespace Tarmac64_Library
                                     Array.Reverse(byteArray);
                                     seg6w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | 0x06000000);
                                     Array.Reverse(byteArray);
                                     seg6w.Write(byteArray);
 
@@ -4181,7 +4205,7 @@ namespace Tarmac64_Library
                                     Array.Reverse(byteArray);
                                     seg6w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition[0] | 0x06000000);
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | 0x06000000);
                                     Array.Reverse(byteArray);
                                     seg6w.Write(byteArray);
 
@@ -4425,7 +4449,7 @@ namespace Tarmac64_Library
             byte[] flip2 = new byte[2];
             List<byte> AnimationData = new List<byte>();
 
-            Skeleton.MeshListOffset = Convert.ToInt32(binaryWriter.BaseStream.Position + Magic);
+            Skeleton.MeshListOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
             int MeshCount = 0;
             for (int ThisObject = 0; ThisObject < SaveObject.ModelData.Length; ThisObject++)
             {
@@ -4441,7 +4465,7 @@ namespace Tarmac64_Library
             {
                 if (SaveObject.ModelData[ThisObject].BoneName == Skeleton.Name)
                 {
-                    flip2 = BitConverter.GetBytes(SaveObject.TextureData[SaveObject.ModelData[ThisObject].materialID].f3dexPosition[0]);
+                    flip2 = BitConverter.GetBytes(SaveObject.TextureData[SaveObject.ModelData[ThisObject].materialID].f3dexPosition);
                     Array.Reverse(flip2);
                     binaryWriter.Write(flip2);
 
@@ -4463,7 +4487,7 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
         }
 
-        public byte[] WriteAnimationData(OK64Bone Skeleton, int Magic)
+        public byte[] WriteAnimationData(OK64Bone Skeleton, UInt32 Magic)
         {
 
             MemoryStream memoryStream = new MemoryStream();
@@ -4471,36 +4495,18 @@ namespace Tarmac64_Library
             byte[] flip2 = new byte[2];
             List<byte> AnimationData = new List<byte>();
 
-            flip2 = BitConverter.GetBytes(Skeleton.Origin[0]);
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
 
-            flip2 = BitConverter.GetBytes(Skeleton.Origin[2]);
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
-
-            flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Origin[1] * -1));
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
-
+            binaryWriter.Write(F3D.BigEndian(Skeleton.Origin[0]));
+            binaryWriter.Write(F3D.BigEndian(Skeleton.Origin[2]));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Origin[1] * -1)));
             binaryWriter.Write(Convert.ToInt16(0));
 
             for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.RotationData.Length; ThisFrame++)
             {
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][0]));
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
-
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][2]));
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
-
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][1]));
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][0])));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][2])));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][1])));
             }
-
-
             if (Skeleton.FrameCount % 2 == 1)
             {
                 binaryWriter.Write(Convert.ToInt16(0));
@@ -4509,20 +4515,10 @@ namespace Tarmac64_Library
 
             for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.TranslationData.Length; ThisFrame++)
             {
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][0]));
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
-
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][2]));
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
-
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][1] * -1));
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][0])));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][2])));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][1] * -1)));
             }
-
-
             if (Skeleton.FrameCount % 2 == 1)
             {
                 binaryWriter.Write(Convert.ToInt16(0));
@@ -4531,20 +4527,10 @@ namespace Tarmac64_Library
 
             for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.ScalingData.Length; ThisFrame++)
             {
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][0]));
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
-
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][2]));
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
-
-                flip2 = BitConverter.GetBytes(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][1]));
-                Array.Reverse(flip2);
-                binaryWriter.Write(flip2);
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][0])));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][2])));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][1])));
             }
-
-
             if (Skeleton.FrameCount % 2 == 1)
             {
                 binaryWriter.Write(Convert.ToInt16(0));
@@ -4554,13 +4540,13 @@ namespace Tarmac64_Library
             foreach (var ChildBone in Skeleton.Children)
             {
 
-                ChildBone.TranslationOffset = Convert.ToInt32(Magic + binaryWriter.BaseStream.Position + Skeleton.TranslationOffset);
+                ChildBone.TranslationOffset = Convert.ToUInt32(Magic + binaryWriter.BaseStream.Position + Skeleton.TranslationOffset);
                 binaryWriter.Write(WriteAnimationData(ChildBone, ChildBone.TranslationOffset));
             }
             return memoryStream.ToArray();
         }
 
-        public byte[] BuildAnimationData(OK64Bone Skeleton, int Magic)
+        public byte[] BuildAnimationData(OK64Bone Skeleton, UInt32 Magic)
         {
 
             MemoryStream memoryStream = new MemoryStream();
@@ -4574,7 +4560,7 @@ namespace Tarmac64_Library
 
             foreach (var ChildBone in Skeleton.Children)
             {
-                ChildBone.TranslationOffset = Convert.ToInt32(Magic + binaryWriter.BaseStream.Position);
+                ChildBone.TranslationOffset = Convert.ToUInt32(Magic + binaryWriter.BaseStream.Position);
                 binaryWriter.Write(WriteAnimationData(ChildBone, ChildBone.TranslationOffset));
             }
 
@@ -4620,11 +4606,6 @@ namespace Tarmac64_Library
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
             List<byte> AnimationData = new List<byte>();
-
-
-
-
-
             flip2 = BitConverter.GetBytes(Skeleton.FrameCount);
             Array.Reverse(flip2);
             binaryWriter.Write(flip2);
@@ -4634,130 +4615,6 @@ namespace Tarmac64_Library
 
             return memoryStream.ToArray();
         }
-
-        //
-        int hms_joint = 0;
-        int hms_begin = 1;
-        int hms_end = 2;
-        int hms_exit = 3;
-        /*
-            #define	hmsBegin()						hms_begin,	2,
-            #define	hmsEnd()						hms_end,	2,
-            #define	hmsExit()						hms_exit,	2,
-            #define	hmsJoint(mode,addr,ox,oy,oz)	hms_joint,	7,0,(unsigned long)addr,ox,oy,oz,
-        */
-
-        public byte[] HMSBegin()
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(hms_begin)));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(2)));
-            return memoryStream.ToArray();
-        }
-        public byte[] HMSEnd()
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(hms_end)));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(2)));
-            return memoryStream.ToArray();
-        }
-        public byte[] HMSExit()
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(hms_exit)));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(2)));
-            return memoryStream.ToArray();
-        }
-        public byte[] HMSJoint(int Mode, int ModelAddress, short[] Origin)
-        {
-            //hms_joint,    7,0,(unsigned long)addr,ox,oy,oz,
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(hms_joint)));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(7)));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Mode)));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(0x0A000000 | ModelAddress)));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToInt32(Origin[0]))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToInt32(Origin[1]))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToInt32(Origin[2]))));
-            return memoryStream.ToArray();
-        }
-
-        public byte[] WriteBoneHeader(OK64Bone Skeleton, TM64_Course.OKObjectType SaveObject)
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
-
-            binaryWriter.Write(HMSBegin());
-
-            int MeshCount = 0;
-            for (int ThisObject = 0; ThisObject < SaveObject.ModelData.Length; ThisObject++)
-            {
-                if (SaveObject.ModelData[ThisObject].BoneName == Skeleton.Name)
-                {
-                    binaryWriter.Write(HMSJoint(0, Convert.ToInt32(SaveObject.ModelData[ThisObject].ListPosition | 0x0A000000), Skeleton.Origin));
-                    MeshCount++;
-                }
-            }
-            if (MeshCount == 0)
-            {
-                binaryWriter.Write(HMSJoint(0, 0, Skeleton.Origin));
-            }
-
-            foreach(var SubChild in Skeleton.Children)
-            {
-                binaryWriter.Write(WriteBoneHeader(SubChild, SaveObject));
-            }
-
-            binaryWriter.Write(HMSEnd());
-
-            return memoryStream.ToArray();
-        }
-
-        public int GetCount(OK64Bone Skeleton, int Count)
-        {
-            Count++;
-            foreach (var Child in Skeleton.Children)
-            {
-                Count = GetCount(Child, Count);
-            }
-            return Count;
-        }
-        public byte[] BuildAnimationRecord(OK64Bone Skeleton, int AnimationData, int AnimationTable)
-        {
-
-            //          AnimeRecord chomp_anim_anm ={
-            //MAP_ANIM_NORMAL,    /* attribute                */
-            //0,                    /* syncro                 */
-            //0,                    /* start frame              */
-            //0,                    /* loop frame              */
-            //20,                    /* number of frames          */
-            //7,                    /* number of joints          */
-            //chomp_anim_prm,        /* anim param pointer      */
-            //chomp_anim_tbl        /* anim table pointer      */
-            //}
-
-            int TotalChildCount = GetCount(Skeleton, 0);
-            
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToInt16(1))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToInt16(0))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToInt16(0))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToInt16(0))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToInt16(Skeleton.FrameCount))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToInt16(TotalChildCount))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(0x0A000000 | AnimationData)));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(0x0A000000 | AnimationTable)));
-
-            return memoryStream.ToArray();
-        }
-
 
 
         public OK64Animation LoadAnimation(NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
@@ -4874,9 +4731,6 @@ namespace Tarmac64_Library
             }
 
 
-            Bone.Origin[0] += Parent.Origin[0];
-            Bone.Origin[1] += Parent.Origin[1];
-            Bone.Origin[2] += Parent.Origin[2];
             return Bone;
         }
         public OK64Bone GetTransforms(OK64Bone Skeleton, int FrameCount)
@@ -4899,7 +4753,7 @@ namespace Tarmac64_Library
             if (Bone.Name == AnimeChannel.NodeName)
             {
                 Bone.Animation = LoadAnimation(AnimeChannel, Bone, FrameCount);
-
+                Bone.FrameCount = FrameCount;
             }
             foreach (var Child in Bone.Children)
             {
@@ -4922,13 +4776,103 @@ namespace Tarmac64_Library
             GetTransforms(Skeleton, Skeleton.FrameCount);
             return Skeleton;
         }
-        
-        
 
+        public OK64Collide CreateHitbox(string Name)
+        {
+            OK64Collide NewSphere = new OK64Collide();
+            NewSphere.Name = Name;
+            NewSphere.Type = 0;
+            NewSphere.Origin = new short[3] { 0, 0, 0 };            
+            NewSphere.Size = new short[3] { 0, 0, 0 };
+            NewSphere.Scale = 10;
+            NewSphere.Status = 0;
+            NewSphere.Effect = 0;
+            NewSphere.HitResult = 0;
+            NewSphere.CollideResult = 0;
+            return NewSphere;
+        }
+        
+        public OK64Collide[] LoadHitbox(Scene FBX)
+        {
+            List<OK64Collide> Hitbox = new List<OK64Collide>();
+            Node Base = FBX.RootNode.FindNode("Collide Objects");
+            for (int ThisChild = 0; ThisChild < Base.ChildCount; ThisChild++)
+            {
+                Hitbox.Add(new OK64Collide());
+                Matrix4x4 OPrime = GetTotalTransform(Base.Children[ThisChild], FBX);
+                Hitbox[ThisChild].Origin = new short[3] { Convert.ToInt16(OPrime.A4 * 100), Convert.ToInt16(OPrime.B4 * 100), Convert.ToInt16(OPrime.C4 * 100) };
+                Hitbox[ThisChild].Size = new short[3] { 5, 5, 5 };
+                Hitbox[ThisChild].Status = 0;
+                Hitbox[ThisChild].Effect = 0;
+                Hitbox[ThisChild].Name = Base.Children[ThisChild].Name;
+                
+            }
+
+
+            return Hitbox.ToArray();
+        }
+
+
+
+        public TM64_Geometry.OK64Collide[] LoadHitboxFile(byte[] FileData)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+            memoryStream.Write(FileData, 0, FileData.Length);
+            memoryStream.Position = 0;
+            int Count = binaryReader.ReadInt32();
+            TM64_Geometry.OK64Collide[] Hitbox = new TM64_Geometry.OK64Collide[Count];
+            for (int ThisHit = 0; ThisHit < Count; ThisHit++)
+            {
+                Hitbox[ThisHit] = new TM64_Geometry.OK64Collide();
+                Hitbox[ThisHit].Name = binaryReader.ReadString();
+                Hitbox[ThisHit].Type = binaryReader.ReadInt16();
+                Hitbox[ThisHit].Status = binaryReader.ReadInt16();
+                Hitbox[ThisHit].Scale = binaryReader.ReadInt16();
+                Hitbox[ThisHit].Effect = binaryReader.ReadInt16();
+                Hitbox[ThisHit].CollideResult = binaryReader.ReadInt16();
+                Hitbox[ThisHit].HitResult = binaryReader.ReadInt16();
+                Hitbox[ThisHit].Origin = new short[3];
+                Hitbox[ThisHit].Size = new short[3];
+                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                {
+                    Hitbox[ThisHit].Origin[ThisVector] = binaryReader.ReadInt16();
+                    Hitbox[ThisHit].Size[ThisVector] = binaryReader.ReadInt16();
+                }
+            }
+            return Hitbox;
+
+        }
+
+        public byte[] SaveHitboxFile(TM64_Geometry.OK64Collide[] Hitbox)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+            binaryWriter.Write(Hitbox.Length);
+            foreach (var Hit in Hitbox)
+            {
+                binaryWriter.Write(Hit.Name);
+                binaryWriter.Write(Hit.Type);
+                binaryWriter.Write(Hit.Status);
+                binaryWriter.Write(Hit.Scale);
+                binaryWriter.Write(Hit.Effect);
+                binaryWriter.Write(Hit.CollideResult);
+                binaryWriter.Write(Hit.HitResult);
+                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                {
+                    binaryWriter.Write(Hit.Origin[ThisVector]);
+                    binaryWriter.Write(Hit.Size[ThisVector]);
+                }
+            }
+
+            return memoryStream.ToArray();
+
+        }
 
     }
 
-    
+
 
 }
 

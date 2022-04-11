@@ -129,8 +129,9 @@ namespace Tarmac64_Library
                 Assimp.Node masterNode = ModelData.RootNode.FindNode("Master Objects");
                 if (masterNode != null)
                 {
-                    TextureObjects[0] = TarmacGeo.loadTextures(ModelData, FBXFilePath);
-                    MasterObjects[0] = TarmacGeo.createObjects(ModelData, TextureObjects[0]);
+                    //TextureObjects[0] = TarmacGeo.loadTextures(ModelData, FBXFilePath);
+                    //MasterObjects[0] = TarmacGeo.createObjects(ModelData, TextureObjects[0]);
+                    int a = 0;
                 }
                 else
                 {
