@@ -3621,7 +3621,7 @@ namespace Tarmac64_Library
             }
         }
 
-        public byte[] RGBA(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true)
+        public byte[] RGBA(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false)
         {
 
             MemoryStream memoryStream = new MemoryStream();
@@ -3631,23 +3631,6 @@ namespace Tarmac64_Library
             UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
 
 
-
-            if (GeometryToggle)
-            {
-                //First setup the Geometry Mode parameter
-                TextureObject.GeometryModes = 0;
-                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
-                {
-                    if (TextureObject.GeometryBools[ThisCheck])
-                    {
-                        TextureObject.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
-                    }
-                }
-
-                binaryWriter.Write(F3D.gsSPClearGeometryMode(F3DEX095_Parameters.AllGeometryModes));    //clear existing modes
-                binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.GeometryModes));               //set the mode we made above.
-            }
-            
 
 
 
@@ -3672,12 +3655,27 @@ namespace Tarmac64_Library
 
             if (GeometryToggle)
             {
-                binaryWriter.Write(
-                    F3D.gsDPSetCombineMode(
-                        F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
-                        F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
-                    )
-                );
+                
+                if (FogToggle)
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                            F3DEX095_Parameters.G_CC_PASS2
+                        )
+                    );
+                }
+                else
+                
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
+                        )
+                    );
+                }
+
             }
             /*
             if (!TextureObject.AdvancedSettings)
@@ -3711,12 +3709,27 @@ namespace Tarmac64_Library
             //set render mode
             if (GeometryToggle)
             {
-                binaryWriter.Write(
-                    F3D.gsDPSetRenderMode(
-                        F3DEX095_Parameters.RenderModes[TextureObject.RenderModeA],
-                        F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
-                    )
-                );
+                
+                if (FogToggle)
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.G_RM_FOG_SHADE_A,
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
+                        )
+                    );
+                }               
+                else
+                
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeA],
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
+                        )
+                    );
+                }
+
             }
 
             //Load Texture Settings
@@ -3740,6 +3753,206 @@ namespace Tarmac64_Library
 
 
 
+            if (GeometryToggle)
+            {
+
+                
+                binaryWriter.Write(F3D.gsSPClearGeometryMode(F3DEX095_Parameters.AllGeometryModes));    //clear existing modes
+                
+                //setup the Geometry Mode parameter
+                TextureObject.GeometryModes = 0;
+                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
+                {
+                    if (TextureObject.GeometryBools[ThisCheck])
+                    {
+                        TextureObject.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
+                    }
+                }
+
+
+                if (FogToggle)
+                {
+                    TextureObject.GeometryModes |= F3DEX095_Parameters.G_FOG;
+                }
+
+                binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.GeometryModes));               //set the mode we made above.
+            }
+
+
+            //Load Texture Data
+            binaryWriter.Write(
+                F3D.gsNinLoadTextureImage(
+                    Convert.ToUInt32(TextureObject.segmentPosition | Convert.ToUInt32(Segment << 24)),
+                    F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
+                    F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
+                    Convert.ToUInt32(TextureObject.textureWidth),
+                    Convert.ToUInt32(TextureObject.textureHeight),
+                    0,
+                    7
+                )
+            );
+            
+
+
+            binaryWriter.Write(F3D.gsSPEndDisplayList());                                             //End the Display List
+
+
+
+
+
+            return memoryStream.ToArray();
+
+        }
+
+
+        public byte[] CI(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false)
+        {
+
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+            byte[] byteArray = new byte[2];
+            UInt32 heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
+            UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
+
+
+
+
+
+            //set MIP levels to 0.
+            binaryWriter.Write(
+                F3D.gsSPTexture(
+                    65535,
+                    65535,
+                    0,
+                    0,
+                    1
+                )
+            );
+
+            //pipe sync.
+            binaryWriter.Write(
+                F3D.gsDPPipeSync()
+            );
+
+
+
+            if (GeometryToggle)
+            {
+
+                if (FogToggle)
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                            F3DEX095_Parameters.G_CC_PASS2
+                        )
+                    );
+                }
+                else
+
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
+                        )
+                    );
+                }
+
+            }
+            /*
+            if (!TextureObject.AdvancedSettings)
+            {
+                //set combine mode (simple)
+                binaryWriter.Write(
+                    F3D.gsDPSetCombineMode(
+                        F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                        F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
+                    )
+                );
+
+            }
+            else
+            {
+                //set combine mode (advanced)
+                binaryWriter.Write(
+                    F3D.gsDPSetCombineMode(
+                        TextureObject.CombineValuesA,
+                        TextureObject.CombineValuesB
+                    )
+                );
+
+            }
+            */
+
+
+
+
+
+            //set render mode
+            if (GeometryToggle)
+            {
+
+                if (FogToggle)
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.G_RM_FOG_SHADE_A,
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
+                        )
+                    );
+                }
+                else
+
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeA],
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
+                        )
+                    );
+                }
+
+            }
+
+            //Load Texture Settings
+            binaryWriter.Write(
+                F3D.gsNinSetupTileDescription(
+                    F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
+                    F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
+                    Convert.ToUInt32(TextureObject.textureWidth),
+                    Convert.ToUInt32(TextureObject.textureHeight),
+                    0,
+                    0,
+                    F3DEX095_Parameters.TextureModes[TextureObject.SFlag],
+                    widthex,
+                    0,
+                    F3DEX095_Parameters.TextureModes[TextureObject.TFlag],
+                    heightex,
+                    0
+                )
+            );
+
+
+            //binaryWriter.Write()
+
+
+
+
+            if (GeometryToggle)
+            {
+                //setup the Geometry Mode parameter
+                TextureObject.GeometryModes = 0;
+                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
+                {
+                    if (TextureObject.GeometryBools[ThisCheck])
+                    {
+                        TextureObject.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
+                    }
+                }
+                binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.GeometryModes));               //set the mode we made above.
+            }
+
 
             //Load Texture Data
             binaryWriter.Write(
@@ -3754,7 +3967,10 @@ namespace Tarmac64_Library
                 )
             );
 
-
+            if (GeometryToggle)
+            {
+                binaryWriter.Write(F3D.gsSPClearGeometryMode(TextureObject.GeometryModes));    //clear existing modes
+            }
 
 
 
@@ -3770,7 +3986,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] compileCourseTexture(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5)
+        public byte[] compileCourseTexture(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5, bool FogToggle = false)
         {
             byte[] byteArray = new byte[0];
 
@@ -3800,7 +4016,7 @@ namespace Tarmac64_Library
                 if ((textureObject[materialID].textureName != null) && (textureObject[materialID].textureName != "NULL"))
                 {
                     textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
-                    seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), true));
+                    seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle));
                 }
             }
             return seg7m.ToArray();
@@ -3808,7 +4024,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] compileTextureObject(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5, bool GeometryMode = true)
+        public byte[] compileTextureObject(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5, bool GeometryMode = true, bool FogToggle = false)
         {
             byte[] byteArray = new byte[0];
 
@@ -3847,7 +4063,7 @@ namespace Tarmac64_Library
                 if ((textureObject[materialID].textureName != null) && (textureObject[materialID].textureName != "NULL"))
                 {
                     textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
-                    seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode));
+                    seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle));
                 }                    
             }
             return seg7m.ToArray();

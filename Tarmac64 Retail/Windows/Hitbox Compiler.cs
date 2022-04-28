@@ -210,15 +210,15 @@ namespace Tarmac64_Retail
                     Hitbox[Index].Scale = Parse;
                 }
 
-                Hitbox[Index].Type = Convert.ToInt16(TypeBox.SelectedIndex);
-                Hitbox[Index].Status = Convert.ToInt16(StatusBox.SelectedIndex);
-                Hitbox[Index].Effect = Convert.ToInt16(EffectBox.SelectedIndex);
-                Hitbox[Index].HitResult = Convert.ToInt16(DmgResultBox.SelectedIndex);
-                Hitbox[Index].CollideResult = Convert.ToInt16(ColResultBox.SelectedIndex);
+                Hitbox[Index].Type = Convert.ToInt16(TypeBox.SelectedIndex-1);
+                Hitbox[Index].Status = Convert.ToInt16(StatusBox.SelectedIndex-1);
+                Hitbox[Index].Effect = Convert.ToInt16(EffectBox.SelectedIndex-1);
+                Hitbox[Index].HitResult = Convert.ToInt16(DmgResultBox.SelectedIndex-1);
+                Hitbox[Index].CollideResult = Convert.ToInt16(ColResultBox.SelectedIndex-1);
 
 
 
-                if (Hitbox[Index].Type == 0)
+                if ( (Hitbox[Index].Type == 0) || (Hitbox[Index].Type == 2) )
                 {
 
                     SizeYBox.Enabled = false;

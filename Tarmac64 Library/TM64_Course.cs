@@ -150,7 +150,16 @@ namespace Tarmac64_Library
             public string SerialNumber { get; set; }
             public int Gametype { get; set; }
             public VSBomb[] BombArray { get; set; }
+            public OKFog Fog { get; set; }
 
+        }
+        public class OKFog
+        {
+
+            public short FogToggle { get; set; }
+            public TM64_Geometry.OK64Color FogColor { get; set; }
+            public short StartDistance { get; set; }
+            public short StopDistance { get; set; }
         }
 
         public class VSBomb
@@ -353,10 +362,10 @@ namespace Tarmac64_Library
                 binaryWriter.Write(F3D.BigEndian(Hit.Origin[2]));
                 binaryWriter.Write(F3D.BigEndian(Hit.Origin[1] * -1));
 
-                binaryWriter.Write(Convert.ToByte(Hit.Status));
-                binaryWriter.Write(Convert.ToByte(Hit.Effect));
-                binaryWriter.Write(Convert.ToByte(Hit.CollideResult));
-                binaryWriter.Write(Convert.ToByte(Hit.HitResult));
+                binaryWriter.Write(Convert.ToSByte(Hit.Status));
+                binaryWriter.Write(Convert.ToSByte(Hit.Effect));
+                binaryWriter.Write(Convert.ToSByte(Hit.CollideResult));
+                binaryWriter.Write(Convert.ToSByte(Hit.HitResult));
 
 
             }
@@ -615,7 +624,7 @@ namespace Tarmac64_Library
 
             return memoryStream.ToArray();
         }
-        public byte[] CompileObjectModels(OKObjectType[] SaveData)
+        public byte[] CompileObjectModels(OKObjectType[] SaveData, bool FogToggle)
         {
             byte[] flip = new byte[0];
             byte[] OutputData = new byte[0];
@@ -629,7 +638,7 @@ namespace Tarmac64_Library
             for (int currentItem = 0; currentItem < SaveData.Length; currentItem++)
             {
                 OutputData = TarmacGeometry.writeRawTextures(OutputData, SaveData[currentItem].TextureData, DataLength);
-                OutputData = TarmacGeometry.compileTextureObject(OutputData, SaveData[currentItem].TextureData, DataLength, 0xA, true);
+                OutputData = TarmacGeometry.compileTextureObject(OutputData, SaveData[currentItem].TextureData, DataLength, 0xA, true, FogToggle);
                 OutputData = TarmacGeometry.compileF3DObject(OutputData, SaveData[currentItem].ModelData, SaveData[currentItem].TextureData, DataLength, 0xA);                
             }
             binaryWriter.Write(OutputData);
@@ -1093,6 +1102,16 @@ namespace Tarmac64_Library
             DataLength = binaryReader.ReadInt32();
             CourseData.Segment7 = binaryReader.ReadBytes(DataLength);
 
+            CourseData.Fog = new OKFog();
+            CourseData.Fog.FogToggle = binaryReader.ReadInt16();
+            CourseData.Fog.StartDistance = binaryReader.ReadInt16();
+            CourseData.Fog.StopDistance = binaryReader.ReadInt16();
+            CourseData.Fog.FogColor = new TM64_Geometry.OK64Color();
+            CourseData.Fog.FogColor.R = binaryReader.ReadByte();
+            CourseData.Fog.FogColor.G = binaryReader.ReadByte();
+            CourseData.Fog.FogColor.B = binaryReader.ReadByte();
+            CourseData.Fog.FogColor.A = binaryReader.ReadByte();
+
             CourseData.Gametype = binaryReader.ReadInt32();
             CourseData.Credits = binaryReader.ReadString();            
             CourseData.Name = binaryReader.ReadString();
@@ -1287,6 +1306,15 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.Segment6);
             binaryWriter.Write(CourseData.Segment7.Length);
             binaryWriter.Write(CourseData.Segment7);
+
+
+            binaryWriter.Write(CourseData.Fog.FogToggle);
+            binaryWriter.Write(CourseData.Fog.StartDistance);
+            binaryWriter.Write(CourseData.Fog.StopDistance);
+            binaryWriter.Write(CourseData.Fog.FogColor.R);
+            binaryWriter.Write(CourseData.Fog.FogColor.G);
+            binaryWriter.Write(CourseData.Fog.FogColor.B);
+            binaryWriter.Write(CourseData.Fog.FogColor.A);
 
 
             binaryWriter.Write(CourseData.Gametype);
@@ -2243,6 +2271,22 @@ namespace Tarmac64_Library
             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ScrollDataSize)));  //Total Data
 
             binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.PathOffset));
+
+
+            if (courseData.Fog.FogToggle > 0)
+            {
+                binaryWriter.Write(F3D.BigEndian(courseData.Fog.StartDistance));
+                binaryWriter.Write(F3D.BigEndian(courseData.Fog.StopDistance));
+            }
+            else
+            {
+                binaryWriter.Write(F3D.BigEndian(-1));
+                binaryWriter.Write(F3D.BigEndian(-1));
+            }
+            binaryWriter.Write(courseData.Fog.FogColor.R);
+            binaryWriter.Write(courseData.Fog.FogColor.G);
+            binaryWriter.Write(courseData.Fog.FogColor.B);
+            binaryWriter.Write(courseData.Fog.FogColor.A);
 
             for (int currentPad = 0; currentPad < 16; currentPad++)
             {

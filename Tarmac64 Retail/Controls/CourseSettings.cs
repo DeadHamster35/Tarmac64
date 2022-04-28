@@ -52,7 +52,23 @@ namespace Tarmac64_Retail
             CourseData.PathEffects = new TM64_Course.PathEffect[0];
             CourseData.BombArray = new TM64_Course.VSBomb[7];
             CourseData.PathSurface = new int[4];
-            
+            CourseData.Fog = new TM64_Course.OKFog();
+            CourseData.Fog.FogToggle = 0;
+            CourseData.Fog.StartDistance = 900;
+            CourseData.Fog.StopDistance = 1000;
+            CourseData.Fog.FogColor = new TM64_Geometry.OK64Color();
+            CourseData.Fog.FogColor.R = 240;
+            CourseData.Fog.FogColor.G = 240;
+            CourseData.Fog.FogColor.B = 240;
+            CourseData.Fog.FogColor.A = 255;
+
+            FogStartBox.Text = "900";
+            FogEndBox.Text = "1000";
+            FogToggleBox.Checked = false;
+            FogRBox.Text = "240";
+            FogGBox.Text = "240";
+            FogBBox.Text = "240";
+            FogABox.Text = "255";
 
 
             SkyRM.Text = "216";
@@ -215,6 +231,19 @@ namespace Tarmac64_Retail
                 CourseData.BombArray[ThisBomb].Point = Convert.ToInt16(SettingsInfo[ThisLine++]);
                 CourseData.BombArray[ThisBomb].Type = Convert.ToInt16(SettingsInfo[ThisLine++]);
             }
+
+
+
+            CourseData.Fog = new TM64_Course.OKFog();
+
+            CourseData.Fog.FogToggle = Convert.ToInt16(SettingsInfo[ThisLine++]);
+            CourseData.Fog.FogColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
+            CourseData.Fog.FogColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
+            CourseData.Fog.FogColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
+            CourseData.Fog.FogColor.A = Convert.ToByte(SettingsInfo[ThisLine++]);
+            CourseData.Fog.StartDistance = Convert.ToInt16(SettingsInfo[ThisLine++]);
+            CourseData.Fog.StopDistance = Convert.ToInt16(SettingsInfo[ThisLine++]);
+
             UpdateUI();
             return ThisLine;
         }
@@ -290,6 +319,15 @@ namespace Tarmac64_Retail
                 Output.Add(CourseData.BombArray[ThisBomb].Point.ToString());
                 Output.Add(CourseData.BombArray[ThisBomb].Type.ToString());
             }
+
+            Output.Add(CourseData.Fog.FogToggle.ToString());
+            Output.Add(CourseData.Fog.FogColor.R.ToString());
+            Output.Add(CourseData.Fog.FogColor.G.ToString());
+            Output.Add(CourseData.Fog.FogColor.B.ToString());
+            Output.Add(CourseData.Fog.FogColor.A.ToString());
+            Output.Add(CourseData.Fog.StartDistance.ToString());
+            Output.Add(CourseData.Fog.StopDistance.ToString());
+
             return Output.ToArray();
 
         }
@@ -313,6 +351,35 @@ namespace Tarmac64_Retail
             CourseData.PreviewPath = previewBox.Text;
             CourseData.BannerPath = bannerBox.Text;
             CourseData.GhostPath = ghostBox.Text;
+
+            CourseData.Fog.FogToggle = Convert.ToInt16(FogToggleBox.Checked);
+            if (int.TryParse(FogRBox.Text, out ParseInt))
+            {
+                CourseData.Fog.FogColor.R = Convert.ToByte(ParseInt);
+            }
+            if (int.TryParse(FogGBox.Text, out ParseInt))
+            {
+                CourseData.Fog.FogColor.G = Convert.ToByte(ParseInt);
+            }
+            if (int.TryParse(FogBBox.Text, out ParseInt))
+            {
+                CourseData.Fog.FogColor.B = Convert.ToByte(ParseInt);
+            }
+            if (int.TryParse(FogABox.Text, out ParseInt))
+            {
+                CourseData.Fog.FogColor.A = Convert.ToByte(ParseInt);
+            }
+
+            if (int.TryParse(FogStartBox.Text, out ParseInt))
+            {
+                CourseData.Fog.StartDistance = Convert.ToInt16(ParseInt);
+            }
+            if (int.TryParse(FogEndBox.Text, out ParseInt))
+            {
+                CourseData.Fog.StopDistance = Convert.ToInt16(ParseInt);
+            }
+
+
             CourseData.OK64HeaderData.WaterType = WaterTypeBox.SelectedIndex;
 
             if (int.TryParse(PathSurfaceBox.Text, out ParseInt))
@@ -514,6 +581,14 @@ namespace Tarmac64_Retail
             WaterTypeBox.SelectedIndex = CourseData.OK64HeaderData.WaterType;
             BombTypeBox.SelectedIndex = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;
             waterBox.Text = CourseData.OK64HeaderData.WaterLevel.ToString();
+
+            FogToggleBox.Checked = Convert.ToBoolean(CourseData.Fog.FogToggle);
+            FogStartBox.Text = CourseData.Fog.StartDistance.ToString();
+            FogEndBox.Text = CourseData.Fog.StopDistance.ToString();
+            FogRBox.Text = CourseData.Fog.FogColor.R.ToString();
+            FogGBox.Text = CourseData.Fog.FogColor.G.ToString();
+            FogBBox.Text = CourseData.Fog.FogColor.B.ToString();
+            FogABox.Text = CourseData.Fog.FogColor.A.ToString();
 
 
             if (Index != -1)
@@ -732,6 +807,28 @@ namespace Tarmac64_Retail
                 buttonColor = System.Drawing.Color.FromArgb(0, 0, 0);
             }
             ColorPickAdjust.BackColor = buttonColor;
+
+
+
+
+            colorInt[0] = 0;
+            int.TryParse(FogRBox.Text, out colorInt[0]);
+            colorInt[1] = 0;
+            int.TryParse(FogGBox.Text, out colorInt[1]);
+            colorInt[2] = 0;
+            int.TryParse(FogBBox.Text, out colorInt[2]);
+
+            if (colorInt[0] < 256 & colorInt[0] > -1 & colorInt[1] < 256 & colorInt[1] > -1 & colorInt[2] < 256 & colorInt[2] > -1)
+            {
+                buttonColor = System.Drawing.Color.FromArgb(colorInt[0], colorInt[1], colorInt[2]);
+            }
+            else
+            {
+                buttonColor = System.Drawing.Color.FromArgb(0, 0, 0);
+            }
+            FogCButton.BackColor = buttonColor;
+
+
         }
 
 
@@ -979,6 +1076,19 @@ namespace Tarmac64_Retail
         private void label13_Click(object sender, EventArgs e)
         {
 
+        }
+
+
+
+        private void FogCButton_Click(object sender, EventArgs e)
+        {
+            if (ColorPick.ShowDialog() == DialogResult.OK)
+            {
+                FogRBox.Text = ColorPick.Color.R.ToString();
+                FogGBox.Text = ColorPick.Color.G.ToString();
+                FogBBox.Text = ColorPick.Color.B.ToString();
+            }
+            UpdateCourse();
         }
 
         private void WaterTypeBox_SelectedIndexChanged(object sender, EventArgs e)

@@ -354,7 +354,7 @@ namespace Tarmac64_Library
                 PathData = ListStream.ToArray();
 
 
-                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, (ListData.Length + popData.Length + 8 + PathData.Length) );
+                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, (ListData.Length + popData.Length + 8 + PathData.Length),5, Convert.ToBoolean(courseData.Fog.FogToggle) );
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
 
@@ -495,7 +495,7 @@ namespace Tarmac64_Library
                 ListData = ListStream.ToArray();
 
 
-                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + + ListData.Length);
+                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + + ListData.Length, 5, Convert.ToBoolean(courseData.Fog.FogToggle));
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
 
@@ -590,7 +590,7 @@ namespace Tarmac64_Library
             }
             
             
-            courseData.ObjectModelData = TarmacCourse.CompileObjectModels(TypeList.ToArray());
+            courseData.ObjectModelData = TarmacCourse.CompileObjectModels(TypeList.ToArray(), Convert.ToBoolean(courseData.Fog.FogToggle));
             uint Magic = Convert.ToUInt32(courseData.ObjectModelData.Length);
             courseData.ObjectAnimationData = TarmacCourse.CompileObjectAnimation(TypeList.ToArray(), Magic);
             Magic += Convert.ToUInt32(courseData.ObjectAnimationData.Length);

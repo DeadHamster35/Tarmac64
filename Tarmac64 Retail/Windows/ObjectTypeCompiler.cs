@@ -101,7 +101,6 @@ namespace Tarmac64_Retail
                 NewType.Name = NameBox.Text;
                 NewType.TextureData = TextureControl.textureArray;
                 NewType.Flag = Convert.ToInt16(FlagBox.Text);
-                NewType.ModelData = TarmacGeometry.createObjects(ModelData, NewType.TextureData);
                 if (HitboxBox.Text != "")
                 {   
                     NewType.ObjectHitbox = TarmacGeometry.LoadHitboxFile(File.ReadAllBytes(HitboxBox.Text));
@@ -127,7 +126,8 @@ namespace Tarmac64_Retail
                     NewType.ObjectAnimations = null;
                 }
 
-                
+                NewType.ModelData = TarmacGeometry.createObjects(ModelData, NewType.TextureData);
+
                 NewType.ModelScale = Convert.ToSingle(ScaleBox.Text);
                 NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex -1);
                 NewType.Range = Convert.ToInt16(RangeBox.Text);

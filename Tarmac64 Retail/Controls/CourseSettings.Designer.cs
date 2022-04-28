@@ -142,12 +142,28 @@
             this.PathSurfaceBox = new System.Windows.Forms.TextBox();
             this.DistributeBox = new System.Windows.Forms.CheckBox();
             this.label20 = new System.Windows.Forms.Label();
-            this.PathCountBox = new System.Windows.Forms.TextBox();
+            this.PathCountBox = new System.Windows.Forms.TextBox(); this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.FogEndBox = new System.Windows.Forms.TextBox();
+            this.FogToggleBox = new System.Windows.Forms.CheckBox();
+            this.label33 = new System.Windows.Forms.Label();
+            this.FogABox = new System.Windows.Forms.TextBox();
+            this.FogStartBox = new System.Windows.Forms.TextBox();
+            this.label34 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.FogRBox = new System.Windows.Forms.TextBox();
+            this.FogGBox = new System.Windows.Forms.TextBox();
+            this.label24 = new System.Windows.Forms.Label();
+            this.FogBBox = new System.Windows.Forms.TextBox();
+            this.FogCButton = new System.Windows.Forms.Button();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox9.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // label63
@@ -302,7 +318,7 @@
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.EchoStartBox);
             this.groupBox1.Controls.Add(this.label11);
-            this.groupBox1.Location = new System.Drawing.Point(4, 233);
+            this.groupBox1.Location = new System.Drawing.Point(5, 347);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(280, 181);
             this.groupBox1.TabIndex = 14;
@@ -586,7 +602,7 @@
             this.groupBox7.Controls.Add(this.startYBox);
             this.groupBox7.Controls.Add(this.startXBox);
             this.groupBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox7.Location = new System.Drawing.Point(4, 477);
+            this.groupBox7.Location = new System.Drawing.Point(5, 591);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(280, 183);
             this.groupBox7.TabIndex = 15;
@@ -856,7 +872,7 @@
             this.groupBox2.Controls.Add(this.label30);
             this.groupBox2.Controls.Add(this.label31);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox2.Location = new System.Drawing.Point(4, 666);
+            this.groupBox2.Location = new System.Drawing.Point(5, 780);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(280, 169);
             this.groupBox2.TabIndex = 16;
@@ -1123,7 +1139,7 @@
             // 
             this.label51.AutoSize = true;
             this.label51.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label51.Location = new System.Drawing.Point(219, 165);
+            this.label51.Location = new System.Drawing.Point(208, 165);
             this.label51.Name = "label51";
             this.label51.Size = new System.Drawing.Size(60, 13);
             this.label51.TabIndex = 291;
@@ -1134,7 +1150,7 @@
             this.waterBox.Location = new System.Drawing.Point(147, 162);
             this.waterBox.Margin = new System.Windows.Forms.Padding(5);
             this.waterBox.Name = "waterBox";
-            this.waterBox.Size = new System.Drawing.Size(60, 20);
+            this.waterBox.Size = new System.Drawing.Size(55, 20);
             this.waterBox.TabIndex = 9;
             this.waterBox.Text = "0";
             this.waterBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -1242,7 +1258,7 @@
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.BombTypeBox);
             this.groupBox3.Controls.Add(this.BombIndexBox);
-            this.groupBox3.Location = new System.Drawing.Point(3, 931);
+            this.groupBox3.Location = new System.Drawing.Point(4, 1070);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(280, 71);
             this.groupBox3.TabIndex = 18;
@@ -1316,7 +1332,7 @@
             this.groupBox9.Controls.Add(this.oksongBox);
             this.groupBox9.Controls.Add(this.songBox);
             this.groupBox9.Controls.Add(this.label40);
-            this.groupBox9.Location = new System.Drawing.Point(3, 841);
+            this.groupBox9.Location = new System.Drawing.Point(4, 955);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(280, 84);
             this.groupBox9.TabIndex = 17;
@@ -1374,7 +1390,7 @@
             // PathSurfaceSelect
             // 
             this.PathSurfaceSelect.FormattingEnabled = true;
-            this.PathSurfaceSelect.Location = new System.Drawing.Point(6, 422);
+            this.PathSurfaceSelect.Location = new System.Drawing.Point(7, 536);
             this.PathSurfaceSelect.Margin = new System.Windows.Forms.Padding(5);
             this.PathSurfaceSelect.Name = "PathSurfaceSelect";
             this.PathSurfaceSelect.Size = new System.Drawing.Size(131, 21);
@@ -1384,7 +1400,7 @@
             // 
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(219, 425);
+            this.label19.Location = new System.Drawing.Point(220, 539);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(68, 13);
             this.label19.TabIndex = 294;
@@ -1392,7 +1408,7 @@
             // 
             // PathSurfaceBox
             // 
-            this.PathSurfaceBox.Location = new System.Drawing.Point(147, 422);
+            this.PathSurfaceBox.Location = new System.Drawing.Point(148, 536);
             this.PathSurfaceBox.Margin = new System.Windows.Forms.Padding(5);
             this.PathSurfaceBox.Name = "PathSurfaceBox";
             this.PathSurfaceBox.Size = new System.Drawing.Size(60, 20);
@@ -1405,7 +1421,7 @@
             // 
             this.DistributeBox.AutoSize = true;
             this.DistributeBox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.DistributeBox.Location = new System.Drawing.Point(6, 451);
+            this.DistributeBox.Location = new System.Drawing.Point(7, 565);
             this.DistributeBox.Name = "DistributeBox";
             this.DistributeBox.Size = new System.Drawing.Size(133, 17);
             this.DistributeBox.TabIndex = 295;
@@ -1417,7 +1433,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(218, 452);
+            this.label20.Location = new System.Drawing.Point(219, 566);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(60, 13);
             this.label20.TabIndex = 297;
@@ -1425,7 +1441,7 @@
             // 
             // PathCountBox
             // 
-            this.PathCountBox.Location = new System.Drawing.Point(146, 449);
+            this.PathCountBox.Location = new System.Drawing.Point(147, 563);
             this.PathCountBox.Margin = new System.Windows.Forms.Padding(5);
             this.PathCountBox.Name = "PathCountBox";
             this.PathCountBox.Size = new System.Drawing.Size(60, 20);
@@ -1434,10 +1450,193 @@
             this.PathCountBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.PathCountBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.FogEndBox);
+            this.groupBox4.Controls.Add(this.FogToggleBox);
+            this.groupBox4.Controls.Add(this.label33);
+            this.groupBox4.Controls.Add(this.FogABox);
+            this.groupBox4.Controls.Add(this.FogStartBox);
+            this.groupBox4.Controls.Add(this.label34);
+            this.groupBox4.Controls.Add(this.label32);
+            this.groupBox4.Controls.Add(this.FogRBox);
+            this.groupBox4.Controls.Add(this.FogGBox);
+            this.groupBox4.Controls.Add(this.label24);
+            this.groupBox4.Controls.Add(this.FogBBox);
+            this.groupBox4.Controls.Add(this.FogCButton);
+            this.groupBox4.Controls.Add(this.label21);
+            this.groupBox4.Controls.Add(this.label23);
+            this.groupBox4.Controls.Add(this.label22);
+            this.groupBox4.Location = new System.Drawing.Point(5, 233);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(279, 108);
+            this.groupBox4.TabIndex = 298;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Fog Settings";
+            // 
+            // FogEndBox
+            // 
+            this.FogEndBox.Location = new System.Drawing.Point(175, 31);
+            this.FogEndBox.Margin = new System.Windows.Forms.Padding(5);
+            this.FogEndBox.Name = "FogEndBox";
+            this.FogEndBox.Size = new System.Drawing.Size(55, 20);
+            this.FogEndBox.TabIndex = 291;
+            this.FogEndBox.Text = "0";
+            this.FogEndBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FogEndBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
+            // FogToggleBox
+            // 
+            this.FogToggleBox.AutoSize = true;
+            this.FogToggleBox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.FogToggleBox.Location = new System.Drawing.Point(11, 33);
+            this.FogToggleBox.Name = "FogToggleBox";
+            this.FogToggleBox.Size = new System.Drawing.Size(80, 17);
+            this.FogToggleBox.TabIndex = 299;
+            this.FogToggleBox.Text = "Enable Fog";
+            this.FogToggleBox.UseVisualStyleBackColor = true;
+            // 
+            // label33
+            // 
+            this.label33.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label33.Location = new System.Drawing.Point(175, 13);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(55, 13);
+            this.label33.TabIndex = 293;
+            this.label33.Text = "End";
+            this.label33.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // FogABox
+            // 
+            this.FogABox.Location = new System.Drawing.Point(161, 78);
+            this.FogABox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.FogABox.Name = "FogABox";
+            this.FogABox.Size = new System.Drawing.Size(40, 20);
+            this.FogABox.TabIndex = 298;
+            this.FogABox.Text = "0";
+            this.FogABox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FogABox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
+            // FogStartBox
+            // 
+            this.FogStartBox.Location = new System.Drawing.Point(111, 31);
+            this.FogStartBox.Margin = new System.Windows.Forms.Padding(5);
+            this.FogStartBox.Name = "FogStartBox";
+            this.FogStartBox.Size = new System.Drawing.Size(55, 20);
+            this.FogStartBox.TabIndex = 290;
+            this.FogStartBox.Text = "0";
+            this.FogStartBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FogStartBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
+            // label34
+            // 
+            this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label34.Location = new System.Drawing.Point(110, 13);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(55, 13);
+            this.label34.TabIndex = 292;
+            this.label34.Text = "Start";
+            this.label34.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label32
+            // 
+            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label32.Location = new System.Drawing.Point(161, 57);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(40, 13);
+            this.label32.TabIndex = 299;
+            this.label32.Text = "A";
+            this.label32.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // FogRBox
+            // 
+            this.FogRBox.Location = new System.Drawing.Point(11, 78);
+            this.FogRBox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.FogRBox.Name = "FogRBox";
+            this.FogRBox.Size = new System.Drawing.Size(40, 20);
+            this.FogRBox.TabIndex = 290;
+            this.FogRBox.Text = "0";
+            this.FogRBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FogRBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
+            // FogGBox
+            // 
+            this.FogGBox.Location = new System.Drawing.Point(61, 78);
+            this.FogGBox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.FogGBox.Name = "FogGBox";
+            this.FogGBox.Size = new System.Drawing.Size(40, 20);
+            this.FogGBox.TabIndex = 291;
+            this.FogGBox.Text = "0";
+            this.FogGBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FogGBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label24.Location = new System.Drawing.Point(239, 81);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(31, 13);
+            this.label24.TabIndex = 294;
+            this.label24.Text = "Color";
+            this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // FogBBox
+            // 
+            this.FogBBox.Location = new System.Drawing.Point(111, 78);
+            this.FogBBox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.FogBBox.Name = "FogBBox";
+            this.FogBBox.Size = new System.Drawing.Size(40, 20);
+            this.FogBBox.TabIndex = 292;
+            this.FogBBox.Text = "0";
+            this.FogBBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FogBBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
+            // FogCButton
+            // 
+            this.FogCButton.BackColor = System.Drawing.Color.Fuchsia;
+            this.FogCButton.Location = new System.Drawing.Point(209, 75);
+            this.FogCButton.Name = "FogCButton";
+            this.FogCButton.Size = new System.Drawing.Size(24, 23);
+            this.FogCButton.TabIndex = 293;
+            this.FogCButton.UseVisualStyleBackColor = false;
+            this.FogCButton.Click += new System.EventHandler(this.FogCButton_Click);
+            // 
+            // label21
+            // 
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label21.Location = new System.Drawing.Point(11, 57);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(40, 13);
+            this.label21.TabIndex = 295;
+            this.label21.Text = "R";
+            this.label21.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label23
+            // 
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label23.Location = new System.Drawing.Point(61, 57);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(40, 13);
+            this.label23.TabIndex = 296;
+            this.label23.Text = "G";
+            this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label22
+            // 
+            this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label22.Location = new System.Drawing.Point(111, 57);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(40, 13);
+            this.label22.TabIndex = 297;
+            this.label22.Text = "B";
+            this.label22.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // CourseSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.label20);
             this.Controls.Add(this.PathCountBox);
             this.Controls.Add(this.DistributeBox);
@@ -1487,6 +1686,8 @@
             this.groupBox3.PerformLayout();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1608,5 +1809,21 @@
         private System.Windows.Forms.CheckBox DistributeBox;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.TextBox PathCountBox;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TextBox FogEndBox;
+        private System.Windows.Forms.CheckBox FogToggleBox;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.TextBox FogABox;
+        private System.Windows.Forms.TextBox FogStartBox;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.TextBox FogRBox;
+        private System.Windows.Forms.TextBox FogGBox;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TextBox FogBBox;
+        private System.Windows.Forms.Button FogCButton;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label label22;
     }
 }
