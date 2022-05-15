@@ -142,7 +142,8 @@
             this.PathSurfaceBox = new System.Windows.Forms.TextBox();
             this.DistributeBox = new System.Windows.Forms.CheckBox();
             this.label20 = new System.Windows.Forms.Label();
-            this.PathCountBox = new System.Windows.Forms.TextBox(); this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.PathCountBox = new System.Windows.Forms.TextBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.FogEndBox = new System.Windows.Forms.TextBox();
             this.FogToggleBox = new System.Windows.Forms.CheckBox();
             this.label33 = new System.Windows.Forms.Label();
@@ -1258,7 +1259,7 @@
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.BombTypeBox);
             this.groupBox3.Controls.Add(this.BombIndexBox);
-            this.groupBox3.Location = new System.Drawing.Point(4, 1070);
+            this.groupBox3.Location = new System.Drawing.Point(5, 1045);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(280, 71);
             this.groupBox3.TabIndex = 18;

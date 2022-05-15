@@ -325,7 +325,7 @@ namespace Tarmac64_Library
 
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginAngle[0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginAngle[2])));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginAngle[1] * -1)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginAngle[1])));
 
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].Velocity[0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].Velocity[2])));
@@ -333,7 +333,7 @@ namespace Tarmac64_Library
 
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].AngularVelocity[0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].AngularVelocity[2])));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].AngularVelocity[1] * -1)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].AngularVelocity[1])));
             }
             return memoryStream.ToArray();
         }

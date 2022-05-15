@@ -33,6 +33,8 @@
             this.SurfaceMap = new System.Windows.Forms.TabPage();
             this.surfaceobjectBox = new System.Windows.Forms.ListBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.BattleBoxC = new System.Windows.Forms.CheckBox();
+            this.VSBoxC = new System.Windows.Forms.CheckBox();
             this.ExtraBoxC = new System.Windows.Forms.CheckBox();
             this.HundredFiftyBoxC = new System.Windows.Forms.CheckBox();
             this.HundredBoxC = new System.Windows.Forms.CheckBox();
@@ -51,6 +53,8 @@
             this.label17 = new System.Windows.Forms.Label();
             this.SectionViews = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.BattleBoxR = new System.Windows.Forms.CheckBox();
+            this.VSBoxR = new System.Windows.Forms.CheckBox();
             this.ExtraBoxR = new System.Windows.Forms.CheckBox();
             this.HundredFiftyBoxR = new System.Windows.Forms.CheckBox();
             this.HundredBoxR = new System.Windows.Forms.CheckBox();
@@ -68,22 +72,18 @@
             this.sectionBox = new System.Windows.Forms.ComboBox();
             this.viewBox = new System.Windows.Forms.ComboBox();
             this.TextureData = new System.Windows.Forms.TabPage();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.Settings = new System.Windows.Forms.TabPage();
-            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Object = new System.Windows.Forms.TabPage();
-            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.raycastBox = new System.Windows.Forms.CheckBox();
             this.ExportBtn = new System.Windows.Forms.Button();
             this.ImportBtn = new System.Windows.Forms.Button();
             this.TypeBox = new System.Windows.Forms.ComboBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.GLControl = new Tarmac64_Retail.GLViewer();
-            this.VSBoxR = new System.Windows.Forms.CheckBox();
-            this.BattleBoxR = new System.Windows.Forms.CheckBox();
-            this.BattleBoxC = new System.Windows.Forms.CheckBox();
-            this.VSBoxC = new System.Windows.Forms.CheckBox();
+            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
+            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
@@ -159,6 +159,30 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Object Info";
             this.groupBox6.Enter += new System.EventHandler(this.groupBox6_Enter);
+            // 
+            // BattleBoxC
+            // 
+            this.BattleBoxC.AutoSize = true;
+            this.BattleBoxC.Checked = true;
+            this.BattleBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.BattleBoxC.Location = new System.Drawing.Point(217, 117);
+            this.BattleBoxC.Name = "BattleBoxC";
+            this.BattleBoxC.Size = new System.Drawing.Size(53, 17);
+            this.BattleBoxC.TabIndex = 35;
+            this.BattleBoxC.Text = "Battle";
+            this.BattleBoxC.UseVisualStyleBackColor = true;
+            // 
+            // VSBoxC
+            // 
+            this.VSBoxC.AutoSize = true;
+            this.VSBoxC.Checked = true;
+            this.VSBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.VSBoxC.Location = new System.Drawing.Point(171, 117);
+            this.VSBoxC.Name = "VSBoxC";
+            this.VSBoxC.Size = new System.Drawing.Size(40, 17);
+            this.VSBoxC.TabIndex = 34;
+            this.VSBoxC.Text = "VS";
+            this.VSBoxC.UseVisualStyleBackColor = true;
             // 
             // ExtraBoxC
             // 
@@ -376,6 +400,30 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Object Settings";
             // 
+            // BattleBoxR
+            // 
+            this.BattleBoxR.AutoSize = true;
+            this.BattleBoxR.Checked = true;
+            this.BattleBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.BattleBoxR.Location = new System.Drawing.Point(212, 20);
+            this.BattleBoxR.Name = "BattleBoxR";
+            this.BattleBoxR.Size = new System.Drawing.Size(53, 17);
+            this.BattleBoxR.TabIndex = 7;
+            this.BattleBoxR.Text = "Battle";
+            this.BattleBoxR.UseVisualStyleBackColor = true;
+            // 
+            // VSBoxR
+            // 
+            this.VSBoxR.AutoSize = true;
+            this.VSBoxR.Checked = true;
+            this.VSBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.VSBoxR.Location = new System.Drawing.Point(166, 20);
+            this.VSBoxR.Name = "VSBoxR";
+            this.VSBoxR.Size = new System.Drawing.Size(40, 17);
+            this.VSBoxR.TabIndex = 6;
+            this.VSBoxR.Text = "VS";
+            this.VSBoxR.UseVisualStyleBackColor = true;
+            // 
             // ExtraBoxR
             // 
             this.ExtraBoxR.AutoSize = true;
@@ -581,13 +629,6 @@
             this.TextureData.UseVisualStyleBackColor = true;
             this.TextureData.Click += new System.EventHandler(this.TextureData_Click);
             // 
-            // TextureControl
-            // 
-            this.TextureControl.Location = new System.Drawing.Point(0, 0);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 780);
-            this.TextureControl.TabIndex = 0;
-            // 
             // Settings
             // 
             this.Settings.AutoScroll = true;
@@ -599,14 +640,6 @@
             this.Settings.Text = "Settings";
             this.Settings.UseVisualStyleBackColor = true;
             this.Settings.Click += new System.EventHandler(this.CourseInfo_Click);
-            // 
-            // SettingsControl
-            // 
-            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
-            this.SettingsControl.Name = "SettingsControl";
-            this.SettingsControl.Size = new System.Drawing.Size(289, 950);
-            this.SettingsControl.TabIndex = 0;
-            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 
             // tabControl1
             // 
@@ -634,16 +667,6 @@
             this.Object.TabIndex = 4;
             this.Object.Text = "Objects";
             this.Object.UseVisualStyleBackColor = true;
-            // 
-            // ObjectControl
-            // 
-            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.ObjectControl.Location = new System.Drawing.Point(-2, 2);
-            this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 597);
-            this.ObjectControl.TabIndex = 1;
-            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
             // raycastBox
             // 
@@ -717,53 +740,30 @@
             this.GLControl.Size = new System.Drawing.Size(915, 659);
             this.GLControl.TabIndex = 3;
             // 
-            // VSBoxR
+            // SettingsControl
             // 
-            this.VSBoxR.AutoSize = true;
-            this.VSBoxR.Checked = true;
-            this.VSBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.VSBoxR.Location = new System.Drawing.Point(166, 20);
-            this.VSBoxR.Name = "VSBoxR";
-            this.VSBoxR.Size = new System.Drawing.Size(40, 17);
-            this.VSBoxR.TabIndex = 6;
-            this.VSBoxR.Text = "VS";
-            this.VSBoxR.UseVisualStyleBackColor = true;
+            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
+            this.SettingsControl.Name = "SettingsControl";
+            this.SettingsControl.Size = new System.Drawing.Size(289, 1150);
+            this.SettingsControl.TabIndex = 0;
+            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 
-            // BattleBoxR
+            // TextureControl
             // 
-            this.BattleBoxR.AutoSize = true;
-            this.BattleBoxR.Checked = true;
-            this.BattleBoxR.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.BattleBoxR.Location = new System.Drawing.Point(212, 20);
-            this.BattleBoxR.Name = "BattleBoxR";
-            this.BattleBoxR.Size = new System.Drawing.Size(53, 17);
-            this.BattleBoxR.TabIndex = 7;
-            this.BattleBoxR.Text = "Battle";
-            this.BattleBoxR.UseVisualStyleBackColor = true;
+            this.TextureControl.Location = new System.Drawing.Point(0, 0);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(289, 780);
+            this.TextureControl.TabIndex = 0;
             // 
-            // BattleBoxC
+            // ObjectControl
             // 
-            this.BattleBoxC.AutoSize = true;
-            this.BattleBoxC.Checked = true;
-            this.BattleBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.BattleBoxC.Location = new System.Drawing.Point(217, 117);
-            this.BattleBoxC.Name = "BattleBoxC";
-            this.BattleBoxC.Size = new System.Drawing.Size(53, 17);
-            this.BattleBoxC.TabIndex = 35;
-            this.BattleBoxC.Text = "Battle";
-            this.BattleBoxC.UseVisualStyleBackColor = true;
-            // 
-            // VSBoxC
-            // 
-            this.VSBoxC.AutoSize = true;
-            this.VSBoxC.Checked = true;
-            this.VSBoxC.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.VSBoxC.Location = new System.Drawing.Point(171, 117);
-            this.VSBoxC.Name = "VSBoxC";
-            this.VSBoxC.Size = new System.Drawing.Size(40, 17);
-            this.VSBoxC.TabIndex = 34;
-            this.VSBoxC.Text = "VS";
-            this.VSBoxC.UseVisualStyleBackColor = true;
+            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ObjectControl.Location = new System.Drawing.Point(-2, 2);
+            this.ObjectControl.Name = "ObjectControl";
+            this.ObjectControl.Size = new System.Drawing.Size(289, 597);
+            this.ObjectControl.TabIndex = 1;
+            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
             // CourseCompiler
             // 

@@ -244,7 +244,7 @@ namespace Tarmac64_Library
                         foreach (var subVert in Face.VertData)
                         {
                             Point3D VertexPoint = new Point3D() { X = subVert.position.x, Y = subVert.position.y, Z = subVert.position.z };
-                            float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[1], TargetObject.OriginAngle[2] };
+                            float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[2], TargetObject.OriginAngle[1] };
                             Point3D ThreeDPoint = RotatePoint(VertexPoint, ObjectAngle);
 
                             gl.Color(ObjectColor[0], ObjectColor[1], ObjectColor[2], ObjectColor[3]);
@@ -288,7 +288,7 @@ namespace Tarmac64_Library
                     foreach (var subVert in Face.VertData)
                     {
                         Point3D VertexPoint = new Point3D() { X = subVert.position.x, Y = subVert.position.y, Z = subVert.position.z };
-                        float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[1], TargetObject.OriginAngle[2] };
+                        float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[2], TargetObject.OriginAngle[1] };
                         Point3D ThreeDPoint = RotatePoint(VertexPoint, ObjectAngle);
 
                         gl.Color(subVert.color.R, subVert.color.G, subVert.color.B, 1.0f);

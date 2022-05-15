@@ -237,6 +237,7 @@ namespace Tarmac64_Retail
             CourseData.Fog = new TM64_Course.OKFog();
 
             CourseData.Fog.FogToggle = Convert.ToInt16(SettingsInfo[ThisLine++]);
+            CourseData.Fog.FogColor = new TM64_Geometry.OK64Color();
             CourseData.Fog.FogColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
             CourseData.Fog.FogColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
             CourseData.Fog.FogColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);

@@ -1417,7 +1417,7 @@ namespace Tarmac64_Library
             if (newObject.meshID.Length == 0)
             {
                 MessageBox.Show("Empty Course Object! -" + newObject.objectName);
-            }
+            } 
             newObject.materialID = fbx.Meshes[newObject.meshID[0]].MaterialIndex;
             int vertCount = 0;
             int faceCount = 0;
