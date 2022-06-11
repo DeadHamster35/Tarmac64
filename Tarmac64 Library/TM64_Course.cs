@@ -31,6 +31,8 @@ namespace Tarmac64_Library
             public short[] AngularVelocity { get; set; }            
             public short ObjectIndex { get; set; }
             public short ObjectFlag { get; set; }
+            public short BattleType { get; set; }
+            public short BattlePlayer { get; set; }
         }
 
         public class OKObjectAnimations
@@ -283,7 +285,9 @@ namespace Tarmac64_Library
             NewObject.Velocity = new float[3] { 0, 0, 0, };
             NewObject.AngularVelocity = new short[3] { 0, 0, 0 };
             NewObject.ObjectIndex = 0;
-            
+            NewObject.BattlePlayer = 0;
+            NewObject.BattleType = 0;
+
             return NewObject;
         }
         public OKObject[] LoadOKObject(byte[] FileData)
@@ -316,7 +320,7 @@ namespace Tarmac64_Library
 
             for (int ThisObject = 0; ThisObject < ObjectList.Length; ThisObject++)
             {
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].ObjectIndex - 6)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].ObjectIndex - 5)));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].ObjectFlag)));
 
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginPosition[0])));

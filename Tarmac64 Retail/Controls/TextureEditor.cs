@@ -322,7 +322,7 @@ namespace Tarmac64_Retail
             UpdateTextureData();
         }
 
-        private void UpdateTextureData()
+        private void UpdateTextureData(bool NewItem = false, int NewIndex = -1)
         {
             if ((Loaded) && (!Locked))
             {
@@ -344,7 +344,14 @@ namespace Tarmac64_Retail
 
                 for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
                 {
-                    textureArray[textureBox.SelectedIndex].GeometryBools[ThisCheck] = GeoModeBox.GetItemChecked(ThisCheck);
+                    if (NewIndex == ThisCheck)
+                    {
+                        textureArray[textureBox.SelectedIndex].GeometryBools[ThisCheck] = NewItem;
+                    }
+                    else
+                    {
+                        textureArray[textureBox.SelectedIndex].GeometryBools[ThisCheck] = GeoModeBox.GetItemChecked(ThisCheck);
+                    }
                 }
                 textureArray[textureBox.SelectedIndex].SFlag = SFlagBox.SelectedIndex;
                 textureArray[textureBox.SelectedIndex].TFlag = TFlagBox.SelectedIndex;
@@ -447,6 +454,16 @@ namespace Tarmac64_Retail
         }
 
         private void GeoModeBox_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            bool NewState = false;
+            if (e.NewValue == CheckState.Checked)
+            {
+                NewState = true;
+            }
+            UpdateTextureData(NewState, e.Index);
+        }
+
+        private void GeoModeBox_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             UpdateTextureData();
         }

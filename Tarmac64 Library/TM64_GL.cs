@@ -9,6 +9,7 @@ using SharpGL.SceneGraph.Assets;
 using Tarmac64_Library;
 using System.Windows.Media.Media3D;
 using Assimp;
+using System.Drawing;
 
 namespace Tarmac64_Library
 {
@@ -32,25 +33,20 @@ namespace Tarmac64_Library
         }
 
 
-        
 
-        public void DrawFace(OpenGL gl, TM64_Geometry.Face subFace)
+
+        public void DrawFace(OpenGL gl, TM64_Geometry.Face subFace, double ShiftS = 0, double ShiftT = 0)
         {
             foreach (var subVert in subFace.VertData)
             {
                 gl.Color(subVert.color.RFloat, subVert.color.GFloat, subVert.color.BFloat, subVert.color.AFloat);
-                gl.TexCoord(subVert.position.u, subVert.position.v);
+                gl.TexCoord(subVert.position.u + ShiftS, subVert.position.v + ShiftT);
                 gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
             }
         }
 
-        public void DrawMarker( OpenGL gl, Texture glTexture, TM64_Geometry.Face subFace, float[] Color, float[] Position)
+        public void DrawMarker( OpenGL gl, Texture glTexture, TM64_Geometry.Face subFace, float[] Color, TM64_Paths.Marker Point)
         {
-            gl.End();
-            gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.Enable(OpenGL.GL_BLEND);
-            glTexture.Destroy(gl);
             gl.Begin(OpenGL.GL_TRIANGLES);
             float[] ThisColor = new float[4];
             if (Color.Length == 3)
@@ -65,16 +61,17 @@ namespace Tarmac64_Library
             {
                 gl.Color(ThisColor[0], ThisColor[1], ThisColor[2], ThisColor[3]);
                 gl.TexCoord(subVert.position.u, subVert.position.v);
-                gl.Vertex(subVert.position.x + Position[0], subVert.position.y+ Position[1], subVert.position.z+ Position[2]);
+                gl.Vertex(subVert.position.x + Point.xval, subVert.position.y+ Point.yval, subVert.position.z+ Point.zval);
             }
         }
-        public float[] GetAlphaFlash(float[] flashColor)
+        public float[] GetAlphaFlash(float[] flashColor, double FrameRate)
         {
+            
             if (flashColor[4] == 0.0f)
             {
                 if (flashColor[3] < 1.0f)
                 {
-                    flashColor[3] = Convert.ToSingle(flashColor[3] + 0.1);
+                    flashColor[3] = Convert.ToSingle(flashColor[3] + (FrameRate * 0.1));
                 }
                 else
                 {
@@ -85,7 +82,7 @@ namespace Tarmac64_Library
             {
                 if (flashColor[3] > 0.0)
                 {
-                    flashColor[3] = Convert.ToSingle(flashColor[3] - 0.1);
+                    flashColor[3] = Convert.ToSingle(flashColor[3] - (FrameRate * 0.1));
                 }
                 else
                 {
@@ -164,12 +161,12 @@ namespace Tarmac64_Library
             gl.Vertex(targetPosition[0] + -2.0f, targetPosition[1] + -2.0f, targetPosition[2] + -2.0f);
             gl.Color(0.0f, 0.0f, 1.0f);
             gl.Vertex(targetPosition[0] + -2.0f, targetPosition[1] + -2.0f, targetPosition[2] + 2.0f);
-            gl.End();
+            
         }
 
         public void DrawSection(OpenGL gl, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
         {
-            gl.End();
+            
             glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
@@ -177,17 +174,12 @@ namespace Tarmac64_Library
             gl.Begin(OpenGL.GL_TRIANGLES);
             DrawShaded(gl, glTexture, targetObject, LocalCamera.flashRed);
             
-            gl.End();
+            
         }
 
 
         public void DrawOKObjectShaded(OpenGL gl, Texture glTexture, TM64_Course.OKObject TargetObject, TM64_Course.OKObjectType TargetObjectType, float[] ObjectColor)
         {
-            gl.End();
-            gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.Enable(OpenGL.GL_BLEND);
-            glTexture.Destroy(gl);
             gl.Begin(OpenGL.GL_TRIANGLES);
             foreach (var ThisGeometry in TargetObjectType.ModelData)
             {
@@ -224,15 +216,6 @@ namespace Tarmac64_Library
 
         public void DrawOKObjectShaded(OpenGL gl, Texture glTexture, TM64_Course.OKObject TargetObject, TM64_Course.OKObjectType TargetObjectType)
         {
-            gl.End();
-            gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-            if (TargetObjectType.Name == "Spooky")
-            {
-                int x = 0;
-            }
-            gl.Enable(OpenGL.GL_BLEND);
-            glTexture.Destroy(gl);
             gl.Begin(OpenGL.GL_TRIANGLES);
             foreach (var ThisGeometry in TargetObjectType.ModelData)
             {
@@ -272,16 +255,15 @@ namespace Tarmac64_Library
         {
             foreach (var Geometry in TargetObjectType.ModelData)
             {
-                gl.End();
+                
                 glTexture.Destroy(gl);
-                gl.Enable(OpenGL.GL_TEXTURE_2D);
                 if (TargetObjectType.TextureData[Geometry.materialID].texturePath == null)
                 {
                     MessageBox.Show("Error loading texture for " + TargetObjectType.Name);
                 }
                 glTexture.Create(gl, TargetObjectType.TextureData[Geometry.materialID].texturePath);
                 glTexture.Bind(gl);
-                gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+
                 gl.Begin(OpenGL.GL_TRIANGLES);
                 foreach (var Face in Geometry.modelGeometry)
                 {                    
@@ -304,11 +286,7 @@ namespace Tarmac64_Library
 
         public void DrawShaded(OpenGL gl, Texture glTexture, TM64_Geometry.OK64F3DObject TargetObject, float[] colorArray)
         {
-            gl.End();
-            gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.Enable(OpenGL.GL_BLEND);
-            glTexture.Destroy(gl);
+            
             gl.Begin(OpenGL.GL_TRIANGLES);
             foreach (var subFace in TargetObject.modelGeometry)
             {
@@ -329,12 +307,11 @@ namespace Tarmac64_Library
                     }
                 }
             }
-            
         }
 
         public void DrawShaded(OpenGL gl, Texture glTexture, TM64_Geometry.OK64F3DObject TargetObject, float[] colorArray, int[] Zone)
         {
-            gl.End();
+            
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             glTexture.Destroy(gl);
             gl.Begin(OpenGL.GL_TRIANGLES);
@@ -369,19 +346,58 @@ namespace Tarmac64_Library
                 OpenGL.GL_CLAMP,
                 OpenGL.GL_REPEAT,
         };
+
+        public void DrawGLCull(OpenGL GL, TM64_Geometry.OK64Texture TextureObject)
+        {
+            bool Enable = false;
+
+            if (TextureObject.GeometryBools[5])
+            {
+                Enable = true;
+
+                GL.CullFace(OpenGL.GL_FRONT_AND_BACK);
+                
+            }
+            else if (TextureObject.GeometryBools[3])
+            {
+                Enable = true;
+
+                if (TextureObject.GeometryBools[4])
+                {
+                    GL.CullFace(OpenGL.GL_FRONT_AND_BACK);
+                    
+                }
+                else
+                {
+                    GL.CullFace(OpenGL.GL_FRONT);
+                }
+            }
+            else if (TextureObject.GeometryBools[4])
+            {
+                Enable = true;
+
+                GL.CullFace(OpenGL.GL_BACK);
+                
+            }
+            if (Enable)
+            {
+                GL.Enable(OpenGL.GL_CULL_FACE);
+            }
+            else
+            {
+                GL.Disable(OpenGL.GL_CULL_FACE);
+            }
+        }
+
+
         public void DrawTextureFlush(OpenGL gl, TM64_Geometry.OK64Texture[] textureArray, Texture glTexture, int TargetID)
         {
-            gl.End();
 
-            gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);                        
-            gl.Enable(OpenGL.GL_BLEND);
-            gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.ShadeModel(OpenGL.GL_SMOOTH);
-            gl.Enable(OpenGL.GL_COLOR_MATERIAL);
-            gl.Enable(OpenGL.GL_TEXTURE_2D);
+
+            gl.End();
             glTexture.Destroy(gl);
 
-
+            uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
 
             if (textureArray[TargetID].texturePath == null)
             {
@@ -390,17 +406,32 @@ namespace Tarmac64_Library
             glTexture.Create(gl, textureArray[TargetID].texturePath);
             glTexture.Bind(gl);
 
-            
-            gl.Begin(OpenGL.GL_TRIANGLES);
-            gl.LoadIdentity();
-            gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[textureArray[TargetID].SFlag] });
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[textureArray[TargetID].TFlag] });
+
+
         }
-        public void DrawTexturedNoFlush(OpenGL gl, TM64_Geometry.OK64Texture[] textureArray, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
-        {   
+        public void DrawTextureFlushScreen(OpenGL gl, int Width, int Height, TM64_Geometry.OK64Texture TextureObject, Texture glTexture)
+        {
+
+            
+
+            glTexture.Destroy(gl);
+
+            uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
+
+            glTexture.Create(gl, RenderScreen(gl, TextureObject.textureScreen - 1, Width, Height));
+            glTexture.Bind(gl);
+
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.SFlag] });
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[TextureObject.TFlag] });
+        }
+        public void DrawTexturedNoFlush(OpenGL gl, TM64_Geometry.OK64Texture TextureObject, TM64_Geometry.OK64F3DObject targetObject)
+        {
+            gl.Begin(OpenGL.GL_TRIANGLES);
             foreach (var subFace in targetObject.modelGeometry)
             {
-                DrawFace(gl, subFace);
+                DrawFace(gl, subFace, TextureObject.GLShiftS, TextureObject.GLShiftT);
             }
         }
 
@@ -409,8 +440,8 @@ namespace Tarmac64_Library
             float[] localCoord = new float[3];
             float hAngle = Convert.ToSingle(LocalCamera.rotation * (Math.PI / 180));
             
-            localCoord[0] = Convert.ToSingle(LocalCamera.position.X + 50 * Math.Cos(hAngle));
-            localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + 50 * Math.Sin(hAngle));
+            localCoord[0] = Convert.ToSingle(LocalCamera.position.X + 15000 * Math.Cos(hAngle));
+            localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + 15000 * Math.Sin(hAngle));
             localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
             LocalCamera.target = new Assimp.Vector3D(localCoord[0], localCoord[1], localCoord[2] + LocalCamera.TargetHeight);
         }
@@ -506,7 +537,7 @@ namespace Tarmac64_Library
 
         public void DrawTextured(OpenGL gl, TM64_Geometry.OK64Texture[] textureArray, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
         {
-            gl.End();
+            
             glTexture.Destroy(gl);
             gl.Enable(OpenGL.GL_TEXTURE_2D);
             if (textureArray[targetObject.materialID].texturePath == null)
@@ -521,13 +552,13 @@ namespace Tarmac64_Library
             {
                 DrawFace(gl, subFace);
             }
-            gl.End();
+            
             
         }
 
         public void DrawTextured(OpenGL gl, TM64_Geometry.OK64Texture[] textureArray, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject, int[] Zone)
         {
-            gl.End();
+            
             glTexture.Destroy(gl);
             gl.Enable(OpenGL.GL_TEXTURE_2D);
             if (textureArray[targetObject.materialID].texturePath == null)
@@ -542,13 +573,13 @@ namespace Tarmac64_Library
             {
                 DrawFace(gl, subFace, Zone);
             }
-            gl.End();
+            
         }
 
 
         public void DrawCursor(OpenGL gl, TMCamera LocalCamera, Texture glTexture)
         {
-            gl.End();
+            
             glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
@@ -560,15 +591,15 @@ namespace Tarmac64_Library
                 foreach (var subVert in Face.VertData)
                 {
                     gl.Color(1.0f, 0.5f, 0f, 1.0f);
-                    gl.Vertex(subVert.position.x + LocalCamera.marker.X, subVert.position.y + LocalCamera.marker.X, subVert.position.z + LocalCamera.marker.X);
+                    gl.Vertex(subVert.position.x + LocalCamera.marker.X, subVert.position.y + LocalCamera.marker.Y, subVert.position.z + LocalCamera.marker.Z);
                 }
             }
 
-            gl.End();
+            
         }
         public void DrawTarget(OpenGL gl, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
         {
-            gl.End();
+            
             glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
@@ -577,7 +608,7 @@ namespace Tarmac64_Library
 
             DrawShaded(gl, glTexture, targetObject, LocalCamera.flashWhite);
 
-            gl.End();
+            
         }
 
 
@@ -586,7 +617,7 @@ namespace Tarmac64_Library
 
         public void DrawTarget(OpenGL gl, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject, int[] Zone)
         {
-            gl.End();
+            
             glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
@@ -595,13 +626,13 @@ namespace Tarmac64_Library
             
             DrawShaded(gl, glTexture, targetObject, LocalCamera.flashWhite, Zone);
             
-            gl.End();
+            
         }
 
 
         public void DrawWire(OpenGL gl, TM64_Geometry.OK64Texture[] textureArray, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
         {
-            gl.End();
+            
             glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
             gl.Begin(OpenGL.GL_TRIANGLES);
@@ -625,10 +656,74 @@ namespace Tarmac64_Library
                     }
                 }
             }
-            gl.End();
+            
         }
 
-        
+
+
+        public Bitmap Save2Picture(OpenGL GL, int x, int y, int width, int height)
+
+        {
+
+            var format = System.Drawing.Imaging.PixelFormat.Format32bppArgb;
+
+            var lockMode = System.Drawing.Imaging.ImageLockMode.WriteOnly;
+
+            var bitmap = new Bitmap(width, height, format);
+
+            var bitmapRect = new Rectangle(new Point { X = x, Y = y }, new Size { Width = width, Height = height });
+
+            System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(bitmapRect, lockMode, format);
+
+            GL.ReadPixels(x, y, width, height, OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, bmpData.Scan0);
+
+            bitmap.UnlockBits(bmpData);
+
+            bitmap.RotateFlip(RotateFlipType.Rotate180FlipX);
+
+            return bitmap;
+
+        }
+
+        double[][] ScreenPointRatios = new double[][]{
+
+            new double[]{ .10, .80 },
+            new double[]{ .50, .80 },
+            new double[]{ .10, .60 },
+            new double[]{ .50, .60 },
+            new double[]{ .10, .40 },
+            new double[]{ .50, .40 }
+            
+        };
+        public Bitmap RenderScreen(OpenGL GL, int ScreenIndex, int width, int height)
+        {
+            var format = System.Drawing.Imaging.PixelFormat.Format32bppArgb;
+
+            var lockMode = System.Drawing.Imaging.ImageLockMode.WriteOnly;
+
+            
+
+
+            int ScreenWidth = Convert.ToInt32(width * 0.40);
+            int ScreenHeight = Convert.ToInt32(height * 0.20);
+
+            var bitmap = new Bitmap(ScreenWidth, ScreenHeight, format);
+            var bitmapRect = new Rectangle(new Point { X = 0, Y = 0 }, new Size { Width = ScreenWidth, Height = ScreenHeight });
+
+            System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(bitmapRect, lockMode, format);
+            
+            GL.ReadPixels(Convert.ToInt32(width * ScreenPointRatios[ScreenIndex][0]), Convert.ToInt32(height * ScreenPointRatios[ScreenIndex][1]), ScreenWidth, ScreenHeight, OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, bmpData.Scan0);
+
+            bitmap.UnlockBits(bmpData);
+
+            bitmap.RotateFlip(RotateFlipType.Rotate180FlipX);
+
+            Bitmap Resized = new Bitmap(bitmap, new Size(width = 64, height = 32));
+            
+
+            return Resized;
+        }
+
     }
 
 }

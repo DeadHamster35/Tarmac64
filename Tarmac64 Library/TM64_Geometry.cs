@@ -131,6 +131,8 @@ namespace Tarmac64_Library
             public int romPosition { get; set; }
             public int f3dexPosition { get; set; }
             public int vertAlpha { get; set; }
+            public double GLShiftS { get; set; }
+            public double GLShiftT { get; set; }
 
         }
         public class OK64F3DGroup

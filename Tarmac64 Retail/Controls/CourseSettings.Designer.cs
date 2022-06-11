@@ -1496,6 +1496,7 @@
             this.FogToggleBox.TabIndex = 299;
             this.FogToggleBox.Text = "Enable Fog";
             this.FogToggleBox.UseVisualStyleBackColor = true;
+            this.FogToggleBox.CheckedChanged += new System.EventHandler(this.UpdateUI);
             // 
             // label33
             // 

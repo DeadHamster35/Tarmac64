@@ -450,7 +450,6 @@
             this.GeoModeBox.Size = new System.Drawing.Size(201, 79);
             this.GeoModeBox.TabIndex = 44;
             this.GeoModeBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.GeoModeBox_ItemCheck);
-            this.GeoModeBox.SelectedIndexChanged += new System.EventHandler(this.GeoModeBox_SelectedIndexChanged);
             // 
             // StandardPanel
             // 

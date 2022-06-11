@@ -1092,6 +1092,11 @@ namespace Tarmac64_Retail
             UpdateCourse();
         }
 
+        private void UpdateUI(object sender, EventArgs e)
+        {
+            UpdateCourse();
+        }
+
         private void WaterTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateCourse();

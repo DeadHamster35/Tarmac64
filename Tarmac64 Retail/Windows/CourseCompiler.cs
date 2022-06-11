@@ -419,12 +419,15 @@ namespace Tarmac64_Library
 
 
 
-                //items trees and piranhas
-                int ObjectCount = 0;
-                TM64_Paths.Pathlist[] ThisList = new TM64_Paths.Pathlist[3];
 
-                ThisList[0] = new TM64_Paths.Pathlist();
-                ThisList[0].pathmarker = new List<TM64_Paths.Marker>();
+
+                courseData.PathOffsets = new UInt32[4] { 0x800DC778, 0x800DC778, 0x800DC778, 0x800DC778 };
+
+                
+                TM64_Paths.Pathlist ThisList = new TM64_Paths.Pathlist();
+
+                ThisList = new TM64_Paths.Pathlist();
+                ThisList.pathmarker = new List<TM64_Paths.Marker>();
                 for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
                 {
                     if (OKObjectList[ThisObject].ObjectIndex == 0)
@@ -433,69 +436,52 @@ namespace Tarmac64_Library
                         ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
                         ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
                         ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
-                        ThisList[0].pathmarker.Add(ThisSpot);
-                        if (ThisList[0].pathmarker.Count > 63)
+                        ThisList.pathmarker.Add(ThisSpot);
+                        if (ThisList.pathmarker.Count > 63)
                         {
                             MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[0].Name + " Too many objects! Max count 64");
                             return;
                         }
                     }
                 }
-                ObjectCount += ThisList[0].pathmarker.Count;
 
-                ThisList[1] = new TM64_Paths.Pathlist();
-                ThisList[1].pathmarker = new List<TM64_Paths.Marker>();
+
+                int BattleCount = 0;
+                List<TM64_Paths.BattleMarker> ObjectiveList = new List<TM64_Paths.BattleMarker>();
                 for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
                 {
                     if (OKObjectList[ThisObject].ObjectIndex == 4)
                     {
-                        TM64_Paths.Marker ThisSpot = new TM64_Paths.Marker();
+                        TM64_Paths.BattleMarker ThisSpot = new TM64_Paths.BattleMarker();
                         ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
                         ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
                         ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
-                        ThisList[1].pathmarker.Add(ThisSpot);
-                        if (ThisList[1].pathmarker.Count > 4)
+                        ThisSpot.flag = OKObjectList[ThisObject].ObjectFlag;
+                        ThisSpot.Player = OKObjectList[ThisObject].BattlePlayer;
+                        ThisSpot.Type = OKObjectList[ThisObject].BattleType;
+
+                        ObjectiveList.Add(ThisSpot);
+                        BattleCount++;
+                        if (BattleCount > 64)
                         {
-                            MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[4].Name + " Too many objects! Max count 4");
+                            MessageBox.Show("FATAL ERROR - Too many Battle Objectives! Max count 64");
                             return;
                         }
                     }
                 }
-                ThisList[2] = new TM64_Paths.Pathlist();
-                ThisList[2].pathmarker = new List<TM64_Paths.Marker>();
-                for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
-                {
-                    if (OKObjectList[ThisObject].ObjectIndex == 5)
-                    {
-                        TM64_Paths.Marker ThisSpot = new TM64_Paths.Marker();
-                        ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
-                        ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
-                        ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
-                        ThisList[2].pathmarker.Add(ThisSpot);
-                        if (ThisList[2].pathmarker.Count > 64)
-                        {
-                            MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[5].Name + " Too many objects! Max count 64");
-                            return;
-                        }
-                    }
-                }
-                courseData.PathOffsets = new UInt32[4] { 0x800DC778, 0x800DC778, 0x800DC778, 0x800DC778 };
 
                 MemoryStream ListStream = new MemoryStream();
 
-                byte[] ThisData = tm64Path.popMarker(ThisList[1], 4);
-                ListStream.Write(ThisData, 0, ThisData.Length);
+                byte[] ItemBoxData = tm64Path.popMarker(ThisList, 64);
+                byte[] BattleObjectiveData = tm64Path.popMarkerBattleObjective(ObjectiveList, 64);
+                ListStream.Write(ItemBoxData, 0, ItemBoxData.Length);
+                ListStream.Write(BattleObjectiveData, 0, BattleObjectiveData.Length);
 
-                ThisData = tm64Path.popMarker(ThisList[2], 64);
-                ListStream.Write(ThisData, 0, ThisData.Length);
-
-                ThisData = tm64Path.popMarker(ThisList[0], 64);
-                ListStream.Write(ThisData, 0, ThisData.Length);
 
                 ListData = ListStream.ToArray();
 
 
-                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + + ListData.Length, 5, Convert.ToBoolean(courseData.Fog.FogToggle));
+                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + ListData.Length, 5, Convert.ToBoolean(courseData.Fog.FogToggle));
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
 
@@ -507,12 +493,8 @@ namespace Tarmac64_Library
                 bs = new MemoryStream();
                 bw = new BinaryWriter(bs);
                 byte[] byteArray = new byte[0];
-                byteArray = BitConverter.GetBytes(0xB8000000);
-                Array.Reverse(byteArray);
-                bw.Write(byteArray);
-                byteArray = BitConverter.GetBytes(0x00000000);
-                Array.Reverse(byteArray);
-                bw.Write(byteArray);
+
+                bw.Write(F3D.gsSPEndDisplayList());
                 bw.Write(ListData);
 
                 bw.Write(textureList);
@@ -540,8 +522,8 @@ namespace Tarmac64_Library
 
 
             //Read Ghost Data from the GhostPath and 
-            // Set the character. Compressed INput data in the OK64Ghost
-            // //is padded and needs to be cleaned via recompression.
+            //Set the character. Compressed INput data in the OK64Ghost
+            //is padded and needs to be cleaned via recompression.
 
             if (courseData.GhostPath != "")
             {
@@ -640,6 +622,16 @@ namespace Tarmac64_Library
                     scrollCount++;
                 }
             }
+            foreach (var ObjectType in TypeList)
+            {
+                foreach (var textureObject in ObjectType.TextureData)
+                {
+                    if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                    {
+                        scrollCount++;
+                    }
+                }
+            }
 
             byte[] flip = BitConverter.GetBytes(Convert.ToInt32(scrollCount));
             Array.Reverse(flip);
@@ -651,15 +643,24 @@ namespace Tarmac64_Library
                 {
                     if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
                     {
-                        flip = BitConverter.GetBytes(Convert.ToInt32(textureObject.f3dexPosition | 0x06000000));
-                        Array.Reverse(flip);
-                        binaryWriter.Write(flip);
-                        flip = BitConverter.GetBytes(Convert.ToInt16(textureObject.textureScrollS));
-                        Array.Reverse(flip);
-                        binaryWriter.Write(flip);
-                        flip = BitConverter.GetBytes(Convert.ToInt16(textureObject.textureScrollT));
-                        Array.Reverse(flip);
-                        binaryWriter.Write(flip);
+                        
+                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.f3dexPosition | 0x06000000)));
+                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollS)));
+                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollT)));
+                    }
+                }
+
+                foreach (var ObjectType in TypeList)
+                {
+                    foreach (var textureObject in ObjectType.TextureData)
+                    {
+                        if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                        {
+
+                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.f3dexPosition | 0x0A000000)));
+                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollS)));
+                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollT)));
+                        }
                     }
                 }
             }
@@ -699,6 +700,17 @@ namespace Tarmac64_Library
                 }
             }
 
+            foreach (var ObjectType in TypeList)
+            {
+                foreach (var textureObject in ObjectType.TextureData)
+                {
+                    if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                    {
+                        screenCount++;
+                    }
+                }
+            }
+
             flip = BitConverter.GetBytes(Convert.ToInt32(screenCount));
             Array.Reverse(flip);
             binaryWriter.Write(flip);
@@ -713,6 +725,18 @@ namespace Tarmac64_Library
                             flip = BitConverter.GetBytes(Convert.ToInt32(textureObject.segmentPosition | 0x05000000));
                             Array.Reverse(flip);
                             binaryWriter.Write(flip);
+                        }
+                    }
+
+                    foreach (var ObjectType in TypeList)
+                    {
+                        foreach (var textureObject in ObjectType.TextureData)
+                        {
+                            if (textureObject.textureScreen == (CurrentScreen + 1))
+                            {
+
+                                binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.segmentPosition | 0x0A000000)));
+                            }
                         }
                     }
                 }
@@ -1145,6 +1169,7 @@ namespace Tarmac64_Library
         {
             textureArray = TextureControl.textureArray;
             GLControl.TextureObjects = textureArray;
+            GLControl.UpdateDraw = true;
         }
         public void ObjectRequestUpdate(object sender, EventArgs e)
         {

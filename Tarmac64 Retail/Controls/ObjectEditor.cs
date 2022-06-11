@@ -121,17 +121,6 @@ namespace Tarmac64_Retail
             ObjectIndexBox.SelectedIndex = 0;
 
             NewItem = new TM64_Course.OKObjectType();
-            NewItem.Name = "Battle Spawn";
-            NewItem.ModelData = new TM64_Geometry.OK64F3DObject[1];
-            NewItem.ModelData[0] = new TM64_Geometry.OK64F3DObject();
-            NewItem.ModelData[0].modelGeometry = TarmacGeometry.CreateStandard(4.0f);
-            NewItem.ModelData[0].objectColor = new float[] { 1.0f, 0f, 0.75f };
-            NewItem.ModelScale = 1.0f;
-            OKObjectTypeList.Add(NewItem);
-            ObjectIndexBox.Items.Add(NewItem.Name);
-            ObjectIndexBox.SelectedIndex = 0;
-
-            NewItem = new TM64_Course.OKObjectType();
             NewItem.Name = "Battle Objective";
             NewItem.ModelData = new TM64_Geometry.OK64F3DObject[1];
             NewItem.ModelData[0] = new TM64_Geometry.OK64F3DObject();
@@ -163,6 +152,10 @@ namespace Tarmac64_Retail
                 RotationXBox.Text = OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[0].ToString();
                 RotationYBox.Text = OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[1].ToString();
                 RotationZBox.Text = OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[2].ToString();
+
+                FlagBox.Text = OKObjectList[ObjectListBox.SelectedIndex].ObjectFlag.ToString();
+                BTypeBox.Text = OKObjectList[ObjectListBox.SelectedIndex].BattleType.ToString();
+                BPlayerBox.Text = OKObjectList[ObjectListBox.SelectedIndex].BattlePlayer.ToString();
             }
             else
             {
@@ -181,6 +174,10 @@ namespace Tarmac64_Retail
                 RotationXBox.Text = "";
                 RotationYBox.Text = "";
                 RotationZBox.Text = "";
+
+                FlagBox.Text = "";
+                BTypeBox.Text = "";
+                BPlayerBox.Text = "";
             }
 
             if (UpdateParent != null)
@@ -211,6 +208,9 @@ namespace Tarmac64_Retail
             {
                 TM64_Course.OKObject NewObject = new TM64_Course.OKObject();
                 NewObject.ObjectIndex = Convert.ToInt16(ObjectSettings[ThisLine++]);
+                NewObject.ObjectFlag = Convert.ToInt16(ObjectSettings[ThisLine++]);
+                NewObject.BattlePlayer = Convert.ToInt16(ObjectSettings[ThisLine++]);
+                NewObject.BattleType = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.OriginPosition = new short[3];
                 NewObject.OriginPosition[0] = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.OriginPosition[1] = Convert.ToInt16(ObjectSettings[ThisLine++]);
@@ -253,6 +253,9 @@ namespace Tarmac64_Retail
             for (int This = 0; This < OKObjectList.Count; This++)
             {
                 Output.Add(OKObjectList[This].ObjectIndex.ToString());
+                Output.Add(OKObjectList[This].ObjectFlag.ToString());
+                Output.Add(OKObjectList[This].BattlePlayer.ToString());
+                Output.Add(OKObjectList[This].BattleType.ToString());
                 Output.Add(OKObjectList[This].OriginPosition[0].ToString());
                 Output.Add(OKObjectList[This].OriginPosition[1].ToString());
                 Output.Add(OKObjectList[This].OriginPosition[2].ToString());
@@ -275,71 +278,82 @@ namespace Tarmac64_Retail
 
         private void UpdateLocation()
         {
-            short Parse = 0;
-            if (short.TryParse(LocationXBox.Text, out Parse))
+            if (ObjectListBox.SelectedIndex != -1)
             {
-                OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[0] = Parse;
-            }
+                short Parse = 0;
+                if (short.TryParse(LocationXBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[0] = Parse;
+                }
 
-            if (short.TryParse(LocationYBox.Text, out Parse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[1] = Parse;
-            }
+                if (short.TryParse(LocationYBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[1] = Parse;
+                }
 
-            if (short.TryParse(LocationZBox.Text, out Parse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[2] = Parse;
-            }
+                if (short.TryParse(LocationZBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[2] = Parse;
+                }
 
 
-            if (short.TryParse(AngleXBox.Text, out Parse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].OriginAngle[0] = Parse;
-            }
+                if (short.TryParse(AngleXBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].OriginAngle[0] = Parse;
+                }
 
-            if (short.TryParse(AngleYBox.Text, out Parse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].OriginAngle[1] = Parse;
-            }
+                if (short.TryParse(AngleYBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].OriginAngle[1] = Parse;
+                }
 
-            if (short.TryParse(AngleZBox.Text, out Parse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].OriginAngle[2] = Parse;
-            }
+                if (short.TryParse(AngleZBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].OriginAngle[2] = Parse;
+                }
 
-            float FloatParse = 0;
-            if (float.TryParse(VelocityXBox.Text, out FloatParse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].Velocity[0] = FloatParse;
-            }
+                float FloatParse = 0;
+                if (float.TryParse(VelocityXBox.Text, out FloatParse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].Velocity[0] = FloatParse;
+                }
 
-            if (float.TryParse(VelocityYBox.Text, out FloatParse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].Velocity[1] = FloatParse;
-            }
+                if (float.TryParse(VelocityYBox.Text, out FloatParse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].Velocity[1] = FloatParse;
+                }
 
-            if (float.TryParse(VelocityZBox.Text, out FloatParse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].Velocity[2] = FloatParse;
-            }
+                if (float.TryParse(VelocityZBox.Text, out FloatParse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].Velocity[2] = FloatParse;
+                }
 
-            if (short.TryParse(RotationXBox.Text, out Parse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[0] = Parse;
-            }
+                if (short.TryParse(RotationXBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[0] = Parse;
+                }
 
-            if (short.TryParse(RotationYBox.Text, out Parse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[1] = Parse;
-            }
+                if (short.TryParse(RotationYBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[1] = Parse;
+                }
 
-            if (short.TryParse(RotationZBox.Text, out Parse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[2] = Parse;
-            }
-            if (short.TryParse(FlagBox.Text, out Parse))
-            {
-                OKObjectList[ObjectListBox.SelectedIndex].ObjectFlag = Parse;
+                if (short.TryParse(RotationZBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[2] = Parse;
+                }
+                if (short.TryParse(FlagBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].ObjectFlag = Parse;
+                }
+                if (short.TryParse(BPlayerBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].BattlePlayer = Parse;
+                }
+                if (short.TryParse(BTypeBox.Text, out Parse))
+                {
+                    OKObjectList[ObjectListBox.SelectedIndex].BattleType = Parse;
+                }
             }
         }
 

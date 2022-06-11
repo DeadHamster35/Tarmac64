@@ -31,6 +31,10 @@
             this.KillObjBtn = new System.Windows.Forms.Button();
             this.AddObjBtn = new System.Windows.Forms.Button();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.BPlayerBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.BTypeBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.FlagBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -83,6 +87,10 @@
             // groupBox8
             // 
             this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox8.Controls.Add(this.label3);
+            this.groupBox8.Controls.Add(this.BPlayerBox);
+            this.groupBox8.Controls.Add(this.label2);
+            this.groupBox8.Controls.Add(this.BTypeBox);
             this.groupBox8.Controls.Add(this.label1);
             this.groupBox8.Controls.Add(this.FlagBox);
             this.groupBox8.Controls.Add(this.label6);
@@ -116,6 +124,54 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Object Information";
             // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label3.AutoSize = true;
+            this.label3.Cursor = System.Windows.Forms.Cursors.Default;
+            this.label3.Location = new System.Drawing.Point(188, 60);
+            this.label3.Margin = new System.Windows.Forms.Padding(5);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(29, 13);
+            this.label3.TabIndex = 240;
+            this.label3.Text = "Char";
+            // 
+            // BPlayerBox
+            // 
+            this.BPlayerBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BPlayerBox.Location = new System.Drawing.Point(227, 57);
+            this.BPlayerBox.Margin = new System.Windows.Forms.Padding(5);
+            this.BPlayerBox.Name = "BPlayerBox";
+            this.BPlayerBox.Size = new System.Drawing.Size(40, 20);
+            this.BPlayerBox.TabIndex = 239;
+            this.BPlayerBox.Text = "0";
+            this.BPlayerBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BPlayerBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateLocationHandler);
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label2.AutoSize = true;
+            this.label2.Cursor = System.Windows.Forms.Cursors.Default;
+            this.label2.Location = new System.Drawing.Point(101, 60);
+            this.label2.Margin = new System.Windows.Forms.Padding(5);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(31, 13);
+            this.label2.TabIndex = 238;
+            this.label2.Text = "Type";
+            // 
+            // BTypeBox
+            // 
+            this.BTypeBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BTypeBox.Location = new System.Drawing.Point(138, 57);
+            this.BTypeBox.Margin = new System.Windows.Forms.Padding(5);
+            this.BTypeBox.Name = "BTypeBox";
+            this.BTypeBox.Size = new System.Drawing.Size(40, 20);
+            this.BTypeBox.TabIndex = 237;
+            this.BTypeBox.Text = "0";
+            this.BTypeBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BTypeBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateLocationHandler);
+            // 
             // label1
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -134,7 +190,7 @@
             this.FlagBox.Location = new System.Drawing.Point(51, 57);
             this.FlagBox.Margin = new System.Windows.Forms.Padding(5);
             this.FlagBox.Name = "FlagBox";
-            this.FlagBox.Size = new System.Drawing.Size(60, 20);
+            this.FlagBox.Size = new System.Drawing.Size(40, 20);
             this.FlagBox.TabIndex = 235;
             this.FlagBox.Text = "0";
             this.FlagBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -473,5 +529,9 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox BPlayerBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox BTypeBox;
     }
 }

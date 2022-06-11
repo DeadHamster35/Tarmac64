@@ -11,6 +11,7 @@ using System.Drawing.Imaging;
 using System.Numerics;
 using Tarmac64_Library;
 using Assimp;
+using F3DSharp;
 
 namespace Tarmac64_Library
 {
@@ -21,6 +22,7 @@ namespace Tarmac64_Library
         MemoryStream memoryStream = new MemoryStream();
         BinaryReader binaryReader = new BinaryReader(Stream.Null);
         BinaryWriter binaryWriter = new BinaryWriter(Stream.Null);
+        F3DEX095 F3D = new F3DEX095();
         public class Pathgroup
         {
             public Pathlist[] pathList { get; set; }
@@ -37,6 +39,19 @@ namespace Tarmac64_Library
             public int yval { get; set; }
             public int zval { get; set; }
             public int flag { get; set; }
+            public float[] Color { get; set; }
+
+        }
+
+        public class BattleMarker
+        {
+
+            public int xval { get; set; }
+            public int yval { get; set; }
+            public int zval { get; set; }
+            public int flag { get; set; }
+            public int Player { get; set; }
+            public int Type { get; set; }
             public float[] Color { get; set; }
 
         }
@@ -244,7 +259,7 @@ namespace Tarmac64_Library
                                     {
                                         if (objectDistance > intersectPoint.X | objectDistance == -1)
                                         {
-                                            objectDistance = intersectPoint.X;
+                                            objectDistance = Convert.ToSingle(intersectPoint.X);
                                             objectID = currentObject;
                                         }
                                     }
@@ -774,6 +789,57 @@ namespace Tarmac64_Library
                 binaryWriter.Write(dataBytes);  //pad
             }
             
+            byte[] popBytes = memoryStream.ToArray();
+            return popBytes;
+
+        }
+
+        public byte[] popMarkerBattleObjective(List<BattleMarker> ThisList, int PaddingLength)
+        {
+
+
+            //popMarkers is used by the geometry compiler, not to add objects to existing courses.
+
+            memoryStream = new MemoryStream();
+            binaryWriter = new BinaryWriter(memoryStream);
+            binaryReader = new BinaryReader(memoryStream);
+
+
+
+            int markerCount = ThisList.Count;
+
+
+            for (int currentMarker = 0; currentMarker < markerCount; currentMarker++)
+            {
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ThisList[currentMarker].xval)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ThisList[currentMarker].zval)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(-1 * ThisList[currentMarker].yval)));
+
+                binaryWriter.Write(F3D.BigEndian(Convert.ToUInt16(ThisList[currentMarker].flag)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToUInt16(ThisList[currentMarker].Player)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToUInt16(ThisList[currentMarker].Type)));
+            }
+
+            binaryWriter.Write(F3D.BigEndian(Convert.ToUInt16(0x8000)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToUInt16(0x8000)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToUInt16(0x8000)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
+
+
+
+            int localPad = PaddingLength - markerCount;
+            for (int currentMarker = 0; currentMarker < localPad; currentMarker++)
+            {
+                binaryWriter.Write(F3D.BigEndian(Convert.ToUInt16(0x8000)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToUInt16(0x8000)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToUInt16(0x8000)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
+            }
+
             byte[] popBytes = memoryStream.ToArray();
             return popBytes;
 
