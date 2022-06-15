@@ -2552,6 +2552,7 @@ namespace Tarmac64_Library
 
                     textureObject[currentTexture].romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
                     binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
+                    textureObject[currentTexture].rawTexture = imageData;                    
                     binaryWriter.Write(imageData);
                 }
             }
@@ -3820,6 +3821,9 @@ namespace Tarmac64_Library
 
 
 
+            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DSharp.F3DEX095_Parameters.G_TT_RGBA16));
+            binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | 0x05000000)));
+
             //set MIP levels to 0.
             binaryWriter.Write(
                 F3D.gsSPTexture(
@@ -3917,6 +3921,26 @@ namespace Tarmac64_Library
 
             }
 
+
+
+            if (GeometryToggle)
+            {
+                //setup the Geometry Mode parameter
+                TextureObject.GeometryModes = 0;
+                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
+                {
+                    if (TextureObject.GeometryBools[ThisCheck])
+                    {
+                        TextureObject.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
+                    }
+                }
+                binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.GeometryModes));               //set the mode we made above.
+            }
+
+
+            //
+
+
             //Load Texture Settings
             binaryWriter.Write(
                 F3D.gsNinSetupTileDescription(
@@ -3941,37 +3965,27 @@ namespace Tarmac64_Library
 
 
 
-            if (GeometryToggle)
-            {
-                //setup the Geometry Mode parameter
-                TextureObject.GeometryModes = 0;
-                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
-                {
-                    if (TextureObject.GeometryBools[ThisCheck])
-                    {
-                        TextureObject.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
-                    }
-                }
-                binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.GeometryModes));               //set the mode we made above.
-            }
-
 
             //Load Texture Data
-            binaryWriter.Write(
-                F3D.gsNinLoadTextureImage(
-                    Convert.ToUInt32(TextureObject.segmentPosition | Convert.ToUInt32(Segment << 24)),
-                    F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
-                    F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
-                    Convert.ToUInt32(TextureObject.textureWidth),
-                    Convert.ToUInt32(TextureObject.textureHeight),
-                    0,
-                    7
-                )
-            );
+            binaryWriter.Write(F3D.gsDPLoadTextureBlock(
+                Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
+                F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
+                F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
+                Convert.ToUInt32(TextureObject.textureWidth),
+                Convert.ToUInt32(TextureObject.textureHeight),
+                0,
+                F3DEX095_Parameters.TextureModes[TextureObject.SFlag],
+                widthex,
+                0,
+                F3DEX095_Parameters.TextureModes[TextureObject.TFlag],
+                heightex,
+                0));
+
+
 
             if (GeometryToggle)
             {
-                binaryWriter.Write(F3D.gsSPClearGeometryMode(TextureObject.GeometryModes));    //clear existing modes
+                //binaryWriter.Write(F3D.gsSPClearGeometryMode(TextureObject.GeometryModes));    //clear existing modes
             }
 
 
@@ -4018,7 +4032,16 @@ namespace Tarmac64_Library
                 if ((textureObject[materialID].textureName != null) && (textureObject[materialID].textureName != "NULL"))
                 {
                     textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
-                    seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle));
+                    if (textureObject[materialID].TextureFormat == 2)
+                    {
+                        seg7w.Write(CI(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle));
+                    }
+                    else
+                    {
+                        seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle));
+                    }
+                    
+
                 }
             }
             return seg7m.ToArray();
