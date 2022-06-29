@@ -217,7 +217,6 @@ namespace Tarmac64_Library
             byte[] XLUList = new byte[0];
             byte[] textureList = new byte[0];
 
-            byte[] popData = Resources.popResources;
 
             byte[] surfaceTable = new byte[0];
             byte[] displayTable = new byte[0];
@@ -300,9 +299,9 @@ namespace Tarmac64_Library
                         ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
                         ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
                         ThisList[3].pathmarker.Add(ThisSpot);
-                        if (ThisList[3].pathmarker.Count > 63)
+                        if (ThisList[3].pathmarker.Count > 8)
                         {
-                            MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[3].Name + " Too many objects! Max count 64");
+                            MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[3].Name + " Too many objects! Max count 8");
                             return;
                         }
                     }
@@ -338,7 +337,7 @@ namespace Tarmac64_Library
 
                 courseData.PathOffsets = new UInt32[4] { 0x800DC778, 0x800DC778, 0x800DC778, 0x800DC778 };
                 courseData.PathSurface = new int[4];                
-                courseData.PathOffsets[0] = 0x06000A20;
+                courseData.PathOffsets[0] = Convert.ToUInt32(0x06000000 + ListData.Length + 8);
                 PathListData = tm64Path.popMarker(pathGroups[0].pathList[0], 0);
                 ListStream.Write(PathListData, 0, PathListData.Length);
 
@@ -346,7 +345,7 @@ namespace Tarmac64_Library
                 ListStream.Write(PathListData, 0, PathListData.Length);
                 for (int ThisPath = 1; ThisPath < pathGroups[0].pathList.Length;ThisPath++)
                 {
-                    courseData.PathOffsets[ThisPath] = Convert.ToUInt32(0x06000A20 + ListStream.Position);
+                    courseData.PathOffsets[ThisPath] = Convert.ToUInt32(0x06000000 + ListData.Length + 8 + ListStream.Position);
                     PathListData = tm64Path.popMarker(pathGroups[0].pathList[ThisPath], 0);
                     ListStream.Write(PathListData, 0, PathListData.Length);
                 }
@@ -354,7 +353,7 @@ namespace Tarmac64_Library
                 PathData = ListStream.ToArray();
 
 
-                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, (ListData.Length + popData.Length + 8 + PathData.Length),5, Convert.ToBoolean(courseData.Fog.FogToggle) );
+                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5, Convert.ToBoolean(courseData.Fog.FogToggle) );
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
                 TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
 
@@ -363,12 +362,11 @@ namespace Tarmac64_Library
 
                 surfaceTable = TarmacGeometry.compilesurfaceTable(surfaceObjects);
 
-                magic = textureList.Length + ListData.Length + PathData.Length + popData.Length + 8 + 8 + (528 * 2) + (surfaceObjects.Length * 8);
+                magic = textureList.Length + ListData.Length + PathData.Length + 8 + 8 + (528 * 2) + (surfaceObjects.Length * 8);
                 
                 // Build the display table with the above magic value
                 // 8 bytes for header
                 // 8040 bytes for the POP data
-                // 952 bytes for the POP resources
                 // 8 bytes for Surface Table Footer
                 // 528 bytes for the Display Table itself. Another 528 for the XLU table.
                 // The surface table is 8 bytes per object.
@@ -397,7 +395,6 @@ namespace Tarmac64_Library
                 Array.Reverse(byteArray);
                 bw.Write(byteArray);
 
-                bw.Write(popData);
                 bw.Write(ListData);
                 bw.Write(PathData);
                 bw.Write(textureList);
@@ -557,14 +554,14 @@ namespace Tarmac64_Library
 
             
             List<TM64_Course.OKObjectType> TypeList = new List<TM64_Course.OKObjectType>();
-            for (int This = 6; This < OKObjectTypeList.Count; This++)
+            for (int This = 5; This < OKObjectTypeList.Count; This++)
             {
                 TypeList.Add(OKObjectTypeList[This]);
             }
             List<TM64_Course.OKObject> CustomObjectList = new List<TM64_Course.OKObject>();
             for (int This = 0; This < OKObjectList.Count; This++)
             {
-                if (OKObjectList[This].ObjectIndex >= 6)
+                if (OKObjectList[This].ObjectIndex >= 5)
                 {
                     CustomObjectList.Add(OKObjectList[This]);
                 }
