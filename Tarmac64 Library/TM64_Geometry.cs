@@ -1567,17 +1567,8 @@ namespace Tarmac64_Library
                     }
                     else
                     {
-                        UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
-                        UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
-
-
-                        //
-                        //
-                        float u_base = 0;
-                        float v_base = 0;
-
-                        float[] u_shift = { 0, 0, 0 };
-                        float[] v_shift = { 0, 0, 0 };
+                        float uBase, vBase;
+                        float uShift, vShift;
                         float[] u_offset = { 0, 0, 0 };
                         float[] v_offset = { 0, 0, 0 };
 
@@ -1607,66 +1598,23 @@ namespace Tarmac64_Library
                         }
 
 
-                        // So we check the absolute values to find which is the least distance from the origin.
-                        // Whether we decide to go positive or negative from that position is fine but we want to start as close as we can to the origin.
-                        // When we actually store the value we do not use an absolute and maintain the positive/negative sign of the value.
+                        //Get the center of the triangle for reorienting. 
 
-                        if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[1]))
-                        {
-                            if (Math.Abs(u_offset[0]) < Math.Abs(u_offset[2]))
-                            {
-                                u_base = u_offset[0];
-                                v_base = v_offset[0];
-                            }
-                            else
-                            {
-                                u_base = u_offset[2];
-                                v_base = v_offset[2];
-                            }
-                        }
-                        else
-                        {
-                            if (Math.Abs(u_offset[1]) < Math.Abs(u_offset[2]))
-                            {
-                                u_base = u_offset[1];
-                                v_base = v_offset[1];
-                            }
-                            else
-                            {
-                                u_base = u_offset[2];
-                                v_base = v_offset[2];
-                            }
-                        }
-
-
-
-                        // Set the shift values for each u/v offset
-                        u_shift[0] = u_offset[0] - u_base;
-                        u_shift[1] = u_offset[1] - u_base;
-                        u_shift[2] = u_offset[2] - u_base;
-
-                        v_shift[0] = v_offset[0] - v_base;
-                        v_shift[1] = v_offset[1] - v_base;
-                        v_shift[2] = v_offset[2] - v_base;
-
+                        uBase = (u_offset[0] + u_offset[1] + u_offset[2]) / 3;
+                        vBase = (v_offset[0] + v_offset[1] + v_offset[2]) / 3;
 
                         //Now apply a modulus operation to get the u/v_base as a decimal only, removing the whole value and any inherited tiling.
-
-                        u_base = u_base % 1.0f;
-                        v_base = v_base % 1.0f;
+                        //Use 2 for the base to maintain mirroring. 
+                        uShift = uBase - (uBase % 2.0f);
+                        vShift = vBase - (vBase % 2.0f);
 
                         // And now add the offsets to the base to get each vert's actual U/V coordinate, before converting to ST.
 
-
-
-                        u_offset[0] = u_base + u_shift[0];
-                        u_offset[1] = u_base + u_shift[1];
-                        u_offset[2] = u_base + u_shift[2];
-
-                        v_offset[0] = v_base + v_shift[0];
-                        v_offset[1] = v_base + v_shift[1];
-                        v_offset[2] = v_base + v_shift[2];
-
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            u_offset[ThisVector] -= uShift;
+                            v_offset[ThisVector] -= vShift;
+                        }
                         // and now apply the calculation to make them into ST coords for Mario Kart.
                         //
 
@@ -1674,7 +1622,7 @@ namespace Tarmac64_Library
                         {
 
                             newObject.modelGeometry[currentFace].VertData[currentVert].position.sBase = u_offset[currentVert] * 32;
-                            newObject.modelGeometry[currentFace].VertData[currentVert].position.tBase = v_offset[currentVert] * -32;
+                            newObject.modelGeometry[currentFace].VertData[currentVert].position.tBase = (1 - v_offset[currentVert]) * 32;
                             if (fbx.Meshes[childMesh].TextureCoordinateChannels[0].Count == 0)
                             {
 
@@ -1688,7 +1636,7 @@ namespace Tarmac64_Library
                                 newObject.modelGeometry[currentFace].VertData[currentVert].position.tPure = (1 - fbx.Meshes[childMesh].TextureCoordinateChannels[0][childPoly.Indices[currentVert]][1]) * 32;
                             }
                             newObject.modelGeometry[currentFace].VertData[currentVert].position.u = u_offset[currentVert];
-                            newObject.modelGeometry[currentFace].VertData[currentVert].position.v = v_offset[currentVert] * -1;
+                            newObject.modelGeometry[currentFace].VertData[currentVert].position.v = 1 - v_offset[currentVert];
                         }
                     }
 
@@ -3817,13 +3765,11 @@ namespace Tarmac64_Library
             UInt32 heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
             UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
 
-
-
-
-
             binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DSharp.F3DEX095_Parameters.G_TT_RGBA16));
             binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | 0x05000000)));
-
+            binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
+                F3DEX095_Parameters.G_IM_FMT_CI, Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
+                0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], 0, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], 0, 0) );
             //set MIP levels to 0.
             binaryWriter.Write(
                 F3D.gsSPTexture(
@@ -3940,7 +3886,7 @@ namespace Tarmac64_Library
 
             //
 
-
+            /*
             //Load Texture Settings
             binaryWriter.Write(
                 F3D.gsNinSetupTileDescription(
@@ -3958,14 +3904,14 @@ namespace Tarmac64_Library
                     0
                 )
             );
-
+            */
 
             //binaryWriter.Write()
 
 
 
 
-
+            /*
             //Load Texture Data
             binaryWriter.Write(F3D.gsDPLoadTextureBlock(
                 Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
@@ -3981,7 +3927,7 @@ namespace Tarmac64_Library
                 heightex,
                 0));
 
-
+            */
 
             if (GeometryToggle)
             {

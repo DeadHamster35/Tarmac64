@@ -210,11 +210,11 @@ namespace Tarmac64_Retail
                     Hitbox[Index].Scale = Parse;
                 }
 
-                Hitbox[Index].Type = Convert.ToInt16(TypeBox.SelectedIndex-1);
-                Hitbox[Index].Status = Convert.ToInt16(StatusBox.SelectedIndex-1);
-                Hitbox[Index].Effect = Convert.ToInt16(EffectBox.SelectedIndex-1);
-                Hitbox[Index].HitResult = Convert.ToInt16(DmgResultBox.SelectedIndex-1);
-                Hitbox[Index].CollideResult = Convert.ToInt16(ColResultBox.SelectedIndex-1);
+                Hitbox[Index].Type = Convert.ToInt16(TypeBox.SelectedIndex);
+                Hitbox[Index].Status = Convert.ToInt16(StatusValues[StatusBox.SelectedIndex]);
+                Hitbox[Index].Effect = Convert.ToInt16(EffectValues[EffectBox.SelectedIndex]);
+                Hitbox[Index].HitResult = Convert.ToInt16(DmgResultBox.SelectedIndex);
+                Hitbox[Index].CollideResult = Convert.ToInt16(ColResultBox.SelectedIndex);
 
 
 
