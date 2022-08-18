@@ -131,10 +131,10 @@ namespace Tarmac64_Library
             public string GhostPath { get; set; }
             public byte[] GhostData { get; set; }
             public int GhostCharacter { get; set; }
-            public int[] GameTempos { get; set; }
             public int[] PathSurface { get; set; }
             public short PathCount { get; set; }
             public short DistributeBool { get; set; }
+            public short GoalBannerBool { get; set; }
 
             public int EchoOffset { get; set; }
             public int EchoEndOffset { get; set; }
@@ -206,7 +206,7 @@ namespace Tarmac64_Library
             public int BombOffset { get; set; }
             public int EchoStart { get; set; }
             public int EchoEnd { get; set; }
-            public byte[] Tempo { get; set; }
+            public byte GoalBannerToggle { get; set; }            
             public short[] PathLength { get; set; }
             public float WaterLevel { get; set; }
             public int WaterType { get; set; }
@@ -1221,7 +1221,8 @@ namespace Tarmac64_Library
             CourseData.SongData.SequenceData = binaryReader.ReadBytes(DataLength);
             DataLength = binaryReader.ReadInt32();
             CourseData.SongData.InstrumentData = binaryReader.ReadBytes(DataLength);
-            CourseData.GameTempos = new int[] { binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32(), binaryReader.ReadInt32() };
+
+            CourseData.GoalBannerBool = binaryReader.ReadInt16();
             
 
             DataLength = binaryReader.ReadInt32();
@@ -1427,11 +1428,9 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.SongData.SequenceData.Length);
             binaryWriter.Write(CourseData.SongData.SequenceData);
             binaryWriter.Write(CourseData.SongData.InstrumentData.Length);
-            binaryWriter.Write(CourseData.SongData.InstrumentData);            
-            binaryWriter.Write(CourseData.GameTempos[0]);
-            binaryWriter.Write(CourseData.GameTempos[1]);
-            binaryWriter.Write(CourseData.GameTempos[2]);
-            binaryWriter.Write(CourseData.GameTempos[3]);
+            binaryWriter.Write(CourseData.SongData.InstrumentData);
+
+            binaryWriter.Write(CourseData.GoalBannerBool);
             
 
             binaryWriter.Write(CourseData.TextureObjects.Length);
@@ -1903,12 +1902,7 @@ namespace Tarmac64_Library
             courseData.EchoEndOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
 
 
-
-            courseData.OK64HeaderData.Tempo = new byte[4];
-            courseData.OK64HeaderData.Tempo[0] = Convert.ToByte(courseData.GameTempos[0]);
-            courseData.OK64HeaderData.Tempo[1] = Convert.ToByte(courseData.GameTempos[1]);
-            courseData.OK64HeaderData.Tempo[2] = Convert.ToByte(courseData.GameTempos[2]);
-            courseData.OK64HeaderData.Tempo[3] = Convert.ToByte(courseData.GameTempos[3]);
+            courseData.OK64HeaderData.GoalBannerToggle = Convert.ToByte(courseData.GoalBannerBool);
 
             //bombdata
             courseData.OK64HeaderData.BombOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
@@ -2242,10 +2236,11 @@ namespace Tarmac64_Library
             binaryWriter.Write(F3D.BigEndian(courseData.EchoOffset));
             binaryWriter.Write(F3D.BigEndian(courseData.EchoEndOffset));
 
-            binaryWriter.Write(courseData.OK64HeaderData.Tempo[0]);
-            binaryWriter.Write(courseData.OK64HeaderData.Tempo[1]);
-            binaryWriter.Write(courseData.OK64HeaderData.Tempo[2]);
-            binaryWriter.Write(courseData.OK64HeaderData.Tempo[3]);
+            binaryWriter.Write(courseData.OK64HeaderData.GoalBannerToggle);
+            //Pad3
+            binaryWriter.Write(Convert.ToByte(0xFF));
+            binaryWriter.Write(Convert.ToByte(0xFF));
+            binaryWriter.Write(Convert.ToByte(0xFF));
 
             binaryWriter.Write(Convert.ToByte(courseData.PathSurface[0]));
             binaryWriter.Write(Convert.ToByte(courseData.PathSurface[1]));

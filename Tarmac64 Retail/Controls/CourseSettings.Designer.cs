@@ -115,15 +115,6 @@
             this.WaterTypeBox = new System.Windows.Forms.ComboBox();
             this.label51 = new System.Windows.Forms.Label();
             this.waterBox = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.sp4Box = new System.Windows.Forms.TextBox();
-            this.label43 = new System.Windows.Forms.Label();
-            this.sp1Box = new System.Windows.Forms.TextBox();
-            this.label42 = new System.Windows.Forms.Label();
-            this.sp2Box = new System.Windows.Forms.TextBox();
-            this.label41 = new System.Windows.Forms.Label();
-            this.sp3Box = new System.Windows.Forms.TextBox();
-            this.label39 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label10 = new System.Windows.Forms.Label();
             this.BombPointBox = new System.Windows.Forms.TextBox();
@@ -159,6 +150,7 @@
             this.label21 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
+            this.GoalBannerBox = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -319,7 +311,7 @@
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.EchoStartBox);
             this.groupBox1.Controls.Add(this.label11);
-            this.groupBox1.Location = new System.Drawing.Point(5, 347);
+            this.groupBox1.Location = new System.Drawing.Point(5, 332);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(280, 181);
             this.groupBox1.TabIndex = 14;
@@ -603,7 +595,7 @@
             this.groupBox7.Controls.Add(this.startYBox);
             this.groupBox7.Controls.Add(this.startXBox);
             this.groupBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox7.Location = new System.Drawing.Point(5, 591);
+            this.groupBox7.Location = new System.Drawing.Point(5, 576);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(280, 183);
             this.groupBox7.TabIndex = 15;
@@ -873,7 +865,7 @@
             this.groupBox2.Controls.Add(this.label30);
             this.groupBox2.Controls.Add(this.label31);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox2.Location = new System.Drawing.Point(5, 780);
+            this.groupBox2.Location = new System.Drawing.Point(5, 765);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(280, 169);
             this.groupBox2.TabIndex = 16;
@@ -1157,100 +1149,6 @@
             this.waterBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.waterBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
             // 
-            // label7
-            // 
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label7.Location = new System.Drawing.Point(166, 187);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(40, 13);
-            this.label7.TabIndex = 290;
-            this.label7.Text = "4P";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // sp4Box
-            // 
-            this.sp4Box.Location = new System.Drawing.Point(166, 205);
-            this.sp4Box.Margin = new System.Windows.Forms.Padding(5);
-            this.sp4Box.Name = "sp4Box";
-            this.sp4Box.Size = new System.Drawing.Size(40, 20);
-            this.sp4Box.TabIndex = 13;
-            this.sp4Box.Text = "1";
-            this.sp4Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.sp4Box.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // label43
-            // 
-            this.label43.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label43.Location = new System.Drawing.Point(16, 187);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(40, 13);
-            this.label43.TabIndex = 289;
-            this.label43.Text = "1P";
-            this.label43.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // sp1Box
-            // 
-            this.sp1Box.Location = new System.Drawing.Point(16, 205);
-            this.sp1Box.Margin = new System.Windows.Forms.Padding(5);
-            this.sp1Box.Name = "sp1Box";
-            this.sp1Box.Size = new System.Drawing.Size(40, 20);
-            this.sp1Box.TabIndex = 10;
-            this.sp1Box.Text = "1";
-            this.sp1Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.sp1Box.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // label42
-            // 
-            this.label42.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label42.Location = new System.Drawing.Point(66, 187);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(40, 13);
-            this.label42.TabIndex = 288;
-            this.label42.Text = "2P";
-            this.label42.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // sp2Box
-            // 
-            this.sp2Box.Location = new System.Drawing.Point(66, 205);
-            this.sp2Box.Margin = new System.Windows.Forms.Padding(5);
-            this.sp2Box.Name = "sp2Box";
-            this.sp2Box.Size = new System.Drawing.Size(40, 20);
-            this.sp2Box.TabIndex = 11;
-            this.sp2Box.Text = "1";
-            this.sp2Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.sp2Box.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // label41
-            // 
-            this.label41.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label41.Location = new System.Drawing.Point(116, 187);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(40, 13);
-            this.label41.TabIndex = 287;
-            this.label41.Text = "3P";
-            this.label41.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // sp3Box
-            // 
-            this.sp3Box.Location = new System.Drawing.Point(116, 205);
-            this.sp3Box.Margin = new System.Windows.Forms.Padding(5);
-            this.sp3Box.Name = "sp3Box";
-            this.sp3Box.Size = new System.Drawing.Size(40, 20);
-            this.sp3Box.TabIndex = 12;
-            this.sp3Box.Text = "1";
-            this.sp3Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.sp3Box.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label39.Location = new System.Drawing.Point(218, 208);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(38, 13);
-            this.label39.TabIndex = 286;
-            this.label39.Text = "Tempo";
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.label10);
@@ -1259,7 +1157,7 @@
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.BombTypeBox);
             this.groupBox3.Controls.Add(this.BombIndexBox);
-            this.groupBox3.Location = new System.Drawing.Point(5, 1045);
+            this.groupBox3.Location = new System.Drawing.Point(5, 1030);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(280, 71);
             this.groupBox3.TabIndex = 18;
@@ -1333,7 +1231,7 @@
             this.groupBox9.Controls.Add(this.oksongBox);
             this.groupBox9.Controls.Add(this.songBox);
             this.groupBox9.Controls.Add(this.label40);
-            this.groupBox9.Location = new System.Drawing.Point(4, 955);
+            this.groupBox9.Location = new System.Drawing.Point(4, 940);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(280, 84);
             this.groupBox9.TabIndex = 17;
@@ -1391,7 +1289,7 @@
             // PathSurfaceSelect
             // 
             this.PathSurfaceSelect.FormattingEnabled = true;
-            this.PathSurfaceSelect.Location = new System.Drawing.Point(7, 536);
+            this.PathSurfaceSelect.Location = new System.Drawing.Point(7, 521);
             this.PathSurfaceSelect.Margin = new System.Windows.Forms.Padding(5);
             this.PathSurfaceSelect.Name = "PathSurfaceSelect";
             this.PathSurfaceSelect.Size = new System.Drawing.Size(131, 21);
@@ -1401,7 +1299,7 @@
             // 
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(220, 539);
+            this.label19.Location = new System.Drawing.Point(220, 524);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(68, 13);
             this.label19.TabIndex = 294;
@@ -1409,7 +1307,7 @@
             // 
             // PathSurfaceBox
             // 
-            this.PathSurfaceBox.Location = new System.Drawing.Point(148, 536);
+            this.PathSurfaceBox.Location = new System.Drawing.Point(148, 521);
             this.PathSurfaceBox.Margin = new System.Windows.Forms.Padding(5);
             this.PathSurfaceBox.Name = "PathSurfaceBox";
             this.PathSurfaceBox.Size = new System.Drawing.Size(60, 20);
@@ -1422,7 +1320,7 @@
             // 
             this.DistributeBox.AutoSize = true;
             this.DistributeBox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.DistributeBox.Location = new System.Drawing.Point(7, 565);
+            this.DistributeBox.Location = new System.Drawing.Point(7, 550);
             this.DistributeBox.Name = "DistributeBox";
             this.DistributeBox.Size = new System.Drawing.Size(133, 17);
             this.DistributeBox.TabIndex = 295;
@@ -1434,7 +1332,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(219, 566);
+            this.label20.Location = new System.Drawing.Point(219, 551);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(60, 13);
             this.label20.TabIndex = 297;
@@ -1442,7 +1340,7 @@
             // 
             // PathCountBox
             // 
-            this.PathCountBox.Location = new System.Drawing.Point(147, 563);
+            this.PathCountBox.Location = new System.Drawing.Point(147, 548);
             this.PathCountBox.Margin = new System.Windows.Forms.Padding(5);
             this.PathCountBox.Name = "PathCountBox";
             this.PathCountBox.Size = new System.Drawing.Size(60, 20);
@@ -1468,7 +1366,7 @@
             this.groupBox4.Controls.Add(this.label21);
             this.groupBox4.Controls.Add(this.label23);
             this.groupBox4.Controls.Add(this.label22);
-            this.groupBox4.Location = new System.Drawing.Point(5, 233);
+            this.groupBox4.Location = new System.Drawing.Point(5, 218);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(279, 108);
             this.groupBox4.TabIndex = 298;
@@ -1634,10 +1532,23 @@
             this.label22.Text = "B";
             this.label22.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // GoalBannerBox
+            // 
+            this.GoalBannerBox.AutoSize = true;
+            this.GoalBannerBox.Location = new System.Drawing.Point(6, 193);
+            this.GoalBannerBox.Margin = new System.Windows.Forms.Padding(5);
+            this.GoalBannerBox.Name = "GoalBannerBox";
+            this.GoalBannerBox.Size = new System.Drawing.Size(123, 17);
+            this.GoalBannerBox.TabIndex = 299;
+            this.GoalBannerBox.Text = "Disable Goal Banner";
+            this.GoalBannerBox.UseVisualStyleBackColor = true;
+            this.GoalBannerBox.CheckedChanged += new System.EventHandler(this.GoalBannerBox_CheckedChanged);
+            // 
             // CourseSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.GoalBannerBox);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.label20);
             this.Controls.Add(this.PathCountBox);
@@ -1650,15 +1561,6 @@
             this.Controls.Add(this.WaterTypeBox);
             this.Controls.Add(this.label51);
             this.Controls.Add(this.waterBox);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.sp4Box);
-            this.Controls.Add(this.label43);
-            this.Controls.Add(this.sp1Box);
-            this.Controls.Add(this.label42);
-            this.Controls.Add(this.sp2Box);
-            this.Controls.Add(this.label41);
-            this.Controls.Add(this.sp3Box);
-            this.Controls.Add(this.label39);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -1779,15 +1681,6 @@
         private System.Windows.Forms.ComboBox WaterTypeBox;
         private System.Windows.Forms.Label label51;
         private System.Windows.Forms.TextBox waterBox;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox sp4Box;
-        private System.Windows.Forms.Label label43;
-        private System.Windows.Forms.TextBox sp1Box;
-        private System.Windows.Forms.Label label42;
-        private System.Windows.Forms.TextBox sp2Box;
-        private System.Windows.Forms.Label label41;
-        private System.Windows.Forms.TextBox sp3Box;
-        private System.Windows.Forms.Label label39;
         private System.Windows.Forms.ComboBox skyBox;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -1827,5 +1720,6 @@
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.CheckBox GoalBannerBox;
     }
 }

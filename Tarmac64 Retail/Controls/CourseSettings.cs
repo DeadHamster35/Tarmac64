@@ -38,7 +38,8 @@ namespace Tarmac64_Retail
         private void CourseSettings_Load(object sender, EventArgs e)
         {
             CourseData.OK64HeaderData = new TM64_Course.OK64Header();
-            CourseData.GameTempos = new int[4];
+
+
             CourseData.MapData = new TM64_Course.MiniMap();
             CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
             CourseData.MapData.MapCoord = new Assimp.Vector2D(0, 0);
@@ -125,11 +126,6 @@ namespace Tarmac64_Retail
             PathTypeBox.SelectedIndex = 0;
             BombIndexBox.SelectedIndex = 0;
             songBox.SelectedIndex = 3;
-            sp1Box.Text = "2";
-
-            sp2Box.Text = "2";
-            sp3Box.Text = "2";
-            sp4Box.Text = "2";
 
 
             waterBox.Text = "-80";
@@ -148,11 +144,7 @@ namespace Tarmac64_Retail
             CourseData.GhostPath = SettingsInfo[ThisLine++];
             CourseData.OK64HeaderData.WaterType = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.OK64HeaderData.WaterLevel = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.GameTempos = new int[4];
-            CourseData.GameTempos[0] = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.GameTempos[1] = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.GameTempos[2] = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.GameTempos[3] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.GoalBannerBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
             CourseData.PathSurface = new int[4];
             CourseData.PathSurface[0] = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.PathSurface[1] = Convert.ToInt32(SettingsInfo[ThisLine++]);
@@ -260,10 +252,7 @@ namespace Tarmac64_Retail
             Output.Add(CourseData.GhostPath);
             Output.Add(CourseData.OK64HeaderData.WaterType.ToString());
             Output.Add(CourseData.OK64HeaderData.WaterLevel.ToString());
-            Output.Add(CourseData.GameTempos[0].ToString());
-            Output.Add(CourseData.GameTempos[1].ToString());
-            Output.Add(CourseData.GameTempos[2].ToString());
-            Output.Add(CourseData.GameTempos[3].ToString());
+            Output.Add(CourseData.GoalBannerBool.ToString());
             Output.Add(CourseData.PathSurface[0].ToString());
             Output.Add(CourseData.PathSurface[1].ToString());
             Output.Add(CourseData.PathSurface[2].ToString());
@@ -354,6 +343,9 @@ namespace Tarmac64_Retail
             CourseData.GhostPath = ghostBox.Text;
 
             CourseData.Fog.FogToggle = Convert.ToInt16(FogToggleBox.Checked);
+
+            CourseData.GoalBannerBool = Convert.ToInt16(!GoalBannerBox.Checked);  //Inverse
+
             if (int.TryParse(FogRBox.Text, out ParseInt))
             {
                 CourseData.Fog.FogColor.R = Convert.ToByte(ParseInt);
@@ -453,22 +445,7 @@ namespace Tarmac64_Retail
             }
 
 
-            if (byte.TryParse(sp1Box.Text, out ParseByte))
-            {
-                CourseData.GameTempos[0] = ParseByte;
-            }
-            if (byte.TryParse(sp2Box.Text, out ParseByte))
-            {
-                CourseData.GameTempos[1] = ParseByte;
-            }
-            if (byte.TryParse(sp3Box.Text, out ParseByte))
-            {
-                CourseData.GameTempos[2] = ParseByte;
-            }
-            if (byte.TryParse(sp4Box.Text, out ParseByte))
-            {
-                CourseData.GameTempos[3] = ParseByte;
-            }
+            
 
 
             if (int.TryParse(mapXBox.Text, out ParseInt))
@@ -608,11 +585,8 @@ namespace Tarmac64_Retail
                 AdjB.Text = PathFX[Index].AdjColor.B.ToString();
                 PathTypeBox.SelectedIndex = PathFX[Index].Type;
             }
-            
-            sp1Box.Text = CourseData.GameTempos[0].ToString();
-            sp2Box.Text = CourseData.GameTempos[1].ToString();
-            sp3Box.Text = CourseData.GameTempos[2].ToString();
-            sp4Box.Text = CourseData.GameTempos[3].ToString();
+
+            GoalBannerBox.Checked = Convert.ToBoolean(CourseData.GoalBannerBool);
 
 
             mapBox.Text = CourseData.MapData.MinimapPath;
@@ -1093,6 +1067,11 @@ namespace Tarmac64_Retail
         }
 
         private void UpdateUI(object sender, EventArgs e)
+        {
+            UpdateCourse();
+        }
+
+        private void GoalBannerBox_CheckedChanged(object sender, EventArgs e)
         {
             UpdateCourse();
         }

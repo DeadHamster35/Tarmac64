@@ -2265,7 +2265,7 @@ namespace Tarmac64_Library
         {
             int screenWidth = 180;
             int screenHeight = 160;
-            int rayDepth = 30000;
+            int rayDepth = 1500000;
             List<int> tempList = new List<int>();
             Assimp.Vector3D raycastOrigin = new Assimp.Vector3D();
             Assimp.Vector3D raycastVector = new Assimp.Vector3D();
@@ -2285,7 +2285,7 @@ namespace Tarmac64_Library
                         
                         raycastOrigin = surfaceObjects[currentObject].modelGeometry[currentFace].CenterPosition;
                             
-                        raycastOrigin.Z += 25;
+                        raycastOrigin.Z += 10;
 
 
                         for (int currentSearch = 0; (currentSearch < searchList.Count); currentSearch++)
@@ -2294,10 +2294,7 @@ namespace Tarmac64_Library
                             {
                                 raycastVector = targetFace.CenterPosition;
                                 Assimp.Vector3D targetPoint = testIntersect(raycastOrigin, raycastVector, targetFace.VertData[0], targetFace.VertData[1], targetFace.VertData[2]);
-                                if (masterObjects[searchList[currentSearch]].objectName == "CourseObject_part63");
-                                {
-                                    int x = 0;
-                                }
+
                                 if (Math.Abs(targetPoint.X) > 0)
                                 {
                                     float targetDistance = Math.Abs(targetPoint.X);
@@ -2802,7 +2799,7 @@ namespace Tarmac64_Library
 
                                     if (CheckST(cObj, TextureObjects[cObj.materialID]))
                                     {
-                                        //MessageBox.Show("Fatal UV Error " + cObj.objectName);
+                                        MessageBox.Show("Fatal UV Error " + cObj.objectName);
                                     }
 
                                     if ((F3DEX095_Parameters.TextureModes[TextureObjects[cObj.materialID].SFlag] != 0) || (F3DEX095_Parameters.TextureModes[TextureObjects[cObj.materialID].TFlag] != 0))
@@ -3769,7 +3766,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | 0x05000000)));
             binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
                 F3DEX095_Parameters.G_IM_FMT_CI, Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
-                0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], 0, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], 0, 0) );
+                0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0) );
             //set MIP levels to 0.
             binaryWriter.Write(
                 F3D.gsSPTexture(
@@ -4183,6 +4180,12 @@ namespace Tarmac64_Library
                                 }
                             }
 
+
+                            if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
+                            {
+                                seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
+                            }
+
                         }
                         //
 
@@ -4276,18 +4279,19 @@ namespace Tarmac64_Library
                                             seg6w.Write(byteArray);
                                         }
                                     }
+
+                                    if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
+                                    {
+                                        seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
+                                    }
+
                                 }
                             }
                         }
                     }
 
-                    byteArray = BitConverter.GetBytes(0xB8000000);
-                    Array.Reverse(byteArray);
-                    seg6w.Write(byteArray);
+                    seg6w.Write(F3D.gsSPEndDisplayList());
 
-                    byteArray = BitConverter.GetBytes(0x00000000);
-                    Array.Reverse(byteArray);
-                    seg6w.Write(byteArray);
                     sectionOut = sectionList;
 
                 }

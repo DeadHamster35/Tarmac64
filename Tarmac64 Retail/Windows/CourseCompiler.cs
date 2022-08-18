@@ -851,271 +851,276 @@ namespace Tarmac64_Library
         {
             MessageBox.Show("Select .FBX File");
 
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = okSettings.ProjectDirectory;
-            dialog.Title = "FBX File";
-            dialog.IsFolderPicker = false;
-            //dialog.DefaultExtension = ".fbx";
-            
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            OpenFileDialog OpenFile = new OpenFileDialog();
+            OpenFile.InitialDirectory = okSettings.ProjectDirectory;
+            OpenFile.Title = "FBX File";
+            OpenFile.Filter = "FBX Model|*.FBX|All Files (*.*)|*.*";
+
+            if (OpenFile.ShowDialog() == DialogResult.OK)
             {
                 //Get the path of specified file
-                FBXfilePath = dialog.FileName;
-                levelFormat = TypeBox.SelectedIndex;
-
-                if (raycastBox.Checked)
+                if (File.Exists(OpenFile.FileName))
                 {
-                    raycastBoolean = 1;  //used to be int for resolution, using 0/1 as false/true until certain resolution not needed.
-                }
-                else
-                {
-                    raycastBoolean = 0;
-                }
-                int modelFormat = 0;  // 
+                    FBXfilePath = OpenFile.FileName;
+                    levelFormat = TypeBox.SelectedIndex;
 
-                Scene fbx = new Scene();
-                AssimpContext importer = new AssimpContext();
-
-                fbx = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
-
-                materialCount = fbx.MaterialCount;
-                int textureCount = 0;
-
-
-                modelFormat = TarmacGeometry.GetModelFormat(fbx);
-                sectionCount = TarmacGeometry.GetSectionCount(fbx); ;
-
-                //
-                // Textures
-                //
-                textureArray = TarmacGeometry.loadTextures(fbx, FBXfilePath);
-                materialCount = textureArray.Length;
-
-                //
-                // Course Objects
-                // Surface Map
-                //
-
-                if (levelFormat == 0)
-                {
-                    switch (modelFormat)
+                    if (raycastBox.Checked)
                     {
-                        case 0:
-                            {
-                                masterObjects = TarmacGeometry.createMaster(fbx, sectionCount, textureArray);
-                                surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
-                                TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
-                                sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
-                                XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
-                                break;
-                            }
-                        case 1:
-                            {
-                                masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray);
-                                surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
-                                TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
-                                sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
-                                XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
-                                break;
-                            }
-                        case 2:
-                            {
-                                masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray);
-                                surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
-                                sectionList = TarmacGeometry.loadSection(fbx, sectionCount, masterObjects);
-                                XLUSectionList = TarmacGeometry.loadSection(fbx, sectionCount, masterObjects);
-                                break;
-                            }
-                    }
-                }
-                else
-                {
-                    masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray);
-                    surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
-                    sectionList = new TM64_Geometry.OK64SectionList[0];
-                    XLUSectionList = new TM64_Geometry.OK64SectionList[0];
-                }
-                masterBox.Nodes.Clear();
-                List<int> listedObjects = new List<int>();
-
-
-
-                for (int currentGroup = 0; currentGroup < masterGroups.Length; currentGroup++)
-                {
-                    masterBox.Nodes.Add(masterGroups[currentGroup].groupName, masterGroups[currentGroup].groupName);
-                    for (int currentGrandchild = 0; currentGrandchild < masterGroups[currentGroup].subIndexes.Length; currentGrandchild++)
-                    {
-                        masterBox.Nodes[currentGroup].Nodes.Add(masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName, masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName);
-                        listedObjects.Add(masterGroups[currentGroup].subIndexes[currentGrandchild]);
-                    }
-                }
-                for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
-                {
-                    if (listedObjects.IndexOf(currentMaster) == -1)
-                    {
-                        masterBox.Nodes.Add(masterObjects[currentMaster].objectName, masterObjects[currentMaster].objectName);
-                    }
-                }
-
-                if (levelFormat == 0)
-                {
-                    surfaceobjectBox.Items.Clear();
-                    for (int currentIndex = 0; currentIndex < surfaceObjects.Length; currentIndex++)
-                    {
-                        surfaceobjectBox.Items.Add(surfaceObjects[currentIndex].objectName);
-                    }
-                    sectionBox.Items.Clear();
-                    for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-                    {
-                        surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
-                        sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
-
-                    }
-                    surfmaterialBox.Items.Clear();
-                    for (int surfacematerialIndex = 0; surfacematerialIndex < surfaceType.Length; surfacematerialIndex++)
-                    {
-                        surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString("X") + "- " + surfaceType[surfacematerialIndex]);
-                    }
-                    viewBox.Items.Clear();
-                    foreach (var viewstring in viewString)
-                    {
-                        viewBox.Items.Add(viewstring);
-                    }
-                }
-                TextureControl.Loaded = true;
-                TextureControl.textureArray = textureArray;
-                textureCount = TextureControl.AddNewTextures(materialCount);
-                
-
-                if (levelFormat == 0)
-                {
-                    viewBox.SelectedIndex = 0;
-                    sectionBox.SelectedIndex = 0;
-                    TextureControl.textureBox.SelectedIndex = 0;
-                    lastMaterial = 0;
-
-                }
-                loaded = true;
-
-                ExportBtn.Enabled = true;
-                ImportBtn.Enabled = true;
-                ImportBtn.Visible = true;
-                ExportBtn.Visible = true;
-                TypeBox.Enabled = false;
-                TypeBox.Visible = false;
-                GLControl.UpdateDraw = true;
-                actionBtn.Text = "Compile";
-
-
-                MessageBox.Show("Select OK64.POP File");
-                dialog.Title = "POP File";
-                dialog.InitialDirectory = okSettings.ProjectDirectory;
-                dialog.IsFolderPicker = false;
-                dialog.DefaultExtension = null;
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    popFile = dialog.FileName;
-                    
-                    if (levelFormat == 0)
-                    {
-                        pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);
-                        if (pathGroups[1].pathList.Length != 0)
-                        {
-                            foreach (var ItemBox in pathGroups[1].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.ObjectIndex = 0;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
-
-                                OKObjectList.Add(NewObject);
-                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
-                            }
-                        }
-                        if (pathGroups[2].pathList.Length != 0)
-                        {
-                            foreach (var Tree in pathGroups[2].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.ObjectIndex = 1;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(Tree.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(Tree.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(Tree.zval);
-
-                                OKObjectList.Add(NewObject);
-                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
-                            }
-                        }
-                        if (pathGroups[3].pathList.Length != 0)
-                        {
-                            foreach (var Plant in pathGroups[3].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.ObjectIndex = 2;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(Plant.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(Plant.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(Plant.zval);
-
-                                OKObjectList.Add(NewObject);
-                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
-                            }
-                        }
-                        if (pathGroups[4].pathList.Length != 0)
-                        {
-                            foreach (var Coin in pathGroups[4].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.ObjectIndex = 3;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(Coin.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(Coin.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(Coin.zval);
-
-                                OKObjectList.Add(NewObject);
-                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
-                            }
-                        }
-
-
-
+                        raycastBoolean = 1;  //used to be int for resolution, using 0/1 as false/true until certain resolution not needed.
                     }
                     else
                     {
-                        pathGroups = tm64Path.loadBattlePOP(popFile);
+                        raycastBoolean = 0;
+                    }
+                    int modelFormat = 0;  // 
 
-                        if (pathGroups[0].pathList.Length != 0)
+                    Scene fbx = new Scene();
+                    AssimpContext importer = new AssimpContext();
+
+                    fbx = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
+
+                    materialCount = fbx.MaterialCount;
+                    int textureCount = 0;
+
+
+                    modelFormat = TarmacGeometry.GetModelFormat(fbx);
+                    sectionCount = TarmacGeometry.GetSectionCount(fbx); ;
+
+                    //
+                    // Textures
+                    //
+                    textureArray = TarmacGeometry.loadTextures(fbx, FBXfilePath);
+                    materialCount = textureArray.Length;
+
+                    //
+                    // Course Objects
+                    // Surface Map
+                    //
+
+                    if (levelFormat == 0)
+                    {
+                        switch (modelFormat)
                         {
-                            foreach (var ItemBox in pathGroups[0].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.ObjectIndex = 0;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
-
-                                OKObjectList.Add(NewObject);
-                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
-                            }
+                            case 0:
+                                {
+                                    masterObjects = TarmacGeometry.createMaster(fbx, sectionCount, textureArray);
+                                    surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
+                                    TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
+                                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
+                                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray);
+                                    surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
+                                    TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
+                                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
+                                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray);
+                                    surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
+                                    sectionList = TarmacGeometry.loadSection(fbx, sectionCount, masterObjects);
+                                    XLUSectionList = TarmacGeometry.loadSection(fbx, sectionCount, masterObjects);
+                                    break;
+                                }
                         }
                     }
+                    else
+                    {
+                        masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray);
+                        surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
+                        sectionList = new TM64_Geometry.OK64SectionList[0];
+                        XLUSectionList = new TM64_Geometry.OK64SectionList[0];
+                    }
+                    masterBox.Nodes.Clear();
+                    List<int> listedObjects = new List<int>();
+
+
+
+                    for (int currentGroup = 0; currentGroup < masterGroups.Length; currentGroup++)
+                    {
+                        masterBox.Nodes.Add(masterGroups[currentGroup].groupName, masterGroups[currentGroup].groupName);
+                        for (int currentGrandchild = 0; currentGrandchild < masterGroups[currentGroup].subIndexes.Length; currentGrandchild++)
+                        {
+                            masterBox.Nodes[currentGroup].Nodes.Add(masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName, masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName);
+                            listedObjects.Add(masterGroups[currentGroup].subIndexes[currentGrandchild]);
+                        }
+                    }
+                    for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
+                    {
+                        if (listedObjects.IndexOf(currentMaster) == -1)
+                        {
+                            masterBox.Nodes.Add(masterObjects[currentMaster].objectName, masterObjects[currentMaster].objectName);
+                        }
+                    }
+
+                    if (levelFormat == 0)
+                    {
+                        surfaceobjectBox.Items.Clear();
+                        for (int currentIndex = 0; currentIndex < surfaceObjects.Length; currentIndex++)
+                        {
+                            surfaceobjectBox.Items.Add(surfaceObjects[currentIndex].objectName);
+                        }
+                        sectionBox.Items.Clear();
+                        for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                        {
+                            surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
+                            sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
+
+                        }
+                        surfmaterialBox.Items.Clear();
+                        for (int surfacematerialIndex = 0; surfacematerialIndex < surfaceType.Length; surfacematerialIndex++)
+                        {
+                            surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString("X") + "- " + surfaceType[surfacematerialIndex]);
+                        }
+                        viewBox.Items.Clear();
+                        foreach (var viewstring in viewString)
+                        {
+                            viewBox.Items.Add(viewstring);
+                        }
+                    }
+                    TextureControl.Loaded = true;
+                    TextureControl.textureArray = textureArray;
+                    textureCount = TextureControl.AddNewTextures(materialCount);
+
+
+                    if (levelFormat == 0)
+                    {
+                        viewBox.SelectedIndex = 0;
+                        sectionBox.SelectedIndex = 0;
+                        TextureControl.textureBox.SelectedIndex = 0;
+                        lastMaterial = 0;
+
+                    }
+                    loaded = true;
+
+                    ExportBtn.Enabled = true;
+                    ImportBtn.Enabled = true;
+                    ImportBtn.Visible = true;
+                    ExportBtn.Visible = true;
+                    TypeBox.Enabled = false;
+                    TypeBox.Visible = false;
+                    GLControl.UpdateDraw = true;
+                    actionBtn.Text = "Compile";
+
+
+                    MessageBox.Show("Select OK64.POP File");
+                    OpenFile.Title = "POP File";
+                    OpenFile.InitialDirectory = okSettings.ProjectDirectory;
+                    OpenFile.Filter = "Tarmac Path and Object Positions|*.OK64.POP|All Files (*.*)|*.*";
+                    if (OpenFile.ShowDialog() == DialogResult.OK)
+                    {
+                        if (File.Exists(OpenFile.FileName))
+                        {
+                            popFile = OpenFile.FileName;
+
+                            if (levelFormat == 0)
+                            {
+                                pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);
+                                if (pathGroups[1].pathList.Length != 0)
+                                {
+                                    foreach (var ItemBox in pathGroups[1].pathList[0].pathmarker)
+                                    {
+                                        TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+
+                                        NewObject.ObjectIndex = 0;
+                                        NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
+                                        NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
+                                        NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
+
+                                        OKObjectList.Add(NewObject);
+                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+
+                                    }
+                                }
+                                if (pathGroups[2].pathList.Length != 0)
+                                {
+                                    foreach (var Tree in pathGroups[2].pathList[0].pathmarker)
+                                    {
+                                        TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+
+                                        NewObject.ObjectIndex = 1;
+                                        NewObject.OriginPosition[0] = Convert.ToInt16(Tree.xval);
+                                        NewObject.OriginPosition[1] = Convert.ToInt16(Tree.yval);
+                                        NewObject.OriginPosition[2] = Convert.ToInt16(Tree.zval);
+
+                                        OKObjectList.Add(NewObject);
+                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+
+                                    }
+                                }
+                                if (pathGroups[3].pathList.Length != 0)
+                                {
+                                    foreach (var Plant in pathGroups[3].pathList[0].pathmarker)
+                                    {
+                                        TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+
+                                        NewObject.ObjectIndex = 2;
+                                        NewObject.OriginPosition[0] = Convert.ToInt16(Plant.xval);
+                                        NewObject.OriginPosition[1] = Convert.ToInt16(Plant.yval);
+                                        NewObject.OriginPosition[2] = Convert.ToInt16(Plant.zval);
+
+                                        OKObjectList.Add(NewObject);
+                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+
+                                    }
+                                }
+                                if (pathGroups[4].pathList.Length != 0)
+                                {
+                                    foreach (var Coin in pathGroups[4].pathList[0].pathmarker)
+                                    {
+                                        TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+
+                                        NewObject.ObjectIndex = 3;
+                                        NewObject.OriginPosition[0] = Convert.ToInt16(Coin.xval);
+                                        NewObject.OriginPosition[1] = Convert.ToInt16(Coin.yval);
+                                        NewObject.OriginPosition[2] = Convert.ToInt16(Coin.zval);
+
+                                        OKObjectList.Add(NewObject);
+                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+
+                                    }
+                                }
+
+
+
+                            }
+                            else
+                            {
+                                pathGroups = tm64Path.loadBattlePOP(popFile);
+
+                                if (pathGroups[0].pathList.Length != 0)
+                                {
+                                    foreach (var ItemBox in pathGroups[0].pathList[0].pathmarker)
+                                    {
+                                        TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+
+                                        NewObject.ObjectIndex = 0;
+                                        NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
+                                        NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
+                                        NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
+
+                                        OKObjectList.Add(NewObject);
+                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                    UpdateGLView();
+                    GLControl.UpdateDraw = true;
+                    TarmacGL.MoveCamera(0, GLControl.LocalCamera, moveDistance);
+
+
+
+                    MessageBox.Show("Finished");
                 }
-                UpdateGLView();
-                GLControl.UpdateDraw = true;
-                TarmacGL.MoveCamera(0, GLControl.LocalCamera, moveDistance);
-
-
-
-                MessageBox.Show("Finished");
             }
             
         }

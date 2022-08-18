@@ -178,51 +178,53 @@ namespace Tarmac64_Library
 
             if (FolderOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                FileName = FolderOpen.FileName;
-                
-
-                string outputDirectory = FolderOpen.FileName;
-                byte[] rom = File.ReadAllBytes(FileName);
-                for (int ThisCourse = 0; ThisCourse < CourseData.Count; ThisCourse++)
+                if (File.Exists(FolderOpen.FileName))
                 {
-                    rom = TarmacCourse.CompileOverKart(CourseData[ThisCourse], rom, (SetCollection[ThisCourse].Cup * 4) + SetCollection[ThisCourse].Course, SetCollection[ThisCourse].Set);
-                    /*
-                    File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString()+ " Segment6.bin", CourseData[ThisCourse].Segment6);
-                    File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment9.bin", CourseData[ThisCourse].Segment9);
-                    File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment7.bin", CourseData[ThisCourse].Segment7);
-                    */
-                    
+                    FileName = FolderOpen.FileName;
+
+
+                    string outputDirectory = FolderOpen.FileName;
+                    byte[] rom = File.ReadAllBytes(FileName);
+                    for (int ThisCourse = 0; ThisCourse < CourseData.Count; ThisCourse++)
+                    {
+                        rom = TarmacCourse.CompileOverKart(CourseData[ThisCourse], rom, (SetCollection[ThisCourse].Cup * 4) + SetCollection[ThisCourse].Course, SetCollection[ThisCourse].Set);
+                        /*
+                        File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString()+ " Segment6.bin", CourseData[ThisCourse].Segment6);
+                        File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment9.bin", CourseData[ThisCourse].Segment9);
+                        File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment7.bin", CourseData[ThisCourse].Segment7);
+                        */
+
+                    }
+                    MemoryStream memoryStream = new MemoryStream();
+                    BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+                    binaryWriter.Write(rom);
+                    binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
+
+
+                    int addressAlign = 1048576 - (Convert.ToInt32(binaryWriter.BaseStream.Length) % 1048576);
+                    if (addressAlign == 1048576)
+                        addressAlign = 0;
+
+
+                    for (int align = 0; align < addressAlign; align++)
+                    {
+                        binaryWriter.Write(Convert.ToByte(0x00));
+                    }
+
+                    binaryWriter.BaseStream.Position = 0xBFFFFC;
+                    byte[] flip = BitConverter.GetBytes(binaryWriter.BaseStream.Length);
+                    Array.Reverse(flip);
+                    binaryWriter.Write(flip);
+
+                    SaveFileDialog FileSave = new SaveFileDialog();
+                    FileSave.Filter = "Z64 ROM|*.z64|All Files (*.*)|*.*";
+                    FileSave.DefaultExt = "z64";
+                    if (FileSave.ShowDialog() == DialogResult.OK)
+                    {
+                        File.WriteAllBytes(FileSave.FileName, memoryStream.ToArray());
+
+                    }
                 }
-                MemoryStream memoryStream = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-                binaryWriter.Write(rom);
-                binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
-                
-
-                int addressAlign = 1048576 - (Convert.ToInt32(binaryWriter.BaseStream.Length) % 1048576);
-                if (addressAlign == 1048576)
-                    addressAlign = 0;
-
-
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-
-                binaryWriter.BaseStream.Position = 0xBFFFFC;
-                byte[] flip = BitConverter.GetBytes(binaryWriter.BaseStream.Length);
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-
-                SaveFileDialog FileSave = new SaveFileDialog();
-                FileSave.Filter = "Z64 ROM|*.z64|All Files (*.*)|*.*";
-                FileSave.DefaultExt = "z64";
-                if (FileSave.ShowDialog() == DialogResult.OK)
-                {
-                    File.WriteAllBytes(FileSave.FileName, memoryStream.ToArray());
-                        
-                }
-
                 
             }
         }
