@@ -31,7 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CourseCompiler));
             this.actionBtn = new System.Windows.Forms.Button();
             this.SurfaceMap = new System.Windows.Forms.TabPage();
-            this.surfaceobjectBox = new System.Windows.Forms.ListBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.BattleBoxC = new System.Windows.Forms.CheckBox();
             this.VSBoxC = new System.Windows.Forms.CheckBox();
@@ -51,8 +50,21 @@
             this.label23 = new System.Windows.Forms.Label();
             this.surfsectionBox = new System.Windows.Forms.ComboBox();
             this.label17 = new System.Windows.Forms.Label();
+            this.surfaceobjectBox = new System.Windows.Forms.ListBox();
             this.SectionViews = new System.Windows.Forms.TabPage();
+            this.CopyViewIndexBox = new System.Windows.Forms.ComboBox();
+            this.CopyBtn = new System.Windows.Forms.Button();
+            this.CopySectionIndexBox = new System.Windows.Forms.ComboBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.objectCountBox = new System.Windows.Forms.TextBox();
+            this.faceBox = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.SVL3Load = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.WaveBox = new System.Windows.Forms.CheckBox();
             this.BattleBoxR = new System.Windows.Forms.CheckBox();
             this.VSBoxR = new System.Windows.Forms.CheckBox();
             this.ExtraBoxR = new System.Windows.Forms.CheckBox();
@@ -61,34 +73,28 @@
             this.FiftyBoxR = new System.Windows.Forms.CheckBox();
             this.TTBoxR = new System.Windows.Forms.CheckBox();
             this.GPBoxR = new System.Windows.Forms.CheckBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.masterBox = new System.Windows.Forms.TreeView();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.objectCountBox = new System.Windows.Forms.TextBox();
-            this.faceBox = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.sectionBox = new System.Windows.Forms.ComboBox();
             this.viewBox = new System.Windows.Forms.ComboBox();
             this.TextureData = new System.Windows.Forms.TabPage();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.Settings = new System.Windows.Forms.TabPage();
+            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Object = new System.Windows.Forms.TabPage();
+            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.raycastBox = new System.Windows.Forms.CheckBox();
             this.ExportBtn = new System.Windows.Forms.Button();
             this.ImportBtn = new System.Windows.Forms.Button();
             this.TypeBox = new System.Windows.Forms.ComboBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.AlphaCHBox = new System.Windows.Forms.CheckBox();
             this.GLControl = new Tarmac64_Retail.GLViewer();
-            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
-            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.TextureData.SuspendLayout();
             this.Settings.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -100,9 +106,8 @@
             // 
             this.actionBtn.AutoSize = true;
             this.actionBtn.Location = new System.Drawing.Point(14, 11);
-            this.actionBtn.Margin = new System.Windows.Forms.Padding(5);
             this.actionBtn.Name = "actionBtn";
-            this.actionBtn.Size = new System.Drawing.Size(65, 23);
+            this.actionBtn.Size = new System.Drawing.Size(50, 23);
             this.actionBtn.TabIndex = 0;
             this.actionBtn.Text = "Load";
             this.actionBtn.UseVisualStyleBackColor = true;
@@ -110,8 +115,8 @@
             // 
             // SurfaceMap
             // 
-            this.SurfaceMap.Controls.Add(this.surfaceobjectBox);
             this.SurfaceMap.Controls.Add(this.groupBox6);
+            this.SurfaceMap.Controls.Add(this.surfaceobjectBox);
             this.SurfaceMap.Cursor = System.Windows.Forms.Cursors.Default;
             this.SurfaceMap.Location = new System.Drawing.Point(4, 22);
             this.SurfaceMap.Name = "SurfaceMap";
@@ -119,21 +124,11 @@
             this.SurfaceMap.TabIndex = 3;
             this.SurfaceMap.Text = "Surfaces";
             this.SurfaceMap.UseVisualStyleBackColor = true;
-            // 
-            // surfaceobjectBox
-            // 
-            this.surfaceobjectBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.surfaceobjectBox.FormattingEnabled = true;
-            this.surfaceobjectBox.Location = new System.Drawing.Point(3, 10);
-            this.surfaceobjectBox.Name = "surfaceobjectBox";
-            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 420);
-            this.surfaceobjectBox.TabIndex = 0;
-            this.surfaceobjectBox.SelectedIndexChanged += new System.EventHandler(this.SurfaceobjectBox_SelectedIndexChanged);
+            this.SurfaceMap.Click += new System.EventHandler(this.SurfaceMap_Click);
             // 
             // groupBox6
             // 
-            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.groupBox6.Controls.Add(this.BattleBoxC);
             this.groupBox6.Controls.Add(this.VSBoxC);
             this.groupBox6.Controls.Add(this.ExtraBoxC);
@@ -152,10 +147,10 @@
             this.groupBox6.Controls.Add(this.label23);
             this.groupBox6.Controls.Add(this.surfsectionBox);
             this.groupBox6.Controls.Add(this.label17);
-            this.groupBox6.Location = new System.Drawing.Point(3, 432);
+            this.groupBox6.Location = new System.Drawing.Point(3, 422);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(281, 167);
-            this.groupBox6.TabIndex = 17;
+            this.groupBox6.Size = new System.Drawing.Size(281, 528);
+            this.groupBox6.TabIndex = 1;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Object Info";
             this.groupBox6.Enter += new System.EventHandler(this.groupBox6_Enter);
@@ -365,13 +360,28 @@
             this.label17.Text = "Section";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // surfaceobjectBox
+            // 
+            this.surfaceobjectBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.surfaceobjectBox.FormattingEnabled = true;
+            this.surfaceobjectBox.Location = new System.Drawing.Point(3, 9);
+            this.surfaceobjectBox.Name = "surfaceobjectBox";
+            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 524);
+            this.surfaceobjectBox.TabIndex = 0;
+            this.surfaceobjectBox.SelectedIndexChanged += new System.EventHandler(this.SurfaceobjectBox_SelectedIndexChanged);
+            // 
             // SectionViews
             // 
-            this.SectionViews.Controls.Add(this.groupBox2);
-            this.SectionViews.Controls.Add(this.button2);
-            this.SectionViews.Controls.Add(this.button1);
-            this.SectionViews.Controls.Add(this.masterBox);
+            this.SectionViews.Controls.Add(this.CopyViewIndexBox);
+            this.SectionViews.Controls.Add(this.CopyBtn);
+            this.SectionViews.Controls.Add(this.CopySectionIndexBox);
             this.SectionViews.Controls.Add(this.groupBox1);
+            this.SectionViews.Controls.Add(this.SVL3Load);
+            this.SectionViews.Controls.Add(this.button1);
+            this.SectionViews.Controls.Add(this.button2);
+            this.SectionViews.Controls.Add(this.groupBox2);
+            this.SectionViews.Controls.Add(this.masterBox);
             this.SectionViews.Controls.Add(this.sectionBox);
             this.SectionViews.Controls.Add(this.viewBox);
             this.SectionViews.Location = new System.Drawing.Point(4, 22);
@@ -382,9 +392,128 @@
             this.SectionViews.Text = "Sections";
             this.SectionViews.UseVisualStyleBackColor = true;
             // 
+            // CopyViewIndexBox
+            // 
+            this.CopyViewIndexBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CopyViewIndexBox.FormattingEnabled = true;
+            this.CopyViewIndexBox.Location = new System.Drawing.Point(203, 37);
+            this.CopyViewIndexBox.Name = "CopyViewIndexBox";
+            this.CopyViewIndexBox.Size = new System.Drawing.Size(77, 21);
+            this.CopyViewIndexBox.TabIndex = 103;
+            // 
+            // CopyBtn
+            // 
+            this.CopyBtn.Location = new System.Drawing.Point(3, 35);
+            this.CopyBtn.Margin = new System.Windows.Forms.Padding(5);
+            this.CopyBtn.Name = "CopyBtn";
+            this.CopyBtn.Size = new System.Drawing.Size(70, 23);
+            this.CopyBtn.TabIndex = 102;
+            this.CopyBtn.Text = "Copy From";
+            this.CopyBtn.UseVisualStyleBackColor = true;
+            this.CopyBtn.Click += new System.EventHandler(this.CopyBtn_Click);
+            // 
+            // CopySectionIndexBox
+            // 
+            this.CopySectionIndexBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CopySectionIndexBox.FormattingEnabled = true;
+            this.CopySectionIndexBox.Location = new System.Drawing.Point(81, 37);
+            this.CopySectionIndexBox.Name = "CopySectionIndexBox";
+            this.CopySectionIndexBox.Size = new System.Drawing.Size(116, 21);
+            this.CopySectionIndexBox.TabIndex = 101;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.objectCountBox);
+            this.groupBox1.Controls.Add(this.faceBox);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Location = new System.Drawing.Point(3, 99);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(230, 51);
+            this.groupBox1.TabIndex = 12;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Section Stats";
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(173, 22);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(42, 13);
+            this.label9.TabIndex = 11;
+            this.label9.Text = "Objects";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // objectCountBox
+            // 
+            this.objectCountBox.Enabled = false;
+            this.objectCountBox.Location = new System.Drawing.Point(110, 19);
+            this.objectCountBox.Name = "objectCountBox";
+            this.objectCountBox.Size = new System.Drawing.Size(57, 20);
+            this.objectCountBox.TabIndex = 10;
+            this.objectCountBox.TabStop = false;
+            this.objectCountBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // faceBox
+            // 
+            this.faceBox.Enabled = false;
+            this.faceBox.Location = new System.Drawing.Point(6, 19);
+            this.faceBox.Name = "faceBox";
+            this.faceBox.Size = new System.Drawing.Size(57, 20);
+            this.faceBox.TabIndex = 7;
+            this.faceBox.TabStop = false;
+            this.faceBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(69, 22);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(35, 13);
+            this.label8.TabIndex = 9;
+            this.label8.Text = "Faces";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // SVL3Load
+            // 
+            this.SVL3Load.Location = new System.Drawing.Point(83, 68);
+            this.SVL3Load.Margin = new System.Windows.Forms.Padding(5);
+            this.SVL3Load.Name = "SVL3Load";
+            this.SVL3Load.Size = new System.Drawing.Size(70, 23);
+            this.SVL3Load.TabIndex = 100;
+            this.SVL3Load.Text = "Load SVL3";
+            this.SVL3Load.UseVisualStyleBackColor = true;
+            this.SVL3Load.Click += new System.EventHandler(this.SVL3Load_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(163, 68);
+            this.button1.Margin = new System.Windows.Forms.Padding(5);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(70, 23);
+            this.button1.TabIndex = 98;
+            this.button1.Text = "Load SVL2";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.SVL2BTN_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(3, 68);
+            this.button2.Margin = new System.Windows.Forms.Padding(5);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(70, 23);
+            this.button2.TabIndex = 99;
+            this.button2.Text = "Save SVL3";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox2.Controls.Add(this.WaveBox);
             this.groupBox2.Controls.Add(this.BattleBoxR);
             this.groupBox2.Controls.Add(this.VSBoxR);
             this.groupBox2.Controls.Add(this.ExtraBoxR);
@@ -393,12 +522,25 @@
             this.groupBox2.Controls.Add(this.FiftyBoxR);
             this.groupBox2.Controls.Add(this.TTBoxR);
             this.groupBox2.Controls.Add(this.GPBoxR);
-            this.groupBox2.Location = new System.Drawing.Point(6, 470);
+            this.groupBox2.Location = new System.Drawing.Point(3, 529);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(279, 69);
+            this.groupBox2.Size = new System.Drawing.Size(279, 67);
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Object Settings";
+            // 
+            // WaveBox
+            // 
+            this.WaveBox.AutoSize = true;
+            this.WaveBox.Checked = true;
+            this.WaveBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.WaveBox.Location = new System.Drawing.Point(206, 43);
+            this.WaveBox.Name = "WaveBox";
+            this.WaveBox.Size = new System.Drawing.Size(67, 17);
+            this.WaveBox.TabIndex = 8;
+            this.WaveBox.Text = "Wave64";
+            this.WaveBox.UseVisualStyleBackColor = true;
+            this.WaveBox.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
             // BattleBoxR
             // 
@@ -502,99 +644,18 @@
             this.GPBoxR.UseVisualStyleBackColor = true;
             this.GPBoxR.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
-            // button2
-            // 
-            this.button2.AutoSize = true;
-            this.button2.Location = new System.Drawing.Point(146, 439);
-            this.button2.Margin = new System.Windows.Forms.Padding(5);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(65, 23);
-            this.button2.TabIndex = 99;
-            this.button2.Text = "Save SVL";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button1
-            // 
-            this.button1.AutoSize = true;
-            this.button1.Location = new System.Drawing.Point(221, 439);
-            this.button1.Margin = new System.Windows.Forms.Padding(5);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(64, 23);
-            this.button1.TabIndex = 98;
-            this.button1.Text = "Load SVL";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.ImportBtn_Click);
-            // 
             // masterBox
             // 
             this.masterBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.masterBox.CheckBoxes = true;
             this.masterBox.HideSelection = false;
-            this.masterBox.Location = new System.Drawing.Point(3, 33);
+            this.masterBox.Location = new System.Drawing.Point(3, 156);
             this.masterBox.Name = "masterBox";
-            this.masterBox.Size = new System.Drawing.Size(279, 398);
+            this.masterBox.Size = new System.Drawing.Size(279, 528);
             this.masterBox.TabIndex = 2;
             this.masterBox.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterCheck);
             this.masterBox.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterSelect);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.objectCountBox);
-            this.groupBox1.Controls.Add(this.faceBox);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Location = new System.Drawing.Point(6, 545);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(279, 51);
-            this.groupBox1.TabIndex = 12;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Section Stats";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(205, 22);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(68, 13);
-            this.label9.TabIndex = 11;
-            this.label9.Text = "Object Count";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // objectCountBox
-            // 
-            this.objectCountBox.Enabled = false;
-            this.objectCountBox.Location = new System.Drawing.Point(142, 19);
-            this.objectCountBox.Name = "objectCountBox";
-            this.objectCountBox.Size = new System.Drawing.Size(57, 20);
-            this.objectCountBox.TabIndex = 10;
-            this.objectCountBox.TabStop = false;
-            this.objectCountBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // faceBox
-            // 
-            this.faceBox.Enabled = false;
-            this.faceBox.Location = new System.Drawing.Point(6, 19);
-            this.faceBox.Name = "faceBox";
-            this.faceBox.Size = new System.Drawing.Size(57, 20);
-            this.faceBox.TabIndex = 7;
-            this.faceBox.TabStop = false;
-            this.faceBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(69, 22);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(61, 13);
-            this.label8.TabIndex = 9;
-            this.label8.Text = "Face Count";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // sectionBox
             // 
@@ -629,6 +690,14 @@
             this.TextureData.UseVisualStyleBackColor = true;
             this.TextureData.Click += new System.EventHandler(this.TextureData_Click);
             // 
+            // TextureControl
+            // 
+            this.TextureControl.Location = new System.Drawing.Point(0, 0);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(289, 780);
+            this.TextureControl.TabIndex = 0;
+            this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
+            // 
             // Settings
             // 
             this.Settings.AutoScroll = true;
@@ -640,6 +709,14 @@
             this.Settings.Text = "Settings";
             this.Settings.UseVisualStyleBackColor = true;
             this.Settings.Click += new System.EventHandler(this.CourseInfo_Click);
+            // 
+            // SettingsControl
+            // 
+            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
+            this.SettingsControl.Name = "SettingsControl";
+            this.SettingsControl.Size = new System.Drawing.Size(289, 1225);
+            this.SettingsControl.TabIndex = 0;
+            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 
             // tabControl1
             // 
@@ -668,11 +745,20 @@
             this.Object.Text = "Objects";
             this.Object.UseVisualStyleBackColor = true;
             // 
+            // ObjectControl
+            // 
+            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ObjectControl.Location = new System.Drawing.Point(3, 3);
+            this.ObjectControl.Name = "ObjectControl";
+            this.ObjectControl.Size = new System.Drawing.Size(289, 579);
+            this.ObjectControl.TabIndex = 1;
+            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
+            // 
             // raycastBox
             // 
             this.raycastBox.AutoSize = true;
-            this.raycastBox.Location = new System.Drawing.Point(89, 15);
-            this.raycastBox.Margin = new System.Windows.Forms.Padding(5);
+            this.raycastBox.Location = new System.Drawing.Point(154, 15);
             this.raycastBox.Name = "raycastBox";
             this.raycastBox.Size = new System.Drawing.Size(65, 17);
             this.raycastBox.TabIndex = 1;
@@ -684,28 +770,24 @@
             // 
             this.ExportBtn.AutoSize = true;
             this.ExportBtn.Enabled = false;
-            this.ExportBtn.Location = new System.Drawing.Point(221, 11);
-            this.ExportBtn.Margin = new System.Windows.Forms.Padding(5);
+            this.ExportBtn.Location = new System.Drawing.Point(225, 11);
             this.ExportBtn.Name = "ExportBtn";
             this.ExportBtn.Size = new System.Drawing.Size(50, 23);
             this.ExportBtn.TabIndex = 4;
             this.ExportBtn.Text = "Export";
             this.ExportBtn.UseVisualStyleBackColor = true;
-            this.ExportBtn.Visible = false;
-            this.ExportBtn.Click += new System.EventHandler(this.button1_Click);
+            this.ExportBtn.Click += new System.EventHandler(this.ExportBtn_Click);
             // 
             // ImportBtn
             // 
             this.ImportBtn.AutoSize = true;
             this.ImportBtn.Enabled = false;
             this.ImportBtn.Location = new System.Drawing.Point(281, 11);
-            this.ImportBtn.Margin = new System.Windows.Forms.Padding(5);
             this.ImportBtn.Name = "ImportBtn";
             this.ImportBtn.Size = new System.Drawing.Size(50, 23);
             this.ImportBtn.TabIndex = 5;
             this.ImportBtn.Text = "Import";
             this.ImportBtn.UseVisualStyleBackColor = true;
-            this.ImportBtn.Visible = false;
             this.ImportBtn.Click += new System.EventHandler(this.Import_Click);
             // 
             // TypeBox
@@ -714,11 +796,11 @@
             this.TypeBox.Items.AddRange(new object[] {
             "Race",
             "Battle"});
-            this.TypeBox.Location = new System.Drawing.Point(162, 13);
+            this.TypeBox.Location = new System.Drawing.Point(281, 37);
             this.TypeBox.Name = "TypeBox";
-            this.TypeBox.Size = new System.Drawing.Size(109, 21);
+            this.TypeBox.Size = new System.Drawing.Size(50, 21);
             this.TypeBox.TabIndex = 98;
-            this.TypeBox.Visible = false;
+            this.TypeBox.SelectedIndexChanged += new System.EventHandler(this.TypeBox_SelectedIndexChanged);
             // 
             // pictureBox2
             // 
@@ -730,6 +812,16 @@
             this.pictureBox2.TabIndex = 97;
             this.pictureBox2.TabStop = false;
             // 
+            // AlphaCHBox
+            // 
+            this.AlphaCHBox.AutoSize = true;
+            this.AlphaCHBox.Location = new System.Drawing.Point(70, 15);
+            this.AlphaCHBox.Name = "AlphaCHBox";
+            this.AlphaCHBox.Size = new System.Drawing.Size(77, 17);
+            this.AlphaCHBox.TabIndex = 99;
+            this.AlphaCHBox.Text = "Alpha CH2";
+            this.AlphaCHBox.UseVisualStyleBackColor = true;
+            // 
             // GLControl
             // 
             this.GLControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -739,38 +831,14 @@
             this.GLControl.Name = "GLControl";
             this.GLControl.Size = new System.Drawing.Size(915, 659);
             this.GLControl.TabIndex = 3;
-            // 
-            // SettingsControl
-            // 
-            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
-            this.SettingsControl.Name = "SettingsControl";
-            this.SettingsControl.Size = new System.Drawing.Size(289, 1150);
-            this.SettingsControl.TabIndex = 0;
-            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
-            // 
-            // TextureControl
-            // 
-            this.TextureControl.Location = new System.Drawing.Point(0, 0);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 780);
-            this.TextureControl.TabIndex = 0;
-            // 
-            // ObjectControl
-            // 
-            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.ObjectControl.Location = new System.Drawing.Point(-2, 2);
-            this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 597);
-            this.ObjectControl.TabIndex = 1;
-            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
+            this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
             // 
             // CourseCompiler
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.ClientSize = new System.Drawing.Size(1264, 682);
             this.Controls.Add(this.TypeBox);
+            this.Controls.Add(this.AlphaCHBox);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.ImportBtn);
             this.Controls.Add(this.ExportBtn);
@@ -788,11 +856,10 @@
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.SectionViews.ResumeLayout(false);
-            this.SectionViews.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.TextureData.ResumeLayout(false);
             this.Settings.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
@@ -859,5 +926,11 @@
         private System.Windows.Forms.CheckBox VSBoxR;
         private System.Windows.Forms.CheckBox BattleBoxC;
         private System.Windows.Forms.CheckBox VSBoxC;
+        private System.Windows.Forms.CheckBox WaveBox;
+        private System.Windows.Forms.CheckBox AlphaCHBox;
+        private System.Windows.Forms.Button SVL3Load;
+        private System.Windows.Forms.Button CopyBtn;
+        private System.Windows.Forms.ComboBox CopySectionIndexBox;
+        private System.Windows.Forms.ComboBox CopyViewIndexBox;
     }
 }

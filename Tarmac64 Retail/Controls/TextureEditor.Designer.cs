@@ -87,6 +87,11 @@
             this.label3 = new System.Windows.Forms.Label();
             this.widthBox = new System.Windows.Forms.TextBox();
             this.bitm = new System.Windows.Forms.PictureBox();
+            this.OverWriteIndexBox = new System.Windows.Forms.ComboBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.OverWriteBox = new System.Windows.Forms.ComboBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox5.SuspendLayout();
             this.AdvancedPanel.SuspendLayout();
             this.StandardPanel.SuspendLayout();
@@ -97,6 +102,11 @@
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox5.Controls.Add(this.button2);
+            this.groupBox5.Controls.Add(this.button1);
+            this.groupBox5.Controls.Add(this.OverWriteBox);
+            this.groupBox5.Controls.Add(this.OverWriteIndexBox);
+            this.groupBox5.Controls.Add(this.label17);
             this.groupBox5.Controls.Add(this.AdvancedPanel);
             this.groupBox5.Controls.Add(this.label16);
             this.groupBox5.Controls.Add(this.GeoModeBox);
@@ -128,7 +138,7 @@
             this.groupBox5.Controls.Add(this.widthBox);
             this.groupBox5.Location = new System.Drawing.Point(3, 253);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(282, 738);
+            this.groupBox5.Size = new System.Drawing.Size(282, 769);
             this.groupBox5.TabIndex = 0;
             this.groupBox5.TabStop = false;
             this.groupBox5.Enter += new System.EventHandler(this.groupBox5_Enter);
@@ -159,7 +169,7 @@
             this.AdvancedPanel.Controls.Add(this.CombA2);
             this.AdvancedPanel.Controls.Add(this.label8);
             this.AdvancedPanel.Controls.Add(this.CombA1);
-            this.AdvancedPanel.Location = new System.Drawing.Point(6, 479);
+            this.AdvancedPanel.Location = new System.Drawing.Point(5, 563);
             this.AdvancedPanel.Name = "AdvancedPanel";
             this.AdvancedPanel.Size = new System.Drawing.Size(274, 306);
             this.AdvancedPanel.TabIndex = 44;
@@ -824,6 +834,60 @@
             this.bitm.TabStop = false;
             this.bitm.UseWaitCursor = true;
             // 
+            // OverWriteIndexBox
+            // 
+            this.OverWriteIndexBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.OverWriteIndexBox.FormattingEnabled = true;
+            this.OverWriteIndexBox.Location = new System.Drawing.Point(69, 486);
+            this.OverWriteIndexBox.Margin = new System.Windows.Forms.Padding(5);
+            this.OverWriteIndexBox.Name = "OverWriteIndexBox";
+            this.OverWriteIndexBox.Size = new System.Drawing.Size(35, 21);
+            this.OverWriteIndexBox.TabIndex = 46;
+            this.OverWriteIndexBox.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // label17
+            // 
+            this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(7, 481);
+            this.label17.Margin = new System.Windows.Forms.Padding(5);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(52, 26);
+            this.label17.TabIndex = 47;
+            this.label17.Text = "Overwrite\r\nBitmap";
+            // 
+            // OverWriteBox
+            // 
+            this.OverWriteBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.OverWriteBox.FormattingEnabled = true;
+            this.OverWriteBox.Location = new System.Drawing.Point(114, 486);
+            this.OverWriteBox.Margin = new System.Windows.Forms.Padding(5);
+            this.OverWriteBox.Name = "OverWriteBox";
+            this.OverWriteBox.Size = new System.Drawing.Size(96, 21);
+            this.OverWriteBox.TabIndex = 48;
+            this.OverWriteBox.SelectedIndexChanged += new System.EventHandler(this.OverWriteBox_SelectedIndexChanged);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(218, 484);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(23, 23);
+            this.button1.TabIndex = 49;
+            this.button1.Text = "+";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(247, 484);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(23, 23);
+            this.button2.TabIndex = 50;
+            this.button2.Text = "-";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // TextureEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -831,7 +895,7 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.bitm);
             this.Name = "TextureEditor";
-            this.Size = new System.Drawing.Size(289, 994);
+            this.Size = new System.Drawing.Size(289, 1025);
             this.Load += new System.EventHandler(this.TextureEditor_Load);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
@@ -905,5 +969,10 @@
         public System.Windows.Forms.ComboBox CombB1;
         private System.Windows.Forms.CheckedListBox GeoModeBox;
         private System.Windows.Forms.Label label16;
+        public System.Windows.Forms.ComboBox OverWriteIndexBox;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button1;
+        public System.Windows.Forms.ComboBox OverWriteBox;
     }
 }

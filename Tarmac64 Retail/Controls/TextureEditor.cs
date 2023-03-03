@@ -55,6 +55,17 @@ namespace Tarmac64_Retail
                     heightBox.Text = textureArray[textureBox.SelectedIndex].textureHeight.ToString();
                     widthBox.Text = textureArray[textureBox.SelectedIndex].textureWidth.ToString();
 
+                    BitBox.SelectedIndex = textureArray[textureBox.SelectedIndex].BitSize;
+                    CodecBox.SelectedIndex = textureArray[textureBox.SelectedIndex].TextureFormat;
+
+                    SFlagBox.SelectedIndex = textureArray[textureBox.SelectedIndex].SFlag;
+                    TFlagBox.SelectedIndex = textureArray[textureBox.SelectedIndex].TFlag;
+
+                    textureScrollSBox.Text = textureArray[textureBox.SelectedIndex].textureScrollS.ToString();
+                    textureScrollTBox.Text = textureArray[textureBox.SelectedIndex].textureScrollT.ToString();
+                    
+                    screenBox.SelectedIndex = textureArray[textureBox.SelectedIndex].textureScreen;
+
                     if (!AdvanceBox.Checked)
                     {
                         CombineBoxA.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeA;
@@ -69,28 +80,64 @@ namespace Tarmac64_Retail
                     RenderBoxA.SelectedIndex = textureArray[textureBox.SelectedIndex].RenderModeA;
                     RenderBoxB.SelectedIndex = textureArray[textureBox.SelectedIndex].RenderModeB;
 
-                    BitBox.SelectedIndex = textureArray[textureBox.SelectedIndex].BitSize;
-                    CodecBox.SelectedIndex = textureArray[textureBox.SelectedIndex].TextureFormat;
-
-                    SFlagBox.SelectedIndex = textureArray[textureBox.SelectedIndex].SFlag;
-                    TFlagBox.SelectedIndex = textureArray[textureBox.SelectedIndex].TFlag;
-
-                    textureScrollSBox.Text = textureArray[textureBox.SelectedIndex].textureScrollS.ToString();
-                    textureScrollTBox.Text = textureArray[textureBox.SelectedIndex].textureScrollT.ToString();
+                    OverWriteIndexBox.Items.Clear();
+                    OverWriteIndexBox.SelectedIndex = -1;
+                    for (int ThisOverWrite = 0; ThisOverWrite < textureArray[textureBox.SelectedIndex].TextureOverWrite.Length; ThisOverWrite++)
+                    {
+                        OverWriteIndexBox.Items.Add(ThisOverWrite);
+                    }
                     
-                    screenBox.SelectedIndex = textureArray[textureBox.SelectedIndex].textureScreen;
-
+                    if (textureArray[textureBox.SelectedIndex].TextureOverWrite.Length > 0)
+                    {
+                        OverWriteIndexBox.SelectedIndex = 0;
+                        OverWriteBox.SelectedIndex = textureArray[textureBox.SelectedIndex].TextureOverWrite[0];
+                    }
+                    else
+                    {
+                        OverWriteIndexBox.SelectedIndex = -1;
+                        OverWriteBox.SelectedIndex = -1;
+                    }
+                    
                     Locked = false;
                     return true;
                 }
                 else
                 {
+
+                    BitBox.SelectedIndex = -1;
+                    CodecBox.SelectedIndex = -1;
+
+                    SFlagBox.SelectedIndex = -1;
+                    TFlagBox.SelectedIndex = -1;
+
+                    textureScrollSBox.Text = "";
+                    textureScrollTBox.Text = "";
+
+                    screenBox.SelectedIndex = -1;
+
+
+
+                    if (!AdvanceBox.Checked)
+                    {
+                        CombineBoxA.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeA;
+                        CombineBoxB.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeB;
+                    }
+
+                    for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
+                    {
+                        GeoModeBox.SetItemChecked(ThisCheck, textureArray[textureBox.SelectedIndex].GeometryBools[ThisCheck]);
+                    }
+
+                    RenderBoxA.SelectedIndex = textureArray[textureBox.SelectedIndex].RenderModeA;
+                    RenderBoxB.SelectedIndex = textureArray[textureBox.SelectedIndex].RenderModeB;
+
                     Locked = false;
-                    return false;
+                    return true;
                 }
             }
             else
             {
+                
                 return false;
             }
             
@@ -104,14 +151,15 @@ namespace Tarmac64_Retail
             {
                 if (textureArray[materialIndex].texturePath != null)
                 {
-                    textureBox.Items.Add("M-" + materialIndex.ToString() + " " + textureArray[materialIndex].textureName);
+                    textureBox.Items.Add("Texture-" + materialIndex.ToString() + " " + textureArray[materialIndex].textureName);                    
                     textureCount++;
                 }
                 else
                 {
                     //MessageBox.Show("Warning! Material " + fbx.Materials[materialIndex].Name + " does not have a diffuse texture and cannot be used.");                    
-                    textureBox.Items.Add("UNUSABLE " + materialIndex.ToString() + " - " + textureArray[materialIndex].textureName);
+                    textureBox.Items.Add("Shaded- " + materialIndex.ToString() + " - " + textureArray[materialIndex].textureName);                    
                 }
+                OverWriteBox.Items.Add(materialIndex.ToString() + " " + textureArray[materialIndex].textureName);
             }
             textureBox.SelectedIndex = 0;
             return textureCount;
@@ -188,11 +236,12 @@ namespace Tarmac64_Retail
             for (int This = 0; This < Count; This++)
             {
                 textureArray[This] = new TM64_Geometry.OK64Texture();
+                textureArray[This].textureName = TextureSettings[ThisLine++];
                 textureArray[This].texturePath = TextureSettings[ThisLine++];
                 if (textureArray[This].texturePath == "")
                 {
                     textureArray[This].texturePath = "NULL";
-                    textureArray[This].textureName = "NULL";
+                    
                 }
                 else
                 {
@@ -232,6 +281,14 @@ namespace Tarmac64_Retail
                 textureArray[This].vertAlpha = Convert.ToInt32(TextureSettings[ThisLine++]);
                 textureArray[This].textureScreen = Convert.ToInt32(TextureSettings[ThisLine++]);
 
+                int OverWriteCount = Convert.ToInt32(TextureSettings[ThisLine++]);
+                textureArray[This].TextureOverWrite = new int[OverWriteCount];
+                for (int ThisOW = 0; ThisOW < OverWriteCount; ThisOW++)
+                {
+                    textureArray[This].TextureOverWrite[ThisOW] = Convert.ToInt32(TextureSettings[ThisLine++]);
+                }
+                
+
             }
             textureBox.SelectedIndex = 0;
             UpdateTextureDisplay();
@@ -247,6 +304,7 @@ namespace Tarmac64_Retail
 
             for (int This = 0; This < textureArray.Length; This++)
             {
+                Output.Add(textureArray[This].textureName);
                 Output.Add(textureArray[This].texturePath);
                 Output.Add(textureArray[This].textureWidth.ToString());
                 Output.Add(textureArray[This].textureHeight.ToString());
@@ -279,6 +337,12 @@ namespace Tarmac64_Retail
                 Output.Add(textureArray[This].textureScrollT.ToString());
                 Output.Add(textureArray[This].vertAlpha.ToString());
                 Output.Add(textureArray[This].textureScreen.ToString());
+
+                Output.Add(textureArray[This].TextureOverWrite.Length.ToString());                
+                foreach (var OverWrite in textureArray[This].TextureOverWrite)
+                {
+                    Output.Add(OverWrite.ToString());
+                }
             }
             return Output.ToArray();
         }
@@ -359,6 +423,12 @@ namespace Tarmac64_Retail
                 textureArray[textureBox.SelectedIndex].BitSize = BitBox.SelectedIndex;
                 textureArray[textureBox.SelectedIndex].TextureFormat = CodecBox.SelectedIndex;
 
+                if (OverWriteIndexBox.SelectedIndex != -1)
+                {
+                    textureArray[textureBox.SelectedIndex].TextureOverWrite[OverWriteIndexBox.SelectedIndex] = OverWriteBox.SelectedIndex;
+                }
+                
+
                 //textureArray[textureBox.SelectedIndex].AdvancedSettings = AdvanceBox.Checked;
                 textureArray[textureBox.SelectedIndex].AdvancedSettings = false;
 
@@ -368,7 +438,7 @@ namespace Tarmac64_Retail
                     textureArray[textureBox.SelectedIndex].CombineModeB = CombineBoxB.SelectedIndex;
                 }
             }
-
+            
             if (UpdateParent != null)
             {
                 UpdateParent(this, EventArgs.Empty);
@@ -464,6 +534,56 @@ namespace Tarmac64_Retail
         }
 
         private void GeoModeBox_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            UpdateTextureData();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Locked = true;
+            OverWriteBox.SelectedIndex = textureArray[textureBox.SelectedIndex].TextureOverWrite[OverWriteIndexBox.SelectedIndex];
+            Locked = false;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Locked = true;
+            OverWriteIndexBox.Items.Add(OverWriteIndexBox.Items.Count);
+            List<int> NewArray = textureArray[textureBox.SelectedIndex].TextureOverWrite.ToList();
+            NewArray.Add(0);
+            textureArray[textureBox.SelectedIndex].TextureOverWrite = NewArray.ToArray();
+            OverWriteIndexBox.SelectedIndex = OverWriteIndexBox.Items.Count - 1;
+            OverWriteBox.SelectedIndex = 0;
+            Locked = false;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Locked = true;            
+            int Index = OverWriteIndexBox.SelectedIndex;
+            if (Index == -1)
+            {
+                return;
+            }
+            OverWriteIndexBox.Items.RemoveAt(Index);
+
+
+            List<int> NewArray = textureArray[textureBox.SelectedIndex].TextureOverWrite.ToList();
+            NewArray.RemoveAt(Index);
+            textureArray[textureBox.SelectedIndex].TextureOverWrite = NewArray.ToArray();
+            if (Index > textureArray.Length)
+            {
+                OverWriteBox.SelectedIndex = textureArray.Length;
+            }
+            else
+            {
+                OverWriteBox.SelectedIndex = Index;
+            }
+            
+            Locked = false;
+        }
+
+        private void OverWriteBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateTextureData();
         }

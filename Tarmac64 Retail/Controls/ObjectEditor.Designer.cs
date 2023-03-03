@@ -480,6 +480,7 @@
             this.ObjectListBox.Size = new System.Drawing.Size(251, 316);
             this.ObjectListBox.TabIndex = 0;
             this.ObjectListBox.SelectedIndexChanged += new System.EventHandler(this.ObjectListBox_SelectedIndexChanged);
+            this.ObjectListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ObjectListBox_MouseDoubleClick);
             // 
             // ObjectEditor
             // 

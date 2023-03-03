@@ -22,9 +22,9 @@ namespace Tarmac64_Retail
         TM64 Tarmac = new TM64();
         TM64_Geometry.OK64Collide[] Hitbox = new TM64_Geometry.OK64Collide[0];
 
-        string[] BoxTypes = new string[] { "Sphere", "Offset Sphere", "Cube", "Offset Cube" };
+        string[] BoxTypes = new string[] { "Sphere", "Box"};
         string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP", "DAMAGE" };
-        string[] StatusNames = new string[] { "None", "MapObjectHit", "LightningHit", "BooTranslucent", "BecomeBombOn", "BecomeBombOff", "FlattenedOn", "FlattenedOff", "MushroomBoost", "SpinOutSaveable", "SpinOut", "GreenShellHit", "RedShellHit", "Bonk", "StarOn", "GhostOn", "StarOff", "GhostOff" };
+        string[] StatusNames = new string[] { "None", "MapObjectHit", "LightningHit", "BooTranslucent", "BecomeBombOn", "BecomeBomb ", "FlattenedOn", "FlattenedOff", "MushroomBoost", "SpinOutSaveable", "SpinOut", "GreenShellHit", "RedShellHit", "Bonk", "StarOn", "GhostOn", "StarOff", "GhostOff" };
         int[] StatusValues = new int[] { -1, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
         string[] EffectNames = new string[] { "None", "StateAnimMusicNote", "StateAnimCrash", "StateAnimPoomp", "StateAnimBoing", "StateAnimExplosion", "StateAnimBonkStars", "StateAnimLandingDust" };
         int[] EffectValues = new int[] { -1, 0, 1, 2, 3, 4, 5, 6 };
@@ -67,8 +67,8 @@ namespace Tarmac64_Retail
                 OriginYBox.Text = Convert.ToString(Hitbox[Index].Origin[1]);
                 OriginZBox.Text = Convert.ToString(Hitbox[Index].Origin[2]);
 
-                StatusBox.SelectedIndex = Hitbox[Index].Status;
-                EffectBox.SelectedIndex = Hitbox[Index].Effect;
+                StatusBox.SelectedIndex = Array.IndexOf(StatusValues,Hitbox[Index].Status);
+                EffectBox.SelectedIndex = Array.IndexOf(EffectValues,Hitbox[Index].Effect);
                 ColResultBox.SelectedIndex = Hitbox[Index].CollideResult;
                 DmgResultBox.SelectedIndex = Hitbox[Index].HitResult;
                 TypeBox.SelectedIndex = Hitbox[Index].Type;
@@ -218,7 +218,7 @@ namespace Tarmac64_Retail
 
 
 
-                if ( (Hitbox[Index].Type == 0) || (Hitbox[Index].Type == 2) )
+                if (Hitbox[Index].Type == 0)
                 {
 
                     SizeYBox.Enabled = false;

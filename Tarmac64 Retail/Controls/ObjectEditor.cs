@@ -26,7 +26,8 @@ namespace Tarmac64_Retail
         public List<TM64_Course.OKObjectType> OKObjectTypeList = new List<TM64_Course.OKObjectType>();
         bool Loading = false;
         public event EventHandler UpdateParent;
-
+        public event EventHandler UpdateZoomToTarget;
+        public int ZoomIndex = -1;
         TM64_Geometry.Face[] StandardGeometry = new TM64_Geometry.Face[4];
 
         private void AddObjBtn_Click(object sender, EventArgs e)
@@ -420,6 +421,17 @@ namespace Tarmac64_Retail
                 ObjectIndexBox.SelectedIndex = ObjectIndexBox.Items.Count - 1;
             }
 
+        }
+
+        private void ObjectListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ZoomIndex = -1;
+            int Index = this.ObjectListBox.IndexFromPoint(e.Location);
+            if (Index != System.Windows.Forms.ListBox.NoMatches)
+            {
+                ZoomIndex = Index;
+            }
+            UpdateZoomToTarget(sender, e);
         }
     }
 }

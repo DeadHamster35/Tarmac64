@@ -19,6 +19,8 @@ namespace Tarmac64_Retail
             InitializeComponent();
         }
 
+        public event EventHandler UpdateParent;
+
         public string[] songNames = new string[] { "None", "Title", "Menu", "Raceways", "Moo Moo Farm", "Choco Mountain", "Koopa Troopa Beach", "Banshee Boardwalk", "Snowland", "Bowser's Castle", "Kalimari Desert", "#- GP Startup", "#- Final Lap", "#- Final Lap (1st)", "#- Final Lap 2-4", "#- You Lose", "#- Race Results", "Star Music", "Rainbow Road", "DK Parkway", "#- Credits Failure", "Toad's Turnpike", "#- VS/Battle Start", "#- VS/Battle Results", "#- Retry/Quit", "Big Donut / Skyscraper", "#- Trophy A", "#- Trophy B1 (Win)", "Credits", "#- Trophy B2 (Lose)" };
         public string[] pathTypes = new string[] { "Echo", "Color", "Camera", "AirControl", "Long Jump", "AI Area" };
         public string[] waterTypes = new string[] { "Water", "Void", "Lava", "Ice" };
@@ -62,6 +64,8 @@ namespace Tarmac64_Retail
             CourseData.Fog.FogColor.G = 240;
             CourseData.Fog.FogColor.B = 240;
             CourseData.Fog.FogColor.A = 255;
+            CourseData.GoalBannerBool = 1;
+            CourseData.SkyboxBool = 1;
 
             FogStartBox.Text = "900";
             FogEndBox.Text = "1000";
@@ -145,6 +149,7 @@ namespace Tarmac64_Retail
             CourseData.OK64HeaderData.WaterType = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.OK64HeaderData.WaterLevel = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.GoalBannerBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
+            CourseData.SkyboxBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
             CourseData.PathSurface = new int[4];
             CourseData.PathSurface[0] = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.PathSurface[1] = Convert.ToInt32(SettingsInfo[ThisLine++]);
@@ -253,6 +258,7 @@ namespace Tarmac64_Retail
             Output.Add(CourseData.OK64HeaderData.WaterType.ToString());
             Output.Add(CourseData.OK64HeaderData.WaterLevel.ToString());
             Output.Add(CourseData.GoalBannerBool.ToString());
+            Output.Add(CourseData.SkyboxBool.ToString());
             Output.Add(CourseData.PathSurface[0].ToString());
             Output.Add(CourseData.PathSurface[1].ToString());
             Output.Add(CourseData.PathSurface[2].ToString());
@@ -345,6 +351,7 @@ namespace Tarmac64_Retail
             CourseData.Fog.FogToggle = Convert.ToInt16(FogToggleBox.Checked);
 
             CourseData.GoalBannerBool = Convert.ToInt16(!GoalBannerBox.Checked);  //Inverse
+            CourseData.SkyboxBool = Convert.ToInt16(SkyBoxCheckBox.Checked);  
 
             if (int.TryParse(FogRBox.Text, out ParseInt))
             {
@@ -535,6 +542,11 @@ namespace Tarmac64_Retail
 
             CourseData.BombArray[BombIndexBox.SelectedIndex].Type = Convert.ToInt16(BombTypeBox.SelectedIndex);
             CourseData.BombArray[BombIndexBox.SelectedIndex].Point = Convert.ToInt16(BombPointBox.Text);
+            if (UpdateParent != null)
+            {
+                UpdateParent(null, null);
+            }
+            
         }
 
 
@@ -587,6 +599,7 @@ namespace Tarmac64_Retail
             }
 
             GoalBannerBox.Checked = Convert.ToBoolean(CourseData.GoalBannerBool);
+            SkyBoxCheckBox.Checked = Convert.ToBoolean(CourseData.SkyboxBool);
 
 
             mapBox.Text = CourseData.MapData.MinimapPath;

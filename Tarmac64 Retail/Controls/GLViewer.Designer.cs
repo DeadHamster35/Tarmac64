@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GLViewer));
             this.SettingsPanel = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.FPSBox = new System.Windows.Forms.TextBox();
             this.RenderCheckbox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.SpeedBox = new System.Windows.Forms.TextBox();
@@ -53,6 +55,8 @@
             // SettingsPanel
             // 
             this.SettingsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SettingsPanel.Controls.Add(this.label2);
+            this.SettingsPanel.Controls.Add(this.FPSBox);
             this.SettingsPanel.Controls.Add(this.RenderCheckbox);
             this.SettingsPanel.Controls.Add(this.label1);
             this.SettingsPanel.Controls.Add(this.SpeedBox);
@@ -69,11 +73,30 @@
             this.SettingsPanel.TabIndex = 2;
             this.SettingsPanel.Visible = false;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 42);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(27, 13);
+            this.label2.TabIndex = 114;
+            this.label2.Text = "FPS";
+            // 
+            // FPSBox
+            // 
+            this.FPSBox.Location = new System.Drawing.Point(50, 39);
+            this.FPSBox.Name = "FPSBox";
+            this.FPSBox.Size = new System.Drawing.Size(67, 20);
+            this.FPSBox.TabIndex = 113;
+            this.FPSBox.Text = "60";
+            this.FPSBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // RenderCheckbox
             // 
             this.RenderCheckbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.RenderCheckbox.AutoSize = true;
             this.RenderCheckbox.Location = new System.Drawing.Point(6, 172);
+            this.RenderCheckbox.Margin = new System.Windows.Forms.Padding(2);
             this.RenderCheckbox.Name = "RenderCheckbox";
             this.RenderCheckbox.Size = new System.Drawing.Size(103, 17);
             this.RenderCheckbox.TabIndex = 112;
@@ -97,6 +120,7 @@
             this.SpeedBox.Name = "SpeedBox";
             this.SpeedBox.Size = new System.Drawing.Size(67, 20);
             this.SpeedBox.TabIndex = 109;
+            this.SpeedBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // CheckboxPaths
             // 
@@ -104,7 +128,8 @@
             this.CheckboxPaths.AutoSize = true;
             this.CheckboxPaths.Checked = true;
             this.CheckboxPaths.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckboxPaths.Location = new System.Drawing.Point(6, 82);
+            this.CheckboxPaths.Location = new System.Drawing.Point(6, 88);
+            this.CheckboxPaths.Margin = new System.Windows.Forms.Padding(2);
             this.CheckboxPaths.Name = "CheckboxPaths";
             this.CheckboxPaths.Size = new System.Drawing.Size(81, 17);
             this.CheckboxPaths.TabIndex = 108;
@@ -130,6 +155,7 @@
             this.chkPop.Checked = true;
             this.chkPop.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkPop.Location = new System.Drawing.Point(6, 151);
+            this.chkPop.Margin = new System.Windows.Forms.Padding(2);
             this.chkPop.Name = "chkPop";
             this.chkPop.Size = new System.Drawing.Size(102, 17);
             this.chkPop.TabIndex = 3;
@@ -142,7 +168,8 @@
             this.chkWireframe.AutoSize = true;
             this.chkWireframe.Checked = true;
             this.chkWireframe.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkWireframe.Location = new System.Drawing.Point(6, 128);
+            this.chkWireframe.Location = new System.Drawing.Point(6, 130);
+            this.chkWireframe.Margin = new System.Windows.Forms.Padding(2);
             this.chkWireframe.Name = "chkWireframe";
             this.chkWireframe.Size = new System.Drawing.Size(111, 17);
             this.chkWireframe.TabIndex = 2;
@@ -155,7 +182,8 @@
             this.CheckboxHover.AutoSize = true;
             this.CheckboxHover.Checked = true;
             this.CheckboxHover.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckboxHover.Location = new System.Drawing.Point(6, 105);
+            this.CheckboxHover.Location = new System.Drawing.Point(6, 109);
+            this.CheckboxHover.Margin = new System.Windows.Forms.Padding(2);
             this.CheckboxHover.Name = "CheckboxHover";
             this.CheckboxHover.Size = new System.Drawing.Size(83, 17);
             this.CheckboxHover.TabIndex = 1;
@@ -168,7 +196,8 @@
             this.CheckboxTextured.AutoSize = true;
             this.CheckboxTextured.Checked = true;
             this.CheckboxTextured.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckboxTextured.Location = new System.Drawing.Point(6, 59);
+            this.CheckboxTextured.Location = new System.Drawing.Point(6, 67);
+            this.CheckboxTextured.Margin = new System.Windows.Forms.Padding(2);
             this.CheckboxTextured.Name = "CheckboxTextured";
             this.CheckboxTextured.Size = new System.Drawing.Size(68, 17);
             this.CheckboxTextured.TabIndex = 0;
@@ -211,7 +240,7 @@
             this.GLWindow.Cursor = System.Windows.Forms.Cursors.Cross;
             this.GLWindow.DrawFPS = false;
             this.GLWindow.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.GLWindow.FrameRate = 1000;
+            this.GLWindow.FrameRate = 120;
             this.GLWindow.Location = new System.Drawing.Point(3, 3);
             this.GLWindow.Name = "GLWindow";
             this.GLWindow.OpenGLVersion = SharpGL.Version.OpenGLVersion.OpenGL2_1;
@@ -225,6 +254,7 @@
             this.GLWindow.Load += new System.EventHandler(this.GLWindow_Load);
             this.GLWindow.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GLWindow_KeyDown);
             this.GLWindow.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GLWindow_MouseClick);
+            
             this.GLWindow.MouseMove += new System.Windows.Forms.MouseEventHandler(this.GLWindow_MouseMove);
             this.GLWindow.Resize += new System.EventHandler(this.GLWindow_Resized);
             // 
@@ -293,5 +323,7 @@
         private System.Windows.Forms.TextBox SpeedBox;
         private System.Windows.Forms.Button ScreenshotBtn;
         public System.Windows.Forms.CheckBox RenderCheckbox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox FPSBox;
     }
 }

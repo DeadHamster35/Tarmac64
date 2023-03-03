@@ -10,6 +10,7 @@ using Tarmac64_Library;
 using System.Windows.Media.Media3D;
 using Assimp;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Tarmac64_Library
 {
@@ -309,6 +310,25 @@ namespace Tarmac64_Library
             }
         }
 
+        public void DrawGouraud(OpenGL gl, Texture glTexture, TM64_Geometry.OK64F3DObject TargetObject)
+        {
+
+            gl.Begin(OpenGL.GL_TRIANGLES);
+            foreach (var subFace in TargetObject.modelGeometry)
+            {
+                foreach (var subVert in subFace.VertData)
+                {
+                    gl.Color(subVert.color.R, subVert.color.G, subVert.color.B, subVert.color.A);
+                    gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
+                }
+            }
+        }
+
+        public void DrawTexturedTexturedNoFlush(OpenGL gL, TM64_Geometry.OK64Texture oK64Texture, TM64_Geometry.OK64F3DObject oK64F3DObject)
+        {
+            throw new NotImplementedException();
+        }
+
         public void DrawShaded(OpenGL gl, Texture glTexture, TM64_Geometry.OK64F3DObject TargetObject, float[] colorArray, int[] Zone)
         {
             
@@ -395,7 +415,6 @@ namespace Tarmac64_Library
 
 
             gl.End();
-            glTexture.Destroy(gl);
 
             uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
 
@@ -403,8 +422,8 @@ namespace Tarmac64_Library
             {
                 MessageBox.Show("Error loading texture for " + textureArray[TargetID].textureName);
             }
-            glTexture.Create(gl, textureArray[TargetID].texturePath);
             glTexture.Bind(gl);
+
 
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[textureArray[TargetID].SFlag] });
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[textureArray[TargetID].TFlag] });
@@ -424,6 +443,7 @@ namespace Tarmac64_Library
             glTexture.Bind(gl);
 
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.SFlag] });
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.SFlag] });
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[TextureObject.TFlag] });
         }
         public void DrawTexturedNoFlush(OpenGL gl, TM64_Geometry.OK64Texture TextureObject, TM64_Geometry.OK64F3DObject targetObject)
@@ -437,6 +457,7 @@ namespace Tarmac64_Library
 
         public void UpdateTarget(TMCamera LocalCamera)
         {
+            return;
             float[] localCoord = new float[3];
             float hAngle = Convert.ToSingle(LocalCamera.rotation * (Math.PI / 180));
             
@@ -444,6 +465,14 @@ namespace Tarmac64_Library
             localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + 15000 * Math.Sin(hAngle));
             localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
             LocalCamera.target = new Assimp.Vector3D(localCoord[0], localCoord[1], localCoord[2] + LocalCamera.TargetHeight);
+        }
+
+
+        public void ZoomCameraTarget(float[] TargetPosition, TMCamera LocalCamera)
+        {
+            LocalCamera.position = new Assimp.Vector3D(TargetPosition[0] + 50, TargetPosition[1], TargetPosition[2] + 10);
+            LocalCamera.rotation = 180;
+            UpdateTarget(LocalCamera);
         }
 
         public void MoveCamera(int direction, TMCamera LocalCamera, float moveDistance)

@@ -29,8 +29,10 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.BElementTable = new System.Windows.Forms.DataGridView();
+            this.Element = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DataValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label10 = new System.Windows.Forms.Label();
             this.FlagBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -79,8 +81,10 @@
             this.LoadBtn = new System.Windows.Forms.Button();
             this.ModelBox = new System.Windows.Forms.TextBox();
             this.BuildBtn = new System.Windows.Forms.Button();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BElementTable)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -94,17 +98,10 @@
             this.panel1.Size = new System.Drawing.Size(314, 588);
             this.panel1.TabIndex = 255;
             // 
-            // TextureControl
-            // 
-            this.TextureControl.AutoScroll = true;
-            this.TextureControl.Location = new System.Drawing.Point(3, 3);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(292, 780);
-            this.TextureControl.TabIndex = 269;
-            // 
             // panel2
             // 
             this.panel2.AutoScroll = true;
+            this.panel2.Controls.Add(this.BElementTable);
             this.panel2.Controls.Add(this.label10);
             this.panel2.Controls.Add(this.FlagBox);
             this.panel2.Controls.Add(this.label3);
@@ -144,10 +141,36 @@
             this.panel2.Size = new System.Drawing.Size(246, 562);
             this.panel2.TabIndex = 240;
             // 
+            // BElementTable
+            // 
+            this.BElementTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.BElementTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Element,
+            this.DataValue});
+            this.BElementTable.Location = new System.Drawing.Point(3, 525);
+            this.BElementTable.Name = "BElementTable";
+            this.BElementTable.Size = new System.Drawing.Size(219, 150);
+            this.BElementTable.TabIndex = 294;
+            this.BElementTable.Visible = false;
+            // 
+            // Element
+            // 
+            this.Element.HeaderText = "Element";
+            this.Element.Name = "Element";
+            this.Element.ReadOnly = true;
+            this.Element.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // DataValue
+            // 
+            this.DataValue.HeaderText = "Value";
+            this.DataValue.Name = "DataValue";
+            this.DataValue.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.DataValue.Width = 75;
+            // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(174, 362);
+            this.label10.Location = new System.Drawing.Point(175, 358);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(27, 13);
             this.label10.TabIndex = 293;
@@ -156,7 +179,7 @@
             // 
             // FlagBox
             // 
-            this.FlagBox.Location = new System.Drawing.Point(116, 359);
+            this.FlagBox.Location = new System.Drawing.Point(117, 355);
             this.FlagBox.Margin = new System.Windows.Forms.Padding(5);
             this.FlagBox.Name = "FlagBox";
             this.FlagBox.Size = new System.Drawing.Size(50, 20);
@@ -167,7 +190,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(175, 72);
+            this.label3.Location = new System.Drawing.Point(176, 68);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(37, 13);
             this.label3.TabIndex = 291;
@@ -176,7 +199,7 @@
             // 
             // HitboxBtn
             // 
-            this.HitboxBtn.Location = new System.Drawing.Point(143, 67);
+            this.HitboxBtn.Location = new System.Drawing.Point(144, 63);
             this.HitboxBtn.Name = "HitboxBtn";
             this.HitboxBtn.Size = new System.Drawing.Size(25, 23);
             this.HitboxBtn.TabIndex = 290;
@@ -186,7 +209,7 @@
             // 
             // HitboxBox
             // 
-            this.HitboxBox.Location = new System.Drawing.Point(4, 69);
+            this.HitboxBox.Location = new System.Drawing.Point(5, 65);
             this.HitboxBox.Margin = new System.Windows.Forms.Padding(5);
             this.HitboxBox.Name = "HitboxBox";
             this.HitboxBox.Size = new System.Drawing.Size(131, 20);
@@ -198,7 +221,7 @@
             this.groupBox2.Controls.Add(this.ZSortBox);
             this.groupBox2.Controls.Add(this.GravityBox);
             this.groupBox2.Controls.Add(this.CameraAlignBox);
-            this.groupBox2.Location = new System.Drawing.Point(2, 446);
+            this.groupBox2.Location = new System.Drawing.Point(3, 442);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(220, 77);
             this.groupBox2.TabIndex = 20;
@@ -252,7 +275,7 @@
             this.groupBox1.Controls.Add(this.label17);
             this.groupBox1.Controls.Add(this.WalkBox);
             this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Location = new System.Drawing.Point(4, 97);
+            this.groupBox1.Location = new System.Drawing.Point(5, 93);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(220, 137);
             this.groupBox1.TabIndex = 3;
@@ -359,7 +382,7 @@
             // 
             // label16
             // 
-            this.label16.Location = new System.Drawing.Point(62, 355);
+            this.label16.Location = new System.Drawing.Point(63, 351);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(46, 27);
             this.label16.TabIndex = 288;
@@ -368,7 +391,7 @@
             // 
             // RenderBox
             // 
-            this.RenderBox.Location = new System.Drawing.Point(4, 359);
+            this.RenderBox.Location = new System.Drawing.Point(5, 355);
             this.RenderBox.Margin = new System.Windows.Forms.Padding(5);
             this.RenderBox.Name = "RenderBox";
             this.RenderBox.Size = new System.Drawing.Size(50, 20);
@@ -378,7 +401,7 @@
             // 
             // label14
             // 
-            this.label14.Location = new System.Drawing.Point(173, 413);
+            this.label14.Location = new System.Drawing.Point(174, 409);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(39, 27);
             this.label14.TabIndex = 284;
@@ -388,14 +411,14 @@
             // SoundTypeBox
             // 
             this.SoundTypeBox.FormattingEnabled = true;
-            this.SoundTypeBox.Location = new System.Drawing.Point(105, 417);
+            this.SoundTypeBox.Location = new System.Drawing.Point(106, 413);
             this.SoundTypeBox.Name = "SoundTypeBox";
             this.SoundTypeBox.Size = new System.Drawing.Size(59, 21);
             this.SoundTypeBox.TabIndex = 19;
             // 
             // label13
             // 
-            this.label13.Location = new System.Drawing.Point(60, 414);
+            this.label13.Location = new System.Drawing.Point(61, 410);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(39, 27);
             this.label13.TabIndex = 282;
@@ -404,7 +427,7 @@
             // 
             // SoundRangeBox
             // 
-            this.SoundRangeBox.Location = new System.Drawing.Point(4, 418);
+            this.SoundRangeBox.Location = new System.Drawing.Point(5, 414);
             this.SoundRangeBox.Margin = new System.Windows.Forms.Padding(5);
             this.SoundRangeBox.Name = "SoundRangeBox";
             this.SoundRangeBox.Size = new System.Drawing.Size(50, 20);
@@ -415,7 +438,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(173, 390);
+            this.label12.Location = new System.Drawing.Point(174, 386);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(38, 13);
             this.label12.TabIndex = 280;
@@ -425,7 +448,7 @@
             // SoundNameBox
             // 
             this.SoundNameBox.FormattingEnabled = true;
-            this.SoundNameBox.Location = new System.Drawing.Point(4, 387);
+            this.SoundNameBox.Location = new System.Drawing.Point(5, 383);
             this.SoundNameBox.Name = "SoundNameBox";
             this.SoundNameBox.Size = new System.Drawing.Size(162, 21);
             this.SoundNameBox.TabIndex = 17;
@@ -433,7 +456,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(173, 325);
+            this.label9.Location = new System.Drawing.Point(174, 321);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(37, 26);
             this.label9.TabIndex = 274;
@@ -442,7 +465,7 @@
             // 
             // LevelBump
             // 
-            this.LevelBump.Location = new System.Drawing.Point(116, 329);
+            this.LevelBump.Location = new System.Drawing.Point(117, 325);
             this.LevelBump.Margin = new System.Windows.Forms.Padding(5);
             this.LevelBump.Name = "LevelBump";
             this.LevelBump.Size = new System.Drawing.Size(50, 20);
@@ -453,7 +476,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(52, 245);
+            this.label8.Location = new System.Drawing.Point(53, 241);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(57, 13);
             this.label8.TabIndex = 272;
@@ -461,18 +484,18 @@
             // 
             // ScaleBox
             // 
-            this.ScaleBox.Location = new System.Drawing.Point(4, 242);
+            this.ScaleBox.Location = new System.Drawing.Point(5, 238);
             this.ScaleBox.Margin = new System.Windows.Forms.Padding(5);
             this.ScaleBox.Name = "ScaleBox";
             this.ScaleBox.Size = new System.Drawing.Size(40, 20);
             this.ScaleBox.TabIndex = 4;
-            this.ScaleBox.Text = "0.1";
+            this.ScaleBox.Text = "10";
             this.ScaleBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(173, 245);
+            this.label7.Location = new System.Drawing.Point(174, 241);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(38, 13);
             this.label7.TabIndex = 269;
@@ -481,7 +504,7 @@
             // 
             // SpeedBox
             // 
-            this.SpeedBox.Location = new System.Drawing.Point(118, 242);
+            this.SpeedBox.Location = new System.Drawing.Point(119, 238);
             this.SpeedBox.Margin = new System.Windows.Forms.Padding(5);
             this.SpeedBox.Name = "SpeedBox";
             this.SpeedBox.Size = new System.Drawing.Size(50, 20);
@@ -492,7 +515,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(173, 273);
+            this.label6.Location = new System.Drawing.Point(174, 269);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(49, 13);
             this.label6.TabIndex = 267;
@@ -502,7 +525,7 @@
             // BehaviorBox
             // 
             this.BehaviorBox.FormattingEnabled = true;
-            this.BehaviorBox.Location = new System.Drawing.Point(4, 270);
+            this.BehaviorBox.Location = new System.Drawing.Point(5, 266);
             this.BehaviorBox.Name = "BehaviorBox";
             this.BehaviorBox.Size = new System.Drawing.Size(162, 21);
             this.BehaviorBox.TabIndex = 6;
@@ -511,7 +534,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(62, 332);
+            this.label5.Location = new System.Drawing.Point(63, 328);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(30, 13);
             this.label5.TabIndex = 265;
@@ -519,7 +542,7 @@
             // 
             // Viewconebox
             // 
-            this.Viewconebox.Location = new System.Drawing.Point(4, 329);
+            this.Viewconebox.Location = new System.Drawing.Point(5, 325);
             this.Viewconebox.Margin = new System.Windows.Forms.Padding(5);
             this.Viewconebox.Name = "Viewconebox";
             this.Viewconebox.Size = new System.Drawing.Size(50, 20);
@@ -530,7 +553,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(173, 302);
+            this.label4.Location = new System.Drawing.Point(174, 298);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(31, 13);
             this.label4.TabIndex = 263;
@@ -539,7 +562,7 @@
             // 
             // SightBox
             // 
-            this.SightBox.Location = new System.Drawing.Point(116, 299);
+            this.SightBox.Location = new System.Drawing.Point(117, 295);
             this.SightBox.Margin = new System.Windows.Forms.Padding(5);
             this.SightBox.Name = "SightBox";
             this.SightBox.Size = new System.Drawing.Size(50, 20);
@@ -550,7 +573,7 @@
             // RangeLabel
             // 
             this.RangeLabel.AutoSize = true;
-            this.RangeLabel.Location = new System.Drawing.Point(62, 302);
+            this.RangeLabel.Location = new System.Drawing.Point(63, 298);
             this.RangeLabel.Name = "RangeLabel";
             this.RangeLabel.Size = new System.Drawing.Size(39, 13);
             this.RangeLabel.TabIndex = 261;
@@ -558,7 +581,7 @@
             // 
             // RangeBox
             // 
-            this.RangeBox.Location = new System.Drawing.Point(4, 299);
+            this.RangeBox.Location = new System.Drawing.Point(5, 295);
             this.RangeBox.Margin = new System.Windows.Forms.Padding(5);
             this.RangeBox.Name = "RangeBox";
             this.RangeBox.Size = new System.Drawing.Size(50, 20);
@@ -569,7 +592,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(175, 12);
+            this.label2.Location = new System.Drawing.Point(177, 8);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 259;
@@ -578,7 +601,7 @@
             // 
             // NameBox
             // 
-            this.NameBox.Location = new System.Drawing.Point(4, 9);
+            this.NameBox.Location = new System.Drawing.Point(5, 5);
             this.NameBox.Margin = new System.Windows.Forms.Padding(5);
             this.NameBox.Name = "NameBox";
             this.NameBox.Size = new System.Drawing.Size(164, 20);
@@ -588,7 +611,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(175, 42);
+            this.label1.Location = new System.Drawing.Point(176, 38);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(36, 13);
             this.label1.TabIndex = 257;
@@ -597,7 +620,7 @@
             // 
             // LoadBtn
             // 
-            this.LoadBtn.Location = new System.Drawing.Point(143, 37);
+            this.LoadBtn.Location = new System.Drawing.Point(144, 33);
             this.LoadBtn.Name = "LoadBtn";
             this.LoadBtn.Size = new System.Drawing.Size(25, 23);
             this.LoadBtn.TabIndex = 2;
@@ -607,7 +630,7 @@
             // 
             // ModelBox
             // 
-            this.ModelBox.Location = new System.Drawing.Point(4, 39);
+            this.ModelBox.Location = new System.Drawing.Point(5, 35);
             this.ModelBox.Margin = new System.Windows.Forms.Padding(5);
             this.ModelBox.Name = "ModelBox";
             this.ModelBox.Size = new System.Drawing.Size(131, 20);
@@ -623,6 +646,14 @@
             this.BuildBtn.Text = "Build Object";
             this.BuildBtn.UseVisualStyleBackColor = true;
             this.BuildBtn.Click += new System.EventHandler(this.BuildBtn_Click);
+            // 
+            // TextureControl
+            // 
+            this.TextureControl.AutoScroll = true;
+            this.TextureControl.Location = new System.Drawing.Point(3, 3);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(292, 780);
+            this.TextureControl.TabIndex = 269;
             // 
             // ObjectTypeCompiler
             // 
@@ -641,6 +672,7 @@
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BElementTable)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -701,5 +733,8 @@
         private System.Windows.Forms.TextBox HitboxBox;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox FlagBox;
+        private System.Windows.Forms.DataGridView BElementTable;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Element;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DataValue;
     }
 }

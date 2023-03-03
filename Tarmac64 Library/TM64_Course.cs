@@ -45,6 +45,56 @@ namespace Tarmac64_Library
             public int DeathPosition { get; set; }
         }
 
+
+
+        public class OKObjectBehaviorDead
+        {
+            //nothing unique
+        }
+
+        public class OKObjectBehaviorExist
+        {
+            //nothing unique
+        }
+
+
+        public class OKObjectBehaviorFloat
+        {
+            //nothing unique
+        }
+        public class OKObjectBehaviorPath
+        {
+
+            public short PathIndex { get; set; }
+            public short Direction { get; set; }
+            public float MaxSpeed { get; set; }
+        }
+
+
+        public class OKObjectBehaviorWander
+        {
+
+            public short Range { get; set; }
+            public short Sight { get; set; }
+            public short Viewcone { get; set; }
+            public float MaxSpeed { get; set; }
+        }
+        
+
+        public class OKObjectBehaviorSearch
+        {
+
+            public short Range { get; set; }
+            public short Sight { get; set; }
+            public short Viewcone { get; set; }
+            public float MaxSpeed { get; set; }
+        }
+
+        public class OKObjectBehaviorBounce
+        {
+            //nothing unique
+        }
+
         public class OKObjectType
         {
             public string Path { get; set; }
@@ -65,9 +115,9 @@ namespace Tarmac64_Library
             public OKObjectAnimations ObjectAnimations { get; set; }
             public TM64_Geometry.OK64Collide[] ObjectHitbox { get; set; }
             public int ModelPosition { get; set; }
-            public UInt32 AnimationPosition { get; set; }
-            public UInt32 HitboxPosition { get; set; }
-            public UInt32 XLUPosition { get; set; }
+            public UInt32 AnimationOffset { get; set; }
+            public UInt32 HitboxOffset { get; set; }
+            public UInt32 XLUOffset { get; set; }
             public int ModelCount { get; set; }
             public int XLUCount { get; set; }
             public byte GravityToggle { get; set; }
@@ -135,6 +185,7 @@ namespace Tarmac64_Library
             public short PathCount { get; set; }
             public short DistributeBool { get; set; }
             public short GoalBannerBool { get; set; }
+            public short SkyboxBool { get; set; }
 
             public int EchoOffset { get; set; }
             public int EchoEndOffset { get; set; }
@@ -206,7 +257,8 @@ namespace Tarmac64_Library
             public int BombOffset { get; set; }
             public int EchoStart { get; set; }
             public int EchoEnd { get; set; }
-            public byte GoalBannerToggle { get; set; }            
+            public byte GoalBannerToggle { get; set; }
+            public byte SkyboxToggle { get; set; }
             public short[] PathLength { get; set; }
             public float WaterLevel { get; set; }
             public int WaterType { get; set; }
@@ -214,6 +266,8 @@ namespace Tarmac64_Library
             public int ScrollEnd { get; set; }
             public UInt32 PathOffset { get; set; }
 
+            public int LapCount { get; set; }
+            public int DragLength { get; set; }
 
         }
 
@@ -364,7 +418,9 @@ namespace Tarmac64_Library
 
                 binaryWriter.Write(F3D.BigEndian(Hit.Origin[0]));
                 binaryWriter.Write(F3D.BigEndian(Hit.Origin[2]));
-                binaryWriter.Write(F3D.BigEndian(Hit.Origin[1] * -1));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Hit.Origin[1] * -1)));
+
+                binaryWriter.Write(Convert.ToInt16(0)); //PAD
 
                 binaryWriter.Write(Convert.ToSByte(Hit.Status));
                 binaryWriter.Write(Convert.ToSByte(Hit.Effect));
@@ -382,7 +438,7 @@ namespace Tarmac64_Library
             foreach (var ThisType in ObjectTypes)
             {
                 
-                ThisType.HitboxPosition = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
+                ThisType.HitboxOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
                 binaryWriter.Write(SaveHitboxRaw(ThisType.ObjectHitbox));
             }
             return memoryStream.ToArray();
@@ -417,15 +473,69 @@ namespace Tarmac64_Library
             NewType.ZSortToggle = binaryReader.ReadByte();
 
 
+
+            /*
+             * 
+             * binaryWriter.Write(TextureData[ThisTexture].textureName);
+                binaryWriter.Write(TextureData[ThisTexture].CombineModeA);
+                binaryWriter.Write(TextureData[ThisTexture].CombineModeB);
+
+                for (int ThisBool = 0; ThisBool < F3DEX095_Parameters.GeometryModes.Length; ThisBool++)
+                {
+                    binaryWriter.Write(TextureData[ThisTexture].GeometryBools[ThisBool]);
+                }
+
+                binaryWriter.Write(TextureData[ThisTexture].RenderModeA);
+                binaryWriter.Write(TextureData[ThisTexture].RenderModeB);
+
+                if (TextureData[ThisTexture].texturePath != null)
+                {
+                    binaryWriter.Write(TextureData[ThisTexture].texturePath);
+                    binaryWriter.Write(TextureData[ThisTexture].textureScrollS);
+                    binaryWriter.Write(TextureData[ThisTexture].textureScrollT);
+                    binaryWriter.Write(TextureData[ThisTexture].textureScreen);
+
+                    binaryWriter.Write(TextureData[ThisTexture].SFlag);
+                    binaryWriter.Write(TextureData[ThisTexture].TFlag);
+
+
+                    binaryWriter.Write(TextureData[ThisTexture].TextureFormat);
+                    binaryWriter.Write(TextureData[ThisTexture].BitSize);
+
+
+                    binaryWriter.Write(TextureData[ThisTexture].vertAlpha);
+
+                    binaryWriter.Write(TextureData[ThisTexture].textureWidth);
+                    binaryWriter.Write(TextureData[ThisTexture].textureHeight);
+                }
+                else
+                {
+                    binaryWriter.Write("NULL");
+                }
+
+            */
             int TextureCount = binaryReader.ReadInt32();
             NewType.TextureData = new TM64_Geometry.OK64Texture[TextureCount];
             for (int ThisTexture = 0; ThisTexture < TextureCount; ThisTexture++)
             {
                 NewType.TextureData[ThisTexture] = new TM64_Geometry.OK64Texture();
+                NewType.TextureData[ThisTexture].textureName = binaryReader.ReadString();
+
+                NewType.TextureData[ThisTexture].CombineModeA = binaryReader.ReadInt32();
+                NewType.TextureData[ThisTexture].CombineModeB = binaryReader.ReadInt32();
+
+                NewType.TextureData[ThisTexture].GeometryBools = new bool[F3DEX095_Parameters.GeometryModes.Length];
+                for (int ThisBool = 0; ThisBool < F3DEX095_Parameters.GeometryModes.Length; ThisBool++)
+                {
+                    NewType.TextureData[ThisTexture].GeometryBools[ThisBool] = binaryReader.ReadBoolean();
+                }
+
+                NewType.TextureData[ThisTexture].RenderModeA = binaryReader.ReadInt32();
+                NewType.TextureData[ThisTexture].RenderModeB = binaryReader.ReadInt32();
+
                 NewType.TextureData[ThisTexture].texturePath = binaryReader.ReadString();
                 if ((NewType.TextureData[ThisTexture].texturePath != "NULL") && (NewType.TextureData[ThisTexture].texturePath != null))
                 {
-                    NewType.TextureData[ThisTexture].textureName = binaryReader.ReadString();
                     
                     NewType.TextureData[ThisTexture].textureScrollS = binaryReader.ReadInt32();
                     NewType.TextureData[ThisTexture].textureScrollT = binaryReader.ReadInt32();
@@ -434,17 +544,6 @@ namespace Tarmac64_Library
                     NewType.TextureData[ThisTexture].SFlag = binaryReader.ReadInt32();
                     NewType.TextureData[ThisTexture].TFlag = binaryReader.ReadInt32();
 
-                    NewType.TextureData[ThisTexture].CombineModeA = binaryReader.ReadInt32();
-                    NewType.TextureData[ThisTexture].CombineModeB = binaryReader.ReadInt32();
-
-                    NewType.TextureData[ThisTexture].GeometryBools = new bool[F3DEX095_Parameters.GeometryModes.Length];
-                    for (int ThisBool = 0; ThisBool < F3DEX095_Parameters.GeometryModes.Length; ThisBool++)
-                    {
-                        NewType.TextureData[ThisTexture].GeometryBools[ThisBool] = binaryReader.ReadBoolean();
-                    }
-
-                    NewType.TextureData[ThisTexture].RenderModeA = binaryReader.ReadInt32();
-                    NewType.TextureData[ThisTexture].RenderModeB = binaryReader.ReadInt32();
 
                     NewType.TextureData[ThisTexture].TextureFormat = binaryReader.ReadInt32();
                     NewType.TextureData[ThisTexture].BitSize = binaryReader.ReadInt32();
@@ -683,7 +782,7 @@ namespace Tarmac64_Library
                 SaveData[currentItem].ModelCount = ModelCount;
                 ModelCount = 0;
 
-                SaveData[currentItem].XLUPosition = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+                SaveData[currentItem].XLUOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position);
                 for (int ThisModel = 0; ThisModel < SaveData[currentItem].ModelData.Length; ThisModel++)
                 {
                     for (int ThisZSort = 5; ThisZSort < 8; ThisZSort++)
@@ -812,14 +911,14 @@ namespace Tarmac64_Library
                     }
                     F3DEX095 F3D = new F3DEX095();
 
-                    SaveData[ThisObject].AnimationPosition = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
+                    SaveData[ThisObject].AnimationOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
                     binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(0x0A000000 | SaveData[ThisObject].ObjectAnimations.WalkPosition)));
                     binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(0x0A000000 | SaveData[ThisObject].ObjectAnimations.TargetPosition)));
                     binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(0x0A000000 | SaveData[ThisObject].ObjectAnimations.DeathPosition)));
                 }
                 else
                 {
-                    SaveData[ThisObject].AnimationPosition = Convert.ToUInt32(0xFFFFFFFF);
+                    SaveData[ThisObject].AnimationOffset = Convert.ToUInt32(0xFFFFFFFF);
                 }
             }
             
@@ -866,7 +965,7 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
         }
         */
-        public byte[] SaveObjectTypeRaw(OKObjectType[] SaveData)
+            public byte[] SaveObjectTypeRaw(OKObjectType[] SaveData)
         {
             byte[] flip = new byte[0];
             MemoryStream memoryStream = new MemoryStream();
@@ -908,15 +1007,15 @@ namespace Tarmac64_Library
                 binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].SoundID));
                 if (SaveData[ThisType].ObjectHitbox != null)
                 {
-                    binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].HitboxPosition));
+                    binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].HitboxOffset));
                 }
                 else
                 {
                     binaryWriter.Write(0xFFFFFFFF);
                 }
                 binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].ModelPosition));
-                binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].XLUPosition));
-                binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].AnimationPosition));
+                binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].XLUOffset));
+                binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].AnimationOffset));
             }
             return memoryStream.ToArray();
         }
@@ -1223,7 +1322,8 @@ namespace Tarmac64_Library
             CourseData.SongData.InstrumentData = binaryReader.ReadBytes(DataLength);
 
             CourseData.GoalBannerBool = binaryReader.ReadInt16();
-            
+            CourseData.SkyboxBool = binaryReader.ReadInt16();
+
 
             DataLength = binaryReader.ReadInt32();
             CourseData.TextureObjects = new TM64_Geometry.OK64Texture[DataLength];
@@ -1431,12 +1531,21 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.SongData.InstrumentData);
 
             binaryWriter.Write(CourseData.GoalBannerBool);
-            
+            binaryWriter.Write(CourseData.SkyboxBool);
+
 
             binaryWriter.Write(CourseData.TextureObjects.Length);
+            List<int> SkippedMaterials = new List<int>();
+            for (int CurrentTexture = 0; CurrentTexture < CourseData.TextureObjects.Length; CurrentTexture++)
+            {
+                foreach (var Index in CourseData.TextureObjects[CurrentTexture].TextureOverWrite)
+                {
+                    SkippedMaterials.Add(Index);
+                }
+            }
             for (int CurrentTexture= 0;CurrentTexture < CourseData.TextureObjects.Length;CurrentTexture++)
             {
-                if ((CourseData.TextureObjects[CurrentTexture].texturePath != null) && (CourseData.TextureObjects[CurrentTexture].texturePath != "NULL"))
+                if (!SkippedMaterials.Contains(CurrentTexture) && ((CourseData.TextureObjects[CurrentTexture].texturePath != null) && (CourseData.TextureObjects[CurrentTexture].texturePath != "NULL")) )
                 {
                     binaryWriter.Write(CourseData.TextureObjects[CurrentTexture].texturePath);
                     binaryWriter.Write(CourseData.TextureObjects[CurrentTexture].compressedSize);
@@ -1903,6 +2012,7 @@ namespace Tarmac64_Library
 
 
             courseData.OK64HeaderData.GoalBannerToggle = Convert.ToByte(courseData.GoalBannerBool);
+            courseData.OK64HeaderData.SkyboxToggle = Convert.ToByte(courseData.SkyboxBool);
 
             //bombdata
             courseData.OK64HeaderData.BombOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
@@ -2237,8 +2347,8 @@ namespace Tarmac64_Library
             binaryWriter.Write(F3D.BigEndian(courseData.EchoEndOffset));
 
             binaryWriter.Write(courseData.OK64HeaderData.GoalBannerToggle);
-            //Pad3
-            binaryWriter.Write(Convert.ToByte(0xFF));
+            binaryWriter.Write(courseData.OK64HeaderData.SkyboxToggle); ;
+            //Pad2
             binaryWriter.Write(Convert.ToByte(0xFF));
             binaryWriter.Write(Convert.ToByte(0xFF));
 

@@ -37,7 +37,7 @@ namespace Tarmac64_Library
         TM64_Course TarmacCourse = new TM64_Course();
         TM64_GL TarmacGL = new TM64_GL();
         CommonOpenFileDialog fileOpen = new CommonOpenFileDialog();
-
+        
         TM64.OK64Settings okSettings = new TM64.OK64Settings();
         TM64_Course.OKObject[] OKObjectData = new TM64_Course.OKObject[0];
         List<TM64_Course.OKObject> OKObjectList = new List<TM64_Course.OKObject>();
@@ -103,7 +103,9 @@ namespace Tarmac64_Library
 
             GLControl.UpdateParent += GLRequestUpdate;
             ObjectControl.UpdateParent += ObjectRequestUpdate;
+            ObjectControl.UpdateZoomToTarget += ZoomToObject;
             TextureControl.UpdateParent += TextureRequestUpdate;
+            SettingsControl.UpdateParent += SettingsRequestUpdate;
 
             TypeBox.SelectedIndex = 0;
             tabControl1.SelectedIndex = 0;
@@ -176,6 +178,7 @@ namespace Tarmac64_Library
     
 
         TM64_Geometry.OK64Texture[] textureArray = new TM64_Geometry.OK64Texture[0];
+        Bitmap[] TextureBitmaps = new Bitmap[0];
 
         int lastMaterial = 0;
 
@@ -667,7 +670,14 @@ namespace Tarmac64_Library
 
             //watervertex
             int waterCount = 0;
-            //FIX THIS
+
+            foreach (var OBJ in masterObjects)
+            {
+                if (OBJ.WaveObject)
+                {
+                    waterCount++;
+                }
+            }
 
 
 
@@ -676,9 +686,13 @@ namespace Tarmac64_Library
             binaryWriter.Write(flip);
             if (waterCount > 0)
             {
-                for (int currentIndex = 0; currentIndex < courseData.TextureObjects.Length; currentIndex++)
+                foreach (var ThisObject in masterObjects)
                 {
-                    //FIX THIS TOO
+                    if (ThisObject.WaveObject)
+                    {
+                        binaryWriter.Write(F3D.BigEndian(ThisObject.faceCount * 3));
+                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(ThisObject.VertCachePosition / 0.875)));
+                    }
                 }
             }
 
@@ -851,10 +865,19 @@ namespace Tarmac64_Library
         {
             MessageBox.Show("Select .FBX File");
 
+            Tarmac64_Retail.LoadBarWindow LoadBarForm = new Tarmac64_Retail.LoadBarWindow();
+            LoadBarForm.Show();
+
+            LoadBarForm.Text = "Loading Course";
+            LoadBarForm.LoadingBar.Value = 10;
+            LoadBarForm.LoadingLabel.Text = "Loading Course Model";
+            LoadBarForm.Update();
+
             OpenFileDialog OpenFile = new OpenFileDialog();
             OpenFile.InitialDirectory = okSettings.ProjectDirectory;
             OpenFile.Title = "FBX File";
             OpenFile.Filter = "FBX Model|*.FBX|All Files (*.*)|*.*";
+            OpenFile.FileName = null;
 
             if (OpenFile.ShowDialog() == DialogResult.OK)
             {
@@ -889,13 +912,29 @@ namespace Tarmac64_Library
                     //
                     // Textures
                     //
+                    LoadBarForm.LoadingBar.Value = 20;
+                    LoadBarForm.LoadingLabel.Text = "Loading Textures";
+                    LoadBarForm.Update();
+
                     textureArray = TarmacGeometry.loadTextures(fbx, FBXfilePath);
                     materialCount = textureArray.Length;
-
+                    TextureBitmaps = new Bitmap[textureArray.Length];
+                    for(int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
+                    {
+                        if (textureArray[ThisTex].texturePath != null)
+                        {
+                            //TextureBitmaps[ThisTex] = new Bitmap("C:\\default.png");
+                            TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
+                        }
+                    }
                     //
                     // Course Objects
                     // Surface Map
                     //
+
+                    LoadBarForm.LoadingBar.Value = 40;
+                    LoadBarForm.LoadingLabel.Text = "Compiling Section-Lists";
+                    LoadBarForm.Update();
 
                     if (levelFormat == 0)
                     {
@@ -903,7 +942,7 @@ namespace Tarmac64_Library
                         {
                             case 0:
                                 {
-                                    masterObjects = TarmacGeometry.createMaster(fbx, sectionCount, textureArray);
+                                    masterObjects = TarmacGeometry.createMaster(fbx, sectionCount, textureArray, AlphaCHBox.Checked);
                                     surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
                                     TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
                                     sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
@@ -912,7 +951,7 @@ namespace Tarmac64_Library
                                 }
                             case 1:
                                 {
-                                    masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray);
+                                    masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray, AlphaCHBox.Checked);
                                     surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
                                     TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
                                     sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
@@ -921,7 +960,7 @@ namespace Tarmac64_Library
                                 }
                             case 2:
                                 {
-                                    masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray);
+                                    masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray, AlphaCHBox.Checked);
                                     surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
                                     sectionList = TarmacGeometry.loadSection(fbx, sectionCount, masterObjects);
                                     XLUSectionList = TarmacGeometry.loadSection(fbx, sectionCount, masterObjects);
@@ -940,6 +979,9 @@ namespace Tarmac64_Library
                     List<int> listedObjects = new List<int>();
 
 
+                    LoadBarForm.LoadingBar.Value = 50;
+                    LoadBarForm.LoadingLabel.Text = "Preparing User Interface";
+                    LoadBarForm.Update();
 
                     for (int currentGroup = 0; currentGroup < masterGroups.Length; currentGroup++)
                     {
@@ -950,6 +992,9 @@ namespace Tarmac64_Library
                             listedObjects.Add(masterGroups[currentGroup].subIndexes[currentGrandchild]);
                         }
                     }
+
+                    LoadBarForm.LoadingBar.Value = 55;
+                    LoadBarForm.Update();
                     for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
                     {
                         if (listedObjects.IndexOf(currentMaster) == -1)
@@ -958,6 +1003,8 @@ namespace Tarmac64_Library
                         }
                     }
 
+                    LoadBarForm.LoadingBar.Value = 60;
+                    LoadBarForm.Update();
                     if (levelFormat == 0)
                     {
                         surfaceobjectBox.Items.Clear();
@@ -965,9 +1012,12 @@ namespace Tarmac64_Library
                         {
                             surfaceobjectBox.Items.Add(surfaceObjects[currentIndex].objectName);
                         }
+                        surfsectionBox.Items.Clear();
                         sectionBox.Items.Clear();
+                        CopySectionIndexBox.Items.Clear();
                         for (int currentSection = 0; currentSection < sectionCount; currentSection++)
                         {
+                            CopySectionIndexBox.Items.Add("Section " + (currentSection + 1).ToString());
                             surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
                             sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
 
@@ -981,6 +1031,7 @@ namespace Tarmac64_Library
                         foreach (var viewstring in viewString)
                         {
                             viewBox.Items.Add(viewstring);
+                            CopyViewIndexBox.Items.Add(viewstring);
                         }
                     }
                     TextureControl.Loaded = true;
@@ -998,20 +1049,32 @@ namespace Tarmac64_Library
                     }
                     loaded = true;
 
+
+                    LoadBarForm.LoadingBar.Value = 65;
+                    LoadBarForm.Update();
+
                     ExportBtn.Enabled = true;
                     ImportBtn.Enabled = true;
                     ImportBtn.Visible = true;
                     ExportBtn.Visible = true;
                     TypeBox.Enabled = false;
                     TypeBox.Visible = false;
+                    AlphaCHBox.Enabled = false;
+                    AlphaCHBox.Visible = false;
+                    raycastBox.Enabled = false;
+                    raycastBox.Visible = false;
                     GLControl.UpdateDraw = true;
                     actionBtn.Text = "Compile";
 
+                    LoadBarForm.LoadingBar.Value = 70;
+                    LoadBarForm.LoadingLabel.Text = "Loading POP Data";                    
+                    LoadBarForm.Update();
 
                     MessageBox.Show("Select OK64.POP File");
                     OpenFile.Title = "POP File";
                     OpenFile.InitialDirectory = okSettings.ProjectDirectory;
                     OpenFile.Filter = "Tarmac Path and Object Positions|*.OK64.POP|All Files (*.*)|*.*";
+                    OpenFile.FileName = null;
                     if (OpenFile.ShowDialog() == DialogResult.OK)
                     {
                         if (File.Exists(OpenFile.FileName))
@@ -1037,6 +1100,8 @@ namespace Tarmac64_Library
 
                                     }
                                 }
+                                LoadBarForm.LoadingBar.Value = 80;
+                                LoadBarForm.Update();
                                 if (pathGroups[2].pathList.Length != 0)
                                 {
                                     foreach (var Tree in pathGroups[2].pathList[0].pathmarker)
@@ -1053,6 +1118,8 @@ namespace Tarmac64_Library
 
                                     }
                                 }
+                                LoadBarForm.LoadingBar.Value = 85;
+                                LoadBarForm.Update();
                                 if (pathGroups[3].pathList.Length != 0)
                                 {
                                     foreach (var Plant in pathGroups[3].pathList[0].pathmarker)
@@ -1085,7 +1152,8 @@ namespace Tarmac64_Library
 
                                     }
                                 }
-
+                                LoadBarForm.LoadingBar.Value = 90;
+                                LoadBarForm.Update();
 
 
                             }
@@ -1109,17 +1177,24 @@ namespace Tarmac64_Library
 
                                     }
                                 }
+                                LoadBarForm.LoadingBar.Value = 90;
+                                LoadBarForm.Update();
                             }
                         }
                         
                     }
+
                     UpdateGLView();
                     GLControl.UpdateDraw = true;
+                    GLControl.CacheTextures();
                     TarmacGL.MoveCamera(0, GLControl.LocalCamera, moveDistance);
 
-
+                    LoadBarForm.LoadingBar.Value = 100;
+                    LoadBarForm.Update();
+                    LoadBarForm.LoadingLabel.Text = "Complete!";
 
                     MessageBox.Show("Finished");
+                    LoadBarForm.Close();
                 }
             }
             
@@ -1167,10 +1242,34 @@ namespace Tarmac64_Library
             }
         }
 
+        public void ZoomToObject(object sender, EventArgs e)            
+        {
+            int ObjectIndex = ObjectControl.ZoomIndex;
+            float[] TargetOrigin = new float[3] {
+                Convert.ToSingle(OKObjectList[ObjectIndex].OriginPosition[0]),
+                Convert.ToSingle(OKObjectList[ObjectIndex].OriginPosition[1]),
+                Convert.ToSingle(OKObjectList[ObjectIndex].OriginPosition[2]),
+            };
+            TarmacGL.ZoomCameraTarget(TargetOrigin, GLControl.LocalCamera);
+            GLControl.UpdateDraw = true;
+        }
+
         public void TextureRequestUpdate(object sender, EventArgs e)
         {
             textureArray = TextureControl.textureArray;
             GLControl.TextureObjects = textureArray;
+            GLControl.BitmapData = TextureBitmaps;
+            GLControl.UpdateDraw = true;
+        }
+
+        public void SettingsRequestUpdate(object sender, EventArgs e)
+        {
+            GLControl.SkyColors = new float[3, 3]
+            {
+                    { Convert.ToSingle(SettingsControl.CourseData.SkyColors.TopColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.TopColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.TopColor.B / 255.0) },
+                    { Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.B / 255.0) },
+                    { Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.B / 255.0) },
+            };
             GLControl.UpdateDraw = true;
         }
         public void ObjectRequestUpdate(object sender, EventArgs e)
@@ -1219,7 +1318,7 @@ namespace Tarmac64_Library
                                 }
                             case 3:
                                 {
-                                    ObjectControl.ObjectListBox.SelectedIndex = GLControl.SelectedObject;
+                                    ObjectControl.ObjectListBox.SelectedIndex = GLControl.OKSelectedObject;
                                     break;
                                 }
                         }
@@ -1426,7 +1525,7 @@ namespace Tarmac64_Library
         }
 
 
-        private void ImportBtn_Click(object sender, EventArgs e)
+        private void SVL2BTN_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
             if (openFile.ShowDialog() == DialogResult.OK)
@@ -1434,11 +1533,10 @@ namespace Tarmac64_Library
                 string filePath = openFile.FileName;
 
                 TM64_Geometry TarmacGeometry = new TM64_Geometry();
-                TM64_Geometry.OK64SectionList[] tempList = TarmacGeometry.ImportSVL(filePath, masterObjects.Length, masterObjects);
+                TM64_Geometry.OK64SectionList[] tempList = TarmacGeometry.ImportSVL2(filePath, masterObjects.Length, masterObjects);
                 if (tempList.Length > 0)
                 {
-                    sectionList = tempList;
-                    XLUSectionList = tempList;
+                    sectionList = tempList;                    
                     UpdateSVDisplay();
 
                 }
@@ -1613,14 +1711,15 @@ namespace Tarmac64_Library
                 }
                 GLControl.UpdateDraw = true;
                 GLControl.TextureObjects = textureArray;
-                if (levelFormat == 0)
-                {
+                GLControl.BitmapData = TextureBitmaps;
+                if ( (levelFormat == 0) && (pathGroups.Length > 0) )
+                {                    
                     GLControl.PathMarker = pathGroups[0].pathList;
                 }
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void ExportBtn_Click(object sender, EventArgs e)
         {
             List<string> Output = new List<string>();
             Output.Add(sectionList.Length.ToString());
@@ -1634,6 +1733,25 @@ namespace Tarmac64_Library
                         Output.Add(obj.ToString());
                     }
                 }
+            }
+            foreach (var section in XLUSectionList)
+            {
+                foreach (var view in section.viewList)
+                {
+                    Output.Add(view.objectList.Length.ToString());
+                    foreach (var obj in view.objectList)
+                    {
+                        Output.Add(obj.ToString());
+                    }
+                }
+            }
+            foreach (var Object in masterObjects)
+            {
+                foreach (var ViewKill in Object.KillDisplayList)
+                {
+                    Output.Add(ViewKill.ToString());
+                }
+                Output.Add(Object.WaveObject.ToString());
             }
             foreach (var Line in SettingsControl.SaveCourseSettings())
             {
@@ -1665,8 +1783,6 @@ namespace Tarmac64_Library
             {
                 string[] SettingsFile = File.ReadAllLines(FileOpen.FileName);
                 int ThisLine = 0;
-                sectionList = new TM64_Geometry.OK64SectionList[0];
-                XLUSectionList = new TM64_Geometry.OK64SectionList[0];
                 int sectionCount = Convert.ToInt32(SettingsFile[ThisLine++]);
                 sectionList = new TM64_Geometry.OK64SectionList[sectionCount];
                 XLUSectionList = new TM64_Geometry.OK64SectionList[sectionCount];
@@ -1675,22 +1791,43 @@ namespace Tarmac64_Library
                 {
                     sectionList[currentSection] = new TM64_Geometry.OK64SectionList();
                     sectionList[currentSection].viewList = new TM64_Geometry.OK64ViewList[4];
+                    for (int currentView = 0; currentView < 4; currentView++)
+                    {
+                        sectionList[currentSection].viewList[currentView] = new TM64_Geometry.OK64ViewList();
+                        int objectCount = Convert.ToInt32(SettingsFile[ThisLine++]);
+                        
+                        sectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
+                        for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                        {
+                            sectionList[currentSection].viewList[currentView].objectList[currentObject] = Convert.ToInt32(SettingsFile[ThisLine]);                          
+                        }
+                    }
+                }
+
+                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                {
                     XLUSectionList[currentSection] = new TM64_Geometry.OK64SectionList();
                     XLUSectionList[currentSection].viewList = new TM64_Geometry.OK64ViewList[4];
                     for (int currentView = 0; currentView < 4; currentView++)
                     {
-                        sectionList[currentSection].viewList[currentView] = new TM64_Geometry.OK64ViewList();
                         XLUSectionList[currentSection].viewList[currentView] = new TM64_Geometry.OK64ViewList();
                         int objectCount = Convert.ToInt32(SettingsFile[ThisLine++]);
-                        
-                        sectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
+
                         XLUSectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
                         for (int currentObject = 0; currentObject < objectCount; currentObject++)
                         {
-                            sectionList[currentSection].viewList[currentView].objectList[currentObject] = Convert.ToInt32(SettingsFile[ThisLine]);
-                            XLUSectionList[currentSection].viewList[currentView].objectList[currentObject] = Convert.ToInt32(SettingsFile[ThisLine++]);                            
+                            XLUSectionList[currentSection].viewList[currentView].objectList[currentObject] = Convert.ToInt32(SettingsFile[ThisLine++]);
                         }
                     }
+                }
+
+                foreach (var Object in masterObjects)
+                {
+                    for (int ThisKill = 0; ThisKill < Object.KillDisplayList.Length; ThisKill++)
+                    {
+                        Object.KillDisplayList[ThisKill] = Convert.ToBoolean(SettingsFile[ThisLine++]);
+                    }
+                    Object.WaveObject = Convert.ToBoolean(SettingsFile[ThisLine++]);
                 }
 
                 string[] SubSettings = new string[SettingsFile.Length - ThisLine];
@@ -1726,7 +1863,7 @@ namespace Tarmac64_Library
                 string filePath = saveFile.FileName;
 
                 TM64_Geometry TarmacGeometry = new TM64_Geometry();
-                TarmacGeometry.ExportSVL(filePath, masterObjects.Length, sectionList, masterObjects);
+                TarmacGeometry.ExportSVL3(filePath, sectionList, XLUSectionList, masterObjects);
             }
         }
 
@@ -1749,16 +1886,67 @@ namespace Tarmac64_Library
             {
                 if (CheckStop)
                 {
-                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[0] = GPBoxC.Checked;
-                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[1] = TTBoxC.Checked;
-                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[2] = VSBoxC.Checked;
-                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[3] = BattleBoxC.Checked;
-                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[4] = FiftyBoxC.Checked;
-                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[5] = HundredBoxC.Checked;
-                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[6] = HundredFiftyBoxC.Checked;
-                    surfaceObjects[masterBox.SelectedNode.Index].KillDisplayList[7] = ExtraBoxC.Checked;
+                    surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[0] = GPBoxC.Checked;
+                    surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[1] = TTBoxC.Checked;
+                    surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[2] = VSBoxC.Checked;
+                    surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[3] = BattleBoxC.Checked;
+                    surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[4] = FiftyBoxC.Checked;
+                    surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[5] = HundredBoxC.Checked;
+                    surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[6] = HundredFiftyBoxC.Checked;
+                    surfaceObjects[surfaceobjectBox.SelectedIndex].KillDisplayList[7] = ExtraBoxC.Checked;
                 }
             }
+        }
+
+        private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SurfaceMap_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TextureControl_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void GLControl_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SVL3Load_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openFile.FileName;
+
+                TM64_Geometry TarmacGeometry = new TM64_Geometry();
+                TM64_Geometry.OK64SectionList[] tempSList = new TM64_Geometry.OK64SectionList[0];
+                TM64_Geometry.OK64SectionList[] tempXLUSList = new TM64_Geometry.OK64SectionList[0];
+                    TarmacGeometry.ImportSVL3(out tempSList, out tempXLUSList, filePath, masterObjects);
+                if (tempSList.Length > 0)
+                {
+                    sectionList = tempSList;
+                    XLUSectionList = tempXLUSList;
+                    UpdateSVDisplay();
+                }
+                else
+                {
+                    MessageBox.Show("Error! Bad SVL3 File");
+                }
+            }
+        }
+
+        private void CopyBtn_Click(object sender, EventArgs e)
+        {
+            sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList =
+                sectionList[CopySectionIndexBox.SelectedIndex].viewList[CopyViewIndexBox.SelectedIndex].objectList;
+            UpdateSVDisplay();
         }
 
         private void masterBox_AfterSelect(object sender, TreeViewEventArgs e)
@@ -1773,6 +1961,7 @@ namespace Tarmac64_Library
             HundredBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[5];
             HundredFiftyBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[6];
             ExtraBoxR.Checked = masterObjects[e.Node.Index].KillDisplayList[7];
+            WaveBox.Checked = masterObjects[e.Node.Index].WaveObject;
             CheckStop = true;
         }
 
@@ -1792,6 +1981,7 @@ namespace Tarmac64_Library
                     masterObjects[masterBox.SelectedNode.Index].KillDisplayList[5] = HundredBoxR.Checked;
                     masterObjects[masterBox.SelectedNode.Index].KillDisplayList[6] = HundredFiftyBoxR.Checked;
                     masterObjects[masterBox.SelectedNode.Index].KillDisplayList[7] = ExtraBoxR.Checked;
+                    masterObjects[masterBox.SelectedNode.Index].WaveObject = WaveBox.Checked;
                 }
             }
             
