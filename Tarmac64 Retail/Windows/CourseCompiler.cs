@@ -39,27 +39,16 @@ namespace Tarmac64_Library
         CommonOpenFileDialog fileOpen = new CommonOpenFileDialog();
         
         TM64.OK64Settings okSettings = new TM64.OK64Settings();
-        TM64_Course.OKObject[] OKObjectData = new TM64_Course.OKObject[0];
         List<TM64_Course.OKObject> OKObjectList = new List<TM64_Course.OKObject>();
-        TM64_Course.OKObjectType[] OKObjectTypeData = new TM64_Course.OKObjectType[0];
         List<TM64_Course.OKObjectType> OKObjectTypeList = new List<TM64_Course.OKObjectType>();
         F3DEX095 F3D = new F3DEX095();
         bool updateBool = false;
 
         int raycastBoolean = 0;
         int sectionCount = 0;
-        public int programFormat;
         int levelFormat = 0;
-        float targetOffset = 0;
-
-
 
         int LastSelectedSection, LastSelectedView = 0;
-        
-        float[] flashRed = { 1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
-        float[] flashYellow = { 1.0f, 1.0f, 1.0f, 1.0f, 0.0f };
-        float[] flashWhite = { 1.0f, 1.0f, 1.0f, 0.5f, 0.0f };
-        int highlightedObject = -1;
 
 
 
@@ -118,13 +107,6 @@ namespace Tarmac64_Library
             
         }
 
-        Stopwatch clockTime = new Stopwatch();
-        SharpGL.SceneGraph.Assets.Texture glTexture = new SharpGL.SceneGraph.Assets.Texture();
-
-        uint[] gtexture = new uint[1];
-        
-
-
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
         TM64_Paths tm64Path = new TM64_Paths();
         TM64 tm64 = new TM64();
@@ -133,17 +115,6 @@ namespace Tarmac64_Library
         TM64_Geometry.OK64SectionList[] XLUSectionList = new TM64_Geometry.OK64SectionList[0];
         TM64_Geometry.OK64SectionList[] surfaceList = new TM64_Geometry.OK64SectionList[0];
 
-
-        MemoryStream bs = new MemoryStream();
-        BinaryReader br = new BinaryReader(Stream.Null);
-        BinaryWriter bw = new BinaryWriter(Stream.Null);
-        MemoryStream ds = new MemoryStream();
-        BinaryReader dr = new BinaryReader(Stream.Null);
-        BinaryWriter dw = new BinaryWriter(Stream.Null);
-        MemoryStream vs = new MemoryStream();
-        BinaryReader vr = new BinaryReader(Stream.Null);
-
-        uint[] gltextureArray = new uint[0];
 
         string[] viewString = new string[] { "North", "East", "South", "West" };
 
@@ -163,9 +134,7 @@ namespace Tarmac64_Library
 
         bool loaded,UpdateDraw = false;
 
-        string FBXfilePath = "";
         TM64_Paths.Pathgroup[] pathGroups = new TM64_Paths.Pathgroup[0];
-        string popFile = "";
 
         TM64_Geometry.OK64F3DObject[] masterObjects = new TM64_Geometry.OK64F3DObject[0];
         TM64_Geometry.OK64F3DGroup[] masterGroups = new TM64_Geometry.OK64F3DGroup[0];
@@ -179,15 +148,11 @@ namespace Tarmac64_Library
 
         TM64_Geometry.OK64Texture[] textureArray = new TM64_Geometry.OK64Texture[0];
         Bitmap[] TextureBitmaps = new Bitmap[0];
-
-        int lastMaterial = 0;
+        
 
         TM64_Course.MiniMap mapData = new TM64_Course.MiniMap();
         TM64_Course.Sky skyData = new TM64_Course.Sky();
         int[] gameSpeed = new int[0];
-
-        AssimpContext AssimpImporter = new AssimpContext();
-        Assimp.Scene fbx = new Assimp.Scene();
         int materialCount;
 
         TM64_GL.TMCamera localCamera = new TM64_GL.TMCamera();
@@ -203,6 +168,10 @@ namespace Tarmac64_Library
             textureArray = TextureControl.textureArray;
             fileOpen.InitialDirectory = okSettings.ProjectDirectory;
             fileOpen.IsFolderPicker = false;
+
+
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
             TM64_Course.Course courseData = SettingsControl.CourseData;
             List<byte[]> Segments = new List<byte[]>();
@@ -231,19 +200,10 @@ namespace Tarmac64_Library
             
             // Game speed multiplier. Default is 2
             gameSpeed = new int[4];
-            /*
-            int.TryParse(sp1Box.Text, out gameSpeed[0]);
-            int.TryParse(sp2Box.Text, out gameSpeed[1]);
-            int.TryParse(sp3Box.Text, out gameSpeed[2]);
-            int.TryParse(sp4Box.Text, out gameSpeed[3]);
-
-            
-
-
 
             byte songID = Convert.ToByte(songBox.SelectedIndex);
 
-            */
+            
             // This command writes all the bitmaps to the end of the ROM
 
             TarmacGeometry.buildTextures(textureArray);
@@ -256,7 +216,6 @@ namespace Tarmac64_Library
             byte[] tempBytes = new byte[0];
             if (levelFormat == 0)
             {
-                int garbage = 0;
 
 
                 // build various segment data
@@ -387,33 +346,27 @@ namespace Tarmac64_Library
 
 
 
-                bs = new MemoryStream();
-                bw = new BinaryWriter(bs);
+                memoryStream = new MemoryStream();
+                binaryWriter = new BinaryWriter(memoryStream);
                 byte[] byteArray = new byte[0];
 
-                byteArray = BitConverter.GetBytes(0xB8000000);
-                Array.Reverse(byteArray);
-                bw.Write(byteArray);
-                byteArray = BitConverter.GetBytes(0x00000000);
-                Array.Reverse(byteArray);
-                bw.Write(byteArray);
+                binaryWriter.Write(F3D.gsSPEndDisplayList());
 
-                bw.Write(ListData);
-                bw.Write(PathData);
-                bw.Write(textureList);
-                courseData.OK64HeaderData.SectionViewPosition = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(displayTable);
-                courseData.OK64HeaderData.XLUViewPosition = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(XLUTable);
-                courseData.OK64HeaderData.SurfaceMapPosition = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(surfaceTable);
-                bw.Write(renderList);
-                bw.Write(XLUList);
-                segment6 = bs.ToArray();
+                binaryWriter.Write(ListData);
+                binaryWriter.Write(PathData);
+                binaryWriter.Write(textureList);
+                courseData.OK64HeaderData.SectionViewPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(displayTable);
+                courseData.OK64HeaderData.XLUViewPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(XLUTable);
+                courseData.OK64HeaderData.SurfaceMapPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(surfaceTable);
+                binaryWriter.Write(renderList);
+                binaryWriter.Write(XLUList);
+                segment6 = memoryStream.ToArray();
             }
             else
             {
-                int garbage = 0;
 
                 //
 
@@ -490,22 +443,22 @@ namespace Tarmac64_Library
                 surfaceTable = TarmacGeometry.compilesurfaceTable(surfaceObjects);
 
 
-                bs = new MemoryStream();
-                bw = new BinaryWriter(bs);
+                memoryStream = new MemoryStream();
+                binaryWriter = new BinaryWriter(memoryStream);
                 byte[] byteArray = new byte[0];
 
-                bw.Write(F3D.gsSPEndDisplayList());
-                bw.Write(ListData);
+                binaryWriter.Write(F3D.gsSPEndDisplayList());
+                binaryWriter.Write(ListData);
 
-                bw.Write(textureList);
-                courseData.OK64HeaderData.SectionViewPosition = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(renderList);
-                courseData.OK64HeaderData.XLUViewPosition = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(XLUList); 
-                courseData.OK64HeaderData.SurfaceMapPosition = Convert.ToInt32(bw.BaseStream.Position);
-                bw.Write(surfaceTable);
+                binaryWriter.Write(textureList);
+                courseData.OK64HeaderData.SectionViewPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(renderList);
+                courseData.OK64HeaderData.XLUViewPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(XLUList); 
+                courseData.OK64HeaderData.SurfaceMapPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(surfaceTable);
 
-                segment6 = bs.ToArray();
+                segment6 = memoryStream.ToArray();
             }
 
 
@@ -605,8 +558,6 @@ namespace Tarmac64_Library
 
 
 
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
             //WaterVertex (translucency) and Map Scrolling
 
@@ -884,7 +835,7 @@ namespace Tarmac64_Library
                 //Get the path of specified file
                 if (File.Exists(OpenFile.FileName))
                 {
-                    FBXfilePath = OpenFile.FileName;
+                    string FBXfilePath = OpenFile.FileName;
                     levelFormat = TypeBox.SelectedIndex;
 
                     if (raycastBox.Checked)
@@ -895,18 +846,15 @@ namespace Tarmac64_Library
                     {
                         raycastBoolean = 0;
                     }
-                    int modelFormat = 0;  // 
-
-                    Scene fbx = new Scene();
+                    
                     AssimpContext importer = new AssimpContext();
 
-                    fbx = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
+                    Scene fbx = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
 
                     materialCount = fbx.MaterialCount;
-                    int textureCount = 0;
 
 
-                    modelFormat = TarmacGeometry.GetModelFormat(fbx);
+                    int modelFormat = TarmacGeometry.GetModelFormat(fbx);
                     sectionCount = TarmacGeometry.GetSectionCount(fbx); ;
 
                     //
@@ -923,7 +871,6 @@ namespace Tarmac64_Library
                     {
                         if (textureArray[ThisTex].texturePath != null)
                         {
-                            //TextureBitmaps[ThisTex] = new Bitmap("C:\\default.png");
                             TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
                         }
                     }
@@ -1036,7 +983,7 @@ namespace Tarmac64_Library
                     }
                     TextureControl.Loaded = true;
                     TextureControl.textureArray = textureArray;
-                    textureCount = TextureControl.AddNewTextures(materialCount);
+                    TextureControl.AddNewTextures(materialCount);
 
 
                     if (levelFormat == 0)
@@ -1044,8 +991,7 @@ namespace Tarmac64_Library
                         viewBox.SelectedIndex = 0;
                         sectionBox.SelectedIndex = 0;
                         TextureControl.textureBox.SelectedIndex = 0;
-                        lastMaterial = 0;
-
+                        
                     }
                     loaded = true;
 
@@ -1079,7 +1025,7 @@ namespace Tarmac64_Library
                     {
                         if (File.Exists(OpenFile.FileName))
                         {
-                            popFile = OpenFile.FileName;
+                            string popFile = OpenFile.FileName;
 
                             if (levelFormat == 0)
                             {
@@ -1114,7 +1060,7 @@ namespace Tarmac64_Library
                                         NewObject.OriginPosition[2] = Convert.ToInt16(Tree.zval);
 
                                         OKObjectList.Add(NewObject);
-                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                        ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
                                     }
                                 }
@@ -1132,8 +1078,7 @@ namespace Tarmac64_Library
                                         NewObject.OriginPosition[2] = Convert.ToInt16(Plant.zval);
 
                                         OKObjectList.Add(NewObject);
-                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
+                                        ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
                                     }
                                 }
                                 if (pathGroups[4].pathList.Length != 0)
@@ -1148,7 +1093,7 @@ namespace Tarmac64_Library
                                         NewObject.OriginPosition[2] = Convert.ToInt16(Coin.zval);
 
                                         OKObjectList.Add(NewObject);
-                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                        ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
                                     }
                                 }
@@ -1173,11 +1118,11 @@ namespace Tarmac64_Library
                                         NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
 
                                         OKObjectList.Add(NewObject);
-                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                        ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
                                     }
                                 }
-                                LoadBarForm.LoadingBar.Value = 90;
+                                LoadBarForm.LoadingBar.Value = 95;
                                 LoadBarForm.Update();
                             }
                         }
@@ -1546,21 +1491,11 @@ namespace Tarmac64_Library
                 }
             }
         }
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void groupBox6_Enter(object sender, EventArgs e)
         {
 
         }
 
-
-        private void label19_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void groupBox1_Enter(object sender, EventArgs e)
         {
