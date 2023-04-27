@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Numerics;
 using Tarmac64_Library;
+using Cereal64;
 
 
 //custom libraries
@@ -194,11 +195,10 @@ namespace Tarmac64_Library
                 else
                 {
                     settings = File.ReadAllLines(SettingsPath);
-                    if (settings.Length == 2)
+                    if (settings.Length == 1)
                     {
                         OkSettings.ProjectDirectory = settings[0];
-                        OkSettings.JRDirectory = settings[1];
-                        if (OkSettings.ProjectDirectory == null | OkSettings.JRDirectory == null)
+                        if (OkSettings.ProjectDirectory == null)
                         {
                             corrupt = true;
                         }
@@ -219,6 +219,7 @@ namespace Tarmac64_Library
                 {
                     OkSettings.ProjectDirectory = dialog.FileName;
                 }
+                /*
                 MessageBox.Show("Please select your TarmacJR Chunk Folder");
                 dialog.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
                 dialog.IsFolderPicker = true;
@@ -226,9 +227,10 @@ namespace Tarmac64_Library
                 {
                     OkSettings.JRDirectory = dialog.FileName;
                 }
-
-                File.AppendAllText(SettingsPath, OkSettings.ProjectDirectory + Environment.NewLine);
-                File.AppendAllText(SettingsPath, OkSettings.JRDirectory + Environment.NewLine);
+                */
+                File.WriteAllText(SettingsPath, OkSettings.ProjectDirectory + Environment.NewLine);
+                
+                //File.AppendAllText(SettingsPath, OkSettings.JRDirectory + Environment.NewLine);
             }
             return OkSettings;
         }
@@ -3032,7 +3034,107 @@ namespace Tarmac64_Library
 
 
         }
+        public void WriteBatchTextures(string FolderPath, int Codec)
+        {
+            TM64 Tarmac = new TM64();
+            N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.RGBA32, N64Codec.IA16, N64Codec.IA8, N64Codec.IA4, N64Codec.I8, N64Codec.I4, N64Codec.CI8, N64Codec.CI4 };
+
+
+            string[] PNGList = Directory.GetFiles(FolderPath, "*.PNG", SearchOption.AllDirectories);
+            string[] BMPList = Directory.GetFiles(FolderPath, "*.BMP", SearchOption.AllDirectories);
+            string[] JPGList = Directory.GetFiles(FolderPath, "*.JPG", SearchOption.AllDirectories);
+            string[] JPEGList = Directory.GetFiles(FolderPath, "*.JPEG", SearchOption.AllDirectories);
+            string[] imageList = PNGList.Concat(BMPList).Concat(JPGList).Concat(JPEGList).ToArray();
+            string parentDirectory = Path.Combine(FolderPath, "output");
+            Directory.CreateDirectory(parentDirectory);
+
+            string hText = "";
+            
+            string childDirectory = Path.Combine(parentDirectory, "ImageData");
+
+
+
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+            foreach (var textureAddress in imageList)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(textureAddress);
+
+                byte[] imageData = null;
+                byte[] paletteData = null;
+                Bitmap bitmapData = new Bitmap(textureAddress);
+                N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[Codec], bitmapData);
+                byte[] compressedTexture = Tarmac.CompressMIO0(imageData);
+
+                int SegmentPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(imageData);
+                int PalettePosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                if (paletteData != null)
+                {
+
+                    binaryWriter.Write(paletteData);
+                }
+
+
+                hText += "#define " + fileName + "_Offset 0x" + SegmentPosition.ToString("X") + Environment.NewLine;
+                hText += "#define " + fileName + "_Size 0x" + imageData.Length.ToString("X") + Environment.NewLine;
+                if (paletteData != null)
+                {
+                    hText += "#define " + fileName + "_Offset 0x" + PalettePosition.ToString("X") + Environment.NewLine;
+                    hText += "#define " + fileName + "_PaletteSize 0x" + paletteData.Length.ToString("X") + Environment.NewLine;
+                }
+
+
+            }
+
+
+            File.WriteAllText(Path.Combine(childDirectory + ".h"), hText);
+            File.WriteAllBytes(childDirectory + ".RAW", memoryStream.ToArray());
+            File.WriteAllBytes(childDirectory + ".MIO0", Tarmac.CompressMIO0(memoryStream.ToArray()));
+
+            binaryWriter.Close();
+        }
+
+
+        public void WriteTextureFile(string textureAddress, int CodecType)
+        {
+            TM64 Tarmac = new TM64();
+            N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.RGBA32, N64Codec.IA16, N64Codec.IA8, N64Codec.IA4, N64Codec.I8, N64Codec.I4, N64Codec.CI8, N64Codec.CI4 };
+
+
+            string parentDirectory = Path.Combine(Path.GetDirectoryName(textureAddress), "output");
+            Directory.CreateDirectory(parentDirectory);
+            string fileName = Path.GetFileName(textureAddress);
+            string childDirectory = Path.Combine(parentDirectory, fileName);
+
+            byte[] imageData = null;
+            byte[] paletteData = null;
+            Bitmap bitmapData = new Bitmap(textureAddress);
+            N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[CodecType], bitmapData);
+            byte[] compressedTexture = Tarmac.CompressMIO0(imageData);
+            byte[] TKMK = Tarmac.CompressTKMK(imageData, bitmapData.Width, bitmapData.Height);
+
+
+            File.WriteAllBytes(childDirectory + ".RAW", imageData);
+            File.WriteAllBytes(childDirectory + ".RAW.MIO0", compressedTexture);
+            File.WriteAllBytes(childDirectory + ".RAW.TKMK00", TKMK);
+            if (paletteData != null)
+            {
+                byte[] compressedPalette = Tarmac.CompressMIO0(paletteData);
+                File.WriteAllBytes(childDirectory + ".PALETTE", paletteData);
+                File.WriteAllBytes(childDirectory + ".PALETTE.MIO0", compressedTexture);
+            }
+
+
+            bitmapData.Dispose();
+        }
+
+
+
     }
+
+    
 
 }
 

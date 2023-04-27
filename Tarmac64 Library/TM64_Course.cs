@@ -30,9 +30,10 @@ namespace Tarmac64_Library
             public float[] Velocity { get; set; }  //multiply by 10 to get short value.
             public short[] AngularVelocity { get; set; }            
             public short ObjectIndex { get; set; }
-            public short ObjectFlag { get; set; }
-            public short BattleType { get; set; }
+            public short GameMode { get; set; }
+            public short ObjectiveClass { get; set; }
             public short BattlePlayer { get; set; }
+            public short Flag { get; set; }
         }
 
         public class OKObjectAnimations
@@ -340,7 +341,7 @@ namespace Tarmac64_Library
             NewObject.AngularVelocity = new short[3] { 0, 0, 0 };
             NewObject.ObjectIndex = 0;
             NewObject.BattlePlayer = 0;
-            NewObject.BattleType = 0;
+            NewObject.ObjectiveClass = 0;
 
             return NewObject;
         }
@@ -375,7 +376,7 @@ namespace Tarmac64_Library
             for (int ThisObject = 0; ThisObject < ObjectList.Length; ThisObject++)
             {
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].ObjectIndex - 5)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].ObjectFlag)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].GameMode)));
 
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginPosition[0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginPosition[2])));
@@ -1619,7 +1620,7 @@ namespace Tarmac64_Library
 
 
         }
-        public byte[] CompileOverKart(Course courseData, byte[] fileData, int cID, int setID)
+        public byte[] CompileOverKart(Course courseData, byte[] fileData, int cID, int setID, uint HeaderAddress = 0xBE9178)
         {
             //HOTSWAP
 
@@ -1738,11 +1739,12 @@ namespace Tarmac64_Library
             //begin writing header info
 
 
-            courseData.OK64HeaderData.Version = 5;
+            courseData.OK64HeaderData.Version = 6;
 
             //add sky colors
 
 
+            //first table
             courseData.OK64HeaderData.Sky = Convert.ToInt32(binaryWriter.BaseStream.Position);
             binaryWriter.Write(Convert.ToByte(0x00));
             binaryWriter.Write(courseData.SkyColors.TopColor.R);
@@ -1756,6 +1758,15 @@ namespace Tarmac64_Library
             binaryWriter.Write(courseData.SkyColors.MidColor.G);
             binaryWriter.Write(Convert.ToByte(0x00));
             binaryWriter.Write(courseData.SkyColors.MidColor.B);
+
+            //0x00FF 0x00FF
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0xFF)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0xFF)); //padding to match existing ROM.
+
+
+            //second table
             binaryWriter.Write(Convert.ToByte(0x00));
             binaryWriter.Write(courseData.SkyColors.MidColor.R);
             binaryWriter.Write(Convert.ToByte(0x00));
@@ -1768,6 +1779,13 @@ namespace Tarmac64_Library
             binaryWriter.Write(courseData.SkyColors.BotColor.G);
             binaryWriter.Write(Convert.ToByte(0x00));
             binaryWriter.Write(courseData.SkyColors.BotColor.B);
+
+
+            //0x0000 0x0000
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
 
 
 
@@ -2417,12 +2435,12 @@ namespace Tarmac64_Library
 
 
 
-            binaryWriter.BaseStream.Position = (0xBE9178 + (setID * 0x50) + (cID * 4));
+            binaryWriter.BaseStream.Position = (HeaderAddress + (setID * 0x50) + (cID * 4));
             flip = BitConverter.GetBytes(headerOffset);
             Array.Reverse(flip);
             binaryWriter.Write(flip);
 
-            binaryWriter.BaseStream.Position = (0xBEA578 + (setID * 0xA0) + (cID * 8));
+            binaryWriter.BaseStream.Position = (HeaderAddress + 0x1400 + (setID * 0xA0) + (cID * 8));
 
             flip = BitConverter.GetBytes(courseData.MenuHeaderData.Banner);
             Array.Reverse(flip);

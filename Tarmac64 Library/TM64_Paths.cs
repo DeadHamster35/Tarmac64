@@ -31,6 +31,16 @@ namespace Tarmac64_Library
         {
             public List<Marker> pathmarker { get; set; }
             public string pathName { get; set; }
+            public void Add(short[] PositionArray)
+            {
+                pathmarker.Add(new Marker(PositionArray));
+            }
+            public void Add(TM64_Course.OKObject Object)
+            {
+                Marker ThisMark = new Marker(Object.OriginPosition);
+                ThisMark.flag = Object.Flag;
+                pathmarker.Add(ThisMark);
+            }
         }
         public class Marker
         {
@@ -40,7 +50,16 @@ namespace Tarmac64_Library
             public int zval { get; set; }
             public int flag { get; set; }
             public float[] Color { get; set; }
+            public Marker()
+            {
 
+            }
+            public Marker(short[] PositionArray)
+            {
+                xval = PositionArray[0];
+                yval = PositionArray[1];
+                zval = PositionArray[2];
+            }
         }
 
         public class BattleMarker

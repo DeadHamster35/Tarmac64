@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -175,6 +176,12 @@ namespace Tarmac64_Library
             uint HeaderOffset = Convert.ToUInt32(HeaderBox.Text, 16);
             MessageBox.Show("Select Patched ROM");
 
+            uint HeaderAddress;
+            if (!UInt32.TryParse(HeaderBox.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out HeaderAddress))
+            {
+                MessageBox.Show("Invalid Header Address");
+                return;
+            }
 
             if (FolderOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
@@ -187,7 +194,9 @@ namespace Tarmac64_Library
                     byte[] rom = File.ReadAllBytes(FileName);
                     for (int ThisCourse = 0; ThisCourse < CourseData.Count; ThisCourse++)
                     {
-                        rom = TarmacCourse.CompileOverKart(CourseData[ThisCourse], rom, (SetCollection[ThisCourse].Cup * 4) + SetCollection[ThisCourse].Course, SetCollection[ThisCourse].Set);
+                        rom = TarmacCourse.CompileOverKart(CourseData[ThisCourse], rom, (SetCollection[ThisCourse].Cup * 4) + SetCollection[ThisCourse].Course, SetCollection[ThisCourse].Set, HeaderAddress);
+                        
+                        
                         /*
                         File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString()+ " Segment6.bin", CourseData[ThisCourse].Segment6);
                         File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment9.bin", CourseData[ThisCourse].Segment9);

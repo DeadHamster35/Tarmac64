@@ -25,12 +25,16 @@ namespace Tarmac64_Library
             public float TargetHeight { get; set; }
             public Assimp.Vector3D target { get; set; }
             public Assimp.Vector3D marker { get; set; }
-            public double rotation { get; set; }
+            public double[] rotation { get; set; }
             public float[] flashRed { get; set; }
             public float[] flashWhite { get; set; }
             public float[] flashYellow { get; set; }
             public TM64_Geometry.Face[] Cursor { get; set; }
 
+            public TMCamera()
+            {
+                rotation = new double[2];
+            }
         }
 
 
@@ -457,21 +461,20 @@ namespace Tarmac64_Library
 
         public void UpdateTarget(TMCamera LocalCamera)
         {
-            return;
-            float[] localCoord = new float[3];
-            float hAngle = Convert.ToSingle(LocalCamera.rotation * (Math.PI / 180));
             
-            localCoord[0] = Convert.ToSingle(LocalCamera.position.X + 15000 * Math.Cos(hAngle));
-            localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + 15000 * Math.Sin(hAngle));
-            localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
-            LocalCamera.target = new Assimp.Vector3D(localCoord[0], localCoord[1], localCoord[2] + LocalCamera.TargetHeight);
+            float[] localCoord = new float[3];
+            localCoord[0] = LocalCamera.position.X + Convert.ToSingle(Math.Cos(LocalCamera.rotation[1]) * Math.Cos(LocalCamera.rotation[0])) * 15000;
+            localCoord[1] = LocalCamera.position.Y + Convert.ToSingle(Math.Cos(LocalCamera.rotation[1]) * Math.Sin(LocalCamera.rotation[0])) * 15000;
+            localCoord[2] = LocalCamera.position.Z + Convert.ToSingle(Math.Sin(LocalCamera.rotation[1])) * 15000;
+            
+            LocalCamera.target = new Assimp.Vector3D(localCoord[0], localCoord[1], localCoord[2]);
         }
 
 
         public void ZoomCameraTarget(float[] TargetPosition, TMCamera LocalCamera)
         {
             LocalCamera.position = new Assimp.Vector3D(TargetPosition[0] + 50, TargetPosition[1], TargetPosition[2] + 10);
-            LocalCamera.rotation = 180;
+            LocalCamera.rotation[0] = 180 * (Math.PI / 180);
             UpdateTarget(LocalCamera);
         }
 
@@ -483,12 +486,17 @@ namespace Tarmac64_Library
                 case 0:
                     {
                         //forward
-                        float hAngle = Convert.ToSingle(LocalCamera.rotation * (Math.PI / 180));
-                        
-                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X + moveDistance * Math.Cos(hAngle));
-                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + moveDistance * Math.Sin(hAngle));
-                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
 
+
+                        localCoord[0] = LocalCamera.position.X + Convert.ToSingle(Math.Cos(LocalCamera.rotation[1]) * Math.Cos(LocalCamera.rotation[0])) * moveDistance;
+                        localCoord[1] = LocalCamera.position.Y + Convert.ToSingle(Math.Cos(LocalCamera.rotation[1]) * Math.Sin(LocalCamera.rotation[0])) * moveDistance;
+                        localCoord[2] = LocalCamera.position.Z + Convert.ToSingle(Math.Sin(LocalCamera.rotation[1])) * moveDistance;
+
+                        /*
+                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X + moveDistance * Math.Cos(LocalCamera.rotation[0]));
+                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + moveDistance * Math.Sin(LocalCamera.rotation[0]));
+                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
+                        */
 
 
                         break;
@@ -496,47 +504,54 @@ namespace Tarmac64_Library
                 case 1:
                     {
                         //back
-                        float hAngle = Convert.ToSingle(LocalCamera.rotation * (Math.PI / 180));
-                        
-                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X - moveDistance * Math.Cos(hAngle));
-                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y - moveDistance * Math.Sin(hAngle));
+                        localCoord[0] = LocalCamera.position.X - Convert.ToSingle(Math.Cos(LocalCamera.rotation[1]) * Math.Cos(LocalCamera.rotation[0])) * moveDistance;
+                        localCoord[1] = LocalCamera.position.Y - Convert.ToSingle(Math.Cos(LocalCamera.rotation[1]) * Math.Sin(LocalCamera.rotation[0])) * moveDistance;
+                        localCoord[2] = LocalCamera.position.Z - Convert.ToSingle(Math.Sin(LocalCamera.rotation[1])) * moveDistance;
+
+                        /*
+                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X - moveDistance * Math.Cos(LocalCamera.rotation[0]));
+                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y - moveDistance * Math.Sin(LocalCamera.rotation[0]));
                         localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
-                        
+                        */
                         break;
                     }
                 case 2:
                     {
                         //up
-                        float hAngle = Convert.ToSingle(LocalCamera.rotation * (Math.PI / 180));
-                        
-                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X);
-                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y);
-                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z + moveDistance);
-                        
+                        float strafeAngle = Convert.ToSingle(LocalCamera.rotation[1] + (90.0f * (Math.PI / 180.0f)));
+                        if (strafeAngle < 0)
+                            strafeAngle += Convert.ToSingle(Math.PI * 2.0f);
+
+                        localCoord[0] = LocalCamera.position.X + Convert.ToSingle(Math.Cos(strafeAngle) * Math.Cos(LocalCamera.rotation[0])) * moveDistance;
+                        localCoord[1] = LocalCamera.position.Y + Convert.ToSingle(Math.Cos(strafeAngle) * Math.Sin(LocalCamera.rotation[0])) * moveDistance;
+                        localCoord[2] = LocalCamera.position.Z + Convert.ToSingle(Math.Sin(strafeAngle)) * moveDistance;
+
                         break;
                     }
                 case 3:
                     {
                         //down
-                        float hAngle = Convert.ToSingle(LocalCamera.rotation * (Math.PI / 180));
-                        
-                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X);
-                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y);
-                        localCoord[2] = Convert.ToSingle(LocalCamera.position.Z - moveDistance);
-                        
+
+                        float strafeAngle = Convert.ToSingle(LocalCamera.rotation[1] - (90.0f * (Math.PI / 180.0f)));
+                        if (strafeAngle < 0)
+                            strafeAngle += Convert.ToSingle(Math.PI * 2.0f);
+
+                        localCoord[0] = LocalCamera.position.X + Convert.ToSingle(Math.Cos(strafeAngle) * Math.Cos(LocalCamera.rotation[0])) * moveDistance;
+                        localCoord[1] = LocalCamera.position.Y + Convert.ToSingle(Math.Cos(strafeAngle) * Math.Sin(LocalCamera.rotation[0])) * moveDistance;
+                        localCoord[2] = LocalCamera.position.Z + Convert.ToSingle(Math.Sin(strafeAngle)) * moveDistance;
+
 
                         break;
                     }
                 case 4:
                     {
                         //strafe
-                        float strafeAngle = Convert.ToSingle(LocalCamera.rotation - 90);
+                        float strafeAngle = Convert.ToSingle(LocalCamera.rotation[0] - (90.0f * (Math.PI / 180.0f)) );
                         if (strafeAngle < 0)
-                            strafeAngle += 360;
-                        float hAngle = Convert.ToSingle(strafeAngle * (Math.PI / 180));
+                            strafeAngle += Convert.ToSingle(Math.PI * 2.0f);
                         
-                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X + moveDistance * Math.Cos(hAngle));
-                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + moveDistance * Math.Sin(hAngle));
+                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X + moveDistance * Math.Cos(strafeAngle));
+                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + moveDistance * Math.Sin(strafeAngle));
                         localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
                         
 
@@ -545,13 +560,12 @@ namespace Tarmac64_Library
                 case 5:
                     {
                         //strafe
-                        float strafeAngle = Convert.ToSingle(LocalCamera.rotation + 90);
-                        if (strafeAngle > 360)
-                            strafeAngle -= 360;
-                        float hAngle = Convert.ToSingle(strafeAngle * (Math.PI / 180));
-                        
-                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X + moveDistance * Math.Cos(hAngle));
-                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + moveDistance * Math.Sin(hAngle));
+                        float strafeAngle = Convert.ToSingle(LocalCamera.rotation[0] + (90.0f * (Math.PI / 180.0f)));
+                        if (strafeAngle < 0)
+                            strafeAngle += Convert.ToSingle(Math.PI * 2.0f);
+
+                        localCoord[0] = Convert.ToSingle(LocalCamera.position.X + moveDistance * Math.Cos(strafeAngle));
+                        localCoord[1] = Convert.ToSingle(LocalCamera.position.Y + moveDistance * Math.Sin(strafeAngle));
                         localCoord[2] = Convert.ToSingle(LocalCamera.position.Z);
                         
                         break;

@@ -86,7 +86,8 @@ namespace Tarmac64_Library
             CreateColors();
             okSettings = Tarmac.LoadSettings();
 
-            localCamera.rotation = 90;
+            localCamera.rotation[0] = 0;
+            //localCamera.rotation = 90;
             gl = GLControl.GLWindow.OpenGL;
             GLControl.OKObjectIndex = 0;
 
@@ -181,7 +182,7 @@ namespace Tarmac64_Library
             byte[] segment7 = new byte[0];
             byte[] segment9 = new byte[0];
             byte[] PathListData = new byte[0];
-            byte[][] ObjectListData = new byte[4][];
+            byte[][] ObjectListData = new byte[5][];
             byte[] ListData = new byte[0];
             byte[] PathData = new byte[0];
             byte[] collisionList = new byte[0];
@@ -201,7 +202,6 @@ namespace Tarmac64_Library
             // Game speed multiplier. Default is 2
             gameSpeed = new int[4];
 
-            byte songID = Convert.ToByte(songBox.SelectedIndex);
 
             
             // This command writes all the bitmaps to the end of the ROM
@@ -216,7 +216,7 @@ namespace Tarmac64_Library
             byte[] tempBytes = new byte[0];
             if (levelFormat == 0)
             {
-
+                //Race Level
 
                 // build various segment data
                         
@@ -226,7 +226,7 @@ namespace Tarmac64_Library
 
                 //items trees and piranhas
                 int ObjectCount = 0;
-                TM64_Paths.Pathlist[] ThisList = new TM64_Paths.Pathlist[4];
+                TM64_Paths.Pathlist[] ThisList = new TM64_Paths.Pathlist[5];
                 for (int ThisType = 0; ThisType < 3; ThisType++)
                 {
                     ThisList[ThisType] = new TM64_Paths.Pathlist();
@@ -235,11 +235,8 @@ namespace Tarmac64_Library
                     {
                         if (OKObjectList[ThisObject].ObjectIndex == ThisType)
                         {
-                            TM64_Paths.Marker ThisSpot = new TM64_Paths.Marker();
-                            ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
-                            ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
-                            ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
-                            ThisList[ThisType].pathmarker.Add(ThisSpot);
+                            ThisList[ThisType].Add(OKObjectList[ThisObject]);
+                            
                             if (ThisList[ThisType].pathmarker.Count > 63)
                             {
                                 MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[ThisType].Name + " Too many objects! Max count 64");
@@ -252,23 +249,32 @@ namespace Tarmac64_Library
 
                 ThisList[3] = new TM64_Paths.Pathlist();
                 ThisList[3].pathmarker = new List<TM64_Paths.Marker>();
+                ThisList[4] = new TM64_Paths.Pathlist();
+                ThisList[4].pathmarker = new List<TM64_Paths.Marker>();
                 for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
                 {
                     if (OKObjectList[ThisObject].ObjectIndex == 3)
                     {
-                        TM64_Paths.Marker ThisSpot = new TM64_Paths.Marker();
-                        ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
-                        ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
-                        ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
-                        ThisList[3].pathmarker.Add(ThisSpot);
+                        ThisList[3].Add(OKObjectList[ThisObject].OriginPosition);
                         if (ThisList[3].pathmarker.Count > 8)
                         {
                             MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[3].Name + " Too many objects! Max count 8");
                             return;
                         }
                     }
+                    if (OKObjectList[ThisObject].ObjectIndex == 4)
+                    {
+                        ThisList[4].Add(OKObjectList[ThisObject].OriginPosition);
+                        if (ThisList[4].pathmarker.Count > 8)
+                        {
+                            MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[4].Name + " Too many objects! Max count 8");
+                            return;
+                        }
+                    }
                 }
+
                 ObjectCount += ThisList[3].pathmarker.Count;
+                ObjectCount += ThisList[4].pathmarker.Count;
 
                 if (ObjectCount >= 100)
                 {
@@ -291,6 +297,8 @@ namespace Tarmac64_Library
 
                 ObjectListData[3] = tm64Path.popMarker(ThisList[3], 8);
                 ListStream.Write(ObjectListData[3], 0, ObjectListData[3].Length);
+                ObjectListData[4] = tm64Path.popMarker(ThisList[4], 8);
+                ListStream.Write(ObjectListData[4], 0, ObjectListData[4].Length);
                 ListData = ListStream.ToArray();
 
 
@@ -316,15 +324,15 @@ namespace Tarmac64_Library
 
 
                 textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5, Convert.ToBoolean(courseData.Fog.FogToggle) );
-                TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
-                TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
+                TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic, true);
+                TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic, false);
 
                 renderList = TarmacGeometry.compileF3DList(ref sectionList, masterObjects, sectionList, textureArray);
                 XLUList = TarmacGeometry.compileXLUList(ref XLUSectionList, masterObjects, XLUSectionList, textureArray);
 
                 surfaceTable = TarmacGeometry.compilesurfaceTable(surfaceObjects);
 
-                magic = textureList.Length + ListData.Length + PathData.Length + 8 + 8 + (528 * 2) + (surfaceObjects.Length * 8);
+                magic = textureList.Length + ListData.Length + PathData.Length + 8 + surfaceTable.Length + (528 * 2);
                 
                 // Build the display table with the above magic value
                 // 8 bytes for header
@@ -368,7 +376,7 @@ namespace Tarmac64_Library
             else
             {
 
-                //
+                //Battle Level
 
 
 
@@ -385,11 +393,7 @@ namespace Tarmac64_Library
                 {
                     if (OKObjectList[ThisObject].ObjectIndex == 0)
                     {
-                        TM64_Paths.Marker ThisSpot = new TM64_Paths.Marker();
-                        ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
-                        ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
-                        ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
-                        ThisList.pathmarker.Add(ThisSpot);
+                        ThisList.Add(OKObjectList[ThisObject].OriginPosition);
                         if (ThisList.pathmarker.Count > 63)
                         {
                             MessageBox.Show("FATAL ERROR - " + OKObjectTypeList[0].Name + " Too many objects! Max count 64");
@@ -403,15 +407,15 @@ namespace Tarmac64_Library
                 List<TM64_Paths.BattleMarker> ObjectiveList = new List<TM64_Paths.BattleMarker>();
                 for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
                 {
-                    if (OKObjectList[ThisObject].ObjectIndex == 4)
+                    if (OKObjectList[ThisObject].ObjectIndex == 5)
                     {
                         TM64_Paths.BattleMarker ThisSpot = new TM64_Paths.BattleMarker();
                         ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
                         ThisSpot.yval = OKObjectList[ThisObject].OriginPosition[1];
                         ThisSpot.zval = OKObjectList[ThisObject].OriginPosition[2];
-                        ThisSpot.flag = OKObjectList[ThisObject].ObjectFlag;
+                        ThisSpot.flag = OKObjectList[ThisObject].GameMode;
                         ThisSpot.Player = OKObjectList[ThisObject].BattlePlayer;
-                        ThisSpot.Type = OKObjectList[ThisObject].BattleType;
+                        ThisSpot.Type = OKObjectList[ThisObject].ObjectiveClass;
 
                         ObjectiveList.Add(ThisSpot);
                         BattleCount++;
@@ -510,18 +514,17 @@ namespace Tarmac64_Library
 
             
             List<TM64_Course.OKObjectType> TypeList = new List<TM64_Course.OKObjectType>();
-            for (int This = 5; This < OKObjectTypeList.Count; This++)
+            for (int This = 6; This < OKObjectTypeList.Count; This++)
             {
                 TypeList.Add(OKObjectTypeList[This]);
             }
             List<TM64_Course.OKObject> CustomObjectList = new List<TM64_Course.OKObject>();
             for (int This = 0; This < OKObjectList.Count; This++)
             {
-                if (OKObjectList[This].ObjectIndex >= 5)
+                if (OKObjectList[This].ObjectIndex >= 6)
                 {
                     CustomObjectList.Add(OKObjectList[This]);
                 }
-
             }
             
             
@@ -533,16 +536,6 @@ namespace Tarmac64_Library
             courseData.ObjectTypeData = TarmacCourse.SaveObjectTypeRaw(TypeList.ToArray());
             courseData.ObjectListData = TarmacCourse.SaveOKObjectListRaw(CustomObjectList.ToArray());
             
-            
-
-            /*
-            courseData.ObjectModelData = new byte[0];
-            courseData.ObjectTypeData = new byte[0];
-            courseData.ObjectListData = new byte[0];
-            
-            courseData.ObjectAnimationData = new byte[0];
-            */
-
             if (courseData.OK64SongPath.Length > 0)
             {
                 TM64_Sound TarmacSound = new TM64_Sound();
@@ -583,6 +576,12 @@ namespace Tarmac64_Library
                     }
                 }
             }
+
+
+
+            memoryStream = new MemoryStream();
+            binaryWriter = new BinaryWriter(memoryStream);
+
 
             byte[] flip = BitConverter.GetBytes(Convert.ToInt32(scrollCount));
             Array.Reverse(flip);
@@ -974,12 +973,6 @@ namespace Tarmac64_Library
                         {
                             surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString("X") + "- " + surfaceType[surfacematerialIndex]);
                         }
-                        viewBox.Items.Clear();
-                        foreach (var viewstring in viewString)
-                        {
-                            viewBox.Items.Add(viewstring);
-                            CopyViewIndexBox.Items.Add(viewstring);
-                        }
                     }
                     TextureControl.Loaded = true;
                     TextureControl.textureArray = textureArray;
@@ -988,7 +981,6 @@ namespace Tarmac64_Library
 
                     if (levelFormat == 0)
                     {
-                        viewBox.SelectedIndex = 0;
                         sectionBox.SelectedIndex = 0;
                         TextureControl.textureBox.SelectedIndex = 0;
                         
@@ -1097,13 +1089,14 @@ namespace Tarmac64_Library
 
                                     }
                                 }
-                                LoadBarForm.LoadingBar.Value = 90;
+                                LoadBarForm.LoadingBar.Value = 95;
                                 LoadBarForm.Update();
 
 
                             }
                             else
                             {
+                                /*
                                 pathGroups = tm64Path.loadBattlePOP(popFile);
 
                                 if (pathGroups[0].pathList.Length != 0)
@@ -1119,6 +1112,25 @@ namespace Tarmac64_Library
 
                                         OKObjectList.Add(NewObject);
                                         ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+
+                                    }
+                                }
+                                */
+
+                                pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);
+                                if (pathGroups[1].pathList.Length != 0)
+                                {
+                                    foreach (var ItemBox in pathGroups[1].pathList[0].pathmarker)
+                                    {
+                                        TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+
+                                        NewObject.ObjectIndex = 0;
+                                        NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
+                                        NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
+                                        NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
+
+                                        OKObjectList.Add(NewObject);
+                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
                                     }
                                 }
@@ -1166,7 +1178,6 @@ namespace Tarmac64_Library
                 sectionList[LastSelectedSection].viewList[LastSelectedView].objectList = GLControl.SectionList;
                 XLUSectionList[LastSelectedSection].viewList[LastSelectedView].objectList = GLControl.SectionList;
                 LastSelectedSection = sectionBox.SelectedIndex;
-                LastSelectedView = viewBox.SelectedIndex;
                 UpdateSVDisplay();
                 UpdateGLView();
             }
@@ -1181,7 +1192,6 @@ namespace Tarmac64_Library
                 sectionList[LastSelectedSection].viewList[LastSelectedView].objectList = GLControl.SectionList;
                 XLUSectionList[LastSelectedSection].viewList[LastSelectedView].objectList = GLControl.SectionList;
                 LastSelectedSection = sectionBox.SelectedIndex;
-                LastSelectedView = viewBox.SelectedIndex;
                 UpdateSVDisplay();
                 UpdateGLView();
             }
@@ -1236,8 +1246,8 @@ namespace Tarmac64_Library
                     }
                 case 2:
                     {
-                        sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList = GLControl.SectionList;
-                        XLUSectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList = GLControl.SectionList;
+                        sectionList[sectionBox.SelectedIndex].viewList[0].objectList = GLControl.SectionList;
+                        XLUSectionList[sectionBox.SelectedIndex].viewList[0].objectList = GLControl.SectionList;
                         if (GLControl.SelectedObject != -1)
                         {
                             SelectObjectIndex(GLControl.SelectedObject);
@@ -1326,7 +1336,7 @@ namespace Tarmac64_Library
                             masterBox.Nodes[currentTree].Checked = false;
                         }
                     }
-                    foreach (var subObject in sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList)
+                    foreach (var subObject in sectionList[sectionBox.SelectedIndex].viewList[0].objectList)
                     {
 
                         TreeNode[] thisNode = masterBox.Nodes.Find(masterObjects[subObject].objectName, true);
@@ -1339,7 +1349,7 @@ namespace Tarmac64_Library
                 }
                 updateBool = false;
             }
-            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList;
+            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList;
         }
         //Seperate loading the counters to prevent infinite loop. 
         private void updateCounter(int faceCount)
@@ -1443,8 +1453,8 @@ namespace Tarmac64_Library
                         }
                     }
                 }
-                sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList = checkList.ToArray();
-                XLUSectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList = checkList.ToArray();
+                sectionList[sectionBox.SelectedIndex].viewList[0].objectList = checkList.ToArray();
+                XLUSectionList[sectionBox.SelectedIndex].viewList[0].objectList = checkList.ToArray();
                 updateCounter(faceCount);
             }
         }
@@ -1509,7 +1519,7 @@ namespace Tarmac64_Library
 
         private void updateSectionList(string objectName, int Index)
         {
-            List<int> objectList = sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList.ToList();
+            List<int> objectList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList.ToList();
             
             if (Index > -1)
             {
@@ -1532,8 +1542,8 @@ namespace Tarmac64_Library
                         }
                     }
                 }
-                sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList = objectList.ToArray();
-                XLUSectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList = objectList.ToArray();
+                sectionList[sectionBox.SelectedIndex].viewList[0].objectList = objectList.ToArray();
+                XLUSectionList[sectionBox.SelectedIndex].viewList[0].objectList = objectList.ToArray();
             }
             UpdateSVDisplay();
         }
@@ -1543,7 +1553,7 @@ namespace Tarmac64_Library
             UpdateDraw = true;
             if (e.Action != TreeViewAction.Unknown)
             {
-                List<int> checkList = sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList.ToList();
+                List<int> checkList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList.ToList();
                 bool checkState = e.Node.Checked;
                 if (loaded == true)
                 {
@@ -1614,7 +1624,7 @@ namespace Tarmac64_Library
 
                             GLControl.CourseModel = masterObjects;
                             GLControl.SurfaceModel = SurfaceList.ToArray();
-                            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList;
+                            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList;
                             GLControl.CourseObjects = new List<TM64_Course.OKObject>();
                             GLControl.ObjectTypes = new TM64_Course.OKObjectType[0];
                             GLControl.TargetMode = 1;
@@ -1659,25 +1669,19 @@ namespace Tarmac64_Library
             List<string> Output = new List<string>();
             Output.Add(sectionList.Length.ToString());
             foreach (var section in sectionList)
-            {
-                foreach (var view in section.viewList)
+            {   
+                Output.Add(section.viewList[0].objectList.Length.ToString());
+                foreach (var obj in section.viewList[0].objectList)
                 {
-                    Output.Add(view.objectList.Length.ToString());
-                    foreach (var obj in view.objectList)
-                    {
-                        Output.Add(obj.ToString());
-                    }
+                    Output.Add(obj.ToString());
                 }
             }
             foreach (var section in XLUSectionList)
             {
-                foreach (var view in section.viewList)
+                Output.Add(section.viewList[0].objectList.Length.ToString());
+                foreach (var obj in section.viewList[0].objectList)
                 {
-                    Output.Add(view.objectList.Length.ToString());
-                    foreach (var obj in view.objectList)
-                    {
-                        Output.Add(obj.ToString());
-                    }
+                    Output.Add(obj.ToString());
                 }
             }
             foreach (var Object in masterObjects)
@@ -1726,7 +1730,7 @@ namespace Tarmac64_Library
                 {
                     sectionList[currentSection] = new TM64_Geometry.OK64SectionList();
                     sectionList[currentSection].viewList = new TM64_Geometry.OK64ViewList[4];
-                    for (int currentView = 0; currentView < 4; currentView++)
+                    for (int currentView = 0; currentView < 1; currentView++)
                     {
                         sectionList[currentSection].viewList[currentView] = new TM64_Geometry.OK64ViewList();
                         int objectCount = Convert.ToInt32(SettingsFile[ThisLine++]);
@@ -1734,7 +1738,7 @@ namespace Tarmac64_Library
                         sectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
                         for (int currentObject = 0; currentObject < objectCount; currentObject++)
                         {
-                            sectionList[currentSection].viewList[currentView].objectList[currentObject] = Convert.ToInt32(SettingsFile[ThisLine]);                          
+                            sectionList[currentSection].viewList[currentView].objectList[currentObject] = Convert.ToInt32(SettingsFile[ThisLine++]);                          
                         }
                     }
                 }
@@ -1743,7 +1747,7 @@ namespace Tarmac64_Library
                 {
                     XLUSectionList[currentSection] = new TM64_Geometry.OK64SectionList();
                     XLUSectionList[currentSection].viewList = new TM64_Geometry.OK64ViewList[4];
-                    for (int currentView = 0; currentView < 4; currentView++)
+                    for (int currentView = 0; currentView < 1; currentView++)
                     {
                         XLUSectionList[currentSection].viewList[currentView] = new TM64_Geometry.OK64ViewList();
                         int objectCount = Convert.ToInt32(SettingsFile[ThisLine++]);
@@ -1758,6 +1762,7 @@ namespace Tarmac64_Library
 
                 foreach (var Object in masterObjects)
                 {
+                    Object.KillDisplayList = new bool[8];
                     for (int ThisKill = 0; ThisKill < Object.KillDisplayList.Length; ThisKill++)
                     {
                         Object.KillDisplayList[ThisKill] = Convert.ToBoolean(SettingsFile[ThisLine++]);
@@ -1879,8 +1884,8 @@ namespace Tarmac64_Library
 
         private void CopyBtn_Click(object sender, EventArgs e)
         {
-            sectionList[sectionBox.SelectedIndex].viewList[viewBox.SelectedIndex].objectList =
-                sectionList[CopySectionIndexBox.SelectedIndex].viewList[CopyViewIndexBox.SelectedIndex].objectList;
+            sectionList[sectionBox.SelectedIndex].viewList[0].objectList =
+                sectionList[CopySectionIndexBox.SelectedIndex].viewList[0].objectList;
             UpdateSVDisplay();
         }
 

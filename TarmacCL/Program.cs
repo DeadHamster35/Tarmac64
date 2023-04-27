@@ -15,20 +15,21 @@ namespace TarmacCL
     class Program
     {
 
-
+        
         static AssimpContext FBXParser = new AssimpContext();
         static float ProgramVersion = 0.2f;
 
 
         static void Main(string[] args)
         {
+            TM64 Tarmac64 = new TM64();
             short CWidth, CHeight;
-            CWidth = 60;
+            CWidth = 90;
             CHeight = 40;
             Console.SetWindowSize(CWidth, CHeight);
-            
-             
 
+
+            
             if (args.Length == 0)
             {
                 Console.WriteLine("");
@@ -37,6 +38,7 @@ namespace TarmacCL
                 Console.WriteLine("Build - " + ProgramVersion.ToString());
                 Console.WriteLine("");
                 Console.WriteLine("Available Commands:");
+                Console.WriteLine("");
                 Console.WriteLine("\t geometry <string>[filepath-directory] <string>[Compilation Type, -C or -B]");
                 Console.WriteLine("\t\t Parse a directory for FBX files.");                
                 Console.WriteLine("\t\t TarmacCL.exe geometry \"C:\\ModelData\\Directory\"");
@@ -44,6 +46,17 @@ namespace TarmacCL
                 Console.WriteLine("\t geometry <string>[filepath-fbx-file] <string>[Compilation Type, -C or -B]");
                 Console.WriteLine("\t\t Compile a single FBX file.");
                 Console.WriteLine("\t\t TarmacCL.exe geometry \"C:\\ModelData\\Directory\\ModelData.FBX\"");
+                Console.WriteLine("");
+                Console.WriteLine("\t texture <string>[filepath-fbx-file] <int> CodecType");
+                Console.WriteLine("\t\t Compile a single Texture file from a PNG/JPEG to specified Codec:");
+                Console.WriteLine("\t\t\t 0-RGBA16, 1-RGBA32, 2-IA16, 3-IA8");
+                Console.WriteLine("\t\t\t 4-IA4, 5-I8, 6-I4, 7-CI8, 8-CI4");
+                Console.WriteLine("\t\t TarmacCL.exe texture \"C:\\TextureData\\Directory\\TextureFile.PNG\" 0");
+                Console.WriteLine("");
+                Console.WriteLine("\t batchtexture <string>[filepath-fbx-file] <int> CodecType");
+                Console.WriteLine("\t\t Compile a directory of Texture files from a PNG/JPEG to specified Codec.");
+                Console.WriteLine("\t\t TarmacCL.exe batchtexture \"C:\\TextureData\\Directory\\\" 0");
+
 
                 return;
             }
@@ -82,6 +95,16 @@ namespace TarmacCL
                             }
 
                         }
+                        break;
+                    }
+                case "texture":
+                    {
+                        Tarmac64.WriteTextureFile(args[1], Convert.ToInt32(args[2]));
+                        break;
+                    }
+                case "batchtexture":
+                    {
+                        Tarmac64.WriteBatchTextures(args[1], Convert.ToInt32(args[2]));
                         break;
                     }
             }
@@ -204,7 +227,7 @@ namespace TarmacCL
                 {
                     Console.WriteLine(ThisRM.ToString() + " - " + F3DEX095_Parameters.RenderModeNames[ThisRM]);
                 }
-                TextureObjects[ThisTexture].RenderModeA = Convert.ToInt32(Console.ReadLine());
+                TextureObjects[ThisTexture].RenderModeB  = Convert.ToInt32(Console.ReadLine());
 
                 //
                 //
@@ -240,7 +263,7 @@ namespace TarmacCL
                 
                 Directory.CreateDirectory(savePath);
                 File.WriteAllLines(Path.Combine(savePath, TextureObjects[ThisTexture].textureName + ".c"), OutputFile.ToArray());
-
+                
             }
 
             File.WriteAllLines(Path.Combine(savePath, Path.GetFileNameWithoutExtension(TargetPath) + ".h"), HFileOutput.ToArray());

@@ -129,5 +129,10 @@ namespace Tarmac64_Retail
             GhostExtractor f2 = new GhostExtractor();
             f2.Show();
         }
+
+        private void compilersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -246,7 +246,7 @@
             this.GLWindow.OpenGLVersion = SharpGL.Version.OpenGLVersion.OpenGL2_1;
             this.GLWindow.RenderContextType = SharpGL.RenderContextType.NativeWindow;
             this.GLWindow.RenderTrigger = SharpGL.RenderTrigger.TimerBased;
-            this.GLWindow.Size = new System.Drawing.Size(922, 668);
+            this.GLWindow.Size = new System.Drawing.Size(923, 669);
             this.GLWindow.TabIndex = 0;
             this.GLWindow.TabStop = false;
             this.GLWindow.OpenGLDraw += new SharpGL.RenderEventHandler(this.GLWindow_OpenGLDraw);
@@ -254,8 +254,9 @@
             this.GLWindow.Load += new System.EventHandler(this.GLWindow_Load);
             this.GLWindow.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GLWindow_KeyDown);
             this.GLWindow.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GLWindow_MouseClick);
-            
+            this.GLWindow.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.GLWindow_MouseDoubleClick);
             this.GLWindow.MouseMove += new System.Windows.Forms.MouseEventHandler(this.GLWindow_MouseMove);
+            this.GLWindow.MouseUp += new System.Windows.Forms.MouseEventHandler(this.GLWindow_MouseUp);
             this.GLWindow.Resize += new System.EventHandler(this.GLWindow_Resized);
             // 
             // FPSDisplay

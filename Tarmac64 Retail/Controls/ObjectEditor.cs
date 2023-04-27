@@ -18,6 +18,21 @@ namespace Tarmac64_Retail
             InitializeComponent();
         }
 
+        string[] OKGameModeNames = new string[]
+        {
+            "Battle",
+            "Capture the Flag",
+            "Soccer"
+        };
+
+
+        string[] OKObjectiveClasses = new string[]
+        {
+            "Spawn",
+            "Flag",
+            "Base"
+        };
+
         TM64_Course TarmacCourse = new TM64_Course();
         TM64 Tarmac = new TM64();
         TM64_GL TarmacGL = new TM64_GL();
@@ -47,6 +62,15 @@ namespace Tarmac64_Retail
         {
 
             DefaultOKObjects();
+
+            foreach (var GName in OKGameModeNames)
+            {
+                ModeBox.Items.Add(GName);
+            }
+            foreach (var GName in OKObjectiveClasses)
+            {
+                ClassBox.Items.Add(GName);
+            }
 
             if (UpdateParent != null)
             {
@@ -122,6 +146,16 @@ namespace Tarmac64_Retail
             ObjectIndexBox.SelectedIndex = 0;
 
             NewItem = new TM64_Course.OKObjectType();
+            NewItem.Name = "Special Box";
+            NewItem.ModelData = new TM64_Geometry.OK64F3DObject[1];
+            NewItem.ModelData[0] = new TM64_Geometry.OK64F3DObject();
+            NewItem.ModelData[0].modelGeometry = TarmacGeometry.CreateStandard(4.0f);
+            NewItem.ModelData[0].objectColor = new float[] { 1.0f, 1.0f, 0.5f };
+            NewItem.ModelScale = 1.0f;
+            OKObjectTypeList.Add(NewItem);
+            ObjectIndexBox.Items.Add(NewItem.Name);
+
+            NewItem = new TM64_Course.OKObjectType();
             NewItem.Name = "Battle Objective";
             NewItem.ModelData = new TM64_Geometry.OK64F3DObject[1];
             NewItem.ModelData[0] = new TM64_Geometry.OK64F3DObject();
@@ -154,9 +188,14 @@ namespace Tarmac64_Retail
                 RotationYBox.Text = OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[1].ToString();
                 RotationZBox.Text = OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[2].ToString();
 
-                FlagBox.Text = OKObjectList[ObjectListBox.SelectedIndex].ObjectFlag.ToString();
-                BTypeBox.Text = OKObjectList[ObjectListBox.SelectedIndex].BattleType.ToString();
-                BPlayerBox.Text = OKObjectList[ObjectListBox.SelectedIndex].BattlePlayer.ToString();
+                FlagBox.Text = OKObjectList[ObjectListBox.SelectedIndex].Flag.ToString();
+
+                if (OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex == 4)
+                {
+                    ModeBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].GameMode;
+                    ClassBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].ObjectiveClass;
+                    BPlayerBox.Text = OKObjectList[ObjectListBox.SelectedIndex].BattlePlayer.ToString();
+                }
             }
             else
             {
@@ -177,7 +216,8 @@ namespace Tarmac64_Retail
                 RotationZBox.Text = "";
 
                 FlagBox.Text = "";
-                BTypeBox.Text = "";
+                ModeBox.SelectedIndex = -1;
+                ClassBox.SelectedIndex = -1;
                 BPlayerBox.Text = "";
             }
 
@@ -209,9 +249,9 @@ namespace Tarmac64_Retail
             {
                 TM64_Course.OKObject NewObject = new TM64_Course.OKObject();
                 NewObject.ObjectIndex = Convert.ToInt16(ObjectSettings[ThisLine++]);
-                NewObject.ObjectFlag = Convert.ToInt16(ObjectSettings[ThisLine++]);
+                NewObject.GameMode = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.BattlePlayer = Convert.ToInt16(ObjectSettings[ThisLine++]);
-                NewObject.BattleType = Convert.ToInt16(ObjectSettings[ThisLine++]);
+                NewObject.ObjectiveClass = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.OriginPosition = new short[3];
                 NewObject.OriginPosition[0] = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.OriginPosition[1] = Convert.ToInt16(ObjectSettings[ThisLine++]);
@@ -254,9 +294,9 @@ namespace Tarmac64_Retail
             for (int This = 0; This < OKObjectList.Count; This++)
             {
                 Output.Add(OKObjectList[This].ObjectIndex.ToString());
-                Output.Add(OKObjectList[This].ObjectFlag.ToString());
+                Output.Add(OKObjectList[This].GameMode.ToString());
                 Output.Add(OKObjectList[This].BattlePlayer.ToString());
-                Output.Add(OKObjectList[This].BattleType.ToString());
+                Output.Add(OKObjectList[This].ObjectiveClass.ToString());
                 Output.Add(OKObjectList[This].OriginPosition[0].ToString());
                 Output.Add(OKObjectList[This].OriginPosition[1].ToString());
                 Output.Add(OKObjectList[This].OriginPosition[2].ToString());
@@ -343,18 +383,23 @@ namespace Tarmac64_Retail
                 {
                     OKObjectList[ObjectListBox.SelectedIndex].AngularVelocity[2] = Parse;
                 }
+
                 if (short.TryParse(FlagBox.Text, out Parse))
                 {
-                    OKObjectList[ObjectListBox.SelectedIndex].ObjectFlag = Parse;
+                    OKObjectList[ObjectListBox.SelectedIndex].Flag = Parse;
                 }
-                if (short.TryParse(BPlayerBox.Text, out Parse))
+
+                if (OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex == 4)
                 {
-                    OKObjectList[ObjectListBox.SelectedIndex].BattlePlayer = Parse;
+                    OKObjectList[ObjectListBox.SelectedIndex].GameMode = Convert.ToInt16(ModeBox.SelectedIndex);
+
+                    if (short.TryParse(BPlayerBox.Text, out Parse))
+                    {
+                        OKObjectList[ObjectListBox.SelectedIndex].BattlePlayer = Parse;
+                    }
+                    OKObjectList[ObjectListBox.SelectedIndex].ObjectiveClass = Convert.ToInt16(ClassBox.SelectedIndex);
                 }
-                if (short.TryParse(BTypeBox.Text, out Parse))
-                {
-                    OKObjectList[ObjectListBox.SelectedIndex].BattleType = Parse;
-                }
+                    
             }
         }
 
@@ -432,6 +477,41 @@ namespace Tarmac64_Retail
                 ZoomIndex = Index;
             }
             UpdateZoomToTarget(sender, e);
+        }
+
+        private void label75_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ClassBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ModeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
