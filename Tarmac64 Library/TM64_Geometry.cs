@@ -3083,14 +3083,14 @@ namespace Tarmac64_Library
 
                 relativeZero = Convert.ToInt32(memoryStream.Position + vertMagic);
                 cObj.meshPosition[0] = Convert.ToInt32(SegmentBinary | relativeZero);
-                
 
+                uint VOffset = 0;
                 for (int ThisDraw = 0; ThisDraw < CrunchedModel.Length; ThisDraw++)
                 {
                     uint VertexCount = Convert.ToUInt32(CrunchedModel[ThisDraw].VertexCache.Count);
                     int LocalFaceCount = CrunchedModel[ThisDraw].Indexes.Count;
-                    binaryWriter.Write(F3D.gsSPVertex(Convert.ToUInt32(cObj.VertCachePosition), VertexCount, 0));
-
+                    binaryWriter.Write(F3D.gsSPVertex(Convert.ToUInt32(cObj.VertCachePosition + VOffset), VertexCount, 0));
+                    VOffset += (VertexCount * 16);
 
                     for (int TargetIndex = 0; TargetIndex < LocalFaceCount;)
                     {

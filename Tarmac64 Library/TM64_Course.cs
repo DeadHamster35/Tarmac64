@@ -375,7 +375,7 @@ namespace Tarmac64_Library
 
             for (int ThisObject = 0; ThisObject < ObjectList.Length; ThisObject++)
             {
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].ObjectIndex - 5)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].ObjectIndex - 6)));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].GameMode)));
 
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginPosition[0])));
@@ -754,7 +754,7 @@ namespace Tarmac64_Library
                     SaveData[currentItem].ModelData[ThisModel].ListPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
                     for (int ThisMesh = 0; ThisMesh < SaveData[currentItem].ModelData[ThisModel].meshPosition.Length; ThisMesh++)
                     {
-                        binaryWriter.Write(F3D.BigEndian(F3D.gsSPDisplayList(Convert.ToUInt32(0x0A000000 | SaveData[currentItem].ModelData[ThisModel].meshPosition[ThisMesh]))));
+                        binaryWriter.Write(F3D.gsSPDisplayList(Convert.ToUInt32(0x0A000000 | SaveData[currentItem].ModelData[ThisModel].meshPosition[ThisMesh])));
                     }
                     binaryWriter.Write(F3D.gsSPEndDisplayList());
                 }
