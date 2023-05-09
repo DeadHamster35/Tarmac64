@@ -25,6 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Collections.Concurrent;
 
+
 namespace Tarmac64_Library
 {
     public class TM64_Geometry
@@ -1493,14 +1494,18 @@ namespace Tarmac64_Library
 
 
 
-            Matrix4x4 OPrime = GetTotalTransform(objectNode, fbx);
-            float[] BOrigin = new float[3]
-            {
-                Convert.ToSingle(OPrime.A4),
-                Convert.ToSingle(OPrime.C4),
-                Convert.ToSingle(OPrime.B4)
-            };
-          
+            Assimp.Matrix4x4 OPrime = GetTotalTransform(objectNode, fbx);
+
+            Assimp.Vector3D BOrigin = new Assimp.Vector3D();
+            Assimp.Vector3D BScale = new Assimp.Vector3D();
+            Assimp.Quaternion RotQuat = new Assimp.Quaternion();
+            OPrime.Decompose(out BScale, out RotQuat, out BOrigin);
+            float[] BRotation = ConvertEuler(RotQuat);
+
+            BRotation[0] /= Convert.ToSingle(0.01745329252);
+            BRotation[1] /= Convert.ToSingle(0.01745329252);
+            BRotation[2] /= Convert.ToSingle(0.01745329252);
+
             List<int> xValues = new List<int>();
             List<int> yValues = new List<int>();
             List<int> zValues = new List<int>();
@@ -1529,6 +1534,7 @@ namespace Tarmac64_Library
             int currentFace = 0;
             //newObject.modelGeometry[currentFace];
 
+            
             foreach (var childMesh in objectNode.MeshIndices)
             {
 
@@ -1557,11 +1563,23 @@ namespace Tarmac64_Library
                     { 
                         newObject.modelGeometry[currentFace].VertData[currentVert] = new Vertex();
                         newObject.modelGeometry[currentFace].VertData[currentVert].position = new Position();
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16((fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X) + BOrigin[0]);
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16((fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y) - BOrigin[1]);
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16((fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z) + BOrigin[2]);
+                        
+                        Point3D VertPosition = new Point3D
+                        (
+                            (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X) * BScale[0],
+                            (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y) * BScale[1],
+                            (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z) * BScale[2]
+                        );
 
+                        Point3D NewPosition = RotatePoint(VertPosition, BRotation);
 
+                        NewPosition.X += BOrigin[0];
+                        NewPosition.Y += BOrigin[1];
+                        NewPosition.Z += BOrigin[2];
+
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(NewPosition.X);
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16(NewPosition.Y);
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16(NewPosition.Z);
 
                         xValues.Add(newObject.modelGeometry[currentFace].VertData[currentVert].position.x);
                         yValues.Add(newObject.modelGeometry[currentFace].VertData[currentVert].position.y);
@@ -5813,7 +5831,6 @@ namespace Tarmac64_Library
 
             return NewAnime;
         }
-
 
         public Point3D RotatePoint(Point3D Point, float[] ObjectAngles)
         {
