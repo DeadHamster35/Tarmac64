@@ -1491,10 +1491,16 @@ namespace Tarmac64_Library
             int vertCount = 0;
             int faceCount = 0;
 
-            
 
 
-
+            Matrix4x4 OPrime = GetTotalTransform(objectNode, fbx);
+            float[] BOrigin = new float[3]
+            {
+                Convert.ToSingle(OPrime.A4),
+                Convert.ToSingle(OPrime.C4),
+                Convert.ToSingle(OPrime.B4)
+            };
+          
             List<int> xValues = new List<int>();
             List<int> yValues = new List<int>();
             List<int> zValues = new List<int>();
@@ -1551,9 +1557,9 @@ namespace Tarmac64_Library
                     { 
                         newObject.modelGeometry[currentFace].VertData[currentVert] = new Vertex();
                         newObject.modelGeometry[currentFace].VertData[currentVert].position = new Position();
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X);
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y);
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16(fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z);
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16((fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X) + BOrigin[0]);
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16((fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y) - BOrigin[1]);
+                        newObject.modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16((fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z) + BOrigin[2]);
 
 
 

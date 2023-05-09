@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ObjectTypeCompiler));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.panel2 = new System.Windows.Forms.Panel();
             this.BElementTable = new System.Windows.Forms.DataGridView();
             this.Element = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -81,7 +83,6 @@
             this.LoadBtn = new System.Windows.Forms.Button();
             this.ModelBox = new System.Windows.Forms.TextBox();
             this.BuildBtn = new System.Windows.Forms.Button();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BElementTable)).BeginInit();
@@ -97,6 +98,14 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(314, 588);
             this.panel1.TabIndex = 255;
+            // 
+            // TextureControl
+            // 
+            this.TextureControl.AutoScroll = true;
+            this.TextureControl.Location = new System.Drawing.Point(3, 3);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(292, 780);
+            this.TextureControl.TabIndex = 269;
             // 
             // panel2
             // 
@@ -647,14 +656,6 @@
             this.BuildBtn.UseVisualStyleBackColor = true;
             this.BuildBtn.Click += new System.EventHandler(this.BuildBtn_Click);
             // 
-            // TextureControl
-            // 
-            this.TextureControl.AutoScroll = true;
-            this.TextureControl.Location = new System.Drawing.Point(3, 3);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(292, 780);
-            this.TextureControl.TabIndex = 269;
-            // 
             // ObjectTypeCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -663,6 +664,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.BuildBtn);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(750, 650);
             this.MinimumSize = new System.Drawing.Size(600, 650);

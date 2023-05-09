@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HitboxCompiler));
             this.LoadFBXButton = new System.Windows.Forms.Button();
             this.IndexBox = new System.Windows.Forms.ComboBox();
             this.OriginXBox = new System.Windows.Forms.TextBox();
@@ -394,6 +395,7 @@
             this.Controls.Add(this.CompileButton);
             this.Controls.Add(this.IndexBox);
             this.Controls.Add(this.LoadFBXButton);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HitboxCompiler";
             this.Text = "Hitbox Compiler";
             this.Load += new System.EventHandler(this.Form1_Load);

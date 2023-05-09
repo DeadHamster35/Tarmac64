@@ -29,6 +29,7 @@ namespace Tarmac64_Retail
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoadBarWindow));
             this.LoadingBar = new System.Windows.Forms.ProgressBar();
             this.LoadingLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -57,6 +58,7 @@ namespace Tarmac64_Retail
             this.ClientSize = new System.Drawing.Size(264, 73);
             this.Controls.Add(this.LoadingLabel);
             this.Controls.Add(this.LoadingBar);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LoadBarWindow";
             this.Text = "TitleName";
             this.Load += new System.EventHandler(this.LoadBarWindow_Load);

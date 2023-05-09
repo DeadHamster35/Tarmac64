@@ -115,14 +115,14 @@
             this.textureCompilerToolStripMenuItem1,
             this.modelCompilerToolStripMenuItem1});
             this.compilersToolStripMenuItem.Name = "compilersToolStripMenuItem";
-            this.compilersToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.compilersToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.compilersToolStripMenuItem.Text = "Compilers";
             this.compilersToolStripMenuItem.Click += new System.EventHandler(this.compilersToolStripMenuItem_Click);
             // 
             // courseCompilerToolStripMenuItem
             // 
             this.courseCompilerToolStripMenuItem.Name = "courseCompilerToolStripMenuItem";
-            this.courseCompilerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.courseCompilerToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.courseCompilerToolStripMenuItem.Text = "Course Compiler";
             this.courseCompilerToolStripMenuItem.Click += new System.EventHandler(this.GeometryToolStripMenuItem1_Click);
             // 
@@ -132,7 +132,7 @@
             this.objectTypeCompilerToolStripMenuItem,
             this.hitboxCompilerToolStripMenuItem1});
             this.objectsToolStripMenuItem.Name = "objectsToolStripMenuItem";
-            this.objectsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.objectsToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.objectsToolStripMenuItem.Text = "Objects";
             // 
             // objectTypeCompilerToolStripMenuItem
@@ -152,14 +152,14 @@
             // textureCompilerToolStripMenuItem1
             // 
             this.textureCompilerToolStripMenuItem1.Name = "textureCompilerToolStripMenuItem1";
-            this.textureCompilerToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.textureCompilerToolStripMenuItem1.Size = new System.Drawing.Size(165, 22);
             this.textureCompilerToolStripMenuItem1.Text = "Texture Compiler";
             this.textureCompilerToolStripMenuItem1.Click += new System.EventHandler(this.textureCompilerToolStripMenuItem_Click_1);
             // 
             // modelCompilerToolStripMenuItem1
             // 
             this.modelCompilerToolStripMenuItem1.Name = "modelCompilerToolStripMenuItem1";
-            this.modelCompilerToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.modelCompilerToolStripMenuItem1.Size = new System.Drawing.Size(165, 22);
             this.modelCompilerToolStripMenuItem1.Text = "Model Compiler";
             this.modelCompilerToolStripMenuItem1.Click += new System.EventHandler(this.modelCompilerToolStripMenuItem_Click);
             // 
@@ -169,7 +169,7 @@
             this.songExtractorToolStripMenuItem,
             this.ghostExtractorToolStripMenuItem});
             this.extractorsToolStripMenuItem.Name = "extractorsToolStripMenuItem";
-            this.extractorsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractorsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.extractorsToolStripMenuItem.Text = "Extractors";
             // 
             // songExtractorToolStripMenuItem
@@ -189,7 +189,7 @@
             // courseLoaderToolStripMenuItem
             // 
             this.courseLoaderToolStripMenuItem.Name = "courseLoaderToolStripMenuItem";
-            this.courseLoaderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.courseLoaderToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.courseLoaderToolStripMenuItem.Text = "Game Builder";
             this.courseLoaderToolStripMenuItem.Click += new System.EventHandler(this.courseLoaderToolStripMenuItem_Click);
             // 

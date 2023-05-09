@@ -125,7 +125,7 @@
             // 
             // groupBox6
             // 
-            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox6.Controls.Add(this.BattleBoxC);
             this.groupBox6.Controls.Add(this.VSBoxC);
             this.groupBox6.Controls.Add(this.ExtraBoxC);
@@ -146,7 +146,7 @@
             this.groupBox6.Controls.Add(this.label17);
             this.groupBox6.Location = new System.Drawing.Point(3, 422);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(281, 528);
+            this.groupBox6.Size = new System.Drawing.Size(281, 170);
             this.groupBox6.TabIndex = 1;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Object Info";
@@ -364,7 +364,7 @@
             this.surfaceobjectBox.FormattingEnabled = true;
             this.surfaceobjectBox.Location = new System.Drawing.Point(3, 9);
             this.surfaceobjectBox.Name = "surfaceobjectBox";
-            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 524);
+            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 407);
             this.surfaceobjectBox.TabIndex = 0;
             this.surfaceobjectBox.SelectedIndexChanged += new System.EventHandler(this.SurfaceobjectBox_SelectedIndexChanged);
             // 
