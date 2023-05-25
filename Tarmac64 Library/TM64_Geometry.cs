@@ -17,9 +17,9 @@ using Cereal64.Common.Rom;
 using Cereal64.Common.Utils.Encoding;
 using System.Text.RegularExpressions;
 using System.Security.Permissions;
-using SharpDX;
 using System.Windows;
 using Tarmac64_Library;
+using SharpDX;
 using F3DSharp;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -1874,7 +1874,7 @@ namespace Tarmac64_Library
             return masterList.ToArray();
         }
 
-        public OK64F3DObject[] loadMaster(ref OK64F3DGroup[] groupArray, Assimp.Scene fbx, OK64Texture[] textureArray, bool AlphaCH = false)
+        public OK64F3DObject[] LoadMaster(ref OK64F3DGroup[] groupArray, Assimp.Scene fbx, OK64Texture[] textureArray, bool AlphaCH = false)
         {
             
             var masterNode = fbx.RootNode.FindNode("Course Master Objects");
@@ -1915,7 +1915,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64F3DObject[] createObjects(Assimp.Scene fbx, OK64Texture[] textureArray)
+        public OK64F3DObject[] CreateObjects(Assimp.Scene fbx, OK64Texture[] textureArray)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0; 
@@ -1932,7 +1932,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64F3DObject[] createMaster(Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray, bool AlphaCH = false)
+        public OK64F3DObject[] CreateMasters(Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray, bool AlphaCH = false)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0;
@@ -1955,7 +1955,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64F3DObject[] loadCollision (Assimp.Scene fbx, int sectionCount, int simpleFormat, OK64Texture[] textureArray)
+        public OK64F3DObject[] LoadCollisions(Assimp.Scene fbx, int sectionCount, int simpleFormat, OK64Texture[] textureArray)
          {   
             int totalIndexCount = 0;
             int totalIndex = 0;
@@ -2012,7 +2012,7 @@ namespace Tarmac64_Library
         }
 
 
-        public OK64SectionList[] loadSection(Assimp.Scene fbx, int sectionCount, OK64F3DObject[] masterObjects)
+        public OK64SectionList[] LoadSection(Assimp.Scene fbx, int sectionCount, OK64F3DObject[] masterObjects)
         {
             OK64SectionList[] sectionList = new OK64SectionList[sectionCount];
             List<OK64F3DObject> masterList = new List<OK64F3DObject>(masterObjects);
@@ -2662,7 +2662,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] writeRawTextures(byte[] SegmentData, OK64Texture[] textureObject, int DataLength)
+        public byte[] WriteRawTextures(byte[] SegmentData, OK64Texture[] textureObject, int DataLength)
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -2738,7 +2738,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] writeModelTextures(byte[] SegmentData, OK64Texture[] textureObject, int DataLength)
+        public byte[] WriteModelTextures(byte[] SegmentData, OK64Texture[] textureObject, int DataLength)
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -2812,7 +2812,7 @@ namespace Tarmac64_Library
         }
 
 
-        public void buildTextures(OK64Texture[] TextureArray)
+        public void BuildTextures(OK64Texture[] TextureArray)
         {
             int segment5Position = 0;
             List<int> SkipMaterials = new List<int>();
@@ -2942,7 +2942,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] compiletextureTable(TM64_Course.Course CourseData)
+        public byte[] CompileTextureTable(TM64_Course.Course CourseData)
         {
             OK64Texture[] textureObject = CourseData.TextureObjects;
             MemoryStream memoryStream = new MemoryStream();
@@ -3033,7 +3033,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] compileF3DObject(byte[] InputData, OK64F3DObject[] MasterObjects, OK64Texture[] TextureObjects, int vertMagic, int Segment)
+        public byte[] CompileF3DObject(byte[] InputData, OK64F3DObject[] MasterObjects, OK64Texture[] TextureObjects, int vertMagic, int Segment)
         {
 
 
@@ -3153,7 +3153,7 @@ namespace Tarmac64_Library
             
         }
 
-        public byte[] compileF3DHeader(int Position, byte[] HeaderData)
+        public byte[] CompileF3DHeader(int Position, byte[] HeaderData)
         {
             MemoryStream memoryStream = new MemoryStream();
             
@@ -3254,7 +3254,7 @@ namespace Tarmac64_Library
 
             return memoryStream.ToArray();
         }
-        public void compileCourseObject(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic, bool BoundingToggle = false)
+        public void CompileCourseObjects(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic, bool BoundingToggle = false)
         {
 
 
@@ -4531,7 +4531,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] compileTextureObject(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5, bool GeometryMode = true, bool FogToggle = false)
+        public byte[] CompileTextureObjects(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5, bool GeometryMode = true, bool FogToggle = false)
         {
             byte[] byteArray = new byte[0];
 
@@ -4576,7 +4576,7 @@ namespace Tarmac64_Library
             return seg7m.ToArray();
         }
 
-        public byte[] compileObjectList(byte[] OutputData, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int SegmentID)
+        public byte[] CompileObjectList(byte[] OutputData, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int SegmentID)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -4647,7 +4647,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] compileF3DList(ref OK64SectionList[] sectionOut, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, OK64Texture[] textureObject)
+        public byte[] CompileF3DList(ref OK64SectionList[] sectionOut, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, OK64Texture[] textureObject)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -4769,7 +4769,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] compileXLUList(ref OK64SectionList[] sectionOut, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, OK64Texture[] textureObject)
+        public byte[] CompileXLUList(ref OK64SectionList[] sectionOut, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, OK64Texture[] textureObject)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -5058,7 +5058,7 @@ namespace Tarmac64_Library
             return seg6m.ToArray();
         }
 
-        public byte[] compilesurfaceTable(OK64F3DObject[] surfaceObject)
+        public byte[] CompileSurfaceTable(OK64F3DObject[] surfaceObject)
         {
             MemoryStream seg6m = new MemoryStream();
             BinaryReader seg6r = new BinaryReader(seg6m);
@@ -5108,7 +5108,7 @@ namespace Tarmac64_Library
             return seg6;
         }
 
-        public byte[] compilesectionviewTable(OK64SectionList[] sectionList, int magic)
+        public byte[] CompilesectionviewTable(OK64SectionList[] sectionList, int magic)
         {
             MemoryStream seg6m = new MemoryStream();
             BinaryReader seg6r = new BinaryReader(seg6m);

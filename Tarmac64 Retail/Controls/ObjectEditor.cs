@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tarmac64_Library;
+using System.IO;
 
 namespace Tarmac64_Retail
 {
@@ -229,18 +230,35 @@ namespace Tarmac64_Retail
 
         public int LoadSettings(string[] ObjectSettings)
         {
+
+            TM64.OK64Settings okSettings = Tarmac.LoadSettings();
             Loading = true;
             int ThisLine = 0;
             int Count = Convert.ToInt32(ObjectSettings[ThisLine++]);
             OKObjectTypeList.Clear();
             ObjectIndexBox.Items.Clear();
             DefaultOKObjects();
+            OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
+
             for (int This = 0; This < Count; This++)
-            {                
-                TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(ObjectSettings[ThisLine++]);
-                OKObjectTypeList.Add(NewType);
-                ObjectIndexBox.Items.Add(NewType.Name);
+            {
+                string TargetFile = ObjectSettings[ThisLine++];
+                if (!File.Exists(TargetFile))
+                {
+                    MessageBox.Show("Please select replacement OKObject for " + Environment.NewLine + TargetFile);
+                    if (FileOpen.ShowDialog() == DialogResult.OK)
+                    {
+                        TargetFile = FileOpen.FileName;
+                    }
+                }
+
+                    TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(ObjectSettings[ThisLine++]);
+                    OKObjectTypeList.Add(NewType);
+                    ObjectIndexBox.Items.Add(NewType.Name);
             }
+
+
             OKObjectList.Clear();
             ObjectListBox.Items.Clear();
             Count = Convert.ToInt32(ObjectSettings[ThisLine++]);

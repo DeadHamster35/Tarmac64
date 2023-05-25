@@ -741,9 +741,9 @@ namespace Tarmac64_Library
             
             for (int currentItem = 0; currentItem < SaveData.Length; currentItem++)
             {
-                OutputData = TarmacGeometry.writeRawTextures(OutputData, SaveData[currentItem].TextureData, DataLength);
-                OutputData = TarmacGeometry.compileTextureObject(OutputData, SaveData[currentItem].TextureData, DataLength, 0xA, true, FogToggle);
-                OutputData = TarmacGeometry.compileF3DObject(OutputData, SaveData[currentItem].ModelData, SaveData[currentItem].TextureData, DataLength, 0xA);                
+                OutputData = TarmacGeometry.WriteRawTextures(OutputData, SaveData[currentItem].TextureData, DataLength);
+                OutputData = TarmacGeometry.CompileTextureObjects(OutputData, SaveData[currentItem].TextureData, DataLength, 0xA, true, FogToggle);
+                OutputData = TarmacGeometry.CompileF3DObject(OutputData, SaveData[currentItem].ModelData, SaveData[currentItem].TextureData, DataLength, 0xA);                
             }
             binaryWriter.Write(OutputData);
             //Mesh List
@@ -1641,7 +1641,7 @@ namespace Tarmac64_Library
             TM64_Geometry mk = new TM64_Geometry();
 
             fileData = mk.WriteTextures(fileData, courseData);
-            courseData.Segment9 = mk.compiletextureTable(courseData);
+            courseData.Segment9 = mk.CompileTextureTable(courseData);
             int addressAlign = 0;
 
 

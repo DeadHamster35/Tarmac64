@@ -4,5 +4,4 @@
 // a specific target and scoped to a namespace, type, member, etc.
 
 using System.Diagnostics.CodeAnalysis;
-
-
+[assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>", Scope = "member", Target = "~M:Tarmac64_Library.TM64_Geometry.testIntersect(Assimp.Vector3D,Assimp.Vector3D,Tarmac64_Library.TM64_Geometry.Vertex,Tarmac64_Library.TM64_Geometry.Vertex,Tarmac64_Library.TM64_Geometry.Vertex)~Assimp.Vector3D")]

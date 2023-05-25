@@ -35,9 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Aspose.3D">
-      <HintPath>..\Tarmac64 Library\bin\Release\Aspose.3D.dll</HintPath>
-    </Reference>
     <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
     </Reference>
@@ -50,7 +47,7 @@
       <HintPath>..\Tarmac64 Library\Resources\Cereal64.Microcodes.dll</HintPath>
     </Reference>
     <Reference Include="F3DSharp">
-      <HintPath>..\..\copyman\CopyMan\CopyMan\DLL\F3DSharp.dll</HintPath>
+      <HintPath>..\Tarmac64 Library\Resources\F3DSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

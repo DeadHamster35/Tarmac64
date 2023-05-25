@@ -24,7 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>..\Tarmac64 Developer\Tarmac64.ruleset</CodeAnalysisRuleSet>
-    <NoWarn>IDE0044;IDE0017;IDE0059</NoWarn>
+    <NoWarn>IDE0044;IDE0017;IDE0059;IDE1006;</NoWarn>
     <WarningsAsErrors>IDE1006</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -40,9 +40,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Aspose.3D, Version=20.7.0.0, Culture=neutral, PublicKeyToken=f071c641d0b4582b, processorArchitecture=MSIL">
-      <HintPath>..\..\..\copyman\CopyMan\packages\Aspose.3D.20.7.0\lib\net46\Aspose.3D.dll</HintPath>
-    </Reference>
     <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
     </Reference>
@@ -67,10 +64,10 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="SharpDX">
-      <HintPath>..\modified assimp\SharpDX.dll</HintPath>
+      <HintPath>Resources\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
-      <HintPath>..\modified assimp\SharpDX.Mathematics.dll</HintPath>
+      <HintPath>Resources\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="SharpGL, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpGL.2.4.1.2\lib\net40-client\SharpGL.dll</HintPath>

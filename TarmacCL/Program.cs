@@ -155,7 +155,7 @@ namespace TarmacCL
             if (masterNode != null)
             {
                 TextureObjects = TM64Geometry.loadTextures(ModelData, TargetPath);
-                MasterObjects = TM64Geometry.createObjects(ModelData, TextureObjects);
+                MasterObjects = TM64Geometry.CreateObjects(ModelData, TextureObjects);
             }
 
             for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
@@ -254,8 +254,8 @@ namespace TarmacCL
                 Console.Clear();
                 int DataLength = 0;
                 byte[] TempBuffer = new byte[0];
-                TM64Geometry.writeModelTextures(TempBuffer, TextureObjects, DataLength);
-                TM64Geometry.compileTextureObject(TempBuffer, TextureObjects, DataLength, SegmentID);
+                TM64Geometry.WriteModelTextures(TempBuffer, TextureObjects, DataLength);
+                TM64Geometry.CompileTextureObjects(TempBuffer, TextureObjects, DataLength, SegmentID);
 
                 OutputFile.AddRange(TM64Geometry.WriteTextureC(TextureObjects[ThisTexture]));
                 HFileOutput.Add("extern unsigned short[] " + TextureObjects[ThisTexture].textureName + "();");

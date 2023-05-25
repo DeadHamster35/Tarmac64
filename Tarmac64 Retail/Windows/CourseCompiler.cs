@@ -206,7 +206,7 @@ namespace Tarmac64_Library
             
             // This command writes all the bitmaps to the end of the ROM
 
-            TarmacGeometry.buildTextures(textureArray);
+            TarmacGeometry.BuildTextures(textureArray);
                     
 
             //build segment 7 out of the main course objects and surface geometry
@@ -324,13 +324,13 @@ namespace Tarmac64_Library
 
 
                 textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5, Convert.ToBoolean(courseData.Fog.FogToggle) );
-                TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic, true);
-                TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic, false);
+                TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic, true);
+                TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic, false);
 
-                renderList = TarmacGeometry.compileF3DList(ref sectionList, masterObjects, sectionList, textureArray);
-                XLUList = TarmacGeometry.compileXLUList(ref XLUSectionList, masterObjects, XLUSectionList, textureArray);
+                renderList = TarmacGeometry.CompileF3DList(ref sectionList, masterObjects, sectionList, textureArray);
+                XLUList = TarmacGeometry.CompileXLUList(ref XLUSectionList, masterObjects, XLUSectionList, textureArray);
 
-                surfaceTable = TarmacGeometry.compilesurfaceTable(surfaceObjects);
+                surfaceTable = TarmacGeometry.CompileSurfaceTable(surfaceObjects);
 
                 magic = textureList.Length + ListData.Length + PathData.Length + 8 + surfaceTable.Length + (528 * 2);
                 
@@ -348,8 +348,8 @@ namespace Tarmac64_Library
 
                 // Build the display table with the above magic value
 
-                displayTable = TarmacGeometry.compilesectionviewTable(sectionList, magic);
-                XLUTable = TarmacGeometry.compilesectionviewTable(XLUSectionList, magic + renderList.Length);
+                displayTable = TarmacGeometry.CompilesectionviewTable(sectionList, magic);
+                XLUTable = TarmacGeometry.CompilesectionviewTable(XLUSectionList, magic + renderList.Length);
 
 
 
@@ -439,12 +439,12 @@ namespace Tarmac64_Library
 
 
                 textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + ListData.Length, 5, Convert.ToBoolean(courseData.Fog.FogToggle));
-                TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
-                TarmacGeometry.compileCourseObject(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
+                TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
+                TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
 
                 renderList = TarmacGeometry.CompileBattleList(masterObjects, textureArray);
                 XLUList = TarmacGeometry.CompileBattleXLU(masterObjects, textureArray);
-                surfaceTable = TarmacGeometry.compilesurfaceTable(surfaceObjects);
+                surfaceTable = TarmacGeometry.CompileSurfaceTable(surfaceObjects);
 
 
                 memoryStream = new MemoryStream();
@@ -888,8 +888,8 @@ namespace Tarmac64_Library
                         {
                             case 0:
                                 {
-                                    masterObjects = TarmacGeometry.createMaster(fbx, sectionCount, textureArray, AlphaCHBox.Checked);
-                                    surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
+                                    masterObjects = TarmacGeometry.CreateMasters(fbx, sectionCount, textureArray, AlphaCHBox.Checked);
+                                    surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
                                     TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
                                     sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
                                     XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
@@ -897,8 +897,8 @@ namespace Tarmac64_Library
                                 }
                             case 1:
                                 {
-                                    masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray, AlphaCHBox.Checked);
-                                    surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
+                                    masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray, AlphaCHBox.Checked);
+                                    surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
                                     TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
                                     sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
                                     XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
@@ -906,18 +906,18 @@ namespace Tarmac64_Library
                                 }
                             case 2:
                                 {
-                                    masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray, AlphaCHBox.Checked);
-                                    surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
-                                    sectionList = TarmacGeometry.loadSection(fbx, sectionCount, masterObjects);
-                                    XLUSectionList = TarmacGeometry.loadSection(fbx, sectionCount, masterObjects);
+                                    masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray, AlphaCHBox.Checked);
+                                    surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
+                                    sectionList = TarmacGeometry.LoadSection(fbx, sectionCount, masterObjects);
+                                    XLUSectionList = TarmacGeometry.LoadSection(fbx, sectionCount, masterObjects);
                                     break;
                                 }
                         }
                     }
                     else
                     {
-                        masterObjects = TarmacGeometry.loadMaster(ref masterGroups, fbx, textureArray);
-                        surfaceObjects = TarmacGeometry.loadCollision(fbx, sectionCount, modelFormat, textureArray);
+                        masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray);
+                        surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
                         sectionList = new TM64_Geometry.OK64SectionList[0];
                         XLUSectionList = new TM64_Geometry.OK64SectionList[0];
                     }

@@ -84,7 +84,7 @@ namespace Tarmac64_Library
                 if (masterNode != null)
                 {
                     TextureObjects[0] = TarmacGeo.loadTextures(ModelData, FBXFilePath);
-                    MasterObjects[0] = TarmacGeo.createObjects(ModelData, TextureObjects[0]);
+                    MasterObjects[0] = TarmacGeo.CreateObjects(ModelData, TextureObjects[0]);
                 }
                 else
                 {
@@ -113,20 +113,20 @@ namespace Tarmac64_Library
             {
                 if (MCheckBox.Checked)
                 {
-                    OutputData = TarmacGeo.writeModelTextures(OutputData, TextureObjects[currentItem], DataLength);
-                    OutputData = TarmacGeo.compileTextureObject(OutputData, TextureObjects[currentItem], DataLength, SegmentID);
-                    OutputData = TarmacGeo.compileF3DObject(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], DataLength, SegmentID);
+                    OutputData = TarmacGeo.WriteModelTextures(OutputData, TextureObjects[currentItem], DataLength);
+                    OutputData = TarmacGeo.CompileTextureObjects(OutputData, TextureObjects[currentItem], DataLength, SegmentID);
+                    OutputData = TarmacGeo.CompileF3DObject(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], DataLength, SegmentID);
 
 
 
                     int SegmentPosition = OutputData.Length + (SegmentID * 0x01000000) + DataLength;
 
-                    HeaderData = TarmacGeo.compileF3DHeader(SegmentPosition, HeaderData);
+                    HeaderData = TarmacGeo.CompileF3DHeader(SegmentPosition, HeaderData);
 
                     asmText += ".definelabel " + MasterObjects[currentItem][0].objectName + ", 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
                     hText += "extern const int " + MasterObjects[currentItem][0].objectName + "; //0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
                     cText += "const int " + MasterObjects[currentItem][0].objectName + "= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
-                    OutputData = TarmacGeo.compileObjectList(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], SegmentID);
+                    OutputData = TarmacGeo.CompileObjectList(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], SegmentID);
                 }
                 TM64_Course TarmacCourse = new TM64_Course();
                 //byte[] AnimationData = TarmacCourse.CompileObjectAnimation(TypeList.ToArray(), OutputData.Length);

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.202
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8BED16F1-6BBF-4A49-8620-FA3B0AD2E794}"
 	ProjectSection(SolutionItems) = preProject
@@ -9,6 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarmac64 Designer", "Tarmac64 Retail\Tarmac64 Designer.csproj", "{5D094EE2-1FD1-4E91-8719-1EF35BDD5BAD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BD044BBD-727B-40AC-B6BA-087E81864333} = {BD044BBD-727B-40AC-B6BA-087E81864333}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarmac64 Library", "Tarmac64 Library\Tarmac64 Library.csproj", "{BD044BBD-727B-40AC-B6BA-087E81864333}"
 EndProject

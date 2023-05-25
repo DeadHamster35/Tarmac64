@@ -117,7 +117,7 @@ namespace Tarmac64_Retail
                     NewType.ObjectAnimations = null;
                 }
 
-                NewType.ModelData = TarmacGeometry.createObjects(ModelData, NewType.TextureData);
+                NewType.ModelData = TarmacGeometry.CreateObjects(ModelData, NewType.TextureData);
 
 
                 float TempFloat;
