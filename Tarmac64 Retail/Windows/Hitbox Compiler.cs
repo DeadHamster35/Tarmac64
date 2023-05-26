@@ -25,7 +25,7 @@ namespace Tarmac64_Retail
         string[] BoxTypes = new string[] { "Sphere", "Box"};
         string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP", "DAMAGE" };
         string[] StatusNames = new string[] { "None", "MapObjectHit", "LightningHit", "BooTranslucent", "BecomeBombOn", "BecomeBomb ", "FlattenedOn", "FlattenedOff", "MushroomBoost", "SpinOutSaveable", "SpinOut", "GreenShellHit", "RedShellHit", "Bonk", "StarOn", "GhostOn", "StarOff", "GhostOff" };
-        int[] StatusValues = new int[] { -1, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
+        int[] StatusValues = new int[] { -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
         string[] EffectNames = new string[] { "None", "StateAnimMusicNote", "StateAnimCrash", "StateAnimPoomp", "StateAnimBoing", "StateAnimExplosion", "StateAnimBonkStars", "StateAnimLandingDust" };
         int[] EffectValues = new int[] { -1, 0, 1, 2, 3, 4, 5, 6 };
 
@@ -139,7 +139,7 @@ namespace Tarmac64_Retail
         private void AddBtn_Click(object sender, EventArgs e)
         {
             List<TM64_Geometry.OK64Collide> CurrentList = Hitbox.ToList();
-            CurrentList.Insert(IndexBox.SelectedIndex + 1, TarmacGeometry.CreateHitbox("CollisionSphere " + (Hitbox.Length + 1).ToString()));
+            CurrentList.Insert(IndexBox.SelectedIndex + 1, new TM64_Geometry.OK64Collide("CollisionSphere " + (Hitbox.Length + 1).ToString()));
             IndexBox.Items.Insert(IndexBox.SelectedIndex + 1, "CollisionSphere " + (Hitbox.Length + 1).ToString());
             Hitbox = CurrentList.ToArray();
             IndexBox.SelectedIndex = IndexBox.Items.Count - 1;

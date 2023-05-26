@@ -630,7 +630,7 @@ namespace Tarmac64_Library
                 NewType.ObjectHitbox = new TM64_Geometry.OK64Collide[Count];
                 for (int ThisHit = 0; ThisHit < Count; ThisHit++)
                 {
-                    NewType.ObjectHitbox[ThisHit] = new TM64_Geometry.OK64Collide();
+                    NewType.ObjectHitbox[ThisHit] = new TM64_Geometry.OK64Collide(ThisHit.ToString());
                     NewType.ObjectHitbox[ThisHit].Name = binaryReader.ReadString();
                     NewType.ObjectHitbox[ThisHit].Type = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].Status = binaryReader.ReadInt16();

@@ -152,7 +152,7 @@ namespace Tarmac64_Library
             public string Name { get; set; }
             //Cube or Sphere type. 
             public short Type { get; set; }
-            
+
             //Various result values for hits
             public short Status { get; set; }
             public short Effect { get; set; }
@@ -165,6 +165,19 @@ namespace Tarmac64_Library
             //Spheretype uses first size element for Radius.
             public short[] Origin { get; set; }
             public short[] Size { get; set; }
+
+            public OK64Collide(string InputName)
+            {
+                Name = InputName;
+                Type = 0;
+                Origin = new short[3] { 0, 0, 0 };
+                Size = new short[3] { 0, 0, 0 };
+                Scale = 10;
+                Status = 0;
+                Effect = -1;
+                HitResult = 0;
+                CollideResult = 0;
+            }
             //
         }
 
@@ -5907,20 +5920,6 @@ namespace Tarmac64_Library
             return Skeleton;
         }
 
-        public OK64Collide CreateHitbox(string Name)
-        {
-            OK64Collide NewSphere = new OK64Collide();
-            NewSphere.Name = Name;
-            NewSphere.Type = 0;
-            NewSphere.Origin = new short[3] { 0, 0, 0 };            
-            NewSphere.Size = new short[3] { 0, 0, 0 };
-            NewSphere.Scale = 10;
-            NewSphere.Status = 0;
-            NewSphere.Effect = 0;
-            NewSphere.HitResult = 0;
-            NewSphere.CollideResult = 0;
-            return NewSphere;
-        }
         
         public OK64Collide[] LoadHitbox(Scene FBX)
         {
@@ -5928,7 +5927,7 @@ namespace Tarmac64_Library
             Node Base = FBX.RootNode.FindNode("Collide Objects");
             for (int ThisChild = 0; ThisChild < Base.ChildCount; ThisChild++)
             {
-                Hitbox.Add(new OK64Collide());
+                Hitbox.Add(new OK64Collide(ThisChild.ToString()));
                 Matrix4x4 OPrime = GetTotalTransform(Base.Children[ThisChild], FBX);
                 Hitbox[ThisChild].Origin = new short[3] { Convert.ToInt16(OPrime.A4 * 100), Convert.ToInt16(OPrime.B4 * 100), Convert.ToInt16(OPrime.C4 * 100) };
                 Hitbox[ThisChild].Size = new short[3] { 5, 5, 5 };
@@ -5954,7 +5953,7 @@ namespace Tarmac64_Library
             TM64_Geometry.OK64Collide[] Hitbox = new TM64_Geometry.OK64Collide[Count];
             for (int ThisHit = 0; ThisHit < Count; ThisHit++)
             {
-                Hitbox[ThisHit] = new TM64_Geometry.OK64Collide();
+                Hitbox[ThisHit] = new TM64_Geometry.OK64Collide(ThisHit.ToString());
                 Hitbox[ThisHit].Name = binaryReader.ReadString();
                 Hitbox[ThisHit].Type = binaryReader.ReadInt16();
                 Hitbox[ThisHit].Status = binaryReader.ReadInt16();
