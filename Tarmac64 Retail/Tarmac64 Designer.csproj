@@ -7,7 +7,7 @@
     <ProjectGuid>{5D094EE2-1FD1-4E91-8719-1EF35BDD5BAD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>OverKart64_Retail</RootNamespace>
-    <AssemblyName>Tarmac64 Designer</AssemblyName>
+    <AssemblyName>Tarmac64</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

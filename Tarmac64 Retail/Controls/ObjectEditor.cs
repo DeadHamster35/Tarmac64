@@ -253,9 +253,9 @@ namespace Tarmac64_Retail
                     }
                 }
 
-                    TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(ObjectSettings[ThisLine++]);
-                    OKObjectTypeList.Add(NewType);
-                    ObjectIndexBox.Items.Add(NewType.Name);
+                TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(TargetFile);
+                OKObjectTypeList.Add(NewType);
+                ObjectIndexBox.Items.Add(NewType.Name);
             }
 
 

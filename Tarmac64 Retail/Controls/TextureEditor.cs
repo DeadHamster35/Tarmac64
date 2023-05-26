@@ -238,15 +238,6 @@ namespace Tarmac64_Retail
                 textureArray[This] = new TM64_Geometry.OK64Texture();
                 textureArray[This].textureName = TextureSettings[ThisLine++];
                 textureArray[This].texturePath = TextureSettings[ThisLine++];
-                if (textureArray[This].texturePath == "")
-                {
-                    textureArray[This].texturePath = "NULL";
-                    
-                }
-                else
-                {
-                    textureArray[This].textureName = textureArray[This].texturePath;
-                }
                 textureArray[This].textureWidth = Convert.ToInt32(TextureSettings[ThisLine++]);
                 textureArray[This].textureHeight = Convert.ToInt32(TextureSettings[ThisLine++]);
 
@@ -305,7 +296,6 @@ namespace Tarmac64_Retail
             for (int This = 0; This < textureArray.Length; This++)
             {
                 Output.Add(textureArray[This].textureName);
-                Output.Add(textureArray[This].texturePath);
                 Output.Add(textureArray[This].textureWidth.ToString());
                 Output.Add(textureArray[This].textureHeight.ToString());
 
