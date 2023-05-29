@@ -156,7 +156,7 @@ namespace Tarmac64_Library
             //Various result values for hits
             public short Status { get; set; }
             public short Effect { get; set; }
-            public short Scale { get; set; }
+            public float Scale { get; set; }
             public short CollideResult { get; set; }
             public short HitResult { get; set; }
 
@@ -172,7 +172,7 @@ namespace Tarmac64_Library
                 Type = 0;
                 Origin = new short[3] { 0, 0, 0 };
                 Size = new short[3] { 0, 0, 0 };
-                Scale = 10;
+                Scale = 0.1f;
                 Status = 0;
                 Effect = -1;
                 HitResult = 0;
@@ -3331,13 +3331,6 @@ namespace Tarmac64_Library
                 
                 cObj.meshPosition = new int[cObj.meshID.Length];
 
-                if (cObj.meshID.Length > 1)
-                {
-                    int Break = 0;
-                    MessageBox.Show("Tell Hamp you've found the chosen one");
-                    //finally, a worthy foe.
-
-                }
                 cObj.meshPosition[0] = Convert.ToInt32(seg7w.BaseStream.Position);
 
                 if (BoundingToggle)
@@ -5957,7 +5950,7 @@ namespace Tarmac64_Library
                 Hitbox[ThisHit].Name = binaryReader.ReadString();
                 Hitbox[ThisHit].Type = binaryReader.ReadInt16();
                 Hitbox[ThisHit].Status = binaryReader.ReadInt16();
-                Hitbox[ThisHit].Scale = binaryReader.ReadInt16();
+                Hitbox[ThisHit].Scale = binaryReader.ReadSingle();
                 Hitbox[ThisHit].Effect = binaryReader.ReadInt16();
                 Hitbox[ThisHit].CollideResult = binaryReader.ReadInt16();
                 Hitbox[ThisHit].HitResult = binaryReader.ReadInt16();

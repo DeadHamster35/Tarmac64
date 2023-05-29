@@ -89,7 +89,7 @@
             this.OriginXBox.Name = "OriginXBox";
             this.OriginXBox.Size = new System.Drawing.Size(84, 20);
             this.OriginXBox.TabIndex = 14;
-            this.OriginXBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.SizeXBox_KeyUp);
+            this.OriginXBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateHBData);
             // 
             // label1
             // 
@@ -133,7 +133,7 @@
             this.SizeZBox.Name = "SizeZBox";
             this.SizeZBox.Size = new System.Drawing.Size(84, 20);
             this.SizeZBox.TabIndex = 13;
-            this.SizeZBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.SizeXBox_KeyUp);
+            this.SizeZBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateHBData);
             // 
             // label5
             // 
@@ -150,7 +150,7 @@
             this.SizeXBox.Name = "SizeXBox";
             this.SizeXBox.Size = new System.Drawing.Size(84, 20);
             this.SizeXBox.TabIndex = 11;
-            this.SizeXBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.SizeXBox_KeyUp);
+            this.SizeXBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateHBData);
             // 
             // SizeYBox
             // 
@@ -158,7 +158,7 @@
             this.SizeYBox.Name = "SizeYBox";
             this.SizeYBox.Size = new System.Drawing.Size(84, 20);
             this.SizeYBox.TabIndex = 12;
-            this.SizeYBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.SizeXBox_KeyUp);
+            this.SizeYBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateHBData);
             // 
             // XLabel
             // 
@@ -175,7 +175,7 @@
             this.OriginYBox.Name = "OriginYBox";
             this.OriginYBox.Size = new System.Drawing.Size(84, 20);
             this.OriginYBox.TabIndex = 15;
-            this.OriginYBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.SizeXBox_KeyUp);
+            this.OriginYBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateHBData);
             // 
             // label2
             // 
@@ -192,7 +192,7 @@
             this.OriginZBox.Name = "OriginZBox";
             this.OriginZBox.Size = new System.Drawing.Size(84, 20);
             this.OriginZBox.TabIndex = 16;
-            this.OriginZBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.SizeXBox_KeyUp);
+            this.OriginZBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateHBData);
             // 
             // label3
             // 
@@ -261,7 +261,7 @@
             this.ScaleBox.Size = new System.Drawing.Size(100, 20);
             this.ScaleBox.TabIndex = 9;
             this.ScaleBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.ScaleBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.SizeXBox_KeyUp);
+            this.ScaleBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateHBData);
             // 
             // label19
             // 

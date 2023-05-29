@@ -123,7 +123,7 @@ namespace Tarmac64_Retail
                 float TempFloat;
                 if (Single.TryParse(ScaleBox.Text, out TempFloat))
                 {
-                    NewType.ModelScale = Convert.ToSingle(1.0f / Convert.ToSingle(TempFloat));
+                    NewType.ModelScale = TempFloat;
                 }
                 
                 NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex -1);

@@ -407,7 +407,7 @@ namespace Tarmac64_Library
             foreach (var Hit in Hitbox)
             {
                 binaryWriter.Write(F3D.BigEndian(Hit.Type)); //padding
-                binaryWriter.Write(F3D.BigEndian(Hit.Scale));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Hit.Scale * 100)));
 
                 binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
                 binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
@@ -634,7 +634,7 @@ namespace Tarmac64_Library
                     NewType.ObjectHitbox[ThisHit].Name = binaryReader.ReadString();
                     NewType.ObjectHitbox[ThisHit].Type = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].Status = binaryReader.ReadInt16();
-                    NewType.ObjectHitbox[ThisHit].Scale = binaryReader.ReadInt16();
+                    NewType.ObjectHitbox[ThisHit].Scale = binaryReader.ReadSingle();
                     NewType.ObjectHitbox[ThisHit].Effect = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].CollideResult = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].HitResult = binaryReader.ReadInt16();

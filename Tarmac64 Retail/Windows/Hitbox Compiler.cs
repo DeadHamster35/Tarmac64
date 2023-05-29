@@ -115,7 +115,7 @@ namespace Tarmac64_Retail
             {
                 EffectBox.Items.Add(Effect);
             }
-            ScaleBox.Text = "10";
+            ScaleBox.Text = "0.1";
             TypeBox.SelectedIndex = 0;
             ColResultBox.SelectedIndex = 0;
             DmgResultBox.SelectedIndex = 0;
@@ -181,6 +181,7 @@ namespace Tarmac64_Retail
             {
                 int Index = IndexBox.SelectedIndex;
                 Int16 Parse;
+                Single ParseS;
                 if (Int16.TryParse(OriginXBox.Text, out Parse))
                 {
                     Hitbox[Index].Origin[0] = Parse;
@@ -205,9 +206,9 @@ namespace Tarmac64_Retail
                 {
                     Hitbox[Index].Size[2] = Parse;
                 }
-                if (Int16.TryParse(ScaleBox.Text, out Parse))
+                if (Single.TryParse(ScaleBox.Text, out ParseS))
                 {
-                    Hitbox[Index].Scale = Parse;
+                    Hitbox[Index].Scale = ParseS;
                 }
 
                 Hitbox[Index].Type = Convert.ToInt16(TypeBox.SelectedIndex);
@@ -244,7 +245,7 @@ namespace Tarmac64_Retail
             UpdateHitboxData();
         }
 
-        private void SizeXBox_KeyUp(object sender, KeyEventArgs e)
+        private void UpdateHBData(object sender, KeyEventArgs e)
         {
             UpdateHitboxData();
         }
