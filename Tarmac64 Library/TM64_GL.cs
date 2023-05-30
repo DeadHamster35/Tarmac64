@@ -65,7 +65,6 @@ namespace Tarmac64_Library
             foreach (var subVert in subFace.VertData)
             {
                 gl.Color(ThisColor[0], ThisColor[1], ThisColor[2], ThisColor[3]);
-                gl.TexCoord(subVert.position.u, subVert.position.v);
                 gl.Vertex(subVert.position.x + Point.xval, subVert.position.y+ Point.yval, subVert.position.z+ Point.zval);
             }
         }

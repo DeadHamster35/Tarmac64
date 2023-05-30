@@ -527,9 +527,18 @@ namespace Tarmac64_Retail
                 }
             }
 
-
+            
             TarmacGL.DrawCursor(GL, LocalCamera, GLTexture[GLShadeIndex]);
+
+
+            GL.End();
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             GL.Disable(OpenGL.GL_CULL_FACE);
+
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.Enable(OpenGL.GL_BLEND);
+            GL.CullFace(OpenGL.GL_BACK);
             TM64_Geometry TarmacGeo = new TM64_Geometry();
             TM64_Geometry.Face[] Marker = TarmacGeo.CreateStandard(Convert.ToSingle(5.0));
             if (CheckboxPaths.Checked)

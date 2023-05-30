@@ -228,16 +228,20 @@ namespace Tarmac64_Retail
             this.Height = 780;
         }
 
-        public int LoadTextureSettings(string[] TextureSettings)
+        public int LoadTextureSettings(string[] TextureSettings, TM64_Geometry.OK64Texture[] CurrentArray)
         {
             int ThisLine = 0;
             int Count = Convert.ToInt32(TextureSettings[ThisLine++]);
             textureArray = new TM64_Geometry.OK64Texture[Count];
+            if (Count != CurrentArray.Length)
+            {
+                MessageBox.Show("Warning! Texture Counts do not match. Attempting backup.");
+            }
             for (int This = 0; This < Count; This++)
             {
                 textureArray[This] = new TM64_Geometry.OK64Texture();
                 textureArray[This].textureName = TextureSettings[ThisLine++];
-                textureArray[This].texturePath = TextureSettings[ThisLine++];
+                textureArray[This].texturePath = CurrentArray[This].texturePath;
                 textureArray[This].textureWidth = Convert.ToInt32(TextureSettings[ThisLine++]);
                 textureArray[This].textureHeight = Convert.ToInt32(TextureSettings[ThisLine++]);
 

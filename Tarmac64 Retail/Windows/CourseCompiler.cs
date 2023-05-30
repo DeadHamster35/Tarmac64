@@ -1782,7 +1782,7 @@ namespace Tarmac64_Library
 
                 SubSettings = new string[SettingsFile.Length - ThisLine];
                 Array.Copy(SettingsFile, ThisLine, SubSettings, 0, SettingsFile.Length - ThisLine);
-                ThisLine += TextureControl.LoadTextureSettings(SubSettings);
+                ThisLine += TextureControl.LoadTextureSettings(SubSettings, textureArray);
 
                 SubSettings = new string[SettingsFile.Length - ThisLine];
                 Array.Copy(SettingsFile, ThisLine, SubSettings, 0, SettingsFile.Length - ThisLine);
