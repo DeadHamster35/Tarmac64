@@ -231,7 +231,9 @@ namespace Tarmac64_Retail
         public int LoadSettings(string[] ObjectSettings)
         {
 
-            TM64.OK64Settings okSettings = Tarmac.LoadSettings();
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            okSettings.LoadSettings();
+
             Loading = true;
             int ThisLine = 0;
             int Count = Convert.ToInt32(ObjectSettings[ThisLine++]);
@@ -293,7 +295,10 @@ namespace Tarmac64_Retail
                 OKObjectList.Add(NewObject);
                 int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + ObjectListBox.Items.Count.ToString());
             }
-            ObjectListBox.SelectedIndex = 0;
+            if (ObjectListBox.Items.Count > 0)
+            {
+                ObjectListBox.SelectedIndex = 0;
+            }
             Loading = false;
             UpdateObjectUI();
 

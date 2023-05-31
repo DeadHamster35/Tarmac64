@@ -80,12 +80,10 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Object = new System.Windows.Forms.TabPage();
             this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
-            this.raycastBox = new System.Windows.Forms.CheckBox();
             this.ExportBtn = new System.Windows.Forms.Button();
             this.ImportBtn = new System.Windows.Forms.Button();
             this.TypeBox = new System.Windows.Forms.ComboBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.AlphaCHBox = new System.Windows.Forms.CheckBox();
             this.GLControl = new Tarmac64_Retail.GLViewer();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -117,7 +115,7 @@
             this.SurfaceMap.Cursor = System.Windows.Forms.Cursors.Default;
             this.SurfaceMap.Location = new System.Drawing.Point(4, 22);
             this.SurfaceMap.Name = "SurfaceMap";
-            this.SurfaceMap.Size = new System.Drawing.Size(307, 602);
+            this.SurfaceMap.Size = new System.Drawing.Size(192, 74);
             this.SurfaceMap.TabIndex = 3;
             this.SurfaceMap.Text = "Surfaces";
             this.SurfaceMap.UseVisualStyleBackColor = true;
@@ -144,7 +142,7 @@
             this.groupBox6.Controls.Add(this.label23);
             this.groupBox6.Controls.Add(this.surfsectionBox);
             this.groupBox6.Controls.Add(this.label17);
-            this.groupBox6.Location = new System.Drawing.Point(3, 422);
+            this.groupBox6.Location = new System.Drawing.Point(3, -106);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(281, 170);
             this.groupBox6.TabIndex = 1;
@@ -364,7 +362,7 @@
             this.surfaceobjectBox.FormattingEnabled = true;
             this.surfaceobjectBox.Location = new System.Drawing.Point(3, 9);
             this.surfaceobjectBox.Name = "surfaceobjectBox";
-            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 407);
+            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 4);
             this.surfaceobjectBox.TabIndex = 0;
             this.surfaceobjectBox.SelectedIndexChanged += new System.EventHandler(this.SurfaceobjectBox_SelectedIndexChanged);
             // 
@@ -648,7 +646,7 @@
             this.TextureData.Location = new System.Drawing.Point(4, 22);
             this.TextureData.Name = "TextureData";
             this.TextureData.Padding = new System.Windows.Forms.Padding(3);
-            this.TextureData.Size = new System.Drawing.Size(307, 602);
+            this.TextureData.Size = new System.Drawing.Size(192, 74);
             this.TextureData.TabIndex = 1;
             this.TextureData.Text = "Textures";
             this.TextureData.UseVisualStyleBackColor = true;
@@ -719,17 +717,6 @@
             this.ObjectControl.TabIndex = 1;
             this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
-            // raycastBox
-            // 
-            this.raycastBox.AutoSize = true;
-            this.raycastBox.Location = new System.Drawing.Point(154, 15);
-            this.raycastBox.Name = "raycastBox";
-            this.raycastBox.Size = new System.Drawing.Size(65, 17);
-            this.raycastBox.TabIndex = 1;
-            this.raycastBox.TabStop = false;
-            this.raycastBox.Text = "Raycast";
-            this.raycastBox.UseVisualStyleBackColor = true;
-            // 
             // ExportBtn
             // 
             this.ExportBtn.AutoSize = true;
@@ -760,9 +747,9 @@
             this.TypeBox.Items.AddRange(new object[] {
             "Race",
             "Battle"});
-            this.TypeBox.Location = new System.Drawing.Point(281, 37);
+            this.TypeBox.Location = new System.Drawing.Point(70, 11);
             this.TypeBox.Name = "TypeBox";
-            this.TypeBox.Size = new System.Drawing.Size(50, 21);
+            this.TypeBox.Size = new System.Drawing.Size(93, 21);
             this.TypeBox.TabIndex = 98;
             this.TypeBox.SelectedIndexChanged += new System.EventHandler(this.TypeBox_SelectedIndexChanged);
             // 
@@ -775,16 +762,6 @@
             this.pictureBox2.Size = new System.Drawing.Size(164, 23);
             this.pictureBox2.TabIndex = 97;
             this.pictureBox2.TabStop = false;
-            // 
-            // AlphaCHBox
-            // 
-            this.AlphaCHBox.AutoSize = true;
-            this.AlphaCHBox.Location = new System.Drawing.Point(70, 15);
-            this.AlphaCHBox.Name = "AlphaCHBox";
-            this.AlphaCHBox.Size = new System.Drawing.Size(77, 17);
-            this.AlphaCHBox.TabIndex = 99;
-            this.AlphaCHBox.Text = "Alpha CH2";
-            this.AlphaCHBox.UseVisualStyleBackColor = true;
             // 
             // GLControl
             // 
@@ -802,12 +779,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.ClientSize = new System.Drawing.Size(1264, 682);
             this.Controls.Add(this.TypeBox);
-            this.Controls.Add(this.AlphaCHBox);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.ImportBtn);
             this.Controls.Add(this.ExportBtn);
             this.Controls.Add(this.GLControl);
-            this.Controls.Add(this.raycastBox);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.actionBtn);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -858,7 +833,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ComboBox surfpropertybox;
         private System.Windows.Forms.TreeView masterBox;
-        private System.Windows.Forms.CheckBox raycastBox;
         private System.Windows.Forms.TabPage Object;
         private System.Windows.Forms.PictureBox pictureBox2;
         private Tarmac64_Retail.GLViewer GLControl;
@@ -889,7 +863,6 @@
         private System.Windows.Forms.CheckBox BattleBoxC;
         private System.Windows.Forms.CheckBox VSBoxC;
         private System.Windows.Forms.CheckBox WaveBox;
-        private System.Windows.Forms.CheckBox AlphaCHBox;
         private System.Windows.Forms.Button SVL3Load;
         private System.Windows.Forms.Button CopyBtn;
         private System.Windows.Forms.ComboBox CopySectionIndexBox;

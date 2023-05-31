@@ -104,7 +104,7 @@
             this.extractorsToolStripMenuItem,
             this.courseLoaderToolStripMenuItem});
             this.ToolsStripMenu.Name = "ToolsStripMenu";
-            this.ToolsStripMenu.Size = new System.Drawing.Size(89, 20);
+            this.ToolsStripMenu.Size = new System.Drawing.Size(87, 20);
             this.ToolsStripMenu.Text = "Tools           +";
             // 
             // compilersToolStripMenuItem
@@ -122,7 +122,7 @@
             // courseCompilerToolStripMenuItem
             // 
             this.courseCompilerToolStripMenuItem.Name = "courseCompilerToolStripMenuItem";
-            this.courseCompilerToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.courseCompilerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.courseCompilerToolStripMenuItem.Text = "Course Compiler";
             this.courseCompilerToolStripMenuItem.Click += new System.EventHandler(this.GeometryToolStripMenuItem1_Click);
             // 
@@ -132,34 +132,34 @@
             this.objectTypeCompilerToolStripMenuItem,
             this.hitboxCompilerToolStripMenuItem1});
             this.objectsToolStripMenuItem.Name = "objectsToolStripMenuItem";
-            this.objectsToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.objectsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.objectsToolStripMenuItem.Text = "Objects";
             // 
             // objectTypeCompilerToolStripMenuItem
             // 
             this.objectTypeCompilerToolStripMenuItem.Name = "objectTypeCompilerToolStripMenuItem";
-            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.objectTypeCompilerToolStripMenuItem.Text = "Object Type Compiler";
             this.objectTypeCompilerToolStripMenuItem.Click += new System.EventHandler(this.objectTypeCompilerToolStripMenuItem_Click);
             // 
             // hitboxCompilerToolStripMenuItem1
             // 
             this.hitboxCompilerToolStripMenuItem1.Name = "hitboxCompilerToolStripMenuItem1";
-            this.hitboxCompilerToolStripMenuItem1.Size = new System.Drawing.Size(190, 22);
+            this.hitboxCompilerToolStripMenuItem1.Size = new System.Drawing.Size(188, 22);
             this.hitboxCompilerToolStripMenuItem1.Text = "Hitbox Compiler";
             this.hitboxCompilerToolStripMenuItem1.Click += new System.EventHandler(this.hitboxCompilerToolStripMenuItem_Click);
             // 
             // textureCompilerToolStripMenuItem1
             // 
             this.textureCompilerToolStripMenuItem1.Name = "textureCompilerToolStripMenuItem1";
-            this.textureCompilerToolStripMenuItem1.Size = new System.Drawing.Size(165, 22);
+            this.textureCompilerToolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
             this.textureCompilerToolStripMenuItem1.Text = "Texture Compiler";
             this.textureCompilerToolStripMenuItem1.Click += new System.EventHandler(this.textureCompilerToolStripMenuItem_Click_1);
             // 
             // modelCompilerToolStripMenuItem1
             // 
             this.modelCompilerToolStripMenuItem1.Name = "modelCompilerToolStripMenuItem1";
-            this.modelCompilerToolStripMenuItem1.Size = new System.Drawing.Size(165, 22);
+            this.modelCompilerToolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
             this.modelCompilerToolStripMenuItem1.Text = "Model Compiler";
             this.modelCompilerToolStripMenuItem1.Click += new System.EventHandler(this.modelCompilerToolStripMenuItem_Click);
             // 
@@ -175,14 +175,14 @@
             // songExtractorToolStripMenuItem
             // 
             this.songExtractorToolStripMenuItem.Name = "songExtractorToolStripMenuItem";
-            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.songExtractorToolStripMenuItem.Text = "Song Extractor";
             this.songExtractorToolStripMenuItem.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // ghostExtractorToolStripMenuItem
             // 
             this.ghostExtractorToolStripMenuItem.Name = "ghostExtractorToolStripMenuItem";
-            this.ghostExtractorToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.ghostExtractorToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.ghostExtractorToolStripMenuItem.Text = "Ghost Extractor";
             this.ghostExtractorToolStripMenuItem.Click += new System.EventHandler(this.ghostExtractorToolStripMenuItem_Click);
             // 
@@ -196,8 +196,8 @@
             // resetFoldersToolStripMenuItem
             // 
             this.resetFoldersToolStripMenuItem.Name = "resetFoldersToolStripMenuItem";
-            this.resetFoldersToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
-            this.resetFoldersToolStripMenuItem.Text = "Reset Folders";
+            this.resetFoldersToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.resetFoldersToolStripMenuItem.Text = "Settings";
             this.resetFoldersToolStripMenuItem.Click += new System.EventHandler(this.resetFoldersToolStripMenuItem_Click);
             // 
             // label5

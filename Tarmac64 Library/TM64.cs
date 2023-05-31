@@ -67,8 +67,54 @@ namespace Tarmac64_Library
         public class OK64Settings
         {
             public string ProjectDirectory { get; set; }
+            public string ObjectDirectory { get; set; }
+            public float ImportScale { get; set; }
+            public bool AlphaCH2 { get; set; }
             public string JRDirectory { get; set; }
             public bool Valid { get; set; }
+
+
+            public OK64Settings LoadSettings()
+            {
+                string AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string SettingsPath = Path.Combine(AppData, "Tarmac64.OK64Settings");
+                string[] InputData = new string[0];
+
+                if (File.Exists(SettingsPath))
+                {
+                    InputData = File.ReadAllLines(SettingsPath);
+                    if (InputData.Length == 4)
+                    {
+                        ProjectDirectory = InputData[0];
+                        ObjectDirectory = InputData[1];
+                        ImportScale = Convert.ToSingle(InputData[2]);
+                        AlphaCH2 = Convert.ToBoolean(InputData[3]);
+                        return this;
+                    }
+                    
+                }
+                MessageBox.Show("Error Loading Settings. Restoring defaults");
+                ProjectDirectory = "";
+                ObjectDirectory = "";
+                ImportScale = 0.01f;
+                AlphaCH2 = true;
+                return this;
+                
+            }
+            public void SaveSettings()
+            {
+                string AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string SettingsPath = Path.Combine(AppData, "Tarmac64.OK64Settings");
+                string[] settings = new string[0];
+
+
+                string[] SaveData = new string[4];
+                SaveData[0] = ProjectDirectory;
+                SaveData[1] = ObjectDirectory;
+                SaveData[2] = Convert.ToString(ImportScale);
+                SaveData[3] = Convert.ToString(AlphaCH2);
+                File.WriteAllLines(SettingsPath, SaveData);
+            }
         }
 
 
@@ -171,68 +217,6 @@ namespace Tarmac64_Library
             }
             return memoryOutput.ToArray();
             
-        }
-        public OK64Settings LoadSettings(bool Forced = false)
-        {
-            OK64Settings OkSettings = new OK64Settings();
-            
-            string AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string SettingsPath = Path.Combine(AppData, "Tarmac.OK64Settings");
-            string[] settings = new string[0];
-
-            bool corrupt = Forced;
-            if (!File.Exists(SettingsPath))
-            {
-                corrupt = true;
-            }
-            else
-            {
-                if (Forced)
-                {
-                    corrupt = true;
-                    File.Delete(SettingsPath);
-                }
-                else
-                {
-                    settings = File.ReadAllLines(SettingsPath);
-                    if (settings.Length == 1)
-                    {
-                        OkSettings.ProjectDirectory = settings[0];
-                        if (OkSettings.ProjectDirectory == null)
-                        {
-                            corrupt = true;
-                        }
-                    }
-                    else
-                    {
-                        corrupt = true;
-                    }
-                }
-            }
-            if (corrupt)
-            {
-                MessageBox.Show("Error Loading Settings. Please select your Project Folder");
-                CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-                dialog.InitialDirectory = "C:\\";
-                dialog.IsFolderPicker = true;
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    OkSettings.ProjectDirectory = dialog.FileName;
-                }
-                /*
-                MessageBox.Show("Please select your TarmacJR Chunk Folder");
-                dialog.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
-                dialog.IsFolderPicker = true;
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    OkSettings.JRDirectory = dialog.FileName;
-                }
-                */
-                File.WriteAllText(SettingsPath, OkSettings.ProjectDirectory + Environment.NewLine);
-                
-                //File.AppendAllText(SettingsPath, OkSettings.JRDirectory + Environment.NewLine);
-            }
-            return OkSettings;
         }
         public byte[] CompileSegment(byte[] seg4, byte[] seg6, byte[] seg7, byte[] seg9, byte[] fileData, int cID)
         {

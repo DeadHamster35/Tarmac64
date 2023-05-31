@@ -70,16 +70,8 @@ namespace Tarmac64_Retail
 
         private void resetFoldersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TM64 Tarmac = new TM64();
-
-            string message = "Reset your Tarmac Folders?";
-            string caption = "Settings Dialog";
-            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-            DialogResult result;
-            if (MessageBox.Show(message, caption, buttons) == System.Windows.Forms.DialogResult.Yes)
-            {
-                Tarmac.LoadSettings(true);
-            }
+            SettingsWindow f2 = new SettingsWindow();
+            f2.Show();
             
         }
 

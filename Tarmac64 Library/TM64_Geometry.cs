@@ -1476,7 +1476,8 @@ namespace Tarmac64_Library
         public OK64F3DObject createObject (Assimp.Scene fbx, Assimp.Node objectNode, OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false)
         {
             OK64F3DObject newObject = new OK64F3DObject();
-
+            TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
+            TarmacSettings.LoadSettings();
             
             newObject.objectColor = new float[3];
             newObject.objectColor[0] = rValue.NextFloat(0.3f, 1);
@@ -1579,9 +1580,9 @@ namespace Tarmac64_Library
                         
                         Point3D VertPosition = new Point3D
                         (
-                            (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X) * BScale[0],
-                            (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y) * BScale[1],
-                            (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z) * BScale[2]
+                            (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].X) * BScale[0] * TarmacSettings.ImportScale,
+                            (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Y) * BScale[1] * TarmacSettings.ImportScale,
+                            (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z) * BScale[2] * TarmacSettings.ImportScale
                         );
 
                         Point3D NewPosition = RotatePoint(VertPosition, BRotation);
@@ -1637,6 +1638,7 @@ namespace Tarmac64_Library
                                     int AlphaValue = GetMax((Convert.ToInt32(fbx.Meshes[childMesh].VertexColorChannels[1][childPoly.Indices[currentVert]].R * 255)), GetMax((Convert.ToInt32(fbx.Meshes[childMesh].VertexColorChannels[1][childPoly.Indices[currentVert]].G * 255)), (Convert.ToInt32(fbx.Meshes[childMesh].VertexColorChannels[1][childPoly.Indices[currentVert]].B * 255))));
                                     newObject.modelGeometry[currentFace].VertData[currentVert].color.A = (Convert.ToByte(AlphaValue));
                                 }
+                                else
                                 {
                                     newObject.modelGeometry[currentFace].VertData[currentVert].color.A = (Convert.ToByte(fbx.Meshes[childMesh].VertexColorChannels[0][childPoly.Indices[currentVert]].A * 255));
                                 }

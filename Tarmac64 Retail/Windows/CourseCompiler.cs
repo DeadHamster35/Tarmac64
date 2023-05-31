@@ -44,7 +44,6 @@ namespace Tarmac64_Library
         F3DEX095 F3D = new F3DEX095();
         bool updateBool = false;
 
-        int raycastBoolean = 0;
         int sectionCount = 0;
         int levelFormat = 0;
 
@@ -84,7 +83,10 @@ namespace Tarmac64_Library
             
             
             CreateColors();
-            okSettings = Tarmac.LoadSettings();
+
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            okSettings.LoadSettings();
+
 
             localCamera.rotation[0] = 0;
             //localCamera.rotation = 90;
@@ -837,22 +839,13 @@ namespace Tarmac64_Library
                     string FBXfilePath = OpenFile.FileName;
                     levelFormat = TypeBox.SelectedIndex;
 
-                    if (raycastBox.Checked)
-                    {
-                        raycastBoolean = 1;  //used to be int for resolution, using 0/1 as false/true until certain resolution not needed.
-                    }
-                    else
-                    {
-                        raycastBoolean = 0;
-                    }
-                    
                     AssimpContext importer = new AssimpContext();
 
                     Scene fbx = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
 
                     materialCount = fbx.MaterialCount;
 
-
+                    
                     int modelFormat = TarmacGeometry.GetModelFormat(fbx);
                     sectionCount = TarmacGeometry.GetSectionCount(fbx); ;
 
@@ -888,25 +881,25 @@ namespace Tarmac64_Library
                         {
                             case 0:
                                 {
-                                    masterObjects = TarmacGeometry.CreateMasters(fbx, sectionCount, textureArray, AlphaCHBox.Checked);
+                                    masterObjects = TarmacGeometry.CreateMasters(fbx, sectionCount, textureArray, okSettings.AlphaCH2);
                                     surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
                                     TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
-                                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
-                                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
+                                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
+                                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
                                     break;
                                 }
                             case 1:
                                 {
-                                    masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray, AlphaCHBox.Checked);
+                                    masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray, okSettings.AlphaCH2);
                                     surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
                                     TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
-                                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
-                                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, raycastBoolean);
+                                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
+                                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
                                     break;
                                 }
                             case 2:
                                 {
-                                    masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray, AlphaCHBox.Checked);
+                                    masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray, okSettings.AlphaCH2);
                                     surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
                                     sectionList = TarmacGeometry.LoadSection(fbx, sectionCount, masterObjects);
                                     XLUSectionList = TarmacGeometry.LoadSection(fbx, sectionCount, masterObjects);
@@ -997,10 +990,6 @@ namespace Tarmac64_Library
                     ExportBtn.Visible = true;
                     TypeBox.Enabled = false;
                     TypeBox.Visible = false;
-                    AlphaCHBox.Enabled = false;
-                    AlphaCHBox.Visible = false;
-                    raycastBox.Enabled = false;
-                    raycastBox.Visible = false;
                     GLControl.UpdateDraw = true;
                     actionBtn.Text = "Compile";
 

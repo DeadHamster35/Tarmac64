@@ -72,9 +72,11 @@ namespace Tarmac64_Library
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            TM64.OK64Settings okSettings = new TM64.OK64Settings();
             TM64 Tarmac = new TM64();
-            okSettings = Tarmac.LoadSettings();
+
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            okSettings.LoadSettings();
+
             TM64_Course TarmacCourse = new TM64_Course();
             OpenFileDialog FileOpen = new OpenFileDialog();
             FileOpen.Filter = "Tarmac Course|*.ok64.Course|All Files (*.*)|*.*";
@@ -168,7 +170,10 @@ namespace Tarmac64_Library
         {
             TM64 Tarmac = new TM64();
             TM64_Course TarmacCourse = new TM64_Course();
-            TM64.OK64Settings okSettings = Tarmac.LoadSettings();
+
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            okSettings.LoadSettings();
+
             CommonOpenFileDialog FolderOpen = new CommonOpenFileDialog();
             FolderOpen.InitialDirectory = okSettings.ProjectDirectory;
             FolderOpen.IsFolderPicker = false;

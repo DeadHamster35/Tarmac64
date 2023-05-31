@@ -577,13 +577,16 @@ namespace Tarmac64_Retail
                     }
                 case 3:
                     {
-                        if (TargetedObject != -1)
+                        if (CourseObjects.Count > 0)
                         {
-                            TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[TargetedObject], ObjectTypes[CourseObjects[TargetedObject].ObjectIndex], LocalCamera.flashWhite);
-                        }
-                        if (OKSelectedObject != -1)
-                        {
-                            TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[OKSelectedObject], ObjectTypes[CourseObjects[OKSelectedObject].ObjectIndex], LocalCamera.flashWhite);
+                            if (TargetedObject != -1)
+                            {
+                                TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[TargetedObject], ObjectTypes[CourseObjects[TargetedObject].ObjectIndex], LocalCamera.flashWhite);
+                            }
+                            if (OKSelectedObject != -1)
+                            {
+                                TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[OKSelectedObject], ObjectTypes[CourseObjects[OKSelectedObject].ObjectIndex], LocalCamera.flashWhite);
+                            }
                         }
                         break;
                     }
