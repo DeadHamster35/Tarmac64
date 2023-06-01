@@ -485,16 +485,25 @@ namespace Tarmac64_Retail
                 var indexes = OKObjectList.Select((item, index) => new { Item = item, Index = index })
                   .Where(o => o.Item.ObjectIndex == ObjectIndexBox.SelectedIndex)
                   .Select(o => o.Index);
-                foreach(int i in indexes)
+                foreach (int i in indexes)
                     ObjectListBox.Items.RemoveAt(ObjectIndexBox.SelectedIndex);
 
                 OKObjectList.RemoveAll(x => x.ObjectIndex == ObjectIndexBox.SelectedIndex);
                 OKObjectTypeList.RemoveAt(ObjectIndexBox.SelectedIndex);
                 ObjectIndexBox.Items.RemoveAt(ObjectIndexBox.SelectedIndex);
-
-                ObjectIndexBox.SelectedIndex = OKObjectList[ObjectListBox.Items.Count - 1].ObjectIndex;
+                RefreshObjectListBox();
             }
 
+        }
+
+        private void RefreshObjectListBox()
+        {
+            int j = 0;
+            foreach (var obj in OKObjectList)
+            {
+                ObjectListBox.Items[j] = ("Object " + OKObjectTypeList[obj.ObjectIndex].Name + j.ToString());
+                j++;
+            }
         }
 
         private void ObjectListBox_MouseDoubleClick(object sender, MouseEventArgs e)
