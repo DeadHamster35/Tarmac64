@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tarmac64_Library;
 using System.IO;
+using System.Linq;
 
 namespace Tarmac64_Retail
 {
@@ -443,6 +444,8 @@ namespace Tarmac64_Retail
             if ((OKObjectList.Count > 0) && (ObjectListBox.SelectedIndex != -1))
             {
                 OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex = Convert.ToInt16(ObjectIndexBox.SelectedIndex);
+                ObjectListBox.Items[ObjectListBox.SelectedIndex] = ("Object " + OKObjectTypeList[OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex].Name + ObjectListBox.SelectedIndex.ToString());
+                
             }
             UpdateObjectUI();
         }
@@ -484,11 +487,28 @@ namespace Tarmac64_Retail
         {
             if (ObjectIndexBox.SelectedIndex > 3)
             {
+                var indexes = OKObjectList.Select((item, index) => new { Item = item, Index = index })
+                  .Where(o => o.Item.ObjectIndex == ObjectIndexBox.SelectedIndex)
+                  .Select(o => o.Index);
+                foreach (int i in indexes)
+                    ObjectListBox.Items.RemoveAt(ObjectIndexBox.SelectedIndex);
+
+                OKObjectList.RemoveAll(x => x.ObjectIndex == ObjectIndexBox.SelectedIndex);
                 OKObjectTypeList.RemoveAt(ObjectIndexBox.SelectedIndex);
                 ObjectIndexBox.Items.RemoveAt(ObjectIndexBox.SelectedIndex);
-                ObjectIndexBox.SelectedIndex = ObjectIndexBox.Items.Count - 1;
+                RefreshObjectListBox();
             }
 
+        }
+
+        private void RefreshObjectListBox()
+        {
+            int j = 0;
+            foreach (var obj in OKObjectList)
+            {
+                ObjectListBox.Items[j] = ("Object " + OKObjectTypeList[obj.ObjectIndex].Name + j.ToString());
+                j++;
+            }
         }
 
         private void ObjectListBox_MouseDoubleClick(object sender, MouseEventArgs e)
