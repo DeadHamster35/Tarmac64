@@ -1589,10 +1589,17 @@ namespace Tarmac64_Library
                         NewPosition.X += BOrigin[0];
                         NewPosition.Y += BOrigin[1];
                         NewPosition.Z += BOrigin[2];
-
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(NewPosition.X);
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16(NewPosition.Y);
-                        newObject.modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16(NewPosition.Z);
+                        try
+                        {
+                            newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(NewPosition.X);
+                            newObject.modelGeometry[currentFace].VertData[currentVert].position.y = Convert.ToInt16(NewPosition.Y);
+                            newObject.modelGeometry[currentFace].VertData[currentVert].position.z = Convert.ToInt16(NewPosition.Z);
+                        }
+                        catch (OverflowException) 
+                        {
+                            MessageBox.Show("Mesh indices are too high or too low. Check your FBX export settings to ensure that they are being exported as Meters");
+                            Environment.Exit(0);
+                        }
 
                         xValues.Add(newObject.modelGeometry[currentFace].VertData[currentVert].position.x);
                         yValues.Add(newObject.modelGeometry[currentFace].VertData[currentVert].position.y);

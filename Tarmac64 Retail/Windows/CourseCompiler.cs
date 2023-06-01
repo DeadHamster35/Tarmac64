@@ -1468,15 +1468,13 @@ namespace Tarmac64_Library
         private void SurfsectionBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (surfaceobjectBox.SelectedIndex != -1)
-            {
                 surfaceObjects[surfaceobjectBox.SelectedIndex].surfaceID = surfsectionBox.SelectedIndex + 1;
-            }
         }
 
         private void SurfmaterialBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
-            surfaceObjects[surfaceobjectBox.SelectedIndex].surfaceMaterial = surfaceTypeID[surfmaterialBox.SelectedIndex];
+            if (surfmaterialBox.SelectedIndex != -1)
+                surfaceObjects[surfaceobjectBox.SelectedIndex].surfaceMaterial = surfaceTypeID[surfmaterialBox.SelectedIndex];
         }
 
 
