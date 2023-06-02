@@ -100,24 +100,7 @@ namespace Tarmac64_Retail
                 {
                     NewType.ObjectHitbox = null;
                 }
-                if (AToggleBox.Checked)
-                {
-                    NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
-                    var WalkData = importer.ImportFile(WalkBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                    NewType.ObjectAnimations.WalkAnimation = TarmacGeometry.LoadSkeleton(WalkData);
 
-                    var TargetData = importer.ImportFile(TargetBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                    NewType.ObjectAnimations.TargetAnimation = TarmacGeometry.LoadSkeleton(TargetData);
-
-                    var DeathData = importer.ImportFile(DeathBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                    NewType.ObjectAnimations.DeathAnimation = TarmacGeometry.LoadSkeleton(DeathData);
-                }
-                else
-                {
-                    NewType.ObjectAnimations = null;
-                }
-
-                NewType.ModelData = TarmacGeometry.CreateObjects(ModelData, NewType.TextureData);
 
 
                 float TempFloat;
@@ -125,6 +108,33 @@ namespace Tarmac64_Retail
                 {
                     NewType.ModelScale = TempFloat;
                 }
+                else
+                {
+                    MessageBox.Show("Scale Parsing Error. Check scale value.");
+                    return;
+                }
+
+
+                if (AToggleBox.Checked)
+                {
+                    NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
+                    var WalkData = importer.ImportFile(WalkBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+                    NewType.ObjectAnimations.WalkAnimation = TarmacGeometry.LoadSkeleton(WalkData, NewType.ModelScale);
+
+                    var TargetData = importer.ImportFile(TargetBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+                    NewType.ObjectAnimations.TargetAnimation = TarmacGeometry.LoadSkeleton(TargetData, NewType.ModelScale);
+
+                    var DeathData = importer.ImportFile(DeathBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+                    NewType.ObjectAnimations.DeathAnimation = TarmacGeometry.LoadSkeleton(DeathData, NewType.ModelScale);
+                }
+                else
+                {
+                    NewType.ObjectAnimations = null;
+                }
+
+                NewType.ModelData = TarmacGeometry.CreateObjects(ModelData, NewType.TextureData, AToggleBox.Checked);
+
+
                 
                 NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex -1);
                 NewType.Range = Convert.ToInt16(RangeBox.Text);

@@ -1782,6 +1782,13 @@ namespace Tarmac64_Library
                 SubSettings = new string[SettingsFile.Length - ThisLine];
                 Array.Copy(SettingsFile, ThisLine, SubSettings, 0, SettingsFile.Length - ThisLine);
                 ObjectControl.LoadSettings(SubSettings);
+
+                GLControl.SkyColors = new float[3, 3]
+                {
+                        { Convert.ToSingle(SettingsControl.CourseData.SkyColors.TopColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.TopColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.TopColor.B / 255.0) },
+                        { Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.B / 255.0) },
+                        { Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.B / 255.0) },
+                };
             }
         }
 

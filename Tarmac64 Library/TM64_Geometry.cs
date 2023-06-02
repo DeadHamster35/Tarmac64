@@ -24,6 +24,7 @@ using F3DSharp;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Collections.Concurrent;
+using System.Windows.Media.Imaging;
 
 
 namespace Tarmac64_Library
@@ -1473,7 +1474,7 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
         }
 
-        public OK64F3DObject createObject (Assimp.Scene fbx, Assimp.Node objectNode, OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false)
+        public OK64F3DObject createObject (Assimp.Scene fbx, Assimp.Node objectNode, OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false, bool DisregardOrigin = false)
         {
             OK64F3DObject newObject = new OK64F3DObject();
             TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
@@ -1508,17 +1509,32 @@ namespace Tarmac64_Library
 
 
 
-            Assimp.Matrix4x4 OPrime = GetTotalTransform(objectNode, fbx);
-
             Assimp.Vector3D BOrigin = new Assimp.Vector3D();
             Assimp.Vector3D BScale = new Assimp.Vector3D();
             Assimp.Quaternion RotQuat = new Assimp.Quaternion();
-            OPrime.Decompose(out BScale, out RotQuat, out BOrigin);
-            float[] BRotation = ConvertEuler(RotQuat);
+            float[] BRotation = new float[3];
+            if (!DisregardOrigin)
+            {
 
-            BRotation[0] /= Convert.ToSingle(0.01745329252);
-            BRotation[1] /= Convert.ToSingle(0.01745329252);
-            BRotation[2] /= Convert.ToSingle(0.01745329252);
+                Assimp.Matrix4x4 OPrime = GetTotalTransform(objectNode, fbx);
+
+                OPrime.Decompose(out BScale, out RotQuat, out BOrigin);
+                BRotation = ConvertEuler(RotQuat);
+
+                BRotation[0] /= Convert.ToSingle(0.01745329252);
+                BRotation[1] /= Convert.ToSingle(0.01745329252);
+                BRotation[2] /= Convert.ToSingle(0.01745329252);
+            }
+            else
+            {
+                BOrigin[0] = 0.0f;
+                BOrigin[1] = 0.0f;
+                BOrigin[2] = 0.0f;
+
+                BScale[0] = 1.0f;
+                BScale[0] = 1.0f;
+                BScale[0] = 1.0f;
+            }
 
             List<int> xValues = new List<int>();
             List<int> yValues = new List<int>();
@@ -1585,11 +1601,21 @@ namespace Tarmac64_Library
                             (fbx.Meshes[childMesh].Vertices[childPoly.Indices[currentVert]].Z) * BScale[2] * TarmacSettings.ImportScale
                         );
 
-                        Point3D NewPosition = RotatePoint(VertPosition, BRotation);
+                        Point3D NewPosition = new Point3D();
+                        if (!DisregardOrigin)
+                        {
+                            NewPosition = RotatePoint(VertPosition, BRotation);
 
-                        NewPosition.X += BOrigin[0];
-                        NewPosition.Y += BOrigin[1];
-                        NewPosition.Z += BOrigin[2];
+                            NewPosition.X += BOrigin[0];
+                            NewPosition.Y += BOrigin[1];
+                            NewPosition.Z += BOrigin[2];
+                        }
+                        else
+                        {
+                            NewPosition.X = VertPosition.X;
+                            NewPosition.Y = VertPosition.Y;
+                            NewPosition.Z = VertPosition.Z; 
+                        }
                         try
                         {
                             newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(NewPosition.X);
@@ -1667,10 +1693,7 @@ namespace Tarmac64_Library
                         newObject.modelGeometry[currentFace].VertData[currentVert].color.GFloat = Convert.ToSingle(newObject.modelGeometry[currentFace].VertData[currentVert].color.G) / 255;
                         newObject.modelGeometry[currentFace].VertData[currentVert].color.BFloat = Convert.ToSingle(newObject.modelGeometry[currentFace].VertData[currentVert].color.B) / 255;
                         newObject.modelGeometry[currentFace].VertData[currentVert].color.AFloat = Convert.ToSingle(newObject.modelGeometry[currentFace].VertData[currentVert].color.A) / 255;                        
-                        if (newObject.modelGeometry[currentFace].VertData[currentVert].color.AFloat != 1.0)
-                        {
-                            int BreakPoint = 0;
-                        }
+                        
                     }
 
 
@@ -1937,15 +1960,17 @@ namespace Tarmac64_Library
 
 
 
-        public OK64F3DObject[] CreateObjects(Assimp.Scene fbx, OK64Texture[] textureArray)
+        public OK64F3DObject[] CreateObjects(Assimp.Scene fbx, OK64Texture[] textureArray, bool DisregardOrigin = false)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0; 
             var BaseNode = fbx.RootNode.FindNode("Master Objects");
+            TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
+            TarmacSettings.LoadSettings();
 
             for (int childObject = 0; childObject < BaseNode.Children.Count; childObject++)
             {
-                masterObjects.Add(createObject(fbx, BaseNode.Children[childObject], textureArray));
+                masterObjects.Add(createObject(fbx, BaseNode.Children[childObject], textureArray, false, TarmacSettings.AlphaCH2, DisregardOrigin));
             }
             List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
             OK64F3DObject[] outputObjects = NaturalSort(masterObjects).ToArray();
@@ -5224,7 +5249,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64Bone LoadBone(Node Base, Scene FBX)
+        public OK64Bone LoadBone(Node Base, Scene FBX, float ModelScale)
         {
             OK64Bone NewBone = new OK64Bone();
             NewBone.Name = Base.Name;
@@ -5232,14 +5257,14 @@ namespace Tarmac64_Library
 
             Matrix4x4 OPrime = GetTotalTransform(Base, FBX);
             NewBone.Origin = new short[3];
-            NewBone.Origin[0] = Convert.ToInt16(OPrime.A4 * 100);
-            NewBone.Origin[1] = Convert.ToInt16(OPrime.C4 * 100);
-            NewBone.Origin[2] = Convert.ToInt16(OPrime.B4 * 100);
+            NewBone.Origin[0] = Convert.ToInt16(OPrime.A4 * 100 * ModelScale);
+            NewBone.Origin[1] = Convert.ToInt16(OPrime.C4 * 100 * ModelScale);
+            NewBone.Origin[2] = Convert.ToInt16(OPrime.B4 * 100 * ModelScale);
 
             //Base.Transform.
             for (int ThisChild = 0; ThisChild < Base.ChildCount; ThisChild++)
             {
-                NewBone.Children[ThisChild] = LoadBone(Base.Children[ThisChild], FBX);
+                NewBone.Children[ThisChild] = LoadBone(Base.Children[ThisChild], FBX, ModelScale);
             }
             return NewBone;
         }
@@ -5914,11 +5939,11 @@ namespace Tarmac64_Library
             }
             return Bone;
         }
-        public OK64Bone LoadSkeleton (Scene FBX)
+        public OK64Bone LoadSkeleton (Scene FBX, float ModelScale)
         {
             
             Node Base = FBX.RootNode.FindNode("BodyBone");
-            OK64Bone Skeleton = LoadBone(Base, FBX);
+            OK64Bone Skeleton = LoadBone(Base, FBX, ModelScale);
 
             Animation Anime = FBX.Animations[0];
             Skeleton.FrameCount = Convert.ToInt32(Anime.DurationInTicks);

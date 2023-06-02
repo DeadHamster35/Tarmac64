@@ -78,7 +78,7 @@ namespace Tarmac64_Library
 
                 
                 var ObjectAnimations = new TM64_Course.OKObjectAnimations();
-                ObjectAnimations.WalkAnimation = TarmacGeo.LoadSkeleton(ModelData);
+                ObjectAnimations.WalkAnimation = TarmacGeo.LoadSkeleton(ModelData, 1.0f);
 
                 Assimp.Node masterNode = ModelData.RootNode.FindNode("Master Objects");
                 if (masterNode != null)
