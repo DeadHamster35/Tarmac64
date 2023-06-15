@@ -146,6 +146,9 @@
     <None Include="Resources\TextLogo.png" />
     <None Include="Resources\Tree1.bmp" />
     <None Include="Resources\Tree1.png" />
+    <Content Include="Resources\TextureNotFound.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Tree1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

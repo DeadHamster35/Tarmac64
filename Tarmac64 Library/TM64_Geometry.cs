@@ -2864,7 +2864,15 @@ namespace Tarmac64_Library
                         };
                         byte[] imageData = null;
                         byte[] paletteData = null;
-                        Bitmap bitmapData = new Bitmap(TextureArray[currentTexture].texturePath);
+                        Bitmap bitmapData;
+                        try
+                        {
+                            bitmapData = new Bitmap(TextureArray[currentTexture].texturePath);
+                        }
+                        catch
+                        {
+                            bitmapData = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "/Resources/TextureNotFound.png");
+                        }
 
                         N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[TextureArray[currentTexture].TextureFormat][TextureArray[currentTexture].BitSize], bitmapData);
                         TextureArray[currentTexture].compressedTexture = Tarmac.CompressMIO0(imageData);
