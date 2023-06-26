@@ -20,6 +20,7 @@ namespace Tarmac64_Library
         
         TM64 Tarmac = new TM64();
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
+        TM64_Objects TarmacObject = new TM64_Objects();
         F3DEX095 F3D =new F3DEX095();
         
 
@@ -114,7 +115,7 @@ namespace Tarmac64_Library
             public TM64_Geometry.OK64Texture[] TextureData { get; set; }
             public TM64_Geometry.OK64F3DObject[] ModelData { get; set; }
             public OKObjectAnimations ObjectAnimations { get; set; }
-            public TM64_Geometry.OK64Collide[] ObjectHitbox { get; set; }
+            public TM64_Objects.OK64Collide[] ObjectHitbox { get; set; }
             public int ModelPosition { get; set; }
             public UInt32 AnimationOffset { get; set; }
             public UInt32 HitboxOffset { get; set; }
@@ -399,7 +400,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] SaveHitboxRaw(TM64_Geometry.OK64Collide[] Hitbox)
+        public byte[] SaveHitboxRaw(TM64_Objects.OK64Collide[] Hitbox)
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -411,7 +412,7 @@ namespace Tarmac64_Library
 
                 binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
                 binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
-                binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
+                binaryWriter.Write(Convert.ToInt16(F3D.BigEndian(Hit.BoxAngle))); //ayy real Z angles lessgo.
 
                 binaryWriter.Write(F3D.BigEndian(Hit.Size[0]));
                 binaryWriter.Write(F3D.BigEndian(Hit.Size[2]));
@@ -627,10 +628,10 @@ namespace Tarmac64_Library
             if (binaryReader.ReadBoolean())
             {
                 int Count = binaryReader.ReadInt32();
-                NewType.ObjectHitbox = new TM64_Geometry.OK64Collide[Count];
+                NewType.ObjectHitbox = new TM64_Objects.OK64Collide[Count];
                 for (int ThisHit = 0; ThisHit < Count; ThisHit++)
                 {
-                    NewType.ObjectHitbox[ThisHit] = new TM64_Geometry.OK64Collide(ThisHit.ToString());
+                    NewType.ObjectHitbox[ThisHit] = new TM64_Objects.OK64Collide(ThisHit.ToString());
                     NewType.ObjectHitbox[ThisHit].Name = binaryReader.ReadString();
                     NewType.ObjectHitbox[ThisHit].Type = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].Status = binaryReader.ReadInt16();
@@ -707,7 +708,7 @@ namespace Tarmac64_Library
             if (SaveData.ObjectHitbox != null)
             {
                 binaryWriter.Write(true);
-                binaryWriter.Write(TarmacGeometry.SaveHitboxFile(SaveData.ObjectHitbox));
+                binaryWriter.Write(TarmacObject.SaveHitboxFile(SaveData.ObjectHitbox));
             }
             else
             {

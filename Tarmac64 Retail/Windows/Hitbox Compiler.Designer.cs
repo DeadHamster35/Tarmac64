@@ -61,16 +61,18 @@
             this.StatusBox = new System.Windows.Forms.ComboBox();
             this.TypeBox = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.AngleZBox = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // LoadFBXButton
             // 
-            this.LoadFBXButton.Enabled = false;
             this.LoadFBXButton.Location = new System.Drawing.Point(12, 10);
             this.LoadFBXButton.Name = "LoadFBXButton";
             this.LoadFBXButton.Size = new System.Drawing.Size(75, 23);
             this.LoadFBXButton.TabIndex = 0;
-            this.LoadFBXButton.Text = "Load .FBX";
+            this.LoadFBXButton.Text = "Load .HBK";
             this.LoadFBXButton.UseVisualStyleBackColor = true;
             this.LoadFBXButton.Click += new System.EventHandler(this.LoadFBXClick);
             // 
@@ -358,11 +360,40 @@
             this.label12.Text = "Type";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // label13
+            // 
+            this.label13.Location = new System.Drawing.Point(280, 248);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(42, 20);
+            this.label13.TabIndex = 314;
+            this.label13.Text = "Angle";
+            this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // AngleZBox
+            // 
+            this.AngleZBox.Location = new System.Drawing.Point(191, 249);
+            this.AngleZBox.Name = "AngleZBox";
+            this.AngleZBox.Size = new System.Drawing.Size(84, 20);
+            this.AngleZBox.TabIndex = 313;
+            this.AngleZBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateHBData);
+            // 
+            // label14
+            // 
+            this.label14.Location = new System.Drawing.Point(191, 272);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(84, 20);
+            this.label14.TabIndex = 312;
+            this.label14.Text = "Z";
+            this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // HitboxCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(335, 252);
+            this.ClientSize = new System.Drawing.Size(335, 296);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.AngleZBox);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label6);
@@ -438,5 +469,8 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox TypeBox;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox AngleZBox;
+        private System.Windows.Forms.Label label14;
     }
 }

@@ -57,6 +57,7 @@ namespace Tarmac64_Retail
         TM64_Course TarmacCourse = new TM64_Course();
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
         TM64 Tarmac = new TM64();
+        TM64_Objects TarmacObject = new TM64_Objects();
         Scene ModelData = new Scene();
         TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
         
@@ -96,7 +97,7 @@ namespace Tarmac64_Retail
                 NewType.Flag = Convert.ToInt16(FlagBox.Text);
                 if (HitboxBox.Text != "")
                 {   
-                    NewType.ObjectHitbox = TarmacGeometry.LoadHitboxFile(File.ReadAllBytes(HitboxBox.Text));
+                    NewType.ObjectHitbox = TarmacObject.LoadHitboxFile(File.ReadAllBytes(HitboxBox.Text));
                 }
                 else
                 {

@@ -19,8 +19,9 @@ namespace Tarmac64_Retail
         AssimpContext importer = new AssimpContext();
         TM64_Course TarmacCourse = new TM64_Course();
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
+        TM64_Objects TarmacObject = new TM64_Objects();
         TM64 Tarmac = new TM64();
-        TM64_Geometry.OK64Collide[] Hitbox = new TM64_Geometry.OK64Collide[0];
+        TM64_Objects.OK64Collide[] Hitbox = new TM64_Objects.OK64Collide[0];
 
         string[] BoxTypes = new string[] { "Sphere", "Box"};
         string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP", "DAMAGE" };
@@ -39,8 +40,12 @@ namespace Tarmac64_Retail
             OpenFileDialog FileOpen = new OpenFileDialog();
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
-                var CollideData = importer.ImportFile(FileOpen.FileName, PostProcessPreset.TargetRealTimeMaximumQuality);
-                Hitbox = TarmacGeometry.LoadHitbox(CollideData);
+                if (!File.Exists(FileOpen.FileName))
+                {
+                    return;
+                }
+
+                Hitbox = TarmacObject.LoadHBK(FileOpen.FileName);
                 
                 foreach (var Hit in Hitbox)
                 {
@@ -52,7 +57,7 @@ namespace Tarmac64_Retail
             else
             {
                 MessageBox.Show("Error");
-                Hitbox = new TM64_Geometry.OK64Collide[0];
+                Hitbox = new TM64_Objects.OK64Collide[0];
                 IndexBox.Items.Clear();
             }
         }
@@ -126,7 +131,7 @@ namespace Tarmac64_Retail
         private void CompileClick(object sender, EventArgs e)
         {
             
-            byte[] FileData = TarmacGeometry.SaveHitboxFile(Hitbox);
+            byte[] FileData = TarmacObject.SaveHitboxFile(Hitbox);
             SaveFileDialog FileSave = new SaveFileDialog();
             FileSave.InitialDirectory = TarmacSettings.ObjectDirectory;
             FileSave.Filter = "Tarmac Hitbox|*.ok64.HITBOX|All Files(*.*)|*.*";
@@ -139,8 +144,8 @@ namespace Tarmac64_Retail
 
         private void AddBtn_Click(object sender, EventArgs e)
         {
-            List<TM64_Geometry.OK64Collide> CurrentList = Hitbox.ToList();
-            CurrentList.Insert(IndexBox.SelectedIndex + 1, new TM64_Geometry.OK64Collide("CollisionSphere " + (Hitbox.Length + 1).ToString()));
+            List<TM64_Objects.OK64Collide> CurrentList = Hitbox.ToList();
+            CurrentList.Insert(IndexBox.SelectedIndex + 1, new TM64_Objects.OK64Collide("CollisionSphere " + (Hitbox.Length + 1).ToString()));
             IndexBox.Items.Insert(IndexBox.SelectedIndex + 1, "CollisionSphere " + (Hitbox.Length + 1).ToString());
             Hitbox = CurrentList.ToArray();
             IndexBox.SelectedIndex = IndexBox.Items.Count - 1;
@@ -149,7 +154,7 @@ namespace Tarmac64_Retail
 
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
-            List<TM64_Geometry.OK64Collide> CurrentList = Hitbox.ToList();
+            List<TM64_Objects.OK64Collide> CurrentList = Hitbox.ToList();
             int Index = IndexBox.SelectedIndex;
             if (Index > 0)
             {
@@ -206,6 +211,10 @@ namespace Tarmac64_Retail
                 if (Int16.TryParse(SizeZBox.Text, out Parse))
                 {
                     Hitbox[Index].Size[2] = Parse;
+                }
+                if (Int16.TryParse(AngleZBox.Text, out Parse))
+                {
+                    Hitbox[Index].BoxAngle = Parse;
                 }
                 if (Single.TryParse(ScaleBox.Text, out ParseS))
                 {
