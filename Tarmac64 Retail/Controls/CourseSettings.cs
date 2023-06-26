@@ -103,13 +103,16 @@ namespace Tarmac64_Retail
             PathSurfaceSelect.Items.Add("Path 3");
             PathSurfaceSelect.SelectedIndex = 0;
 
+            foreach (var BombType in bombTypes)
+            {   
+                BombTypeBox.Items.Add(BombType);
+            }
             for (int currentBomb = 0; currentBomb < 7; currentBomb++)
             {
                 BombIndexBox.Items.Add("Bomb " + currentBomb.ToString());
                 CourseData.BombArray[currentBomb] = new TM64_Course.VSBomb();
                 CourseData.BombArray[currentBomb].Point = Convert.ToInt16(bombPoints[currentBomb]);
                 CourseData.BombArray[currentBomb].Type = Convert.ToInt16(bompTypeIDs[currentBomb]);
-                BombTypeBox.Items.Add(CourseData.BombArray[currentBomb].Type);
             }
 
             for (int songIndex = 0; songIndex < songNames.Length; songIndex++)
@@ -982,7 +985,7 @@ namespace Tarmac64_Retail
 
         private void BombPointBox_TextChanged(object sender, EventArgs e)
         {
-
+            UpdateCourse();
         }
 
         private void label10_Click(object sender, EventArgs e)

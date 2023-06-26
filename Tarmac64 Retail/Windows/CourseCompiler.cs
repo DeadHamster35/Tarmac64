@@ -85,7 +85,6 @@ namespace Tarmac64_Library
             
             CreateColors();
 
-            TM64.OK64Settings okSettings = new TM64.OK64Settings();
             okSettings.LoadSettings();
 
 

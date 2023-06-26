@@ -68,6 +68,7 @@ namespace Tarmac64_Library
         {
             public string ProjectDirectory { get; set; }
             public string ObjectDirectory { get; set; }
+            public string ROMDirectory { get; set; }
             public float ImportScale { get; set; }
             public bool AlphaCH2 { get; set; }
             public string JRDirectory { get; set; }
@@ -83,12 +84,13 @@ namespace Tarmac64_Library
                 if (File.Exists(SettingsPath))
                 {
                     InputData = File.ReadAllLines(SettingsPath);
-                    if (InputData.Length == 4)
+                    if (InputData.Length == 5)
                     {
                         ProjectDirectory = InputData[0];
                         ObjectDirectory = InputData[1];
-                        ImportScale = Convert.ToSingle(InputData[2]);
-                        AlphaCH2 = Convert.ToBoolean(InputData[3]);
+                        ROMDirectory = InputData[2];
+                        ImportScale = Convert.ToSingle(InputData[3]);
+                        AlphaCH2 = Convert.ToBoolean(InputData[4]);
                         return this;
                     }
                     
@@ -96,6 +98,7 @@ namespace Tarmac64_Library
                 MessageBox.Show("Error Loading Settings. Restoring defaults");
                 ProjectDirectory = "";
                 ObjectDirectory = "";
+                ROMDirectory = "";
                 ImportScale = 0.01f;
                 AlphaCH2 = true;
                 return this;
@@ -108,11 +111,12 @@ namespace Tarmac64_Library
                 string[] settings = new string[0];
 
 
-                string[] SaveData = new string[4];
+                string[] SaveData = new string[5];
                 SaveData[0] = ProjectDirectory;
                 SaveData[1] = ObjectDirectory;
-                SaveData[2] = Convert.ToString(ImportScale);
-                SaveData[3] = Convert.ToString(AlphaCH2);
+                SaveData[2] = ROMDirectory;
+                SaveData[3] = Convert.ToString(ImportScale);
+                SaveData[4] = Convert.ToString(AlphaCH2);
                 File.WriteAllLines(SettingsPath, SaveData);
             }
         }

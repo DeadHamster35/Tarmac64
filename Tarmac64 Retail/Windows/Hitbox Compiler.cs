@@ -28,7 +28,7 @@ namespace Tarmac64_Retail
         int[] StatusValues = new int[] { -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
         string[] EffectNames = new string[] { "None", "StateAnimMusicNote", "StateAnimCrash", "StateAnimPoomp", "StateAnimBoing", "StateAnimExplosion", "StateAnimBonkStars", "StateAnimLandingDust" };
         int[] EffectValues = new int[] { -1, 0, 1, 2, 3, 4, 5, 6 };
-
+        TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
         public HitboxCompiler()
         {
             InitializeComponent();
@@ -97,7 +97,7 @@ namespace Tarmac64_Retail
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+            TarmacSettings.LoadSettings();
             foreach (var Type in BoxTypes)
             {
                 TypeBox.Items.Add(Type);
@@ -128,6 +128,7 @@ namespace Tarmac64_Retail
             
             byte[] FileData = TarmacGeometry.SaveHitboxFile(Hitbox);
             SaveFileDialog FileSave = new SaveFileDialog();
+            FileSave.InitialDirectory = TarmacSettings.ObjectDirectory;
             FileSave.Filter = "Tarmac Hitbox|*.ok64.HITBOX|All Files(*.*)|*.*";
             if (FileSave.ShowDialog() == DialogResult.OK)
             {

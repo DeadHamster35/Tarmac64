@@ -50,7 +50,7 @@ namespace Tarmac64_Library
 
         private void RemoveCourse()
         {
-            if (NameBox.Items.Count > 0)
+            if (NameBox.Items.Count >= 0)
             {
                 int Index = NameBox.SelectedIndex;
                 NameBox.Items.RemoveAt(Index);
@@ -174,12 +174,6 @@ namespace Tarmac64_Library
             TM64.OK64Settings okSettings = new TM64.OK64Settings();
             okSettings.LoadSettings();
 
-            CommonOpenFileDialog FolderOpen = new CommonOpenFileDialog();
-            FolderOpen.InitialDirectory = okSettings.ProjectDirectory;
-            FolderOpen.IsFolderPicker = false;
-            string FileName = "";
-            uint HeaderOffset = Convert.ToUInt32(HeaderBox.Text, 16);
-            MessageBox.Show("Select Patched ROM");
 
             uint HeaderAddress;
             if (!UInt32.TryParse(HeaderBox.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out HeaderAddress))
@@ -187,6 +181,14 @@ namespace Tarmac64_Library
                 MessageBox.Show("Invalid Header Address");
                 return;
             }
+
+            CommonOpenFileDialog FolderOpen = new CommonOpenFileDialog();
+            FolderOpen.InitialDirectory = okSettings.ROMDirectory;
+            FolderOpen.IsFolderPicker = false;
+            string FileName = "";
+            uint HeaderOffset = Convert.ToUInt32(HeaderBox.Text, 16);
+            MessageBox.Show("Select Patched ROM");
+
 
             if (FolderOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {

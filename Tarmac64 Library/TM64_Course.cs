@@ -2070,6 +2070,7 @@ namespace Tarmac64_Library
             {
                 
                 int[] tempMusicOffset = new int[2]; //use inside this IF statement to handle the positions of data.
+                int[] tempMusicSizes = new int[2]; //use inside this IF statement to handle the positions of data.
 
                 tempMusicOffset[0] = Convert.ToInt32(binaryWriter.BaseStream.Position);
                 binaryWriter.Write(courseData.SongData.SequenceData);
@@ -2081,7 +2082,6 @@ namespace Tarmac64_Library
                 {
                     binaryWriter.Write(Convert.ToByte(0x00));
                 }
-
                 tempMusicOffset[1] = Convert.ToInt32(binaryWriter.BaseStream.Position);
                 binaryWriter.Write(courseData.SongData.InstrumentData);
 
@@ -2110,6 +2110,14 @@ namespace Tarmac64_Library
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
                 binaryWriter.Write(Convert.ToInt32(0));
+
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
             }
             else
             {

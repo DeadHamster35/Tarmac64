@@ -25,6 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Collections.Concurrent;
 using System.Windows.Media.Imaging;
+using System.Data;
 
 
 namespace Tarmac64_Library
@@ -1616,6 +1617,8 @@ namespace Tarmac64_Library
                             NewPosition.Y = VertPosition.Y;
                             NewPosition.Z = VertPosition.Z; 
                         }
+
+
                         try
                         {
                             newObject.modelGeometry[currentFace].VertData[currentVert].position.x = Convert.ToInt16(NewPosition.X);
@@ -1624,7 +1627,7 @@ namespace Tarmac64_Library
                         }
                         catch (OverflowException) 
                         {
-                            MessageBox.Show("Mesh indices are too high or too low. Check your FBX export settings to ensure that they are being exported as Meters");
+                            MessageBox.Show("Mesh indices are too high or too low. Check your FBX export settings and Tarmac Import Scale");
                             Environment.Exit(0);
                         }
 
@@ -1909,13 +1912,15 @@ namespace Tarmac64_Library
                 if (listedObjects.IndexOf(currentMaster) == -1)
                 {
                     ungroupedObjects.Add(masterObjects[currentMaster]);
-
                 }
             }
 
+            OK64F3DObject[] ungroupedArray = ungroupedObjects.ToArray();
+            Array.Sort(ungroupedArray, (x, y) => string.Compare(x.objectName, y.objectName));
+
             List<OK64F3DObject> masterList = new List<OK64F3DObject>();
             masterList.AddRange(groupObjects);
-            masterList.AddRange(ungroupedObjects);
+            masterList.AddRange(ungroupedArray);
             return masterList.ToArray();
         }
 
@@ -2768,6 +2773,30 @@ namespace Tarmac64_Library
                     textureObject[currentTexture].romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
                     binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
                     binaryWriter.Write(imageData);
+
+                    int SegPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
+                    if (paletteData != null)
+                    {
+                        textureObject[currentTexture].PaletteData = paletteData;
+                        textureObject[currentTexture].paletteSize = paletteData.Length;
+                        textureObject[currentTexture].palettePosition = SegPosition;
+                        SegPosition += textureObject[currentTexture].paletteSize;
+                        addressAlign = 0x1000 - (SegPosition % 0x1000);
+                        if (addressAlign == 0x1000)
+                            addressAlign = 0;
+                        SegPosition += addressAlign;
+
+                        binaryWriter.Write(textureObject[currentTexture].PaletteData);
+                        addressAlign = 0x1000 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 0x1000);
+                        if (addressAlign == 0x1000)
+                            addressAlign = 0;
+                        for (int align = 0; align < addressAlign; align++)
+                        {
+                            binaryWriter.Write(Convert.ToByte(0x00));
+                        }
+                    }
+
+
                 }
             }
 
@@ -2836,12 +2865,36 @@ namespace Tarmac64_Library
                     textureObject[currentTexture].fileSize = imageData.Length;
                     textureObject[currentTexture].segmentPosition = Convert.ToInt32(binaryWriter.BaseStream.Position + DataLength);
 
+
                     // write compressed MIO0 texture to end of ROM.
 
                     textureObject[currentTexture].romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
                     binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
                     textureObject[currentTexture].rawTexture = imageData;                    
                     binaryWriter.Write(imageData);
+
+                    int SegPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
+                    if (paletteData != null)
+                    {
+                        textureObject[currentTexture].PaletteData = paletteData;
+                        textureObject[currentTexture].paletteSize = paletteData.Length;
+                        textureObject[currentTexture].palettePosition = SegPosition;
+                        SegPosition += textureObject[currentTexture].paletteSize;
+                        addressAlign = 0x1000 - (SegPosition % 0x1000);
+                        if (addressAlign == 0x1000)
+                            addressAlign = 0;
+                        SegPosition += addressAlign;
+
+                        binaryWriter.Write(textureObject[currentTexture].PaletteData);
+                        addressAlign = 0x1000 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 0x1000);
+                        if (addressAlign == 0x1000)
+                            addressAlign = 0;
+                        for (int align = 0; align < addressAlign; align++)
+                        {
+                            binaryWriter.Write(Convert.ToByte(0x00));
+                        }
+                    }
+
                 }
             }
 
@@ -3907,6 +3960,9 @@ namespace Tarmac64_Library
 
 
 
+            byte[] SegmentByte = BitConverter.GetBytes(4);
+            Array.Reverse(SegmentByte);
+            int SegmentID = BitConverter.ToInt32(SegmentByte, 0);
 
 
             //set MIP levels to 0.
@@ -4100,6 +4156,10 @@ namespace Tarmac64_Library
         public byte[] CI(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false)
         {
 
+            byte[] SegmentByte = BitConverter.GetBytes(Segment);
+            Array.Reverse(SegmentByte);
+            int SegmentID = BitConverter.ToInt32(SegmentByte, 0);
+
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
             byte[] byteArray = new byte[2];
@@ -4107,11 +4167,11 @@ namespace Tarmac64_Library
             UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
 
             binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DSharp.F3DEX095_Parameters.G_TT_RGBA16));
-            binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | 0x05000000)));
+            binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | SegmentID)));
             if (TextureObject.BitSize < 2)
             {
                 //Macro 4-bit Texture Load
-                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
+                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
                     0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
             }
@@ -4136,7 +4196,7 @@ namespace Tarmac64_Library
                 );
                 //Load Texture Data
                 binaryWriter.Write(F3D.gsDPLoadTextureBlock(
-                    Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
+                    Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                     F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                     Convert.ToUInt32(TextureObject.textureWidth),
@@ -4617,9 +4677,44 @@ namespace Tarmac64_Library
             {
                 if ((textureObject[materialID].texturePath != null) && (textureObject[materialID].texturePath != "NULL"))
                 {
+                    //Textured Polygons (Slow)
                     textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
-                    seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle));
-                }                    
+                    switch (textureObject[materialID].TextureFormat)
+                    {
+
+                        case 0:
+                        default:
+                            {
+                                seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle));
+                                break;
+                            }
+                        case 2:
+                            {
+                                seg7w.Write(CI(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle));
+                                break;
+                            }
+                        case 3:
+                        case 4:
+                            {
+                                seg7w.Write(IA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle));
+                                break;
+                            }
+                        case 1:
+                            {
+                                MessageBox.Show("ERROR - " + textureObject[materialID].textureName + " - YUV Format not supported.");
+                                break;
+                            }
+                    }
+
+
+                }
+                else
+                {
+                    // Gouraud or Flat Shading (Fast)
+                    textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
+                    seg7w.Write(UntexturedPolygons(textureObject[materialID], GeometryMode, FogToggle));
+
+                }
             }
             return seg7m.ToArray();
         }
@@ -4679,7 +4774,19 @@ namespace Tarmac64_Library
                         }
                     }
                 }
-
+                if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
+                {
+                    seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
+                    seg6w.Write(
+                        F3D.gsSPTexture(
+                            65535,
+                            65535,
+                            0,
+                            0,
+                            1
+                        )
+                    );
+                }
             }
 
             byteArray = BitConverter.GetBytes(0xB8000000);
@@ -4946,20 +5053,20 @@ namespace Tarmac64_Library
                                             }
                                         }
 
-                                        if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
-                                        {
-                                            seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
-                                            seg6w.Write(
-                                                F3D.gsSPTexture(
-                                                    65535,
-                                                    65535,
-                                                    0,
-                                                    0,
-                                                    1
-                                                )
-                                            );
-                                        }
+                                    }
 
+                                    if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
+                                    {
+                                        seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
+                                        seg6w.Write(
+                                            F3D.gsSPTexture(
+                                                65535,
+                                                65535,
+                                                0,
+                                                0,
+                                                1
+                                            )
+                                        );
                                     }
                                 }
                             }
@@ -5946,7 +6053,7 @@ namespace Tarmac64_Library
             OK64Bone Skeleton = LoadBone(Base, FBX, ModelScale);
 
             Animation Anime = FBX.Animations[0];
-            Skeleton.FrameCount = Convert.ToInt32(Anime.DurationInTicks);
+            Skeleton.FrameCount = Convert.ToInt32(Anime.DurationInTicks + 1);
             for (int ThisNode = 0; ThisNode < Anime.NodeAnimationChannelCount; ThisNode++)
             {
                 ParseAnimation(FBX, Anime.NodeAnimationChannels[ThisNode], Skeleton, Skeleton.FrameCount);

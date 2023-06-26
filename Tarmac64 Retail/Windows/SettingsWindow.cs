@@ -39,6 +39,7 @@ namespace Tarmac64_Retail
             bool Valid = false;
             TarmacSettings.ProjectDirectory = CourseDIRBox.Text;
             TarmacSettings.ObjectDirectory = ObjectDIRBox.Text;
+            TarmacSettings.ROMDirectory = ROMDIRBox.Text;
             if (float.TryParse(ScaleBox.Text, out ParseF))
             {
                 TarmacSettings.ImportScale = ParseF;
@@ -87,6 +88,17 @@ namespace Tarmac64_Retail
             if (FileOpen.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 ObjectDIRBox.Text = FileOpen.FileName;
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            CommonOpenFileDialog FileOpen = new CommonOpenFileDialog();
+            FileOpen.IsFolderPicker = true;
+
+            if (FileOpen.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                ROMDIRBox.Text = FileOpen.FileName;
             }
         }
     }

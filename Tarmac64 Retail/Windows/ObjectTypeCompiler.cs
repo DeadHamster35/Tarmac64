@@ -58,6 +58,7 @@ namespace Tarmac64_Retail
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
         TM64 Tarmac = new TM64();
         Scene ModelData = new Scene();
+        TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
         
         public ObjectTypeCompiler()
         {
@@ -67,7 +68,8 @@ namespace Tarmac64_Retail
         private void LoadBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
-            FileOpen.Filter = "FBX File|*.fbx|All Files|*.*";
+            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
+            FileOpen.Filter = "FBX File|*.fbx|All Files|*.*";          
             
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
@@ -132,7 +134,7 @@ namespace Tarmac64_Retail
                     NewType.ObjectAnimations = null;
                 }
 
-                NewType.ModelData = TarmacGeometry.CreateObjects(ModelData, NewType.TextureData, AToggleBox.Checked);
+                NewType.ModelData = TarmacGeometry.CreateObjects(ModelData, NewType.TextureData, false);
 
 
                 
@@ -182,6 +184,7 @@ namespace Tarmac64_Retail
 
         private void ObjectTypeCompiler_Load(object sender, EventArgs e)
         {
+            TarmacSettings.LoadSettings();
             PropertyInfo[] properties = typeof(TM64_Course.OKObjectBehaviorSearch).GetProperties();
             foreach (PropertyInfo ThisProp in properties)
             {
@@ -253,6 +256,7 @@ namespace Tarmac64_Retail
         private void button1_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
             FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
@@ -270,6 +274,7 @@ namespace Tarmac64_Retail
         private void button2_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
             FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
@@ -280,6 +285,7 @@ namespace Tarmac64_Retail
         private void button4_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
             FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
@@ -297,6 +303,7 @@ namespace Tarmac64_Retail
         private void HitboxBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
             FileOpen.Filter = "Tarmac Hitbox|*.ok64.HITBOX|All Files(*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {

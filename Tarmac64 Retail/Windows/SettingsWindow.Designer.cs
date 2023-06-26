@@ -38,6 +38,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.AlphaBox = new System.Windows.Forms.CheckBox();
             this.button3 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.ROMDIRBox = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -98,7 +101,7 @@
             // 
             // ScaleBox
             // 
-            this.ScaleBox.Location = new System.Drawing.Point(14, 86);
+            this.ScaleBox.Location = new System.Drawing.Point(14, 105);
             this.ScaleBox.Margin = new System.Windows.Forms.Padding(5);
             this.ScaleBox.Name = "ScaleBox";
             this.ScaleBox.Size = new System.Drawing.Size(64, 20);
@@ -107,7 +110,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(88, 89);
+            this.label3.Location = new System.Drawing.Point(88, 109);
             this.label3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(66, 13);
@@ -117,7 +120,7 @@
             // AlphaBox
             // 
             this.AlphaBox.AutoSize = true;
-            this.AlphaBox.Location = new System.Drawing.Point(175, 88);
+            this.AlphaBox.Location = new System.Drawing.Point(175, 108);
             this.AlphaBox.Name = "AlphaBox";
             this.AlphaBox.Size = new System.Drawing.Size(143, 17);
             this.AlphaBox.TabIndex = 8;
@@ -126,7 +129,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(258, 125);
+            this.button3.Location = new System.Drawing.Point(258, 144);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 9;
@@ -134,11 +137,42 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(12, 74);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(35, 23);
+            this.button1.TabIndex = 12;
+            this.button1.Text = "...";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // ROMDIRBox
+            // 
+            this.ROMDIRBox.Location = new System.Drawing.Point(55, 75);
+            this.ROMDIRBox.Margin = new System.Windows.Forms.Padding(5);
+            this.ROMDIRBox.Name = "ROMDIRBox";
+            this.ROMDIRBox.Size = new System.Drawing.Size(187, 20);
+            this.ROMDIRBox.TabIndex = 11;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(252, 79);
+            this.label4.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(77, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "ROM Directory";
+            // 
             // SettingsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(344, 156);
+            this.ClientSize = new System.Drawing.Size(344, 177);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.ROMDIRBox);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.AlphaBox);
             this.Controls.Add(this.ScaleBox);
@@ -170,5 +204,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox AlphaBox;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox ROMDIRBox;
+        private System.Windows.Forms.Label label4;
     }
 }
