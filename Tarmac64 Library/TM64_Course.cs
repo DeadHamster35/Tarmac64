@@ -412,7 +412,7 @@ namespace Tarmac64_Library
 
                 binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
                 binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
-                binaryWriter.Write(Convert.ToInt16(F3D.BigEndian(Hit.BoxAngle))); //ayy real Z angles lessgo.
+                binaryWriter.Write(F3D.BigEndian(Hit.BoxAngle)); //ayy real Z angles lessgo.
 
                 binaryWriter.Write(F3D.BigEndian(Hit.Size[0]));
                 binaryWriter.Write(F3D.BigEndian(Hit.Size[2]));
@@ -639,6 +639,7 @@ namespace Tarmac64_Library
                     NewType.ObjectHitbox[ThisHit].Effect = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].CollideResult = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].HitResult = binaryReader.ReadInt16();
+                    NewType.ObjectHitbox[ThisHit].BoxAngle = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].Origin = new short[3];
                     NewType.ObjectHitbox[ThisHit].Size = new short[3];
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
