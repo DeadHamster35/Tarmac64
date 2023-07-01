@@ -25,6 +25,7 @@ using Cereal64.Microcodes.F3DEX.DataElements;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Runtime.Serialization.Formatters.Binary;
 using F3DSharp;
+using System.Linq.Expressions;
 
 namespace Tarmac64_Library
 {
@@ -863,7 +864,14 @@ namespace Tarmac64_Library
                     {
                         if (textureArray[ThisTex].texturePath != null)
                         {
-                            TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
+                            try
+                            {
+                                TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
+                            }
+                            catch 
+                            {
+                                TextureBitmaps[ThisTex] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "/Resources/TextureNotFound.png");
+                            }
                         }
                     }
                     //
