@@ -61,7 +61,7 @@ namespace Tarmac64_Retail
                 IndexBox.Items.Clear();
             }
         }
-
+        
         private void IndexBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (Hitbox.Length > 0)

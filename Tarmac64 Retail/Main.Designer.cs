@@ -40,6 +40,7 @@
             this.ghostExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.courseLoaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetFoldersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            
             this.label5 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -253,5 +254,6 @@
         private System.Windows.Forms.ToolStripMenuItem extractorsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem songExtractorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ghostExtractorToolStripMenuItem;
+        
     }
 }

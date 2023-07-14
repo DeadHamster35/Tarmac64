@@ -11,6 +11,7 @@ using System.Windows.Media.Media3D;
 using Assimp;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace Tarmac64_Library
 {
@@ -257,6 +258,7 @@ namespace Tarmac64_Library
 
         public void DrawOKObjectTextured(OpenGL gl, Texture glTexture, TM64_Course.OKObject TargetObject, TM64_Course.OKObjectType TargetObjectType)
         {
+            OpenFileDialog FileReplace = new OpenFileDialog();
             foreach (var Geometry in TargetObjectType.ModelData)
             {
                 
@@ -264,7 +266,26 @@ namespace Tarmac64_Library
                 if (TargetObjectType.TextureData[Geometry.materialID].texturePath == null)
                 {
                     MessageBox.Show("Error loading texture for " + TargetObjectType.Name);
+                    if (FileReplace.ShowDialog == DialogResult.OK)
+                    {
+                        if (FileReplace.FileName != null)
+                        {
+                            if(File.Exists(FileReplace.FileName))
+                            {
+                                TargetObjectType.TextureData[Geometry.materialID].texturePath = FileReplace.FileName;
+                            }
+                            else
+                            {
+                                TargetObjectType.TextureData[Geometry.materialID].texturePath = 
+                            }
+                        }
+                    }
                 }
+                if (File.Exists(TargetObjectType.TextureData[Geometry.materialID].texturePath)) ;
+                {
+
+                }
+
                 glTexture.Create(gl, TargetObjectType.TextureData[Geometry.materialID].texturePath);
                 glTexture.Bind(gl);
 
