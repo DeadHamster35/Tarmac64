@@ -93,8 +93,8 @@ namespace Tarmac64_Retail
                     case 1:
                         {
                             //cylinder
+                            SizeYBox.Enabled = true;
                             SizeZBox.Enabled = false;
-                            SizeZBox.Enabled = true;
                             SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
                             SizeYBox.Text = Convert.ToString(Hitbox[Index].Size[1]);
                             SizeZBox.Text = "";
@@ -258,8 +258,8 @@ namespace Tarmac64_Retail
                     case 1:
                         {
                             //cylinder
-                            SizeYBox.Enabled = false;
-                            SizeZBox.Enabled = true;
+                            SizeYBox.Enabled = true;
+                            SizeZBox.Enabled = false;
                             SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
                             SizeYBox.Text = Convert.ToString(Hitbox[Index].Size[1]);
                             SizeZBox.Text = "";
