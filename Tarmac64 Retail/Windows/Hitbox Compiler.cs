@@ -23,7 +23,7 @@ namespace Tarmac64_Retail
         TM64 Tarmac = new TM64();
         TM64_Objects.OK64Collide[] Hitbox = new TM64_Objects.OK64Collide[0];
 
-        string[] BoxTypes = new string[] { "Sphere", "Box"};
+        string[] BoxTypes = new string[] { "Sphere", "Cylinder", "Box"};
         string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP", "DAMAGE" };
         string[] StatusNames = new string[] { "None", "MapObjectHit", "LightningHit", "BooTranslucent", "BecomeBombOn", "BecomeBomb ", "FlattenedOn", "FlattenedOff", "MushroomBoost", "SpinOutSaveable", "SpinOut", "GreenShellHit", "RedShellHit", "Bonk", "StarOn", "GhostOn", "StarOff", "GhostOff" };
         int[] StatusValues = new int[] { -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
@@ -78,23 +78,38 @@ namespace Tarmac64_Retail
                 DmgResultBox.SelectedIndex = Hitbox[Index].HitResult;
                 TypeBox.SelectedIndex = Hitbox[Index].Type;
                 ScaleBox.Text = Convert.ToString(Hitbox[Index].Scale);
-                if (Hitbox[Index].Type == 0)
+                switch(Hitbox[Index].Type)
                 {
-                    
-                    SizeYBox.Enabled = false;
-                    SizeZBox.Enabled = false;
-                    SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
-                    SizeYBox.Text = "";
-                    SizeZBox.Text = "";
-                }
-                else
-                {
-                    
-                    SizeYBox.Enabled = true;
-                    SizeZBox.Enabled = true;
-                    SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
-                    SizeYBox.Text = Convert.ToString(Hitbox[Index].Size[1]);
-                    SizeZBox.Text = Convert.ToString(Hitbox[Index].Size[2]);
+                    case 0:
+                        {
+                            //sphere
+                            SizeYBox.Enabled = false;
+                            SizeZBox.Enabled = false;
+                            SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
+                            SizeYBox.Text = "";
+                            SizeZBox.Text = "";
+                            break;
+                        }
+                    case 1:
+                        {
+                            //cylinder
+                            SizeZBox.Enabled = false;
+                            SizeZBox.Enabled = true;
+                            SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
+                            SizeYBox.Text = Convert.ToString(Hitbox[Index].Size[1]);
+                            SizeZBox.Text = "";
+                            break;
+                        }
+                    case 2:
+                        {
+                            //cube
+                            SizeYBox.Enabled = true;
+                            SizeZBox.Enabled = true;
+                            SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
+                            SizeYBox.Text = Convert.ToString(Hitbox[Index].Size[1]);
+                            SizeZBox.Text = Convert.ToString(Hitbox[Index].Size[2]);
+                            break;
+                        }
                 }
                 Loaded = true;
             }
@@ -228,24 +243,48 @@ namespace Tarmac64_Retail
                 Hitbox[Index].CollideResult = Convert.ToInt16(ColResultBox.SelectedIndex);
 
 
-
+                switch(Hitbox[Index].Type)
+                {
+                    case 0:
+                        {
+                            //sphere
+                            SizeYBox.Enabled = false;
+                            SizeZBox.Enabled = false;
+                            SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
+                            SizeYBox.Text = "";
+                            SizeZBox.Text = "";
+                            break;
+                        }
+                    case 1:
+                        {
+                            //cylinder
+                            SizeYBox.Enabled = false;
+                            SizeZBox.Enabled = true;
+                            SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
+                            SizeYBox.Text = Convert.ToString(Hitbox[Index].Size[1]);
+                            SizeZBox.Text = "";
+                            break;
+                        }
+                    case 2:
+                        {
+                            //cube
+                            SizeYBox.Enabled = true;
+                            SizeZBox.Enabled = true;
+                            SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
+                            SizeYBox.Text = Convert.ToString(Hitbox[Index].Size[1]);
+                            SizeZBox.Text = Convert.ToString(Hitbox[Index].Size[2]);
+                            break;
+                        }
+                }
                 if (Hitbox[Index].Type == 0)
                 {
 
-                    SizeYBox.Enabled = false;
-                    SizeZBox.Enabled = false;
-                    SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
-                    SizeYBox.Text = "";
-                    SizeZBox.Text = "";
+                    
                 }
                 else
                 {
 
-                    SizeYBox.Enabled = true;
-                    SizeZBox.Enabled = true;
-                    SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
-                    SizeYBox.Text = Convert.ToString(Hitbox[Index].Size[1]);
-                    SizeZBox.Text = Convert.ToString(Hitbox[Index].Size[2]);
+                    
                 }
             }
 

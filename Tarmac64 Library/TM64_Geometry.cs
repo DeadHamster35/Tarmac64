@@ -2913,7 +2913,7 @@ namespace Tarmac64_Library
                         }
                         catch
                         {
-                            bitmapData = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "/Resources/TextureNotFound.png");
+                            bitmapData = new Bitmap(Tarmac64_Library.Properties.Resources.TextureNotFound);
                         }
 
                         N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[TextureArray[currentTexture].TextureFormat][TextureArray[currentTexture].BitSize], bitmapData);

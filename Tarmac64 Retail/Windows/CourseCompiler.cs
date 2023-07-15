@@ -863,13 +863,20 @@ namespace Tarmac64_Library
                     {
                         if (textureArray[ThisTex].texturePath != null)
                         {
-                            try
+                            if (File.Exists(textureArray[ThisTex].texturePath))
                             {
-                                TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
+                                try
+                                {
+                                    TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
+                                }
+                                catch
+                                {
+                                    TextureBitmaps[ThisTex] = new Bitmap(Tarmac64_Library.Properties.Resources.TextureNotFound);
+                                }
                             }
-                            catch 
+                            else
                             {
-                                TextureBitmaps[ThisTex] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "/Resources/TextureNotFound.png");
+                                TextureBitmaps[ThisTex] = new Bitmap(Tarmac64_Library.Properties.Resources.TextureNotFound);
                             }
                         }
                     }

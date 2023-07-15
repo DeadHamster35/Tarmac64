@@ -257,6 +257,34 @@ namespace Tarmac64_Retail
                 }
 
                 TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(TargetFile);
+
+                for (int ThisTexture = 0; ThisTexture < NewType.TextureData.Length; ThisTexture++)
+                {
+                    if (
+                        (NewType.TextureData[ThisTexture].texturePath == null) ||
+                        (!File.Exists(NewType.TextureData[ThisTexture].texturePath))
+                    )
+                    {
+                        MessageBox.Show("Error loading texture " + NewType.TextureData[ThisTexture].textureName + " for " + NewType.Name);
+                        if (FileOpen.ShowDialog() == DialogResult.OK)
+                        {
+                            if (FileOpen.FileName != null)
+                            {
+                                if (File.Exists(FileOpen.FileName))
+                                {
+                                    NewType.TextureData[ThisTexture].texturePath = FileOpen.FileName;
+                                }
+                                else
+                                {
+                                    NewType.TextureData[ThisTexture].texturePath = null;
+                                    MessageBox.Show("File was not found - compiled map may be corrupt");
+                                }
+                            }
+                        }
+                    }
+                }
+                
+
                 OKObjectTypeList.Add(NewType);
                 ObjectIndexBox.Items.Add(NewType.Name);
             }

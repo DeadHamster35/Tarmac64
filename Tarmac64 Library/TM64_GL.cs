@@ -263,31 +263,24 @@ namespace Tarmac64_Library
             {
                 
                 glTexture.Destroy(gl);
-                if (TargetObjectType.TextureData[Geometry.materialID].texturePath == null)
+                if (
+                    (TargetObjectType.TextureData[Geometry.materialID].texturePath != null) &&
+                    (File.Exists(TargetObjectType.TextureData[Geometry.materialID].texturePath))
+                )
                 {
-                    MessageBox.Show("Error loading texture for " + TargetObjectType.Name);
-                    if (FileReplace.ShowDialog == DialogResult.OK)
-                    {
-                        if (FileReplace.FileName != null)
-                        {
-                            if(File.Exists(FileReplace.FileName))
-                            {
-                                TargetObjectType.TextureData[Geometry.materialID].texturePath = FileReplace.FileName;
-                            }
-                            else
-                            {
-                                TargetObjectType.TextureData[Geometry.materialID].texturePath = 
-                            }
-                        }
-                    }
+                    glTexture.Create(gl, TargetObjectType.TextureData[Geometry.materialID].texturePath);
+                    glTexture.Bind(gl);
                 }
-                if (File.Exists(TargetObjectType.TextureData[Geometry.materialID].texturePath)) ;
+                else
                 {
-
+                    glTexture.Create(gl, Tarmac64_Library.Properties.Resources.TextureNotFound);
+                    glTexture.Bind(gl);                   
                 }
+                
+                   
+                
+                
 
-                glTexture.Create(gl, TargetObjectType.TextureData[Geometry.materialID].texturePath);
-                glTexture.Bind(gl);
 
                 gl.Begin(OpenGL.GL_TRIANGLES);
                 foreach (var Face in Geometry.modelGeometry)

@@ -86,19 +86,32 @@ namespace Tarmac64_Library
 
                     HitboxData[CurrentBox].Type = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
 
-                    if (HitboxData[CurrentBox].Type == 0)
+                    switch(HitboxData[CurrentBox].Type)
                     {
-                        //sphere
-                        HitboxData[CurrentBox].Size[0] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
-                    }
-                    else
-                    {
+                        case 0:
+                            {
+                                //Sphere
+                                HitboxData[CurrentBox].Size[0] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
+                                break;
+                            }
 
-                        HitboxData[CurrentBox].Size[0] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
-                        HitboxData[CurrentBox].Size[1] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
-                        HitboxData[CurrentBox].Size[2] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
+                        case 1:
+                            {
+                                //cylinder
+                                HitboxData[CurrentBox].Size[0] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
+                                HitboxData[CurrentBox].Size[1] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
+                                break;
+                            }
 
-                        HitboxData[CurrentBox].BoxAngle = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]) * 100.0f);
+                        case 2:
+                            {
+                                //box
+                                HitboxData[CurrentBox].Size[0] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
+                                HitboxData[CurrentBox].Size[1] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
+                                HitboxData[CurrentBox].Size[2] = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]));
+                                HitboxData[CurrentBox].BoxAngle = Convert.ToInt16(Convert.ToSingle(FileData[CurrentLine++]) * 100.0f);
+                                break;
+                            }
                     }
 
                     CurrentBox++;

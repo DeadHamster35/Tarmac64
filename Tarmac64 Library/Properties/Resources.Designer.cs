@@ -133,6 +133,16 @@ namespace Tarmac64_Library.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap TextureNotFound {
+            get {
+                object obj = ResourceManager.GetObject("TextureNotFound", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Tree1 {
             get {
                 object obj = ResourceManager.GetObject("Tree1", resourceCulture);
