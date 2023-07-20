@@ -82,8 +82,12 @@ namespace Tarmac64_Retail
 
         public void CreateObject(TM64_Course.OKObject NewObject)
         {
-            int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + ObjectListBox.Items.Count.ToString());
-            ObjectListBox.SelectedIndex = NewIndex;
+            if (-1 < NewObject.ObjectIndex && NewObject.ObjectIndex <= OKObjectTypeList.Count)
+            {
+                int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + ObjectListBox.Items.Count.ToString());
+                ObjectListBox.SelectedIndex = NewIndex;
+            }
+            
         }
 
 
@@ -111,7 +115,7 @@ namespace Tarmac64_Retail
             NewItem.ModelData[0].objectColor = new float[] { 1.0f, 1.0f, 0.5f };
             NewItem.ModelScale = 1.0f;
             OKObjectTypeList.Add(NewItem);
-            ObjectIndexBox.Items.Add(NewItem.Name);
+            ObjectTypeIndexBox.Items.Add(NewItem.Name);
 
             NewItem = new TM64_Course.OKObjectType();
             NewItem.Name = "Tree";
@@ -121,8 +125,8 @@ namespace Tarmac64_Retail
             NewItem.ModelData[0].objectColor = new float[] { 0f, 1.0f, 0f };
             NewItem.ModelScale = 1.0f;
             OKObjectTypeList.Add(NewItem);
-            ObjectIndexBox.Items.Add(NewItem.Name);
-            ObjectIndexBox.SelectedIndex = 0;
+            ObjectTypeIndexBox.Items.Add(NewItem.Name);
+            ObjectTypeIndexBox.SelectedIndex = 0;
 
             NewItem = new TM64_Course.OKObjectType();
             NewItem.Name = "Piranha";
@@ -132,8 +136,8 @@ namespace Tarmac64_Retail
             NewItem.ModelData[0].objectColor = new float[] { 1.0f, 0.45f, 0f };
             NewItem.ModelScale = 1.0f;
             OKObjectTypeList.Add(NewItem);
-            ObjectIndexBox.Items.Add(NewItem.Name);
-            ObjectIndexBox.SelectedIndex = 0;
+            ObjectTypeIndexBox.Items.Add(NewItem.Name);
+            ObjectTypeIndexBox.SelectedIndex = 0;
 
 
             NewItem = new TM64_Course.OKObjectType();
@@ -144,8 +148,8 @@ namespace Tarmac64_Retail
             NewItem.ModelData[0].objectColor = new float[] { 1.0f, 0f, 0f };
             NewItem.ModelScale = 1.0f;
             OKObjectTypeList.Add(NewItem);
-            ObjectIndexBox.Items.Add(NewItem.Name);
-            ObjectIndexBox.SelectedIndex = 0;
+            ObjectTypeIndexBox.Items.Add(NewItem.Name);
+            ObjectTypeIndexBox.SelectedIndex = 0;
 
             NewItem = new TM64_Course.OKObjectType();
             NewItem.Name = "Special Box";
@@ -155,7 +159,7 @@ namespace Tarmac64_Retail
             NewItem.ModelData[0].objectColor = new float[] { 1.0f, 1.0f, 0.5f };
             NewItem.ModelScale = 1.0f;
             OKObjectTypeList.Add(NewItem);
-            ObjectIndexBox.Items.Add(NewItem.Name);
+            ObjectTypeIndexBox.Items.Add(NewItem.Name);
 
             NewItem = new TM64_Course.OKObjectType();
             NewItem.Name = "Battle Objective";
@@ -165,14 +169,14 @@ namespace Tarmac64_Retail
             NewItem.ModelData[0].objectColor = new float[] { 0f, 1.0f, 0.75f };
             NewItem.ModelScale = 1.0f;
             OKObjectTypeList.Add(NewItem);
-            ObjectIndexBox.Items.Add(NewItem.Name);
-            ObjectIndexBox.SelectedIndex = 0;
+            ObjectTypeIndexBox.Items.Add(NewItem.Name);
+            ObjectTypeIndexBox.SelectedIndex = 0;
         }
         public void UpdateObjectUI()
         {
             if ((ObjectListBox.Items.Count > 0) && (ObjectListBox.SelectedIndex != -1) && (!Loading))
             {
-                ObjectIndexBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex;
+                ObjectTypeIndexBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex;
 
                 LocationXBox.Text = OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[0].ToString();
                 LocationYBox.Text = OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[1].ToString();
@@ -239,7 +243,7 @@ namespace Tarmac64_Retail
             int ThisLine = 0;
             int Count = Convert.ToInt32(ObjectSettings[ThisLine++]);
             OKObjectTypeList.Clear();
-            ObjectIndexBox.Items.Clear();
+            ObjectTypeIndexBox.Items.Clear();
             DefaultOKObjects();
             OpenFileDialog FileOpen = new OpenFileDialog();
             FileOpen.InitialDirectory = okSettings.ProjectDirectory;
@@ -286,7 +290,7 @@ namespace Tarmac64_Retail
                 
 
                 OKObjectTypeList.Add(NewType);
-                ObjectIndexBox.Items.Add(NewType.Name);
+                ObjectTypeIndexBox.Items.Add(NewType.Name);
             }
 
 
@@ -471,7 +475,7 @@ namespace Tarmac64_Retail
         {
             if ((OKObjectList.Count > 0) && (ObjectListBox.SelectedIndex != -1))
             {
-                OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex = Convert.ToInt16(ObjectIndexBox.SelectedIndex);
+                OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex = Convert.ToInt16(ObjectTypeIndexBox.SelectedIndex);
                 ObjectListBox.Items[ObjectListBox.SelectedIndex] = ("Object " + OKObjectTypeList[OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex].Name + ObjectListBox.SelectedIndex.ToString());
                 
             }
@@ -499,7 +503,7 @@ namespace Tarmac64_Retail
             {                
                 TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(FileOpen.FileName);
                 OKObjectTypeList.Add(NewType);
-                ObjectIndexBox.Items.Add(NewType.Name);
+                ObjectTypeIndexBox.Items.Add(NewType.Name);
             }
                     
 
@@ -513,18 +517,22 @@ namespace Tarmac64_Retail
 
         private void KillTypeBtn_Click(object sender, EventArgs e)
         {
-            if (ObjectIndexBox.SelectedIndex > 3)
+            if (ObjectTypeIndexBox.SelectedIndex > 5)
             {
                 var indexes = OKObjectList.Select((item, index) => new { Item = item, Index = index })
-                  .Where(o => o.Item.ObjectIndex == ObjectIndexBox.SelectedIndex)
+                  .Where(o => o.Item.ObjectIndex == ObjectTypeIndexBox.SelectedIndex)
                   .Select(o => o.Index);
                 foreach (int i in indexes)
-                    ObjectListBox.Items.RemoveAt(ObjectIndexBox.SelectedIndex);
+                    ObjectListBox.Items.RemoveAt(ObjectTypeIndexBox.SelectedIndex);
 
-                OKObjectList.RemoveAll(x => x.ObjectIndex == ObjectIndexBox.SelectedIndex);
-                OKObjectTypeList.RemoveAt(ObjectIndexBox.SelectedIndex);
-                ObjectIndexBox.Items.RemoveAt(ObjectIndexBox.SelectedIndex);
+                OKObjectList.RemoveAll(x => x.ObjectIndex == ObjectTypeIndexBox.SelectedIndex);
+                OKObjectTypeList.RemoveAt(ObjectTypeIndexBox.SelectedIndex);
+                ObjectTypeIndexBox.Items.RemoveAt(ObjectTypeIndexBox.SelectedIndex);
                 RefreshObjectListBox();
+                if (ObjectTypeIndexBox.SelectedIndex == -1)
+                {
+                    ObjectTypeIndexBox.SelectedIndex = ObjectTypeIndexBox.Items.Count -1;
+                }
             }
 
         }

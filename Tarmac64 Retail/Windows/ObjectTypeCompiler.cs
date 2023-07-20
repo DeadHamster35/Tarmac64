@@ -135,7 +135,7 @@ namespace Tarmac64_Retail
                     NewType.ObjectAnimations = null;
                 }
 
-                NewType.ModelData = TarmacGeometry.CreateObjects(ModelData, NewType.TextureData, false);
+                NewType.ModelData = TarmacGeometry.CreateObjects(ModelData, NewType.TextureData, true);
 
 
                 

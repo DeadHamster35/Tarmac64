@@ -31,9 +31,11 @@
             this.KillObjBtn = new System.Windows.Forms.Button();
             this.AddObjBtn = new System.Windows.Forms.Button();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.ClassBox = new System.Windows.Forms.ComboBox();
-            this.ModeBox = new System.Windows.Forms.ComboBox();
+            this.FlagBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.ModeBox = new System.Windows.Forms.ComboBox();
             this.BPlayerBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -55,14 +57,12 @@
             this.AngleZBox = new System.Windows.Forms.TextBox();
             this.AddTypeBtn = new System.Windows.Forms.Button();
             this.label75 = new System.Windows.Forms.Label();
-            this.ObjectIndexBox = new System.Windows.Forms.ComboBox();
+            this.ObjectTypeIndexBox = new System.Windows.Forms.ComboBox();
             this.label53 = new System.Windows.Forms.Label();
             this.LocationYBox = new System.Windows.Forms.TextBox();
             this.LocationXBox = new System.Windows.Forms.TextBox();
             this.LocationZBox = new System.Windows.Forms.TextBox();
             this.ObjectListBox = new System.Windows.Forms.ListBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.FlagBox = new System.Windows.Forms.TextBox();
             this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -115,7 +115,7 @@
             this.groupBox8.Controls.Add(this.AngleZBox);
             this.groupBox8.Controls.Add(this.AddTypeBtn);
             this.groupBox8.Controls.Add(this.label75);
-            this.groupBox8.Controls.Add(this.ObjectIndexBox);
+            this.groupBox8.Controls.Add(this.ObjectTypeIndexBox);
             this.groupBox8.Controls.Add(this.label53);
             this.groupBox8.Controls.Add(this.LocationYBox);
             this.groupBox8.Controls.Add(this.LocationXBox);
@@ -128,6 +128,19 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Object Information";
             // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label4.AutoSize = true;
+            this.label4.Cursor = System.Windows.Forms.Cursors.Default;
+            this.label4.Location = new System.Drawing.Point(16, 57);
+            this.label4.Margin = new System.Windows.Forms.Padding(5);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(27, 13);
+            this.label4.TabIndex = 244;
+            this.label4.Text = "Flag";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
+            // 
             // ClassBox
             // 
             this.ClassBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -139,16 +152,17 @@
             this.ClassBox.TabIndex = 242;
             this.ClassBox.SelectedIndexChanged += new System.EventHandler(this.ClassBox_SelectedIndexChanged);
             // 
-            // ModeBox
+            // FlagBox
             // 
-            this.ModeBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ModeBox.FormattingEnabled = true;
-            this.ModeBox.Location = new System.Drawing.Point(168, 55);
-            this.ModeBox.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this.ModeBox.Name = "ModeBox";
-            this.ModeBox.Size = new System.Drawing.Size(89, 21);
-            this.ModeBox.TabIndex = 241;
-            this.ModeBox.SelectedIndexChanged += new System.EventHandler(this.ModeBox_SelectedIndexChanged);
+            this.FlagBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.FlagBox.Location = new System.Drawing.Point(62, 55);
+            this.FlagBox.Margin = new System.Windows.Forms.Padding(5);
+            this.FlagBox.Name = "FlagBox";
+            this.FlagBox.Size = new System.Drawing.Size(52, 20);
+            this.FlagBox.TabIndex = 243;
+            this.FlagBox.Text = "0";
+            this.FlagBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FlagBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateLocationHandler);
             // 
             // label3
             // 
@@ -162,6 +176,17 @@
             this.label3.TabIndex = 240;
             this.label3.Text = "Player";
             this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
+            // ModeBox
+            // 
+            this.ModeBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ModeBox.FormattingEnabled = true;
+            this.ModeBox.Location = new System.Drawing.Point(168, 55);
+            this.ModeBox.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.ModeBox.Name = "ModeBox";
+            this.ModeBox.Size = new System.Drawing.Size(89, 21);
+            this.ModeBox.TabIndex = 241;
+            this.ModeBox.SelectedIndexChanged += new System.EventHandler(this.ModeBox_SelectedIndexChanged);
             // 
             // BPlayerBox
             // 
@@ -418,16 +443,16 @@
             this.label75.Text = "Type";
             this.label75.Click += new System.EventHandler(this.label75_Click);
             // 
-            // ObjectIndexBox
+            // ObjectTypeIndexBox
             // 
-            this.ObjectIndexBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ObjectIndexBox.FormattingEnabled = true;
-            this.ObjectIndexBox.Location = new System.Drawing.Point(54, 23);
-            this.ObjectIndexBox.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            this.ObjectIndexBox.Name = "ObjectIndexBox";
-            this.ObjectIndexBox.Size = new System.Drawing.Size(147, 21);
-            this.ObjectIndexBox.TabIndex = 0;
-            this.ObjectIndexBox.SelectedIndexChanged += new System.EventHandler(this.ObjectIndexBox_SelectedIndexChanged);
+            this.ObjectTypeIndexBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ObjectTypeIndexBox.FormattingEnabled = true;
+            this.ObjectTypeIndexBox.Location = new System.Drawing.Point(54, 23);
+            this.ObjectTypeIndexBox.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.ObjectTypeIndexBox.Name = "ObjectTypeIndexBox";
+            this.ObjectTypeIndexBox.Size = new System.Drawing.Size(147, 21);
+            this.ObjectTypeIndexBox.TabIndex = 0;
+            this.ObjectTypeIndexBox.SelectedIndexChanged += new System.EventHandler(this.ObjectIndexBox_SelectedIndexChanged);
             // 
             // label53
             // 
@@ -490,31 +515,6 @@
             this.ObjectListBox.SelectedIndexChanged += new System.EventHandler(this.ObjectListBox_SelectedIndexChanged);
             this.ObjectListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ObjectListBox_MouseDoubleClick);
             // 
-            // label4
-            // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label4.AutoSize = true;
-            this.label4.Cursor = System.Windows.Forms.Cursors.Default;
-            this.label4.Location = new System.Drawing.Point(16, 57);
-            this.label4.Margin = new System.Windows.Forms.Padding(5);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(27, 13);
-            this.label4.TabIndex = 244;
-            this.label4.Text = "Flag";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
-            // 
-            // FlagBox
-            // 
-            this.FlagBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.FlagBox.Location = new System.Drawing.Point(62, 55);
-            this.FlagBox.Margin = new System.Windows.Forms.Padding(5);
-            this.FlagBox.Name = "FlagBox";
-            this.FlagBox.Size = new System.Drawing.Size(52, 20);
-            this.FlagBox.TabIndex = 243;
-            this.FlagBox.Text = "0";
-            this.FlagBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.FlagBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateLocationHandler);
-            // 
             // ObjectEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -557,7 +557,7 @@
         private System.Windows.Forms.TextBox LocationXBox;
         private System.Windows.Forms.TextBox LocationZBox;
         public System.Windows.Forms.ListBox ObjectListBox;
-        public System.Windows.Forms.ComboBox ObjectIndexBox;
+        public System.Windows.Forms.ComboBox ObjectTypeIndexBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label24;

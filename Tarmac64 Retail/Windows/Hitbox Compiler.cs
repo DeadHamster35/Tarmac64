@@ -49,7 +49,7 @@ namespace Tarmac64_Retail
                 
                 foreach (var Hit in Hitbox)
                 {
-                    IndexBox.Items.Add(Hit.Name);
+                    IndexBox.Items.Add  (Hit.Name);
                 }
                 Loaded = true;
                 IndexBox.SelectedIndex = 0;

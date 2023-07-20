@@ -1497,8 +1497,8 @@ namespace Tarmac64_Library
                 BOrigin[2] = 0.0f;
 
                 BScale[0] = 1.0f;
-                BScale[0] = 1.0f;
-                BScale[0] = 1.0f;
+                BScale[1] = 1.0f;
+                BScale[2] = 1.0f;
             }
 
             List<int> xValues = new List<int>();
@@ -5965,7 +5965,7 @@ namespace Tarmac64_Library
             
             for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
             {
-                Point3D Root = new Point3D() { X = Bone.Origin[0] - Parent.Origin[0], Y = Bone.Origin[1] - Parent.Origin[1], Z = Bone.Origin[2] - Parent.Origin[2] };
+                Point3D Root = new Point3D() { X = (Bone.Origin[0] / 100.0f) - (Parent.Origin[0] / 100.0f), Y = (Bone.Origin[1] / 100.0f) - (Parent.Origin[1] / 100.0f), Z = (Bone.Origin[2] / 100.0f) - (Parent.Origin[2] / 100.0f) };
                 float[] Angle = new float[3]{
                     Convert.ToSingle(Parent.Animation.RotationData[ThisFrame][0]),
                     Convert.ToSingle(Parent.Animation.RotationData[ThisFrame][1]),
@@ -5973,9 +5973,9 @@ namespace Tarmac64_Library
                 };
                 Point3D Branch = RotatePoint(Root, Angle);
                 
-                Bone.Animation.TranslationData[ThisFrame][0] += Convert.ToInt16((Branch.X - Root.X) + Parent.Animation.TranslationData[ThisFrame][0]);
-                Bone.Animation.TranslationData[ThisFrame][1] += Convert.ToInt16((Branch.Y - Root.Y) + Parent.Animation.TranslationData[ThisFrame][1]);
-                Bone.Animation.TranslationData[ThisFrame][2] += Convert.ToInt16((Branch.Z - Root.Z) + Parent.Animation.TranslationData[ThisFrame][2]);
+                Bone.Animation.TranslationData[ThisFrame][0] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][0]);
+                Bone.Animation.TranslationData[ThisFrame][1] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][1]);
+                Bone.Animation.TranslationData[ThisFrame][2] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][2]);
 
             }
 

@@ -1234,7 +1234,7 @@ namespace Tarmac64_Library
         {
             OKObjectList = ObjectControl.OKObjectList;
             OKObjectTypeList = ObjectControl.OKObjectTypeList;
-            GLControl.OKObjectIndex = ObjectControl.ObjectIndexBox.SelectedIndex;
+            GLControl.OKObjectIndex = ObjectControl.ObjectTypeIndexBox.SelectedIndex;
             GLControl.OKSelectedObject = ObjectControl.ObjectListBox.SelectedIndex;
             GLControl.ObjectTypes = ObjectControl.OKObjectTypeList.ToArray();
             GLControl.UpdateDraw = true;
@@ -1285,7 +1285,7 @@ namespace Tarmac64_Library
                         
                     }
             }
-            GLControl.OKObjectIndex = ObjectControl.ObjectIndexBox.SelectedIndex;
+            GLControl.OKObjectIndex = ObjectControl.ObjectTypeIndexBox.SelectedIndex;
             GLControl.OKSelectedObject = ObjectControl.ObjectListBox.SelectedIndex;
         }
 
