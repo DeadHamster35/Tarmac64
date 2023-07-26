@@ -38,6 +38,10 @@ namespace Tarmac64_Retail
         private void LoadFBXClick(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
+            TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
+            TarmacSettings.LoadSettings();
+
+            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
                 if (!File.Exists(FileOpen.FileName))

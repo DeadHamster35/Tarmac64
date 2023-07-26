@@ -2687,6 +2687,19 @@ namespace Tarmac64_Library
             
 
             binaryWriter.Write(SegmentData);
+
+
+
+            int addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+
+
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
             int textureCount = (textureObject.Length);
             for (int currentTexture = 0; currentTexture < textureCount; currentTexture++)
             {
@@ -2720,7 +2733,8 @@ namespace Tarmac64_Library
 
                     //adjust the MIO0 offset to an 8-byte address as required for N64.
                     binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
-                    int addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                    
+                    addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
                     if (addressAlign == 16)
                         addressAlign = 0;
 
@@ -3140,6 +3154,16 @@ namespace Tarmac64_Library
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
             binaryWriter.Write(InputData);
+
+            int addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+
+
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
 
 
             foreach (var cObj in MasterObjects)
@@ -4636,6 +4660,18 @@ namespace Tarmac64_Library
             {
                 seg7w.Write(SegmentData);
             }
+
+
+            int addressAlign = 16 - (Convert.ToInt32(seg7w.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+
+
+            for (int align = 0; align < addressAlign; align++)
+            {
+                seg7w.Write(Convert.ToByte(0x00));
+            }
+
 
             for (int materialID = 0; materialID < textureObject.Length; materialID++)
             {

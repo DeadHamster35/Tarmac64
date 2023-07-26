@@ -496,9 +496,13 @@ namespace Tarmac64_Retail
 
         private void AddTypeBtn_Click(object sender, EventArgs e)
         {
+            TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
+            TarmacSettings.LoadSettings();
+
             OpenFileDialog FileOpen = new OpenFileDialog();
             FileOpen.Filter = "Tarmac Object (*.ok64.OBJECT)|*.ok64.OBJECT|All Files (*.*)|*.*";
             FileOpen.DefaultExt = ".ok64.OBJECT";
+            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {                
                 TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(FileOpen.FileName);
@@ -519,13 +523,33 @@ namespace Tarmac64_Retail
         {
             if (ObjectTypeIndexBox.SelectedIndex > 5)
             {
+
+                
                 var indexes = OKObjectList.Select((item, index) => new { Item = item, Index = index })
                   .Where(o => o.Item.ObjectIndex == ObjectTypeIndexBox.SelectedIndex)
                   .Select(o => o.Index);
+                int ListOffset = 0;
                 foreach (int i in indexes)
-                    ObjectListBox.Items.RemoveAt(ObjectTypeIndexBox.SelectedIndex);
+                {
+                    ObjectListBox.Items.RemoveAt(i - ListOffset);
+                    ListOffset++;
+                }
+
 
                 OKObjectList.RemoveAll(x => x.ObjectIndex == ObjectTypeIndexBox.SelectedIndex);
+
+
+
+
+                indexes = OKObjectList.Select((item, index) => new { Item = item, Index = index })
+                  .Where(o => o.Item.ObjectIndex > ObjectTypeIndexBox.SelectedIndex)
+                  .Select(o => o.Index);
+                foreach (int i in indexes)
+                {
+                    OKObjectList[i].ObjectIndex--;
+                }
+
+
                 OKObjectTypeList.RemoveAt(ObjectTypeIndexBox.SelectedIndex);
                 ObjectTypeIndexBox.Items.RemoveAt(ObjectTypeIndexBox.SelectedIndex);
                 RefreshObjectListBox();

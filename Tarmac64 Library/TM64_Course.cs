@@ -967,7 +967,7 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
         }
         */
-            public byte[] SaveObjectTypeRaw(OKObjectType[] SaveData)
+        public byte[] SaveObjectTypeRaw(OKObjectType[] SaveData)
         {
             byte[] flip = new byte[0];
             MemoryStream memoryStream = new MemoryStream();
@@ -1005,6 +1005,9 @@ namespace Tarmac64_Library
                     binaryWriter.Write(Convert.ToByte(0xFF));
                 }                
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].Flag)); //
+
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[ThisType].ModelScale * 100.0f)));
+                binaryWriter.Write(Convert.ToInt16(0)); //Padding
 
                 binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].SoundID));
                 if (SaveData[ThisType].ObjectHitbox != null)
