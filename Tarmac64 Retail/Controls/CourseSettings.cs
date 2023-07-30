@@ -66,6 +66,7 @@ namespace Tarmac64_Retail
             CourseData.Fog.FogColor.A = 255;
             CourseData.GoalBannerBool = 1;
             CourseData.SkyboxBool = 1;
+            CourseData.ManualTempo = 2;
 
             FogStartBox.Text = "900";
             FogEndBox.Text = "1000";
@@ -151,6 +152,7 @@ namespace Tarmac64_Retail
             CourseData.GhostPath = SettingsInfo[ThisLine++];
             CourseData.OK64HeaderData.WaterType = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.OK64HeaderData.WaterLevel = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.ManualTempo = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.GoalBannerBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
             CourseData.SkyboxBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
             CourseData.PathSurface = new int[4];
@@ -260,6 +262,7 @@ namespace Tarmac64_Retail
             Output.Add(CourseData.GhostPath);
             Output.Add(CourseData.OK64HeaderData.WaterType.ToString());
             Output.Add(CourseData.OK64HeaderData.WaterLevel.ToString());
+            Output.Add(CourseData.ManualTempo.ToString());
             Output.Add(CourseData.GoalBannerBool.ToString());
             Output.Add(CourseData.SkyboxBool.ToString());
             Output.Add(CourseData.PathSurface[0].ToString());
@@ -400,6 +403,12 @@ namespace Tarmac64_Retail
             {
                 CourseData.OK64HeaderData.WaterLevel = ParseFloat;
             }
+
+            if (int.TryParse(TempoTTBox.Text, out ParseInt))
+            {
+                CourseData.ManualTempo = ParseInt;
+            }
+            
 
 
             if (int.TryParse(BombPointBox.Text, out ParseInt))

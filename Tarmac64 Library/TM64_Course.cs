@@ -206,6 +206,7 @@ namespace Tarmac64_Library
             public int Gametype { get; set; }
             public VSBomb[] BombArray { get; set; }
             public OKFog Fog { get; set; }
+            public int ManualTempo { get; set; }
 
         }
         public class OKFog
@@ -1398,6 +1399,7 @@ namespace Tarmac64_Library
             CourseData.PathOffsets[1] = binaryReader.ReadUInt32();
             CourseData.PathOffsets[2] = binaryReader.ReadUInt32();
             CourseData.PathOffsets[3] = binaryReader.ReadUInt32();
+            CourseData.ManualTempo = binaryReader.ReadInt32();
 
 
             return CourseData;
@@ -1619,7 +1621,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.PathOffsets[1]);
             binaryWriter.Write(CourseData.PathOffsets[2]);
             binaryWriter.Write(CourseData.PathOffsets[3]);
-
+            binaryWriter.Write(CourseData.ManualTempo);
             return Tarmac.CompressMIO0(memoryStream.ToArray());
 
 
@@ -2377,9 +2379,9 @@ namespace Tarmac64_Library
             binaryWriter.Write(F3D.BigEndian(courseData.EchoEndOffset));
 
             binaryWriter.Write(courseData.OK64HeaderData.GoalBannerToggle);
-            binaryWriter.Write(courseData.OK64HeaderData.SkyboxToggle); ;
-            //Pad2
-            binaryWriter.Write(Convert.ToByte(0xFF));
+            binaryWriter.Write(courseData.OK64HeaderData.SkyboxToggle); ;            
+            binaryWriter.Write(Convert.ToChar(courseData.ManualTempo));
+            //Padding
             binaryWriter.Write(Convert.ToByte(0xFF));
 
             binaryWriter.Write(Convert.ToByte(courseData.PathSurface[0]));
@@ -2426,6 +2428,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(courseData.Fog.FogColor.G);
             binaryWriter.Write(courseData.Fog.FogColor.B);
             binaryWriter.Write(courseData.Fog.FogColor.A);
+
 
             for (int currentPad = 0; currentPad < 16; currentPad++)
             {

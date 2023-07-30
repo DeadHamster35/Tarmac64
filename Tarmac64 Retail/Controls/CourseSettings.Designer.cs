@@ -206,6 +206,9 @@
             this.label55 = new System.Windows.Forms.Label();
             this.DragLengthBox = new System.Windows.Forms.TextBox();
             this.DragBox = new System.Windows.Forms.CheckBox();
+            this.label56 = new System.Windows.Forms.Label();
+            this.TempoTTBox = new System.Windows.Forms.TextBox();
+            this.label57 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -372,7 +375,7 @@
             this.groupBox1.Controls.Add(this.EchoStartBox);
             this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox1.Location = new System.Drawing.Point(0, 400);
+            this.groupBox1.Location = new System.Drawing.Point(1, 443);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(280, 181);
             this.groupBox1.TabIndex = 14;
@@ -656,7 +659,7 @@
             this.groupBox2.Controls.Add(this.label30);
             this.groupBox2.Controls.Add(this.label31);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox2.Location = new System.Drawing.Point(1, 861);
+            this.groupBox2.Location = new System.Drawing.Point(2, 904);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(280, 184);
             this.groupBox2.TabIndex = 16;
@@ -929,7 +932,7 @@
             this.WaterTypeBox.Location = new System.Drawing.Point(6, 162);
             this.WaterTypeBox.Margin = new System.Windows.Forms.Padding(5);
             this.WaterTypeBox.Name = "WaterTypeBox";
-            this.WaterTypeBox.Size = new System.Drawing.Size(131, 21);
+            this.WaterTypeBox.Size = new System.Drawing.Size(196, 21);
             this.WaterTypeBox.TabIndex = 8;
             this.WaterTypeBox.SelectedIndexChanged += new System.EventHandler(this.WaterTypeBox_SelectedIndexChanged);
             // 
@@ -937,15 +940,15 @@
             // 
             this.label51.AutoSize = true;
             this.label51.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label51.Location = new System.Drawing.Point(208, 165);
+            this.label51.Location = new System.Drawing.Point(210, 196);
             this.label51.Name = "label51";
-            this.label51.Size = new System.Drawing.Size(60, 13);
+            this.label51.Size = new System.Drawing.Size(67, 13);
             this.label51.TabIndex = 291;
-            this.label51.Text = "Low Height";
+            this.label51.Text = "Min Y Height";
             // 
             // waterBox
             // 
-            this.waterBox.Location = new System.Drawing.Point(147, 162);
+            this.waterBox.Location = new System.Drawing.Point(147, 193);
             this.waterBox.Margin = new System.Windows.Forms.Padding(5);
             this.waterBox.Name = "waterBox";
             this.waterBox.Size = new System.Drawing.Size(55, 20);
@@ -963,7 +966,7 @@
             this.groupBox3.Controls.Add(this.BombTypeBox);
             this.groupBox3.Controls.Add(this.BombIndexBox);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox3.Location = new System.Drawing.Point(2, 1141);
+            this.groupBox3.Location = new System.Drawing.Point(3, 1184);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(280, 71);
             this.groupBox3.TabIndex = 18;
@@ -1038,7 +1041,7 @@
             this.groupBox9.Controls.Add(this.songBox);
             this.groupBox9.Controls.Add(this.label40);
             this.groupBox9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox9.Location = new System.Drawing.Point(1, 1051);
+            this.groupBox9.Location = new System.Drawing.Point(2, 1094);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(280, 84);
             this.groupBox9.TabIndex = 17;
@@ -1174,7 +1177,7 @@
             this.groupBox4.Controls.Add(this.label23);
             this.groupBox4.Controls.Add(this.label22);
             this.groupBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox4.Location = new System.Drawing.Point(0, 286);
+            this.groupBox4.Location = new System.Drawing.Point(1, 329);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(279, 108);
             this.groupBox4.TabIndex = 298;
@@ -1361,7 +1364,7 @@
             this.groupBox5.Controls.Add(this.DistributeBox);
             this.groupBox5.Controls.Add(this.PathCountBox);
             this.groupBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox5.Location = new System.Drawing.Point(1, 587);
+            this.groupBox5.Location = new System.Drawing.Point(2, 630);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(278, 78);
             this.groupBox5.TabIndex = 300;
@@ -2200,7 +2203,7 @@
             this.groupBox7.Controls.Add(this.startYBox);
             this.groupBox7.Controls.Add(this.startXBox);
             this.groupBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox7.Location = new System.Drawing.Point(0, 671);
+            this.groupBox7.Location = new System.Drawing.Point(1, 714);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(280, 184);
             this.groupBox7.TabIndex = 15;
@@ -2216,7 +2219,7 @@
             this.LapFinishLine.Controls.Add(this.label78);
             this.LapFinishLine.Controls.Add(this.LapBox);
             this.LapFinishLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.LapFinishLine.Location = new System.Drawing.Point(1, 191);
+            this.LapFinishLine.Location = new System.Drawing.Point(2, 234);
             this.LapFinishLine.Name = "LapFinishLine";
             this.LapFinishLine.Size = new System.Drawing.Size(277, 89);
             this.LapFinishLine.TabIndex = 303;
@@ -2256,10 +2259,43 @@
             this.DragBox.Text = "Drag Race (1 Lap)";
             this.DragBox.UseVisualStyleBackColor = true;
             // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label56.Location = new System.Drawing.Point(66, 196);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(73, 13);
+            this.label56.TabIndex = 305;
+            this.label56.Text = "Time T. Tempo";
+            // 
+            // TempoTTBox
+            // 
+            this.TempoTTBox.Location = new System.Drawing.Point(5, 193);
+            this.TempoTTBox.Margin = new System.Windows.Forms.Padding(5);
+            this.TempoTTBox.Name = "TempoTTBox";
+            this.TempoTTBox.Size = new System.Drawing.Size(55, 20);
+            this.TempoTTBox.TabIndex = 304;
+            this.TempoTTBox.Text = "2";
+            this.TempoTTBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label57.Location = new System.Drawing.Point(211, 165);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(59, 13);
+            this.label57.TabIndex = 306;
+            this.label57.Text = "Min Y Type";
+            // 
             // CourseSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label57);
+            this.Controls.Add(this.label56);
+            this.Controls.Add(this.TempoTTBox);
             this.Controls.Add(this.LapFinishLine);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
@@ -2285,7 +2321,7 @@
             this.Controls.Add(this.label15);
             this.Controls.Add(this.CreditsBox);
             this.Name = "CourseSettings";
-            this.Size = new System.Drawing.Size(289, 1225);
+            this.Size = new System.Drawing.Size(289, 1275);
             this.Load += new System.EventHandler(this.CourseSettings_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -2493,5 +2529,8 @@
         private System.Windows.Forms.Label label55;
         private System.Windows.Forms.TextBox DragLengthBox;
         private System.Windows.Forms.CheckBox DragBox;
+        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.TextBox TempoTTBox;
+        private System.Windows.Forms.Label label57;
     }
 }
