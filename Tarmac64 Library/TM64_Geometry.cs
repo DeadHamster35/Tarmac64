@@ -2000,6 +2000,7 @@ namespace Tarmac64_Library
                     surfaceObjects.Add(createObject(fbx,surfaceNode.Children[currentsubObject], textureArray, true));
                     int currentObject = surfaceObjects.Count - 1;
                     surfaceObjects[currentObject].surfaceID = currentSection + 1;
+                    surfaceObjects[currentObject].objectColor = colorValues;
                     string[] surfaceID = surfaceObjects[currentObject].objectName.Split('_');
                     byte SurfaceStorageByte = 0;
                     if (surfaceID[0].Length != 0)
@@ -2727,7 +2728,7 @@ namespace Tarmac64_Library
 
                     textureObject[currentTexture].compressedSize = imageData.Length;
                     textureObject[currentTexture].fileSize = imageData.Length;
-                    textureObject[currentTexture].segmentPosition = TextureSize;  // we need this to build out F3DEX commands later. 
+                    textureObject[currentTexture].segmentPosition = Convert.ToInt32(binaryWriter.BaseStream.Position + DataLength);  // we need this to build out F3DEX commands later. 
                     TextureSize = TextureSize + textureObject[currentTexture].fileSize;
 
 

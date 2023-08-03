@@ -84,7 +84,13 @@ namespace Tarmac64_Retail
         {
             if (-1 < NewObject.ObjectIndex && NewObject.ObjectIndex <= OKObjectTypeList.Count)
             {
+                if (RandomZBox.Checked)
+                {
+                    Random RNG = new Random();
+                    NewObject.OriginAngle[2] = Convert.ToInt16(RNG.Next(360));
+                }
                 int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + ObjectListBox.Items.Count.ToString());
+                
                 ObjectListBox.SelectedIndex = NewIndex;
             }
             

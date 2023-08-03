@@ -676,7 +676,7 @@
             // 
             this.SettingsControl.Location = new System.Drawing.Point(0, 0);
             this.SettingsControl.Name = "SettingsControl";
-            this.SettingsControl.Size = new System.Drawing.Size(289, 1225);
+            this.SettingsControl.Size = new System.Drawing.Size(289, 1275);
             this.SettingsControl.TabIndex = 0;
             this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 

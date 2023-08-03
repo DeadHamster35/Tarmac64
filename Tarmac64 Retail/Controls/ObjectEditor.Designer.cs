@@ -63,6 +63,7 @@
             this.LocationXBox = new System.Windows.Forms.TextBox();
             this.LocationZBox = new System.Windows.Forms.TextBox();
             this.ObjectListBox = new System.Windows.Forms.ListBox();
+            this.RandomZBox = new System.Windows.Forms.CheckBox();
             this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -89,6 +90,7 @@
             // groupBox8
             // 
             this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox8.Controls.Add(this.RandomZBox);
             this.groupBox8.Controls.Add(this.label4);
             this.groupBox8.Controls.Add(this.ClassBox);
             this.groupBox8.Controls.Add(this.FlagBox);
@@ -410,10 +412,10 @@
             // AngleZBox
             // 
             this.AngleZBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AngleZBox.Location = new System.Drawing.Point(153, 161);
+            this.AngleZBox.Location = new System.Drawing.Point(168, 161);
             this.AngleZBox.Margin = new System.Windows.Forms.Padding(5);
             this.AngleZBox.Name = "AngleZBox";
-            this.AngleZBox.Size = new System.Drawing.Size(60, 20);
+            this.AngleZBox.Size = new System.Drawing.Size(45, 20);
             this.AngleZBox.TabIndex = 8;
             this.AngleZBox.Text = "0";
             this.AngleZBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -515,6 +517,15 @@
             this.ObjectListBox.SelectedIndexChanged += new System.EventHandler(this.ObjectListBox_SelectedIndexChanged);
             this.ObjectListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ObjectListBox_MouseDoubleClick);
             // 
+            // RandomZBox
+            // 
+            this.RandomZBox.AutoSize = true;
+            this.RandomZBox.Location = new System.Drawing.Point(153, 164);
+            this.RandomZBox.Name = "RandomZBox";
+            this.RandomZBox.Size = new System.Drawing.Size(15, 14);
+            this.RandomZBox.TabIndex = 245;
+            this.RandomZBox.UseVisualStyleBackColor = true;
+            // 
             // ObjectEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -569,5 +580,6 @@
         public System.Windows.Forms.ComboBox ModeBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox FlagBox;
+        private System.Windows.Forms.CheckBox RandomZBox;
     }
 }
