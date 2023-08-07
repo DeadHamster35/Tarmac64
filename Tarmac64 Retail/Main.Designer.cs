@@ -40,7 +40,6 @@
             this.ghostExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.courseLoaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetFoldersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            
             this.label5 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -58,7 +57,7 @@
             // label2
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label2.Location = new System.Drawing.Point(12, 218);
+            this.label2.Location = new System.Drawing.Point(12, 223);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(402, 34);
             this.label2.TabIndex = 2;
@@ -83,8 +82,8 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(198, 104);
             this.label4.TabIndex = 30;
-            this.label4.Text = "Micro500\r\nLitronom\r\nRenaKunisaki\r\nmib-f8sm9c\r\nGoldenGemGames\r\nzouzzz\r\nPeter Lemon" +
-    "\r\n";
+            this.label4.Text = "Litronom\r\nMicro500\r\nmib-f8sm9c\r\nHootHoot\r\nRain\r\nGoldenGemGames\r\nzouzzz\r\nPeter Lem" +
+    "on\r\n";
             this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // menuStrip1
@@ -208,7 +207,8 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(198, 104);
             this.label5.TabIndex = 32;
-            this.label5.Text = "Triclon\r\nqueueRAM\r\nRain\r\nHootHoot\r\nshygoo\r\nDaniel McCarthy\r\ndwmkerr\r\n";
+            this.label5.Text = "Triclon\r\nqueueRAM\r\nRenaKunisaki\r\nOx\r\nshygoo\r\nMt. Zuul\r\nDaniel McCarthy\r\ndwmkerr\r\n" +
+    "";
             // 
             // TarmacAbout
             // 

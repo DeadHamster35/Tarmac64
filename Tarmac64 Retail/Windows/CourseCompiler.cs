@@ -978,7 +978,7 @@ namespace Tarmac64_Library
                         surfmaterialBox.Items.Clear();
                         for (int surfacematerialIndex = 0; surfacematerialIndex < surfaceType.Length; surfacematerialIndex++)
                         {
-                            surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString("X") + "- " + surfaceType[surfacematerialIndex]);
+                            surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString() + "- " + surfaceType[surfacematerialIndex]);
                         }
                     }
                     TextureControl.Loaded = true;
