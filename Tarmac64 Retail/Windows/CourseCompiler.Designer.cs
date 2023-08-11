@@ -676,7 +676,7 @@
             // 
             this.SettingsControl.Location = new System.Drawing.Point(0, 0);
             this.SettingsControl.Name = "SettingsControl";
-            this.SettingsControl.Size = new System.Drawing.Size(289, 1275);
+            this.SettingsControl.Size = new System.Drawing.Size(289, 1300);
             this.SettingsControl.TabIndex = 0;
             this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 
@@ -702,7 +702,7 @@
             this.Object.Controls.Add(this.ObjectControl);
             this.Object.Location = new System.Drawing.Point(4, 22);
             this.Object.Name = "Object";
-            this.Object.Size = new System.Drawing.Size(307, 602);
+            this.Object.Size = new System.Drawing.Size(192, 74);
             this.Object.TabIndex = 4;
             this.Object.Text = "Objects";
             this.Object.UseVisualStyleBackColor = true;
@@ -713,7 +713,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ObjectControl.Location = new System.Drawing.Point(3, 3);
             this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 596);
+            this.ObjectControl.Size = new System.Drawing.Size(289, 51);
             this.ObjectControl.TabIndex = 1;
             this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 

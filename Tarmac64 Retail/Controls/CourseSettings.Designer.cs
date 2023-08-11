@@ -209,6 +209,11 @@
             this.label56 = new System.Windows.Forms.Label();
             this.TempoTTBox = new System.Windows.Forms.TextBox();
             this.label57 = new System.Windows.Forms.Label();
+            this.label58 = new System.Windows.Forms.Label();
+            this.label59 = new System.Windows.Forms.Label();
+            this.label60 = new System.Windows.Forms.Label();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.textBox11 = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -659,7 +664,7 @@
             this.groupBox2.Controls.Add(this.label30);
             this.groupBox2.Controls.Add(this.label31);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox2.Location = new System.Drawing.Point(2, 904);
+            this.groupBox2.Location = new System.Drawing.Point(1, 940);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(280, 184);
             this.groupBox2.TabIndex = 16;
@@ -966,7 +971,7 @@
             this.groupBox3.Controls.Add(this.BombTypeBox);
             this.groupBox3.Controls.Add(this.BombIndexBox);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox3.Location = new System.Drawing.Point(3, 1184);
+            this.groupBox3.Location = new System.Drawing.Point(2, 1220);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(280, 71);
             this.groupBox3.TabIndex = 18;
@@ -1041,7 +1046,7 @@
             this.groupBox9.Controls.Add(this.songBox);
             this.groupBox9.Controls.Add(this.label40);
             this.groupBox9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox9.Location = new System.Drawing.Point(2, 1094);
+            this.groupBox9.Location = new System.Drawing.Point(1, 1130);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(280, 84);
             this.groupBox9.TabIndex = 17;
@@ -1448,7 +1453,7 @@
             // 
             this.label46.AutoSize = true;
             this.label46.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label46.Location = new System.Drawing.Point(246, 160);
+            this.label46.Location = new System.Drawing.Point(246, 189);
             this.label46.Name = "label46";
             this.label46.Size = new System.Drawing.Size(31, 13);
             this.label46.TabIndex = 162;
@@ -1458,7 +1463,7 @@
             // ColorPickMap
             // 
             this.ColorPickMap.BackColor = System.Drawing.Color.Fuchsia;
-            this.ColorPickMap.Location = new System.Drawing.Point(220, 154);
+            this.ColorPickMap.Location = new System.Drawing.Point(220, 183);
             this.ColorPickMap.Name = "ColorPickMap";
             this.ColorPickMap.Size = new System.Drawing.Size(24, 23);
             this.ColorPickMap.TabIndex = 10;
@@ -1468,7 +1473,7 @@
             // label45
             // 
             this.label45.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label45.Location = new System.Drawing.Point(80, 135);
+            this.label45.Location = new System.Drawing.Point(80, 164);
             this.label45.Name = "label45";
             this.label45.Size = new System.Drawing.Size(60, 13);
             this.label45.TabIndex = 164;
@@ -1478,7 +1483,7 @@
             // label44
             // 
             this.label44.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label44.Location = new System.Drawing.Point(150, 135);
+            this.label44.Location = new System.Drawing.Point(150, 164);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(60, 13);
             this.label44.TabIndex = 165;
@@ -1488,7 +1493,7 @@
             // label36
             // 
             this.label36.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label36.Location = new System.Drawing.Point(6, 135);
+            this.label36.Location = new System.Drawing.Point(6, 164);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(60, 13);
             this.label36.TabIndex = 163;
@@ -1497,7 +1502,7 @@
             // 
             // MapBBox
             // 
-            this.MapBBox.Location = new System.Drawing.Point(150, 156);
+            this.MapBBox.Location = new System.Drawing.Point(150, 185);
             this.MapBBox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
             this.MapBBox.Name = "MapBBox";
             this.MapBBox.Size = new System.Drawing.Size(60, 19);
@@ -1508,7 +1513,7 @@
             // 
             // MapGBox
             // 
-            this.MapGBox.Location = new System.Drawing.Point(80, 156);
+            this.MapGBox.Location = new System.Drawing.Point(80, 185);
             this.MapGBox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
             this.MapGBox.Name = "MapGBox";
             this.MapGBox.Size = new System.Drawing.Size(60, 19);
@@ -1802,7 +1807,7 @@
             // 
             // MapRBox
             // 
-            this.MapRBox.Location = new System.Drawing.Point(8, 156);
+            this.MapRBox.Location = new System.Drawing.Point(8, 185);
             this.MapRBox.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
             this.MapRBox.Name = "MapRBox";
             this.MapRBox.Size = new System.Drawing.Size(60, 19);
@@ -2077,7 +2082,7 @@
             // 
             // MapScaleBox
             // 
-            this.MapScaleBox.Location = new System.Drawing.Point(51, 111);
+            this.MapScaleBox.Location = new System.Drawing.Point(51, 140);
             this.MapScaleBox.Margin = new System.Windows.Forms.Padding(5);
             this.MapScaleBox.Name = "MapScaleBox";
             this.MapScaleBox.Size = new System.Drawing.Size(147, 19);
@@ -2090,7 +2095,7 @@
             // 
             this.label50.AutoSize = true;
             this.label50.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label50.Location = new System.Drawing.Point(210, 114);
+            this.label50.Location = new System.Drawing.Point(210, 143);
             this.label50.Name = "label50";
             this.label50.Size = new System.Drawing.Size(57, 13);
             this.label50.TabIndex = 176;
@@ -2176,6 +2181,11 @@
             // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this.label58);
+            this.groupBox7.Controls.Add(this.label59);
+            this.groupBox7.Controls.Add(this.label60);
+            this.groupBox7.Controls.Add(this.textBox10);
+            this.groupBox7.Controls.Add(this.textBox11);
             this.groupBox7.Controls.Add(this.groupBox11);
             this.groupBox7.Controls.Add(this.label50);
             this.groupBox7.Controls.Add(this.MapScaleBox);
@@ -2205,7 +2215,7 @@
             this.groupBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
             this.groupBox7.Location = new System.Drawing.Point(1, 714);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(280, 184);
+            this.groupBox7.Size = new System.Drawing.Size(280, 220);
             this.groupBox7.TabIndex = 15;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Radar Map";
@@ -2289,6 +2299,56 @@
             this.label57.TabIndex = 306;
             this.label57.Text = "Min Y Type";
             // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label58.Location = new System.Drawing.Point(29, 114);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(14, 13);
+            this.label58.TabIndex = 305;
+            this.label58.Text = "X";
+            // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label59.Location = new System.Drawing.Point(210, 114);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(61, 13);
+            this.label59.TabIndex = 304;
+            this.label59.Text = "Line Coord.";
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label60.Location = new System.Drawing.Point(126, 114);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(14, 13);
+            this.label60.TabIndex = 303;
+            this.label60.Text = "Y";
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(148, 111);
+            this.textBox10.Margin = new System.Windows.Forms.Padding(5);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(50, 19);
+            this.textBox10.TabIndex = 302;
+            this.textBox10.Text = "0";
+            this.textBox10.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // textBox11
+            // 
+            this.textBox11.Location = new System.Drawing.Point(51, 111);
+            this.textBox11.Margin = new System.Windows.Forms.Padding(5);
+            this.textBox11.Name = "textBox11";
+            this.textBox11.Size = new System.Drawing.Size(50, 19);
+            this.textBox11.TabIndex = 301;
+            this.textBox11.Text = "0";
+            this.textBox11.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // CourseSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2321,7 +2381,7 @@
             this.Controls.Add(this.label15);
             this.Controls.Add(this.CreditsBox);
             this.Name = "CourseSettings";
-            this.Size = new System.Drawing.Size(289, 1275);
+            this.Size = new System.Drawing.Size(289, 1300);
             this.Load += new System.EventHandler(this.CourseSettings_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -2532,5 +2592,10 @@
         private System.Windows.Forms.Label label56;
         private System.Windows.Forms.TextBox TempoTTBox;
         private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.Label label60;
+        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.TextBox textBox11;
     }
 }

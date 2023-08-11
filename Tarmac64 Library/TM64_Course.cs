@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Tarmac64_Library;
 using Texture64;
 
@@ -230,6 +231,7 @@ namespace Tarmac64_Library
             public int Height { get; set; }
             public Vector2D MapCoord { get; set; }
             public Vector2D StartCoord { get; set; }
+            public Vector2D LineCoord { get; set; }
             public TM64_Geometry.OK64Color MapColor { get; set; }
             public float MapScale { get; set; }
 
@@ -1406,7 +1408,7 @@ namespace Tarmac64_Library
         }
         public byte[] SaveOK64Course(Course CourseData)
         {
-
+            OpenFileDialog FileOpen = new OpenFileDialog();
             MemoryStream memoryStream = new MemoryStream();            
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
             BinaryReader binaryReader = new BinaryReader(memoryStream);
@@ -1438,26 +1440,72 @@ namespace Tarmac64_Library
                 N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
                 byte[] imageData = null;
                 byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(CourseData.BannerPath);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                CourseData.BannerData = Tarmac.CompressMIO0(imageData);
-                binaryWriter.Write(CourseData.BannerData.Length);
-                binaryWriter.Write(CourseData.BannerData);
+                if (File.Exists(CourseData.BannerPath))
+                {
+                    Bitmap bitmapData = new Bitmap(CourseData.BannerPath);
+                    N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
+                    CourseData.BannerData = Tarmac.CompressMIO0(imageData);
+                    binaryWriter.Write(CourseData.BannerData.Length);
+                    binaryWriter.Write(CourseData.BannerData);
+                }
+                else
+                {
+                    MessageBox.Show("Please select replacement for missing Banner Texture");
+                    if (FileOpen.ShowDialog() == DialogResult.OK)
+                    {
+                        if (File.Exists(FileOpen.FileName))
+                        {
+                            Bitmap bitmapData = new Bitmap(FileOpen.FileName);
+                            N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
+                            CourseData.BannerData = Tarmac.CompressMIO0(imageData);
+                            binaryWriter.Write(CourseData.BannerData.Length);
+                            binaryWriter.Write(CourseData.BannerData);
+                        }
+                    }
+                    else
+                    {
+                        binaryWriter.Write(0);
+                    }
+                }
             }
             else
             {
                 binaryWriter.Write(0);
             }
+
             if (CourseData.PreviewPath.Length > 0)
             {
                 N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
                 byte[] imageData = null;
                 byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(CourseData.PreviewPath);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
-                CourseData.PreviewData = Tarmac.CompressMIO0(imageData);
-                binaryWriter.Write(CourseData.PreviewData.Length);
-                binaryWriter.Write(CourseData.PreviewData);
+                if (File.Exists(CourseData.PreviewPath))
+                {
+                    Bitmap bitmapData = new Bitmap(CourseData.PreviewPath);
+                    N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
+                    CourseData.PreviewData = Tarmac.CompressMIO0(imageData);
+                    binaryWriter.Write(CourseData.PreviewData.Length);
+                    binaryWriter.Write(CourseData.PreviewData);
+
+                }
+                else
+                {
+                    MessageBox.Show("Please select replacement for missing Preview Texture");
+                    if (FileOpen.ShowDialog() == DialogResult.OK)
+                    {
+                        if (File.Exists(FileOpen.FileName))
+                        {
+                            Bitmap bitmapData = new Bitmap(FileOpen.FileName);
+                            N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
+                            CourseData.PreviewData = Tarmac.CompressMIO0(imageData);
+                            binaryWriter.Write(CourseData.PreviewData.Length);
+                            binaryWriter.Write(CourseData.PreviewData);
+                        }
+                    }
+                    else
+                    {
+                        binaryWriter.Write(0);
+                    }
+                }
             }
             else
             {
@@ -1469,13 +1517,38 @@ namespace Tarmac64_Library
                 N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
                 byte[] imageData = null;
                 byte[] paletteData = null;
-                Bitmap bitmapData = new Bitmap(CourseData.MapData.MinimapPath);
-                N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.I4, bitmapData);
-                CourseData.RadarData = Tarmac.CompressMIO0(imageData);
-                binaryWriter.Write(CourseData.RadarData.Length);
-                binaryWriter.Write(CourseData.RadarData);
-                CourseData.MapData.Width = bitmapData.Width;
-                CourseData.MapData.Height = bitmapData.Height;
+                if (File.Exists(CourseData.MapData.MinimapPath))
+                {
+
+                    Bitmap bitmapData = new Bitmap(CourseData.MapData.MinimapPath);
+                    N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.I4, bitmapData);
+                    CourseData.RadarData = Tarmac.CompressMIO0(imageData);
+                    binaryWriter.Write(CourseData.RadarData.Length);
+                    binaryWriter.Write(CourseData.RadarData);
+                    CourseData.MapData.Width = bitmapData.Width;
+                    CourseData.MapData.Height = bitmapData.Height;
+                }
+                else
+                {
+                    MessageBox.Show("Please select replacement for missing Minimap Texture");
+                    if (FileOpen.ShowDialog() == DialogResult.OK)
+                    {
+                        if (File.Exists(FileOpen.FileName))
+                        {
+                            Bitmap bitmapData = new Bitmap(FileOpen.FileName);
+                            N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.I4, bitmapData);
+                            CourseData.RadarData = Tarmac.CompressMIO0(imageData);
+                            binaryWriter.Write(CourseData.RadarData.Length);
+                            binaryWriter.Write(CourseData.RadarData);
+                            CourseData.MapData.Width = bitmapData.Width;
+                            CourseData.MapData.Height = bitmapData.Height;
+                        }
+                    }
+                    else
+                    {
+                        binaryWriter.Write(0);
+                    }
+                }
             }
             else
             {
