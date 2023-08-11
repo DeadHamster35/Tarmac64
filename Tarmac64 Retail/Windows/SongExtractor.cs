@@ -31,7 +31,7 @@ namespace Tarmac64_Retail
                     TM64_Sound TarmacSound = new TM64_Sound();
                     TM64 Tarmac = new TM64();
                     TM64_Sound.OK64Song ExportSong = TarmacSound.ExtractSong(openFile.FileName, Convert.ToInt32(bankBox.Text), Convert.ToInt32(seqBox.Text));
-                    File.WriteAllBytes(saveFile.FileName, Tarmac.CompressMIO0(TarmacSound.SaveSong(TarmacSound.ExtractSong(openFile.FileName, Convert.ToInt32(bankBox.Text), Convert.ToInt32(seqBox.Text)))));
+                    File.WriteAllBytes(saveFile.FileName, Tarmac.CompressMIO0(TarmacSound.SaveSong(ExportSong)));
                 }
                         
             }

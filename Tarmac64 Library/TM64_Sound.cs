@@ -119,8 +119,8 @@ namespace Tarmac64_Library
             binaryWriter.Write(flip);
             binaryWriter.Write(inputSong.SequenceData);
 
-            int addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
-            if (addressAlign == 16)
+            int addressAlign = 64 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 64);
+            if (addressAlign == 64)
                 addressAlign = 0;
 
             for (int align = 0; align < addressAlign; align++)
@@ -133,8 +133,8 @@ namespace Tarmac64_Library
             binaryWriter.Write(flip);
             binaryWriter.Write(inputSong.InstrumentData);
 
-            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
-            if (addressAlign == 16)
+            addressAlign = 64 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 64);
+            if (addressAlign == 64)
                 addressAlign = 0;
 
             for (int align = 0; align < addressAlign; align++)
