@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -1266,7 +1267,8 @@ namespace Tarmac64_Library
 
             CourseData.MapData.MapCoord = new Vector2D(binaryReader.ReadSingle(), binaryReader.ReadSingle());            
             CourseData.MapData.StartCoord = new Vector2D(binaryReader.ReadSingle(), binaryReader.ReadSingle());
-            
+            CourseData.MapData.LineCoord = new Vector2D(binaryReader.ReadSingle(), binaryReader.ReadSingle());
+
             CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
             CourseData.MapData.MapColor.R = binaryReader.ReadByte();
             CourseData.MapData.MapColor.G = binaryReader.ReadByte();
@@ -1559,6 +1561,8 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.MapData.MapCoord[1]);
             binaryWriter.Write(CourseData.MapData.StartCoord[0]);
             binaryWriter.Write(CourseData.MapData.StartCoord[1]);
+            binaryWriter.Write(CourseData.MapData.LineCoord[0]);
+            binaryWriter.Write(CourseData.MapData.LineCoord[1]);
             binaryWriter.Write(CourseData.MapData.MapColor.R);
             binaryWriter.Write(CourseData.MapData.MapColor.G);
             binaryWriter.Write(CourseData.MapData.MapColor.B);
@@ -1989,47 +1993,21 @@ namespace Tarmac64_Library
                     binaryWriter.Write(Convert.ToByte(0x00));
                 }
 
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MapData.MapCoord.X));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
 
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MapData.MapCoord.Y));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord.X)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord.Y)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord.X)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord.Y)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord.X)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord.Y)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Height)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Width)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.R)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.G)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.B)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
+                binaryWriter.Write(F3D.BigEndian((courseData.MapData.MapScale)));
 
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MapData.StartCoord.X));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MapData.StartCoord.Y));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MapData.Height));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MapData.Width));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MapData.MapColor.R));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MapData.MapColor.G));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.MapData.MapColor.B));
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-
-                binaryWriter.Write(Convert.ToInt16(0));
-
-                flip = BitConverter.GetBytes(courseData.MapData.MapScale);
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
 
 
                 binaryWriter.Write(compressedData);

@@ -46,6 +46,7 @@ namespace Tarmac64_Retail
             CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
             CourseData.MapData.MapCoord = new Assimp.Vector2D(0, 0);
             CourseData.MapData.StartCoord = new Assimp.Vector2D(0, 0);
+            CourseData.MapData.LineCoord = new Assimp.Vector2D(0, 0);
             CourseData.SkyColors = new TM64_Course.Sky();
             CourseData.SkyColors.TopColor = new TM64_Geometry.OK64Color();
             CourseData.SkyColors.MidColor = new TM64_Geometry.OK64Color();
@@ -199,6 +200,11 @@ namespace Tarmac64_Retail
                     Convert.ToInt32(SettingsInfo[ThisLine++]),
                     Convert.ToInt32(SettingsInfo[ThisLine++])
                 );
+            CourseData.MapData.LineCoord = new Assimp.Vector2D
+                (
+                    Convert.ToInt32(SettingsInfo[ThisLine++]),
+                    Convert.ToInt32(SettingsInfo[ThisLine++])
+                );
             CourseData.MapData.MapScale = Convert.ToSingle(SettingsInfo[ThisLine++]);
             CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
             CourseData.MapData.MapColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
@@ -292,6 +298,8 @@ namespace Tarmac64_Retail
             Output.Add(CourseData.MapData.MapCoord[1].ToString());
             Output.Add(CourseData.MapData.StartCoord[0].ToString());
             Output.Add(CourseData.MapData.StartCoord[1].ToString());
+            Output.Add(CourseData.MapData.LineCoord[0].ToString());
+            Output.Add(CourseData.MapData.LineCoord[1].ToString());
             Output.Add(CourseData.MapData.MapScale.ToString());
 
             Output.Add(CourseData.MapData.MapColor.R.ToString());
@@ -484,6 +492,14 @@ namespace Tarmac64_Retail
                 }
             }
 
+            if (int.TryParse(lineXBox.Text, out ParseInt))
+            {
+                if (int.TryParse(lineYBox.Text, out ParseInt2))
+                {
+                    CourseData.MapData.LineCoord = new Assimp.Vector2D(ParseInt, ParseInt2);
+                }
+            }
+
             float.TryParse(MapScaleBox.Text, out ParseFloat);
             CourseData.MapData.MapScale = ParseFloat;
 
@@ -620,6 +636,9 @@ namespace Tarmac64_Retail
 
             startXBox.Text = CourseData.MapData.StartCoord[0].ToString();
             startYBox.Text = CourseData.MapData.StartCoord[1].ToString();
+
+            lineXBox.Text = CourseData.MapData.LineCoord[0].ToString();
+            lineYBox.Text = CourseData.MapData.LineCoord[1].ToString();
 
             MapScaleBox.Text = CourseData.MapData.MapScale.ToString();
 

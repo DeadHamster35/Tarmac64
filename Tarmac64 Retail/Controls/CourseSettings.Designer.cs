@@ -202,6 +202,11 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.textBox26 = new System.Windows.Forms.TextBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label58 = new System.Windows.Forms.Label();
+            this.label59 = new System.Windows.Forms.Label();
+            this.label60 = new System.Windows.Forms.Label();
+            this.lineYBox = new System.Windows.Forms.TextBox();
+            this.lineXBox = new System.Windows.Forms.TextBox();
             this.LapFinishLine = new System.Windows.Forms.GroupBox();
             this.label55 = new System.Windows.Forms.Label();
             this.DragLengthBox = new System.Windows.Forms.TextBox();
@@ -209,11 +214,6 @@
             this.label56 = new System.Windows.Forms.Label();
             this.TempoTTBox = new System.Windows.Forms.TextBox();
             this.label57 = new System.Windows.Forms.Label();
-            this.label58 = new System.Windows.Forms.Label();
-            this.label59 = new System.Windows.Forms.Label();
-            this.label60 = new System.Windows.Forms.Label();
-            this.textBox10 = new System.Windows.Forms.TextBox();
-            this.textBox11 = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -2184,8 +2184,8 @@
             this.groupBox7.Controls.Add(this.label58);
             this.groupBox7.Controls.Add(this.label59);
             this.groupBox7.Controls.Add(this.label60);
-            this.groupBox7.Controls.Add(this.textBox10);
-            this.groupBox7.Controls.Add(this.textBox11);
+            this.groupBox7.Controls.Add(this.lineYBox);
+            this.groupBox7.Controls.Add(this.lineXBox);
             this.groupBox7.Controls.Add(this.groupBox11);
             this.groupBox7.Controls.Add(this.label50);
             this.groupBox7.Controls.Add(this.MapScaleBox);
@@ -2219,6 +2219,58 @@
             this.groupBox7.TabIndex = 15;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Radar Map";
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label58.Location = new System.Drawing.Point(29, 114);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(14, 13);
+            this.label58.TabIndex = 305;
+            this.label58.Text = "X";
+            // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label59.Location = new System.Drawing.Point(210, 114);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(61, 13);
+            this.label59.TabIndex = 304;
+            this.label59.Text = "Line Coord.";
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label60.Location = new System.Drawing.Point(126, 114);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(14, 13);
+            this.label60.TabIndex = 303;
+            this.label60.Text = "Y";
+            // 
+            // lineYBox
+            // 
+            this.lineYBox.Location = new System.Drawing.Point(148, 111);
+            this.lineYBox.Margin = new System.Windows.Forms.Padding(5);
+            this.lineYBox.Name = "lineYBox";
+            this.lineYBox.Size = new System.Drawing.Size(50, 19);
+            this.lineYBox.TabIndex = 302;
+            this.lineYBox.Text = "0";
+            this.lineYBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.lineYBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
+            // lineXBox
+            // 
+            this.lineXBox.Location = new System.Drawing.Point(51, 111);
+            this.lineXBox.Margin = new System.Windows.Forms.Padding(5);
+            this.lineXBox.Name = "lineXBox";
+            this.lineXBox.Size = new System.Drawing.Size(50, 19);
+            this.lineXBox.TabIndex = 301;
+            this.lineXBox.Text = "0";
+            this.lineXBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.lineXBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
             // 
             // LapFinishLine
             // 
@@ -2298,56 +2350,6 @@
             this.label57.Size = new System.Drawing.Size(59, 13);
             this.label57.TabIndex = 306;
             this.label57.Text = "Min Y Type";
-            // 
-            // label58
-            // 
-            this.label58.AutoSize = true;
-            this.label58.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label58.Location = new System.Drawing.Point(29, 114);
-            this.label58.Name = "label58";
-            this.label58.Size = new System.Drawing.Size(14, 13);
-            this.label58.TabIndex = 305;
-            this.label58.Text = "X";
-            // 
-            // label59
-            // 
-            this.label59.AutoSize = true;
-            this.label59.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label59.Location = new System.Drawing.Point(210, 114);
-            this.label59.Name = "label59";
-            this.label59.Size = new System.Drawing.Size(61, 13);
-            this.label59.TabIndex = 304;
-            this.label59.Text = "Line Coord.";
-            // 
-            // label60
-            // 
-            this.label60.AutoSize = true;
-            this.label60.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label60.Location = new System.Drawing.Point(126, 114);
-            this.label60.Name = "label60";
-            this.label60.Size = new System.Drawing.Size(14, 13);
-            this.label60.TabIndex = 303;
-            this.label60.Text = "Y";
-            // 
-            // textBox10
-            // 
-            this.textBox10.Location = new System.Drawing.Point(148, 111);
-            this.textBox10.Margin = new System.Windows.Forms.Padding(5);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(50, 19);
-            this.textBox10.TabIndex = 302;
-            this.textBox10.Text = "0";
-            this.textBox10.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // textBox11
-            // 
-            this.textBox11.Location = new System.Drawing.Point(51, 111);
-            this.textBox11.Margin = new System.Windows.Forms.Padding(5);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.Size = new System.Drawing.Size(50, 19);
-            this.textBox11.TabIndex = 301;
-            this.textBox11.Text = "0";
-            this.textBox11.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // CourseSettings
             // 
@@ -2595,7 +2597,7 @@
         private System.Windows.Forms.Label label58;
         private System.Windows.Forms.Label label59;
         private System.Windows.Forms.Label label60;
-        private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.TextBox textBox11;
+        private System.Windows.Forms.TextBox lineYBox;
+        private System.Windows.Forms.TextBox lineXBox;
     }
 }
