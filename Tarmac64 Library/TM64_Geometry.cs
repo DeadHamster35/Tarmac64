@@ -279,96 +279,155 @@ namespace Tarmac64_Library
         private const double Epsilon = 0.000001d;
 
 
-
-        public TM64_Geometry.Face[] CreateStandard(float Size = 5.0f)
+        public Vertex[] StandardVertex(float Size)
         {
-            TM64_Geometry.Face[] StandardGeometry = new TM64_Geometry.Face[4];
-            StandardGeometry[0] = new TM64_Geometry.Face();
+            Vertex[] Standard = new Vertex[8];
 
-            StandardGeometry[0].VertData = new TM64_Geometry.Vertex[3];
+            for (int ThisVert = 0; ThisVert < 8; ThisVert++)
+            {
+                Standard[ThisVert] = new Vertex();
+                Standard[ThisVert].position = new Position();
+            }
 
-            StandardGeometry[0].VertData[0] = new TM64_Geometry.Vertex();
-            StandardGeometry[0].VertData[0].position = new TM64_Geometry.Position();
-            StandardGeometry[0].VertData[0].position.x = Convert.ToInt16(-1 * Size);
-            StandardGeometry[0].VertData[0].position.y = Convert.ToInt16(0);
-            StandardGeometry[0].VertData[0].position.z = Convert.ToInt16(0);
+            //
+            //Poly 1
+            Standard[0].position.x = Convert.ToInt16(Size * -1);
+            Standard[0].position.y = Convert.ToInt16(0);
+            Standard[0].position.z = Convert.ToInt16(0);
 
-            StandardGeometry[0].VertData[1] = new TM64_Geometry.Vertex();
-            StandardGeometry[0].VertData[1].position = new TM64_Geometry.Position();
-            StandardGeometry[0].VertData[1].position.x = Convert.ToInt16(Size);
-            StandardGeometry[0].VertData[1].position.y = Convert.ToInt16(0);
-            StandardGeometry[0].VertData[1].position.z = Convert.ToInt16(0);
+            Standard[1].position.x = Convert.ToInt16(Size);
+            Standard[1].position.y = Convert.ToInt16(0);
+            Standard[1].position.z = Convert.ToInt16(0);
 
-            StandardGeometry[0].VertData[2] = new TM64_Geometry.Vertex();
-            StandardGeometry[0].VertData[2].position = new TM64_Geometry.Position();
-            StandardGeometry[0].VertData[2].position.x = Convert.ToInt16(Size);
-            StandardGeometry[0].VertData[2].position.y = Convert.ToInt16(0);
-            StandardGeometry[0].VertData[2].position.z = Convert.ToInt16(Size * 2);
+            Standard[2].position.x = Convert.ToInt16(Size);
+            Standard[2].position.y = Convert.ToInt16(0);
+            Standard[2].position.z = Convert.ToInt16(Size * 2);
 
+            Standard[3].position.x = Convert.ToInt16(Size * -1);
+            Standard[3].position.y = Convert.ToInt16(0);
+            Standard[3].position.z = Convert.ToInt16(Size * 2);
+
+            //
+            //Poly 2
+
+            Standard[4].position.x = Convert.ToInt16(0);
+            Standard[4].position.y = Convert.ToInt16(Size * -1);
+            Standard[4].position.z = Convert.ToInt16(0);
+
+            Standard[5].position.x = Convert.ToInt16(0);
+            Standard[5].position.y = Convert.ToInt16(Size);
+            Standard[5].position.z = Convert.ToInt16(0);
+
+            Standard[6].position.x = Convert.ToInt16(0);
+            Standard[6].position.y = Convert.ToInt16(Size);
+            Standard[6].position.z = Convert.ToInt16(Size * 2);
+
+            Standard[7].position.x = Convert.ToInt16(0);
+            Standard[7].position.y = Convert.ToInt16(Size * -1);
+            Standard[7].position.z = Convert.ToInt16(Size * 2);
+
+            return Standard;
+
+        }
+
+
+
+
+        public TM64_Geometry.Face[] CreateStandard(float Size = 5.0f, bool DoubleSided = true)
+        {
+            int CurrentIndex = 0;
+            int MaxIndex = 4;
+            if (DoubleSided)
+            {
+                MaxIndex = 8;
+            }
+            Vertex[] SourceArray = StandardVertex(Size);
+
+            TM64_Geometry.Face[] StandardGeometry = new TM64_Geometry.Face[MaxIndex];
             
-            StandardGeometry[1] = new TM64_Geometry.Face();
-            StandardGeometry[1].VertData = new TM64_Geometry.Vertex[3];
 
-            StandardGeometry[1].VertData[0] = new TM64_Geometry.Vertex();
-            StandardGeometry[1].VertData[0].position = new TM64_Geometry.Position();
-            StandardGeometry[1].VertData[0].position.x = Convert.ToInt16(0);
-            StandardGeometry[1].VertData[0].position.y = Convert.ToInt16(-1 * Size);
-            StandardGeometry[1].VertData[0].position.z = Convert.ToInt16(0);
+            //Poly  1
+            //Face 1
+            StandardGeometry[CurrentIndex] = new TM64_Geometry.Face();
+            StandardGeometry[CurrentIndex].VertData = new TM64_Geometry.Vertex[3];
+            StandardGeometry[CurrentIndex].VertData[0] = SourceArray[0];
+            StandardGeometry[CurrentIndex].VertData[1] = SourceArray[1];
+            StandardGeometry[CurrentIndex].VertData[2] = SourceArray[2];
 
-            StandardGeometry[1].VertData[1] = new TM64_Geometry.Vertex();
-            StandardGeometry[1].VertData[1].position = new TM64_Geometry.Position();
-            StandardGeometry[1].VertData[1].position.x = Convert.ToInt16(0);
-            StandardGeometry[1].VertData[1].position.y = Convert.ToInt16(Size);
-            StandardGeometry[1].VertData[1].position.z = Convert.ToInt16(0);
+            CurrentIndex++;
 
-            StandardGeometry[1].VertData[2] = new TM64_Geometry.Vertex();
-            StandardGeometry[1].VertData[2].position = new TM64_Geometry.Position();
-            StandardGeometry[1].VertData[2].position.x = Convert.ToInt16(0);
-            StandardGeometry[1].VertData[2].position.y = Convert.ToInt16(Size);
-            StandardGeometry[1].VertData[2].position.z = Convert.ToInt16(Size * 2);
+            if (DoubleSided)
+            {
+                //Backface 1
+                StandardGeometry[CurrentIndex] = new TM64_Geometry.Face();
+                StandardGeometry[CurrentIndex].VertData = new TM64_Geometry.Vertex[3];
+                StandardGeometry[CurrentIndex].VertData[0] = SourceArray[0];
+                StandardGeometry[CurrentIndex].VertData[1] = SourceArray[2];
+                StandardGeometry[CurrentIndex].VertData[2] = SourceArray[1];
+                CurrentIndex++;
+            }
 
-            StandardGeometry[2] = new TM64_Geometry.Face();
-            StandardGeometry[2].VertData = new TM64_Geometry.Vertex[3];
+            //Face 2
+            StandardGeometry[CurrentIndex] = new TM64_Geometry.Face();
+            StandardGeometry[CurrentIndex].VertData = new TM64_Geometry.Vertex[3];
+            StandardGeometry[CurrentIndex].VertData[0] = SourceArray[2];
+            StandardGeometry[CurrentIndex].VertData[1] = SourceArray[3];
+            StandardGeometry[CurrentIndex].VertData[2] = SourceArray[0];
+            CurrentIndex++;
 
-            StandardGeometry[2].VertData[0] = new TM64_Geometry.Vertex();
-            StandardGeometry[2].VertData[0].position = new TM64_Geometry.Position();
-            StandardGeometry[2].VertData[0].position.x = Convert.ToInt16(-1 * Size);
-            StandardGeometry[2].VertData[0].position.y = Convert.ToInt16(0);
-            StandardGeometry[2].VertData[0].position.z = Convert.ToInt16(0);
+            if (DoubleSided)
+            {
+                //Backface 2
+                StandardGeometry[CurrentIndex] = new TM64_Geometry.Face();
+                StandardGeometry[CurrentIndex].VertData = new TM64_Geometry.Vertex[3];
+                StandardGeometry[CurrentIndex].VertData[0] = SourceArray[2];
+                StandardGeometry[CurrentIndex].VertData[1] = SourceArray[0];
+                StandardGeometry[CurrentIndex].VertData[2] = SourceArray[3];
+                CurrentIndex++;
 
-            StandardGeometry[2].VertData[1] = new TM64_Geometry.Vertex();
-            StandardGeometry[2].VertData[1].position = new TM64_Geometry.Position();
-            StandardGeometry[2].VertData[1].position.x = Convert.ToInt16(Size);
-            StandardGeometry[2].VertData[1].position.y = Convert.ToInt16(0);
-            StandardGeometry[2].VertData[1].position.z = Convert.ToInt16(Size * 2);
+            }
 
-            StandardGeometry[2].VertData[2] = new TM64_Geometry.Vertex();
-            StandardGeometry[2].VertData[2].position = new TM64_Geometry.Position();
-            StandardGeometry[2].VertData[2].position.x = Convert.ToInt16(-1 * Size);
-            StandardGeometry[2].VertData[2].position.y = Convert.ToInt16(0);
-            StandardGeometry[2].VertData[2].position.z = Convert.ToInt16(Size* 2);
+            //Poly  2
+            //Face 1
+            StandardGeometry[CurrentIndex] = new TM64_Geometry.Face();
+            StandardGeometry[CurrentIndex].VertData = new TM64_Geometry.Vertex[3];
+            StandardGeometry[CurrentIndex].VertData[0] = SourceArray[4];
+            StandardGeometry[CurrentIndex].VertData[1] = SourceArray[5];
+            StandardGeometry[CurrentIndex].VertData[2] = SourceArray[6];
 
+            CurrentIndex++;
 
-            StandardGeometry[3] = new TM64_Geometry.Face();
-            StandardGeometry[3].VertData = new TM64_Geometry.Vertex[3];
+            if (DoubleSided)
+            {
+                //Backface 1
+                StandardGeometry[CurrentIndex] = new TM64_Geometry.Face();
+                StandardGeometry[CurrentIndex].VertData = new TM64_Geometry.Vertex[3];
+                StandardGeometry[CurrentIndex].VertData[0] = SourceArray[4];
+                StandardGeometry[CurrentIndex].VertData[1] = SourceArray[6];
+                StandardGeometry[CurrentIndex].VertData[2] = SourceArray[5];
+                CurrentIndex++;
+            }
 
-            StandardGeometry[3].VertData[0] = new TM64_Geometry.Vertex();
-            StandardGeometry[3].VertData[0].position = new TM64_Geometry.Position();
-            StandardGeometry[3].VertData[0].position.x = Convert.ToInt16(0);
-            StandardGeometry[3].VertData[0].position.y = Convert.ToInt16(-1 * Size);
-            StandardGeometry[3].VertData[0].position.z = Convert.ToInt16(0);
+            //Face 2
+            StandardGeometry[CurrentIndex] = new TM64_Geometry.Face();
+            StandardGeometry[CurrentIndex].VertData = new TM64_Geometry.Vertex[3];
+            StandardGeometry[CurrentIndex].VertData[0] = SourceArray[6];
+            StandardGeometry[CurrentIndex].VertData[1] = SourceArray[7];
+            StandardGeometry[CurrentIndex].VertData[2] = SourceArray[4];
+            CurrentIndex++;
 
-            StandardGeometry[3].VertData[1] = new TM64_Geometry.Vertex();
-            StandardGeometry[3].VertData[1].position = new TM64_Geometry.Position();
-            StandardGeometry[3].VertData[1].position.x = Convert.ToInt16(0);
-            StandardGeometry[3].VertData[1].position.y = Convert.ToInt16(Size);
-            StandardGeometry[3].VertData[1].position.z = Convert.ToInt16(Size * 2);
+            if (DoubleSided)
+            {
+                //Backface 2
+                StandardGeometry[CurrentIndex] = new TM64_Geometry.Face();
+                StandardGeometry[CurrentIndex].VertData = new TM64_Geometry.Vertex[3];
+                StandardGeometry[CurrentIndex].VertData[0] = SourceArray[6];
+                StandardGeometry[CurrentIndex].VertData[1] = SourceArray[4];
+                StandardGeometry[CurrentIndex].VertData[2] = SourceArray[7];
+                CurrentIndex++;
 
-            StandardGeometry[3].VertData[2] = new TM64_Geometry.Vertex();
-            StandardGeometry[3].VertData[2].position = new TM64_Geometry.Position();
-            StandardGeometry[3].VertData[2].position.x = Convert.ToInt16(0);
-            StandardGeometry[3].VertData[2].position.y = Convert.ToInt16(-1 * Size);
-            StandardGeometry[3].VertData[2].position.z = Convert.ToInt16(Size * 2);
+            }
+
             return StandardGeometry;
         }
 

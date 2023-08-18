@@ -458,25 +458,23 @@ namespace Tarmac64_Retail
                 }
                 if (TargetMode == 3)
                 {
-
-
                     for (int ThisObject = 0; ThisObject < CourseObjects.Count; ThisObject++)
                     {
                         if ((ThisObject != TargetedObject) && (ThisObject != OKSelectedObject))
                         {
                             if (ObjectTypes[CourseObjects[ThisObject].ObjectIndex].TextureData != null)
                             {
-
+                                GL.End();
                                 GL.Enable(OpenGL.GL_TEXTURE_2D);
                                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
                                 TarmacGL.DrawOKObjectTextured(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
                             }
                             else
                             {
+                                GL.End();
                                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
                                 GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                                 GL.Enable(OpenGL.GL_BLEND);
-                                //GLTexture[GLShadeIndex].Destroy(GL);
                                 GLTexture[GLShadeIndex].Bind(GL);
                                 TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
                             }
@@ -527,33 +525,6 @@ namespace Tarmac64_Retail
                 }
             }
 
-            
-            TarmacGL.DrawCursor(GL, LocalCamera, GLTexture[GLShadeIndex]);
-
-
-            GL.End();
-            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            GL.Disable(OpenGL.GL_CULL_FACE);
-
-            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-            GL.Enable(OpenGL.GL_BLEND);
-            GL.CullFace(OpenGL.GL_BACK);
-            TM64_Geometry TarmacGeo = new TM64_Geometry();
-            TM64_Geometry.Face[] Marker = TarmacGeo.CreateStandard(Convert.ToSingle(5.0));
-            if (CheckboxPaths.Checked)
-            {
-                foreach (var ThisPath in PathMarker)
-                {
-                    foreach (var ThisMark in ThisPath.pathmarker)
-                    {
-                        foreach (var ThisFace in Marker)
-                        {
-                            TarmacGL.DrawMarker(GL, GLTexture[GLShadeIndex], ThisFace, ThisMark.Color, ThisMark);
-                        }
-                    }
-                }
-            }
 
             switch (TargetMode)
             {
@@ -577,6 +548,8 @@ namespace Tarmac64_Retail
                     }
                 case 3:
                     {
+
+                        //for hover over object. flashing color.
                         if (CourseObjects.Count > 0)
                         {
                             if (TargetedObject != -1)
@@ -590,6 +563,34 @@ namespace Tarmac64_Retail
                         }
                         break;
                     }
+            }
+
+
+
+            TarmacGL.DrawCursor(GL, LocalCamera, GLTexture[GLShadeIndex]);
+
+
+            GL.End();
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.Disable(OpenGL.GL_CULL_FACE);
+
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.Enable(OpenGL.GL_BLEND);
+            TM64_Geometry TarmacGeo = new TM64_Geometry();
+            TM64_Geometry.Face[] Marker = TarmacGeo.CreateStandard(Convert.ToSingle(5.0));
+            if (CheckboxPaths.Checked)
+            {
+                foreach (var ThisPath in PathMarker)
+                {
+                    foreach (var ThisMark in ThisPath.pathmarker)
+                    {
+                        foreach (var ThisFace in Marker)
+                        {
+                            TarmacGL.DrawMarker(GL, GLTexture[GLShadeIndex], ThisFace, ThisMark.Color, ThisMark);
+                        }
+                    }
+                }
             }
 
         }
