@@ -276,12 +276,17 @@ namespace Tarmac64_Library
                     glTexture.Create(gl, Tarmac64_Library.Properties.Resources.TextureNotFound);
                     glTexture.Bind(gl);                   
                 }
-                
-                   
-                
-                
 
 
+
+
+
+                uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
+
+
+
+                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TargetObjectType.TextureData[Geometry.materialID].SFlag] });
+                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[TargetObjectType.TextureData[Geometry.materialID].TFlag] });
                 gl.Begin(OpenGL.GL_TRIANGLES);
                 foreach (var Face in Geometry.modelGeometry)
                 {                    
@@ -454,10 +459,12 @@ namespace Tarmac64_Library
 
             glTexture.Destroy(gl);
 
-            uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
+            
 
             glTexture.Create(gl, RenderScreen(gl, TextureObject.textureScreen - 1, Width, Height));
             glTexture.Bind(gl);
+
+            uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
 
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.SFlag] });
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.SFlag] });

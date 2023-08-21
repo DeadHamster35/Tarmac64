@@ -53,6 +53,7 @@ namespace Tarmac64_Retail
         public OpenGL GL = new OpenGL();
         public SharpGL.SceneGraph.Assets.Texture[] GLTexture = new SharpGL.SceneGraph.Assets.Texture[1];
         int GLShadeIndex = 0;
+        int GLObjectIndex = 0;
 
 
         public float[,] SkyColors = new float[3, 3] {
@@ -122,8 +123,9 @@ namespace Tarmac64_Retail
 
         public void CacheTextures()
         {
-            GLTexture = new SharpGL.SceneGraph.Assets.Texture[BitmapData.Length + 1];
+            GLTexture = new SharpGL.SceneGraph.Assets.Texture[BitmapData.Length + 2];
             GLShadeIndex = GLTexture.Length - 1;
+            GLObjectIndex = GLTexture.Length - 2;
             for (int ThisTexture = 0; ThisTexture < BitmapData.Length; ThisTexture++)
             {
                 GLTexture[ThisTexture] = new SharpGL.SceneGraph.Assets.Texture();
@@ -132,6 +134,8 @@ namespace Tarmac64_Retail
                     GLTexture[ThisTexture].Create(GL, BitmapData[ThisTexture]);
                 }
             }
+
+            GLTexture[GLObjectIndex] = new SharpGL.SceneGraph.Assets.Texture();
             GLTexture[GLShadeIndex] = new SharpGL.SceneGraph.Assets.Texture();
         }
         private void GLWindow_Resized(object sender, EventArgs e)
@@ -467,7 +471,7 @@ namespace Tarmac64_Retail
                                 GL.End();
                                 GL.Enable(OpenGL.GL_TEXTURE_2D);
                                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                                TarmacGL.DrawOKObjectTextured(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
+                                TarmacGL.DrawOKObjectTextured(GL, GLTexture[GLObjectIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
                             }
                             else
                             {
@@ -526,6 +530,13 @@ namespace Tarmac64_Retail
             }
 
 
+            GL.End();
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.Enable(OpenGL.GL_BLEND);
+
             switch (TargetMode)
             {
                 case 0:
@@ -554,7 +565,7 @@ namespace Tarmac64_Retail
                         {
                             if (TargetedObject != -1)
                             {
-                                TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[TargetedObject], ObjectTypes[CourseObjects[TargetedObject].ObjectIndex], LocalCamera.flashWhite);
+                                    TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[TargetedObject], ObjectTypes[CourseObjects[TargetedObject].ObjectIndex], LocalCamera.flashWhite);
                             }
                             if (OKSelectedObject != -1)
                             {
@@ -566,17 +577,10 @@ namespace Tarmac64_Retail
             }
 
 
+            GL.Disable(OpenGL.GL_CULL_FACE);
 
             TarmacGL.DrawCursor(GL, LocalCamera, GLTexture[GLShadeIndex]);
 
-
-            GL.End();
-            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            GL.Disable(OpenGL.GL_CULL_FACE);
-
-            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-            GL.Enable(OpenGL.GL_BLEND);
             TM64_Geometry TarmacGeo = new TM64_Geometry();
             TM64_Geometry.Face[] Marker = TarmacGeo.CreateStandard(Convert.ToSingle(5.0));
             if (CheckboxPaths.Checked)

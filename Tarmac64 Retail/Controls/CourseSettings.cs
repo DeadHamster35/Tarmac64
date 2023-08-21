@@ -626,7 +626,10 @@ namespace Tarmac64_Retail
                 PathTypeBox.SelectedIndex = PathFX[Index].Type;
             }
 
-            GoalBannerBox.Checked = Convert.ToBoolean(CourseData.GoalBannerBool);
+            PathSurfaceBox.Text = CourseData.PathSurface[PathSurfaceSelect.SelectedIndex].ToString();
+            PathCountBox.Text = CourseData.PathCount.ToString();
+
+            GoalBannerBox.Checked = !Convert.ToBoolean(CourseData.GoalBannerBool);
             SkyBoxCheckBox.Checked = Convert.ToBoolean(CourseData.SkyboxBool);
 
 
@@ -1112,7 +1115,7 @@ namespace Tarmac64_Retail
 
         private void UpdateUI(object sender, EventArgs e)
         {
-            UpdateCourse();
+            UpdateUI();
         }
 
         private void GoalBannerBox_CheckedChanged(object sender, EventArgs e)
