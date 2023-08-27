@@ -1229,6 +1229,7 @@ namespace Tarmac64_Library
                     { Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.B / 255.0) },
             };
             GLControl.UpdateDraw = true;
+            GLControl.DrawSky = Convert.ToBoolean(SettingsControl.CourseData.SkyboxBool);
         }
         public void ObjectRequestUpdate(object sender, EventArgs e)
         {

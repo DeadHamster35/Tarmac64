@@ -367,6 +367,8 @@ namespace Tarmac64_Retail
             CourseData.GoalBannerBool = Convert.ToInt16(!GoalBannerBox.Checked);  //Inverse
             CourseData.SkyboxBool = Convert.ToInt16(SkyBoxCheckBox.Checked);  
 
+
+
             if (int.TryParse(FogRBox.Text, out ParseInt))
             {
                 CourseData.Fog.FogColor.R = Convert.ToByte(ParseInt);

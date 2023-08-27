@@ -440,10 +440,6 @@ namespace Tarmac64_Library
 
             uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
 
-            if (textureArray[TargetID].texturePath == null)
-            {
-                MessageBox.Show("Error loading texture for " + textureArray[TargetID].textureName);
-            }
             glTexture.Bind(gl);
 
 
@@ -455,8 +451,8 @@ namespace Tarmac64_Library
         public void DrawTextureFlushScreen(OpenGL gl, int Width, int Height, TM64_Geometry.OK64Texture TextureObject, Texture glTexture)
         {
 
-            
 
+            gl.End();
             glTexture.Destroy(gl);
 
             

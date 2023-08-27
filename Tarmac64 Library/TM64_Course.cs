@@ -2140,6 +2140,11 @@ namespace Tarmac64_Library
                 {
                     binaryWriter.Write(Convert.ToByte(0x00));
                 }
+
+
+
+                tempMusicSizes[0] = Convert.ToInt32(binaryWriter.BaseStream.Position - tempMusicOffset[0]);
+
                 tempMusicOffset[1] = Convert.ToInt32(binaryWriter.BaseStream.Position);
                 binaryWriter.Write(courseData.SongData.InstrumentData);
 
@@ -2151,6 +2156,8 @@ namespace Tarmac64_Library
                     binaryWriter.Write(Convert.ToByte(0x00));
                 }
 
+                tempMusicSizes[1] = Convert.ToInt32(binaryWriter.BaseStream.Position - tempMusicOffset[1]);
+
 
 
                 courseData.MusicID = Convert.ToInt32(binaryWriter.BaseStream.Position);
@@ -2158,13 +2165,13 @@ namespace Tarmac64_Library
                 flip = BitConverter.GetBytes(Convert.ToInt32(tempMusicOffset[0]));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
-                flip = BitConverter.GetBytes(Convert.ToInt32(courseData.SongData.SequenceData.Length));
+                flip = BitConverter.GetBytes(Convert.ToInt32(tempMusicSizes[0]));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
                 flip = BitConverter.GetBytes(Convert.ToInt32(tempMusicOffset[1]));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
-                flip = BitConverter.GetBytes(Convert.ToInt32(courseData.SongData.InstrumentData.Length));
+                flip = BitConverter.GetBytes(Convert.ToInt32(tempMusicSizes[1]));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
                 binaryWriter.Write(Convert.ToInt32(0));
@@ -2176,6 +2183,7 @@ namespace Tarmac64_Library
                 {
                     binaryWriter.Write(Convert.ToByte(0x00));
                 }
+
             }
             else
             {

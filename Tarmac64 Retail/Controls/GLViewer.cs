@@ -64,6 +64,7 @@ namespace Tarmac64_Retail
 
         public bool UpdateDraw = false;
         public bool AntiFlicker = true;
+        public bool DrawSky = true;
 
         public event EventHandler UpdateParent;
 
@@ -92,23 +93,29 @@ namespace Tarmac64_Retail
             //GLTexture[GLShadeIndex].Destroy(GL);
             GLTexture[GLShadeIndex].Bind(GL);
 
-            GL.Begin(OpenGL.GL_QUADS);
 
 
-            GL.Color(SkyColors[0, 0], SkyColors[0, 1], SkyColors[0, 2]);
-            GL.Vertex(-1.0, 1.0);
-            GL.Vertex(1.0, 1.0);
+            if (DrawSky)
+            {
+                GL.Begin(OpenGL.GL_QUADS);
 
-            GL.Color(SkyColors[1, 0], SkyColors[1, 1], SkyColors[1, 2]);
-            GL.Vertex(1.0, 0);
-            GL.Vertex(-1.0, 0);
 
-            GL.Vertex(-1.0, 0);
-            GL.Vertex(1.0, 0);
+                GL.Color(SkyColors[0, 0], SkyColors[0, 1], SkyColors[0, 2]);
+                GL.Vertex(-1.0, 1.0);
+                GL.Vertex(1.0, 1.0);
 
-            GL.Color(SkyColors[2, 0], SkyColors[2, 1], SkyColors[2, 2]);
-            GL.Vertex(1.0, -1.0);
-            GL.Vertex(-1.0, -1.0);
+                GL.Color(SkyColors[1, 0], SkyColors[1, 1], SkyColors[1, 2]);
+                GL.Vertex(1.0, 0);
+                GL.Vertex(-1.0, 0);
+
+                GL.Vertex(-1.0, 0);
+                GL.Vertex(1.0, 0);
+
+                GL.Color(SkyColors[2, 0], SkyColors[2, 1], SkyColors[2, 2]);
+                GL.Vertex(1.0, -1.0);
+                GL.Vertex(-1.0, -1.0);
+            }
+            
 
             GL.End();
 
@@ -282,6 +289,7 @@ namespace Tarmac64_Retail
                 GL.Enable(OpenGL.GL_TEXTURE_2D);
                 GL.FrontFace(OpenGL.GL_CCW);
 
+
                 if (TargetMode == 1)
                 {
                     for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
@@ -289,49 +297,45 @@ namespace Tarmac64_Retail
                         if (TextureObjects[ThisTexture].texturePath != null)
                         {
 
-                            if ((RenderCheckbox.Checked) && (TextureObjects[ThisTexture].textureScreen > 0))
-                            {
-                                TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
-
-                            }
-                            else
+                            if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
                             {
                                 TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
-                            }
-                            TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
 
-                            for (int ThisObject = 0; ThisObject < SectionList.Length; ThisObject++)
-                            {
-                                if (CourseModel[SectionList[ThisObject]].materialID == ThisTexture)
+                                TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+
+                                for (int ThisObject = 0; ThisObject < SectionList.Length; ThisObject++)
                                 {
-                                    double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
-                                    TextureObjects[ThisTexture].GLShiftT -= Add;
-                                    Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
-                                    TextureObjects[ThisTexture].GLShiftS += Add;
-
-
-                                    while (TextureObjects[ThisTexture].GLShiftT > 1)
+                                    if (CourseModel[SectionList[ThisObject]].materialID == ThisTexture)
                                     {
-                                        TextureObjects[ThisTexture].GLShiftT -= 1;
+                                        double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
+                                        TextureObjects[ThisTexture].GLShiftT -= Add;
+                                        Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
+                                        TextureObjects[ThisTexture].GLShiftS += Add;
+
+
+                                        while (TextureObjects[ThisTexture].GLShiftT > 1)
+                                        {
+                                            TextureObjects[ThisTexture].GLShiftT -= 1;
+                                        }
+                                        while (TextureObjects[ThisTexture].GLShiftT < 0)
+                                        {
+                                            TextureObjects[ThisTexture].GLShiftT += 1;
+                                        }
+                                        while (TextureObjects[ThisTexture].GLShiftS > 1)
+                                        {
+                                            TextureObjects[ThisTexture].GLShiftS -= 1;
+                                        }
+                                        while (TextureObjects[ThisTexture].GLShiftS < 0)
+                                        {
+                                            TextureObjects[ThisTexture].GLShiftS += 1;
+                                        }
+
+                                        TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[SectionList[ThisObject]]);
+
+
+
+
                                     }
-                                    while (TextureObjects[ThisTexture].GLShiftT < 0)
-                                    {
-                                        TextureObjects[ThisTexture].GLShiftT += 1;
-                                    }
-                                    while (TextureObjects[ThisTexture].GLShiftS > 1)
-                                    {
-                                        TextureObjects[ThisTexture].GLShiftS -= 1;
-                                    }
-                                    while (TextureObjects[ThisTexture].GLShiftS < 0)
-                                    {
-                                        TextureObjects[ThisTexture].GLShiftS += 1;
-                                    }
-
-                                    TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[SectionList[ThisObject]]);
-
-
-
-
                                 }
                             }
                         }
@@ -374,46 +378,44 @@ namespace Tarmac64_Retail
                         if (TextureObjects[ThisTexture].texturePath != null)
                         {
 
-                            if ((RenderCheckbox.Checked) && (TextureObjects[ThisTexture].textureScreen > 0))
-                            {
-                                TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
-                            }
-                            else
+
+                            if(!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
                             {
                                 TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
-                            }
-                            TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
 
-                            double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
-                            TextureObjects[ThisTexture].GLShiftT -= Add;
-                            Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
-                            TextureObjects[ThisTexture].GLShiftS += Add;
+                                TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
 
-                            while (TextureObjects[ThisTexture].GLShiftT > 1)
-                            {
-                                TextureObjects[ThisTexture].GLShiftT -= 1;
-                            }
-                            while (TextureObjects[ThisTexture].GLShiftT < 0)
-                            {
-                                TextureObjects[ThisTexture].GLShiftT += 1;
-                            }
-                            while (TextureObjects[ThisTexture].GLShiftS > 1)
-                            {
-                                TextureObjects[ThisTexture].GLShiftS -= 1;
-                            }
-                            while (TextureObjects[ThisTexture].GLShiftS < 0)
-                            {
-                                TextureObjects[ThisTexture].GLShiftS += 1;
-                            }
+                                double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
+                                TextureObjects[ThisTexture].GLShiftT -= Add;
+                                Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
+                                TextureObjects[ThisTexture].GLShiftS += Add;
 
-
-                            for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
-                            {
-                                if (CourseModel[ThisObject].materialID == ThisTexture)
+                                while (TextureObjects[ThisTexture].GLShiftT > 1)
                                 {
+                                    TextureObjects[ThisTexture].GLShiftT -= 1;
+                                }
+                                while (TextureObjects[ThisTexture].GLShiftT < 0)
+                                {
+                                    TextureObjects[ThisTexture].GLShiftT += 1;
+                                }
+                                while (TextureObjects[ThisTexture].GLShiftS > 1)
+                                {
+                                    TextureObjects[ThisTexture].GLShiftS -= 1;
+                                }
+                                while (TextureObjects[ThisTexture].GLShiftS < 0)
+                                {
+                                    TextureObjects[ThisTexture].GLShiftS += 1;
+                                }
 
 
-                                    TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[ThisObject]);
+                                for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
+                                {
+                                    if (CourseModel[ThisObject].materialID == ThisTexture)
+                                    {
+
+
+                                        TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[ThisObject]);
+                                    }
                                 }
                             }
                         }
@@ -448,9 +450,62 @@ namespace Tarmac64_Retail
                             GL.Enable(OpenGL.GL_TEXTURE_2D);
                             GL.FrontFace(OpenGL.GL_CCW);
                         }
+
                     }
+
+
+                    // For drawing textured screens
+                    
+
+
+                    if (RenderCheckbox.Checked)
+                    {
+                        for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
+                        {
+                            if (TextureObjects[ThisTexture].texturePath != null)
+                            {
+                                if (TextureObjects[ThisTexture].textureScreen > 0)
+                                {
+                                    TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
+
+                                    TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+
+                                    double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
+                                    TextureObjects[ThisTexture].GLShiftT -= Add;
+                                    Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
+                                    TextureObjects[ThisTexture].GLShiftS += Add;
+
+                                    while (TextureObjects[ThisTexture].GLShiftT > 1)
+                                    {
+                                        TextureObjects[ThisTexture].GLShiftT -= 1;
+                                    }
+                                    while (TextureObjects[ThisTexture].GLShiftT < 0)
+                                    {
+                                        TextureObjects[ThisTexture].GLShiftT += 1;
+                                    }
+                                    while (TextureObjects[ThisTexture].GLShiftS > 1)
+                                    {
+                                        TextureObjects[ThisTexture].GLShiftS -= 1;
+                                    }
+                                    while (TextureObjects[ThisTexture].GLShiftS < 0)
+                                    {
+                                        TextureObjects[ThisTexture].GLShiftS += 1;
+                                    }
+                                    for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
+                                    {
+                                        if (CourseModel[ThisObject].materialID == ThisTexture)
+                                        {
+                                            TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[ThisObject]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
                 }
-                GL.End();
+
+                        GL.End();
                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
                 GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                 GL.Enable(OpenGL.GL_BLEND);

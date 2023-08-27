@@ -90,7 +90,7 @@ namespace Tarmac64_Library
             outputSong.SequenceData = binaryReader.ReadBytes(DataLength);
 
 
-            int addressAlign = 64 - (Convert.ToInt32(binaryReader.BaseStream.Position) % 16);
+            int addressAlign = 64 - (Convert.ToInt32(binaryReader.BaseStream.Position) % 64);
             if (addressAlign == 64)
                 addressAlign = 0;
             for (int align = 0; align < addressAlign; align++)
