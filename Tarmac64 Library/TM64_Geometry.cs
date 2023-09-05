@@ -3791,6 +3791,9 @@ namespace Tarmac64_Library
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
             //set MIP levels to 0.
+
+
+            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
             binaryWriter.Write(
                 F3D.gsSPTexture(
                     1,
@@ -4016,6 +4019,8 @@ namespace Tarmac64_Library
             //set MIP levels to 0.
             if (TextureObject.TextureFormat != 0)
             {
+
+                binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
                 binaryWriter.Write(
                     F3D.gsSPTexture(
                         32768,
@@ -4406,6 +4411,17 @@ namespace Tarmac64_Library
             UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
 
 
+            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
+            binaryWriter.Write(
+                    F3D.gsSPTexture(
+                        65535,
+                        65535,
+                        0,
+                        0,
+                        1
+                    )
+                );
+
             if (TextureObject.BitSize < 2)
             {
                 //Macro 4-bit Texture Load
@@ -4449,17 +4465,6 @@ namespace Tarmac64_Library
 
 
             }
-
-
-            binaryWriter.Write(
-                    F3D.gsSPTexture(
-                        65535,
-                        65535,
-                        0,
-                        0,
-                        1
-                    )
-                );
 
             //pipe sync.
             binaryWriter.Write(
