@@ -168,6 +168,8 @@ namespace Tarmac64_Library
             public short[][] TranslationData { get; set; }
             public short[][] RotationData { get; set; }
             public short[][] ScalingData { get; set; }
+
+            public float[][] RotationFloat { get; set; }
         }
 
         public class OK64F3DModel
@@ -5998,19 +6000,22 @@ namespace Tarmac64_Library
 
 
             NewAnime.RotationData = new short[FrameCount][];
+            NewAnime.RotationFloat = new float[FrameCount][];
             for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
             {
 
                 if (ThisFrame < AnimeChannel.RotationKeyCount)
                 {
                     NewAnime.RotationData[ThisFrame] = new short[3];
+                    NewAnime.RotationFloat[ThisFrame] = new float[3];
 
 
                     float[] RotationTemp = ConvertEuler(AnimeChannel.RotationKeys[ThisFrame].Value);
 
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                     {
-                        NewAnime.RotationData[ThisFrame][ThisVector] = Convert.ToInt16((RotationTemp[ThisVector] / 0.01745329252) * 0xB6);
+                        NewAnime.RotationFloat[ThisFrame][ThisVector] = Convert.ToSingle(RotationTemp[ThisVector] / 0.01745329252);
+                        NewAnime.RotationData[ThisFrame][ThisVector] = Convert.ToInt16(NewAnime.RotationFloat[ThisFrame][ThisVector] * 0xB6);
                     }
                 }
                 else
@@ -6066,17 +6071,17 @@ namespace Tarmac64_Library
             
             for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
             {
-                Point3D Root = new Point3D() { X = (Bone.Origin[0] / 100.0f) - (Parent.Origin[0] / 100.0f), Y = (Bone.Origin[1] / 100.0f) - (Parent.Origin[1] / 100.0f), Z = (Bone.Origin[2] / 100.0f) - (Parent.Origin[2] / 100.0f) };
+                Point3D Root = new Point3D() { X = (Bone.Origin[0]) - (Parent.Origin[0]), Y = (Bone.Origin[1]) - (Parent.Origin[1]), Z = (Bone.Origin[2]) - (Parent.Origin[2]) };
                 float[] Angle = new float[3]{
-                    Convert.ToSingle(Parent.Animation.RotationData[ThisFrame][0]),
-                    Convert.ToSingle(Parent.Animation.RotationData[ThisFrame][1]),
-                    Convert.ToSingle(Parent.Animation.RotationData[ThisFrame][2]),
+                    Convert.ToSingle(Parent.Animation.RotationFloat[ThisFrame][0]),
+                    Convert.ToSingle(Parent.Animation.RotationFloat[ThisFrame][1]),
+                    Convert.ToSingle(Parent.Animation.RotationFloat[ThisFrame][2]),
                 };
                 Point3D Branch = RotatePoint(Root, Angle);
                 
-                Bone.Animation.TranslationData[ThisFrame][0] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][0]);
-                Bone.Animation.TranslationData[ThisFrame][1] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][1]);
-                Bone.Animation.TranslationData[ThisFrame][2] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][2]);
+                Bone.Animation.TranslationData[ThisFrame][0] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][0] - (Branch.X - Root.X));
+                Bone.Animation.TranslationData[ThisFrame][1] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][1] - (Branch.Y - Root.Y));
+                Bone.Animation.TranslationData[ThisFrame][2] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][2] - (Branch.Z - Root.Z));
 
             }
 
