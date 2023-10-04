@@ -64,6 +64,7 @@
             this.label13 = new System.Windows.Forms.Label();
             this.AngleZBox = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // LoadFBXButton
@@ -386,11 +387,22 @@
             this.label14.Text = "Z";
             this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(102, 257);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(83, 17);
+            this.checkBox2.TabIndex = 315;
+            this.checkBox2.Text = "Solid Object";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
             // HitboxCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(335, 296);
+            this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.AngleZBox);
             this.Controls.Add(this.label14);
@@ -472,5 +484,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox AngleZBox;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.CheckBox checkBox2;
     }
 }

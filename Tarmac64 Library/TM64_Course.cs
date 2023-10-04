@@ -381,7 +381,7 @@ namespace Tarmac64_Library
             for (int ThisObject = 0; ThisObject < ObjectList.Length; ThisObject++)
             {
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].ObjectIndex - 6)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].GameMode)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].Flag)));
 
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginPosition[0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginPosition[2])));
@@ -408,32 +408,66 @@ namespace Tarmac64_Library
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
-            foreach (var Hit in Hitbox)
+            if (Hitbox == null)
             {
-                binaryWriter.Write(F3D.BigEndian(Hit.Type)); //padding
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Hit.Scale * 100)));
+                binaryWriter.Write(F3D.BigEndian(0)); //padding
+                binaryWriter.Write(F3D.BigEndian(100));
 
                 binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
                 binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
-                binaryWriter.Write(F3D.BigEndian(Hit.BoxAngle)); //ayy real Z angles lessgo.
+                binaryWriter.Write(Convert.ToInt16(0));
 
-                binaryWriter.Write(F3D.BigEndian(Hit.Size[0]));
-                binaryWriter.Write(F3D.BigEndian(Hit.Size[2]));
-                binaryWriter.Write(F3D.BigEndian(Hit.Size[1]));
+                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(Convert.ToInt16(0));
 
-                binaryWriter.Write(F3D.BigEndian(Hit.Origin[0]));
-                binaryWriter.Write(F3D.BigEndian(Hit.Origin[2]));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Hit.Origin[1] * -1)));
+                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(Convert.ToInt16(0));
 
                 binaryWriter.Write(Convert.ToInt16(0)); //PAD
 
-                binaryWriter.Write(Convert.ToSByte(Hit.Status));
-                binaryWriter.Write(Convert.ToSByte(Hit.Effect));
-                binaryWriter.Write(Convert.ToSByte(Hit.CollideResult));
-                binaryWriter.Write(Convert.ToSByte(Hit.HitResult));
+                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(Convert.ToInt16(0));
+            }
+            else
+            {
+                foreach (var Hit in Hitbox)
+                {
+                    binaryWriter.Write(F3D.BigEndian(Hit.Type)); //padding
+                    binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Hit.Scale * 100)));
+
+                    binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
+                    binaryWriter.Write(Convert.ToInt16(0)); //placeholder for the angle data
+                    binaryWriter.Write(F3D.BigEndian(Hit.BoxAngle)); //ayy real Z angles lessgo.
+
+                    binaryWriter.Write(F3D.BigEndian(Hit.Size[0]));
+                    binaryWriter.Write(F3D.BigEndian(Hit.Size[2]));
+                    binaryWriter.Write(F3D.BigEndian(Hit.Size[1]));
+
+                    binaryWriter.Write(F3D.BigEndian(Hit.Origin[0]));
+                    binaryWriter.Write(F3D.BigEndian(Hit.Origin[2]));
+                    binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Hit.Origin[1] * -1)));
+
+                    if (Hit.BoxAngle != 0)
+                    {
+                        binaryWriter.Write(Convert.ToSByte(1));
+                    }
+                    else
+                    {
+                        binaryWriter.Write(Convert.ToSByte(0));
+                    }
+                    binaryWriter.Write(Convert.ToSByte(0)); //PAD
+
+                    binaryWriter.Write(Convert.ToSByte(Hit.Status));
+                    binaryWriter.Write(Convert.ToSByte(Hit.Effect));
+                    binaryWriter.Write(Convert.ToSByte(Hit.CollideResult));
+                    binaryWriter.Write(Convert.ToSByte(Hit.HitResult));
 
 
+                }
             }
             return memoryStream.ToArray();
         }

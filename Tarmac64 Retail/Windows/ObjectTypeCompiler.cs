@@ -19,7 +19,7 @@ namespace Tarmac64_Retail
 
 
         string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP", "DAMAGE"};
-        string[] BehaviorNames = new string[] { "DEAD", "EXIST", "FLOAT", "PATH", "WANDER", "SEARCH", "BOUNCE"};
+        string[] BehaviorNames = new string[] { "DEAD", "EXIST", "FLOAT", "PATH", "WANDER", "SEARCH", "BOUNCE", "FLEE", "STRAFE", "WATER-BOB"};
         string[] StatusNames = new string[] { "None", "MapObjectHit", "LightningHit", "BooTranslucent", "BecomeBombOn", "BecomeBombOff", "FlattenedOn", "FlattenedOff", "MushroomBoost", "SpinOutSaveable", "SpinOut", "GreenShellHit", "RedShellHit", "Bonk", "StarOn", "GhostOn", "StarOff", "GhostOff" };
         int[] StatusValues = new int[] { -1, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
         string[] EffectNames = new string[] { "None", "StateAnimMusicNote", "StateAnimCrash", "StateAnimPoomp", "StateAnimBoing", "StateAnimExplosion", "StateAnimBonkStars", "StateAnimLandingDust" };
@@ -194,19 +194,39 @@ namespace Tarmac64_Retail
                 BElementTable.Rows[RowIndex].Cells[1].Value = 0;
             }
 
-            
-            
-            for (int ThisBehavior = 0; ThisBehavior < 100; ThisBehavior++)
+            string BehaviorPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Behaviors.txt");
+
+            if (File.Exists(BehaviorPath))
             {
-                if (ThisBehavior < BehaviorNames.Length)
-                {
-                    BehaviorBox.Items.Add(BehaviorNames[ThisBehavior]);
-                }
-                else
-                {
-                    BehaviorBox.Items.Add("Undefined Behavior #" + (ThisBehavior - 1).ToString());
-                }
+                string[] CustomBehaviorNames = File.ReadAllLines(BehaviorPath);
                 
+                for (int ThisBehavior = 0; ThisBehavior < 100; ThisBehavior++)
+                {
+                    if (ThisBehavior < CustomBehaviorNames.Length)
+                    {
+                        BehaviorBox.Items.Add(CustomBehaviorNames[ThisBehavior]);
+                    }
+                    else
+                    {
+                        BehaviorBox.Items.Add("Undefined Behavior #" + (ThisBehavior - 1).ToString());
+                    }
+
+                }
+            }
+            else
+            {
+                for (int ThisBehavior = 0; ThisBehavior < 100; ThisBehavior++)
+                {
+                    if (ThisBehavior < BehaviorNames.Length)
+                    {
+                        BehaviorBox.Items.Add(BehaviorNames[ThisBehavior]);
+                    }
+                    else
+                    {
+                        BehaviorBox.Items.Add("Undefined Behavior #" + (ThisBehavior - 1).ToString());
+                    }
+
+                }
             }
             foreach (var Type in SoundTypes)
             {

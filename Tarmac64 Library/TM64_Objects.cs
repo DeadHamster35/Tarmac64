@@ -36,6 +36,7 @@ namespace Tarmac64_Library
             public short[] Size { get; set; }
 
             public short BoxAngle { get; set; }
+            public bool SolidObject { get; set; }
 
             public OK64Collide(string InputName)
             {
@@ -43,11 +44,13 @@ namespace Tarmac64_Library
                 Type = 0;
                 Origin = new short[3] { 0, 0, 0 };
                 Size = new short[3] { 0, 0, 0 };
-                Scale = 0.1f;
+                Scale = 1.0f;
                 Status = 0;
                 Effect = -1;
                 HitResult = 0;
                 CollideResult = 0;
+                BoxAngle = 0;
+                SolidObject = true;
             }
             //
         }
@@ -165,9 +168,13 @@ namespace Tarmac64_Library
                 Hitbox[ThisHit].CollideResult = binaryReader.ReadInt16();
                 Hitbox[ThisHit].HitResult = binaryReader.ReadInt16();
                 Hitbox[ThisHit].BoxAngle = binaryReader.ReadInt16();
+                Hitbox[ThisHit].SolidObject = binaryReader.ReadBoolean();
 
+                // Initialize Arrays
                 Hitbox[ThisHit].Origin = new short[3];
                 Hitbox[ThisHit].Size = new short[3];
+                //
+
                 for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                 {
                     Hitbox[ThisHit].Origin[ThisVector] = binaryReader.ReadInt16();
@@ -194,6 +201,7 @@ namespace Tarmac64_Library
                 binaryWriter.Write(Hit.CollideResult);
                 binaryWriter.Write(Hit.HitResult);
                 binaryWriter.Write(Hit.BoxAngle);
+                binaryWriter.Write(Hit.SolidObject);
                 for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                 {
                     binaryWriter.Write(Hit.Origin[ThisVector]);

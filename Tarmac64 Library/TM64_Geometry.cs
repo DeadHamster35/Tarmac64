@@ -1997,7 +1997,10 @@ namespace Tarmac64_Library
             var BaseNode = fbx.RootNode.FindNode("Master Objects");
             TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
             TarmacSettings.LoadSettings();
-
+            if (BaseNode == null)
+            {
+                MessageBox.Show("Error - No 'Master Objects' node");
+            }
             for (int childObject = 0; childObject < BaseNode.Children.Count; childObject++)
             {
                 masterObjects.Add(createObject(fbx, BaseNode.Children[childObject], textureArray, false, TarmacSettings.AlphaCH2, DisregardOrigin));
@@ -3795,7 +3798,6 @@ namespace Tarmac64_Library
             //set MIP levels to 0.
 
 
-            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
             binaryWriter.Write(
                 F3D.gsSPTexture(
                     1,
@@ -3812,6 +3814,9 @@ namespace Tarmac64_Library
             binaryWriter.Write(
                 F3D.gsDPPipeSync()
             );
+
+
+            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
 
             if (GeometryToggle)
             {
@@ -4022,7 +4027,7 @@ namespace Tarmac64_Library
             if (TextureObject.TextureFormat != 0)
             {
 
-                binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
+                
                 binaryWriter.Write(
                     F3D.gsSPTexture(
                         32768,
@@ -4051,7 +4056,7 @@ namespace Tarmac64_Library
                 F3D.gsDPPipeSync()
             );
 
-
+            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
 
             if (GeometryToggle)
             {
@@ -4413,7 +4418,7 @@ namespace Tarmac64_Library
             UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
 
 
-            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
+            
             binaryWriter.Write(
                     F3D.gsSPTexture(
                         65535,
@@ -4424,6 +4429,14 @@ namespace Tarmac64_Library
                     )
                 );
 
+
+            //pipe sync.
+            binaryWriter.Write(
+                F3D.gsDPPipeSync()
+            );
+
+
+            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
             if (TextureObject.BitSize < 2)
             {
                 //Macro 4-bit Texture Load
@@ -4467,11 +4480,6 @@ namespace Tarmac64_Library
 
 
             }
-
-            //pipe sync.
-            binaryWriter.Write(
-                F3D.gsDPPipeSync()
-            );
 
 
 
@@ -5432,8 +5440,8 @@ namespace Tarmac64_Library
             Matrix4x4 OPrime = GetTotalTransform(Base, FBX);
             NewBone.Origin = new short[3];
             NewBone.Origin[0] = Convert.ToInt16(OPrime.A4 * 100 * ModelScale);
-            NewBone.Origin[1] = Convert.ToInt16(OPrime.C4 * 100 * ModelScale);
-            NewBone.Origin[2] = Convert.ToInt16(OPrime.B4 * 100 * ModelScale);
+            NewBone.Origin[1] = Convert.ToInt16(OPrime.B4 * 100 * ModelScale);
+            NewBone.Origin[2] = Convert.ToInt16(OPrime.C4 * 100 * ModelScale);
 
             //Base.Transform.
             for (int ThisChild = 0; ThisChild < Base.ChildCount; ThisChild++)
@@ -6015,14 +6023,21 @@ namespace Tarmac64_Library
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                     {
                         NewAnime.RotationFloat[ThisFrame][ThisVector] = Convert.ToSingle(RotationTemp[ThisVector] / 0.01745329252);
+                        if (Math.Abs(NewAnime.RotationFloat[ThisFrame][ThisVector]) < 0.01f)
+                        {
+                            NewAnime.RotationFloat[ThisFrame][ThisVector] = 0f;
+                        }
                         NewAnime.RotationData[ThisFrame][ThisVector] = Convert.ToInt16(NewAnime.RotationFloat[ThisFrame][ThisVector] * 0xB6);
                     }
                 }
                 else
                 {
                     NewAnime.RotationData[ThisFrame] = new short[3];
+                    NewAnime.RotationFloat[ThisFrame] = new float[3];
+
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                     {
+                        NewAnime.RotationFloat[ThisFrame][ThisVector] = NewAnime.RotationFloat[ThisFrame - 1][ThisVector];
                         NewAnime.RotationData[ThisFrame][ThisVector] = NewAnime.RotationData[ThisFrame - 1][ThisVector];
                     }
                 }
@@ -6066,9 +6081,17 @@ namespace Tarmac64_Library
             return id.Transform(Point);
         }
 
-        public OK64Bone TransformBone(OK64Bone Bone, OK64Bone Parent, int FrameCount)
+        public OK64Bone TransformBone(OK64Bone Bone, OK64Bone Parent, int FrameCount, float ModelScale)
         {
-            
+            Point3D ARoot = new Point3D() { X = 0, Y = 0, Z = 75 };
+            float[] AAngle = new float[3]{
+                    Convert.ToSingle(0),
+                    Convert.ToSingle(90),
+                    Convert.ToSingle(0),
+                };
+            Point3D ABranch = RotatePoint(ARoot, AAngle);
+
+
             for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
             {
                 Point3D Root = new Point3D() { X = (Bone.Origin[0]) - (Parent.Origin[0]), Y = (Bone.Origin[1]) - (Parent.Origin[1]), Z = (Bone.Origin[2]) - (Parent.Origin[2]) };
@@ -6079,25 +6102,30 @@ namespace Tarmac64_Library
                 };
                 Point3D Branch = RotatePoint(Root, Angle);
                 
-                Bone.Animation.TranslationData[ThisFrame][0] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][0] - (Branch.X - Root.X));
-                Bone.Animation.TranslationData[ThisFrame][1] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][1] - (Branch.Y - Root.Y));
-                Bone.Animation.TranslationData[ThisFrame][2] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][2] - (Branch.Z - Root.Z));
+                Bone.Animation.TranslationData[ThisFrame][0] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][0] - (((Branch.X - Root.X)) / ModelScale));
+                Bone.Animation.TranslationData[ThisFrame][1] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][1] - (((Branch.Y - Root.Y)) / ModelScale));
+                Bone.Animation.TranslationData[ThisFrame][2] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][2] - (((Branch.Z - Root.Z)) / ModelScale));
+
+                Bone.Animation.RotationData[ThisFrame][0] += Parent.Animation.RotationData[ThisFrame][0];
+                Bone.Animation.RotationData[ThisFrame][1] += Parent.Animation.RotationData[ThisFrame][1];
+                Bone.Animation.RotationData[ThisFrame][2] += Parent.Animation.RotationData[ThisFrame][2];
+
 
             }
 
 
             return Bone;
         }
-        public OK64Bone GetTransforms(OK64Bone Skeleton, int FrameCount)
+        public OK64Bone GetTransforms(OK64Bone Skeleton, int FrameCount, float ModelScale)
         {
             foreach (var Child in Skeleton.Children)
             {
-                TransformBone(Child, Skeleton, FrameCount);
+                TransformBone(Child, Skeleton, FrameCount, ModelScale);
             }
 
             foreach (var Child in Skeleton.Children)
             {
-                GetTransforms(Child, FrameCount);
+                GetTransforms(Child, FrameCount, ModelScale);
             }
             return Skeleton;
         }
@@ -6128,7 +6156,7 @@ namespace Tarmac64_Library
             {
                 ParseAnimation(FBX, Anime.NodeAnimationChannels[ThisNode], Skeleton, Skeleton.FrameCount);
             }
-            GetTransforms(Skeleton, Skeleton.FrameCount);
+            GetTransforms(Skeleton, Skeleton.FrameCount, ModelScale);
             return Skeleton;
         }
 
