@@ -66,11 +66,9 @@ namespace Tarmac64_Retail
                     
                     screenBox.SelectedIndex = textureArray[textureBox.SelectedIndex].textureScreen;
 
-                    if (!AdvanceBox.Checked)
-                    {
-                        CombineBoxA.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeA;
-                        CombineBoxB.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeB;
-                    }
+                    CombineBoxA.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeA;
+                    CombineBoxB.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeB;
+                    
 
                     for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
                     {
@@ -116,12 +114,9 @@ namespace Tarmac64_Retail
                     screenBox.SelectedIndex = -1;
 
 
-
-                    if (!AdvanceBox.Checked)
-                    {
-                        CombineBoxA.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeA;
-                        CombineBoxB.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeB;
-                    }
+                    CombineBoxA.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeA;
+                    CombineBoxB.SelectedIndex = textureArray[textureBox.SelectedIndex].CombineModeB;
+                    
 
                     for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
                     {
@@ -191,41 +186,12 @@ namespace Tarmac64_Retail
                 RenderBoxA.Items.Add(ThisName);
                 RenderBoxB.Items.Add(ThisName);
             }
-            foreach (var ThisName in F3DEX095_Parameters.ColorCombineNames)
-            {
-                CombA1.Items.Add(ThisName);
-                CombA2.Items.Add(ThisName);
-                CombA3.Items.Add(ThisName);
-                CombA4.Items.Add(ThisName);
-                CombA1A.Items.Add(ThisName);
-                CombA2A.Items.Add(ThisName);
-                CombA3A.Items.Add(ThisName);
-                CombA4A.Items.Add(ThisName);
-
-                CombB1.Items.Add(ThisName);
-                CombB2.Items.Add(ThisName);
-                CombB3.Items.Add(ThisName);
-                CombB4.Items.Add(ThisName);
-                CombB1A.Items.Add(ThisName);
-                CombB2A.Items.Add(ThisName);
-                CombB3A.Items.Add(ThisName);
-                CombB4A.Items.Add(ThisName);
-            }
 
             foreach (var ThisName in F3DEX095_Parameters.GeometryModeNames)
             {
                 GeoModeBox.Items.Add(ThisName, false);
             }
-
-            AdvancedPanel.Parent = this;
-            AdvancedPanel.Location = new System.Drawing.Point { X = 350, Y = 200 };
-            AdvancedPanel.BringToFront();
-            //
-            StandardPanel.Visible = true;
-            StandardPanel.Parent = groupBox5;
-            StandardPanel.Location = new System.Drawing.Point { X = PanelXY[0], Y = PanelXY[1] };
-            StandardPanel.BringToFront();
-            this.Height = 780;
+            
         }
 
         public int LoadTextureSettings(string[] TextureSettings, TM64_Geometry.OK64Texture[] CurrentArray)
@@ -471,40 +437,6 @@ namespace Tarmac64_Retail
         private void TFlagBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateTextureData(); 
-        }
-
-        private void CombineUICheck()
-        {
-            if ((AdvanceBox.Checked) && (AdvanceBox.Enabled))
-            {
-                //StandardPanel.Visible = false;
-                StandardPanel.Parent = this;
-                StandardPanel.Location = new System.Drawing.Point { X = 350, Y = 200 };
-                StandardPanel.BringToFront();
-                //
-                AdvancedPanel.Parent = groupBox5;
-                AdvancedPanel.Location = new System.Drawing.Point { X = PanelXY[0], Y = PanelXY[1] };
-                AdvancedPanel.BringToFront();
-                this.Height = 1000;
-            }
-            else
-            {
-                AdvancedPanel.Parent = this;
-                AdvancedPanel.Location = new System.Drawing.Point { X = 350, Y = 200 };
-                AdvancedPanel.BringToFront();
-                //
-                StandardPanel.Visible = true;
-                StandardPanel.Parent = groupBox5;
-                StandardPanel.Location = new System.Drawing.Point { X = PanelXY[0], Y = PanelXY[1] };
-                StandardPanel.BringToFront();
-                this.Height = 780;
-            }
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            CombineUICheck();
-            UpdateTextureData();
         }
 
         private void AdvancedPanel_Paint(object sender, PaintEventArgs e)

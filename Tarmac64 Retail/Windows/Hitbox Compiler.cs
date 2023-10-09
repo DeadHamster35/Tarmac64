@@ -82,13 +82,14 @@ namespace Tarmac64_Retail
                 DmgResultBox.SelectedIndex = Hitbox[Index].HitResult;
                 TypeBox.SelectedIndex = Hitbox[Index].Type;
                 ScaleBox.Text = Convert.ToString(Hitbox[Index].Scale);
+                solidBox.Checked = Hitbox[Index].SolidObject;
                 switch(Hitbox[Index].Type)
                 {
                     case 0:
                         {
                             //sphere
                             SizeYBox.Enabled = false;
-                            SizeZBox.Enabled = false;
+                            SizeZBox.Enabled = false;   
                             SizeXBox.Text = Convert.ToString(Hitbox[Index].Size[0]);
                             SizeYBox.Text = "";
                             SizeZBox.Text = "";
@@ -245,7 +246,7 @@ namespace Tarmac64_Retail
                 Hitbox[Index].Effect = Convert.ToInt16(EffectValues[EffectBox.SelectedIndex]);
                 Hitbox[Index].HitResult = Convert.ToInt16(DmgResultBox.SelectedIndex);
                 Hitbox[Index].CollideResult = Convert.ToInt16(ColResultBox.SelectedIndex);
-
+                Hitbox[Index].SolidObject = solidBox.Checked;
 
                 switch(Hitbox[Index].Type)
                 {

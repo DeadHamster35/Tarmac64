@@ -119,6 +119,8 @@ namespace Tarmac64_Retail
 
             GL.End();
 
+
+
             GL.PopMatrix();
             GL.MatrixMode(OpenGL.GL_PROJECTION);
             GL.PopMatrix();
@@ -126,6 +128,8 @@ namespace Tarmac64_Retail
             GL.LoadIdentity();
             GL.Perspective(90.0f, (double)Width / (double)Height, 1, 15000);
             GL.MatrixMode(OpenGL.GL_MODELVIEW);
+
+
         }
 
         public void CacheTextures()
@@ -276,6 +280,10 @@ namespace Tarmac64_Retail
             if (CheckboxTextured.Checked)
             {
 
+
+
+
+
                 GL.End();
                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
 
@@ -288,8 +296,6 @@ namespace Tarmac64_Retail
                 GL.Enable(OpenGL.GL_COLOR_MATERIAL);
                 GL.Enable(OpenGL.GL_TEXTURE_2D);
                 GL.FrontFace(OpenGL.GL_CCW);
-
-
                 if (TargetMode == 1)
                 {
                     for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
@@ -731,6 +737,9 @@ namespace Tarmac64_Retail
 
 
                 GL.LookAt(LocalCamera.position.X, LocalCamera.position.Y, LocalCamera.position.Z, LocalCamera.target.X, LocalCamera.target.Y, LocalCamera.target.Z, 0, 0, 1);
+
+
+
 
                 DrawScene();
 

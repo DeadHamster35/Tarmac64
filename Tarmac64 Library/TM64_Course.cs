@@ -451,6 +451,7 @@ namespace Tarmac64_Library
                     binaryWriter.Write(F3D.BigEndian(Hit.Origin[2]));
                     binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Hit.Origin[1] * -1)));
 
+
                     if (Hit.BoxAngle != 0)
                     {
                         binaryWriter.Write(Convert.ToSByte(1));
@@ -459,7 +460,15 @@ namespace Tarmac64_Library
                     {
                         binaryWriter.Write(Convert.ToSByte(0));
                     }
-                    binaryWriter.Write(Convert.ToSByte(0)); //PAD
+
+                    if (Hit.SolidObject)
+                    {
+                        binaryWriter.Write(Convert.ToSByte(1));
+                    }
+                    else
+                    {
+                        binaryWriter.Write(Convert.ToSByte(0));
+                    }
 
                     binaryWriter.Write(Convert.ToSByte(Hit.Status));
                     binaryWriter.Write(Convert.ToSByte(Hit.Effect));
@@ -678,6 +687,8 @@ namespace Tarmac64_Library
                     NewType.ObjectHitbox[ThisHit].CollideResult = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].HitResult = binaryReader.ReadInt16();
                     NewType.ObjectHitbox[ThisHit].BoxAngle = binaryReader.ReadInt16();
+                    NewType.ObjectHitbox[ThisHit].SolidObject = binaryReader.ReadBoolean();
+
                     NewType.ObjectHitbox[ThisHit].Origin = new short[3];
                     NewType.ObjectHitbox[ThisHit].Size = new short[3];
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)

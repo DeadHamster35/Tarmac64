@@ -29,39 +29,17 @@
         private void InitializeComponent()
         {
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.AdvancedPanel = new System.Windows.Forms.Panel();
-            this.CombB4A = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.CombB3A = new System.Windows.Forms.ComboBox();
-            this.CombB2A = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.CombB1A = new System.Windows.Forms.ComboBox();
-            this.CombB4 = new System.Windows.Forms.ComboBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.CombB3 = new System.Windows.Forms.ComboBox();
-            this.CombB2 = new System.Windows.Forms.ComboBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.CombB1 = new System.Windows.Forms.ComboBox();
-            this.CombA4A = new System.Windows.Forms.ComboBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.CombA3A = new System.Windows.Forms.ComboBox();
-            this.CombA2A = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.CombA1A = new System.Windows.Forms.ComboBox();
-            this.CombA4 = new System.Windows.Forms.ComboBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.CombA3 = new System.Windows.Forms.ComboBox();
-            this.CombA2 = new System.Windows.Forms.ComboBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.CombA1 = new System.Windows.Forms.ComboBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.OverWriteBox = new System.Windows.Forms.ComboBox();
+            this.OverWriteIndexBox = new System.Windows.Forms.ComboBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.GeoModeBox = new System.Windows.Forms.CheckedListBox();
-            this.StandardPanel = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.CombineBoxB = new System.Windows.Forms.ComboBox();
             this.label22 = new System.Windows.Forms.Label();
             this.CombineBoxA = new System.Windows.Forms.ComboBox();
-            this.AdvanceBox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.BitBox = new System.Windows.Forms.ComboBox();
@@ -87,14 +65,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.widthBox = new System.Windows.Forms.TextBox();
             this.bitm = new System.Windows.Forms.PictureBox();
-            this.OverWriteIndexBox = new System.Windows.Forms.ComboBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.OverWriteBox = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.groupBox5.SuspendLayout();
-            this.AdvancedPanel.SuspendLayout();
-            this.StandardPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bitm)).BeginInit();
             this.SuspendLayout();
             // 
@@ -102,16 +73,17 @@
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.button2);
+            this.groupBox5.Controls.Add(this.CombineBoxB);
+            this.groupBox5.Controls.Add(this.label22);
             this.groupBox5.Controls.Add(this.button1);
+            this.groupBox5.Controls.Add(this.CombineBoxA);
             this.groupBox5.Controls.Add(this.OverWriteBox);
             this.groupBox5.Controls.Add(this.OverWriteIndexBox);
             this.groupBox5.Controls.Add(this.label17);
-            this.groupBox5.Controls.Add(this.AdvancedPanel);
             this.groupBox5.Controls.Add(this.label16);
             this.groupBox5.Controls.Add(this.GeoModeBox);
-            this.groupBox5.Controls.Add(this.StandardPanel);
-            this.groupBox5.Controls.Add(this.AdvanceBox);
             this.groupBox5.Controls.Add(this.label1);
             this.groupBox5.Controls.Add(this.label6);
             this.groupBox5.Controls.Add(this.BitBox);
@@ -138,306 +110,64 @@
             this.groupBox5.Controls.Add(this.widthBox);
             this.groupBox5.Location = new System.Drawing.Point(3, 253);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(282, 769);
+            this.groupBox5.Size = new System.Drawing.Size(282, 479);
             this.groupBox5.TabIndex = 0;
             this.groupBox5.TabStop = false;
             this.groupBox5.Enter += new System.EventHandler(this.groupBox5_Enter);
             // 
-            // AdvancedPanel
+            // button2
             // 
-            this.AdvancedPanel.Controls.Add(this.CombB4A);
-            this.AdvancedPanel.Controls.Add(this.label9);
-            this.AdvancedPanel.Controls.Add(this.CombB3A);
-            this.AdvancedPanel.Controls.Add(this.CombB2A);
-            this.AdvancedPanel.Controls.Add(this.label12);
-            this.AdvancedPanel.Controls.Add(this.CombB1A);
-            this.AdvancedPanel.Controls.Add(this.CombB4);
-            this.AdvancedPanel.Controls.Add(this.label13);
-            this.AdvancedPanel.Controls.Add(this.CombB3);
-            this.AdvancedPanel.Controls.Add(this.CombB2);
-            this.AdvancedPanel.Controls.Add(this.label15);
-            this.AdvancedPanel.Controls.Add(this.CombB1);
-            this.AdvancedPanel.Controls.Add(this.CombA4A);
-            this.AdvancedPanel.Controls.Add(this.label14);
-            this.AdvancedPanel.Controls.Add(this.CombA3A);
-            this.AdvancedPanel.Controls.Add(this.CombA2A);
-            this.AdvancedPanel.Controls.Add(this.label11);
-            this.AdvancedPanel.Controls.Add(this.CombA1A);
-            this.AdvancedPanel.Controls.Add(this.CombA4);
-            this.AdvancedPanel.Controls.Add(this.label10);
-            this.AdvancedPanel.Controls.Add(this.CombA3);
-            this.AdvancedPanel.Controls.Add(this.CombA2);
-            this.AdvancedPanel.Controls.Add(this.label8);
-            this.AdvancedPanel.Controls.Add(this.CombA1);
-            this.AdvancedPanel.Location = new System.Drawing.Point(5, 563);
-            this.AdvancedPanel.Name = "AdvancedPanel";
-            this.AdvancedPanel.Size = new System.Drawing.Size(274, 306);
-            this.AdvancedPanel.TabIndex = 44;
-            this.AdvancedPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.AdvancedPanel_Paint);
+            this.button2.Location = new System.Drawing.Point(247, 440);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(23, 23);
+            this.button2.TabIndex = 50;
+            this.button2.Text = "-";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // CombB4A
+            // button1
             // 
-            this.CombB4A.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombB4A.FormattingEnabled = true;
-            this.CombB4A.Location = new System.Drawing.Point(166, 270);
-            this.CombB4A.Margin = new System.Windows.Forms.Padding(5);
-            this.CombB4A.Name = "CombB4A";
-            this.CombB4A.Size = new System.Drawing.Size(90, 21);
-            this.CombB4A.TabIndex = 64;
+            this.button1.Location = new System.Drawing.Point(218, 440);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(23, 23);
+            this.button1.TabIndex = 49;
+            this.button1.Text = "+";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // label9
+            // OverWriteBox
             // 
-            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(1, 266);
-            this.label9.Margin = new System.Windows.Forms.Padding(5);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(55, 26);
-            this.label9.TabIndex = 63;
-            this.label9.Text = "CombineB\r\n3A | 4A";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.OverWriteBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.OverWriteBox.FormattingEnabled = true;
+            this.OverWriteBox.Location = new System.Drawing.Point(114, 442);
+            this.OverWriteBox.Margin = new System.Windows.Forms.Padding(5);
+            this.OverWriteBox.Name = "OverWriteBox";
+            this.OverWriteBox.Size = new System.Drawing.Size(96, 21);
+            this.OverWriteBox.TabIndex = 48;
+            this.OverWriteBox.SelectedIndexChanged += new System.EventHandler(this.OverWriteBox_SelectedIndexChanged);
             // 
-            // CombB3A
+            // OverWriteIndexBox
             // 
-            this.CombB3A.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombB3A.FormattingEnabled = true;
-            this.CombB3A.Location = new System.Drawing.Point(66, 270);
-            this.CombB3A.Margin = new System.Windows.Forms.Padding(5);
-            this.CombB3A.Name = "CombB3A";
-            this.CombB3A.Size = new System.Drawing.Size(90, 21);
-            this.CombB3A.TabIndex = 62;
+            this.OverWriteIndexBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.OverWriteIndexBox.FormattingEnabled = true;
+            this.OverWriteIndexBox.Location = new System.Drawing.Point(69, 442);
+            this.OverWriteIndexBox.Margin = new System.Windows.Forms.Padding(5);
+            this.OverWriteIndexBox.Name = "OverWriteIndexBox";
+            this.OverWriteIndexBox.Size = new System.Drawing.Size(35, 21);
+            this.OverWriteIndexBox.TabIndex = 46;
+            this.OverWriteIndexBox.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
-            // CombB2A
+            // label17
             // 
-            this.CombB2A.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombB2A.FormattingEnabled = true;
-            this.CombB2A.Location = new System.Drawing.Point(166, 239);
-            this.CombB2A.Margin = new System.Windows.Forms.Padding(5);
-            this.CombB2A.Name = "CombB2A";
-            this.CombB2A.Size = new System.Drawing.Size(90, 21);
-            this.CombB2A.TabIndex = 61;
-            // 
-            // label12
-            // 
-            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(1, 235);
-            this.label12.Margin = new System.Windows.Forms.Padding(5);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(55, 26);
-            this.label12.TabIndex = 60;
-            this.label12.Text = "CombineB\r\n1A | 2A";
-            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // CombB1A
-            // 
-            this.CombB1A.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombB1A.FormattingEnabled = true;
-            this.CombB1A.Location = new System.Drawing.Point(66, 239);
-            this.CombB1A.Margin = new System.Windows.Forms.Padding(5);
-            this.CombB1A.Name = "CombB1A";
-            this.CombB1A.Size = new System.Drawing.Size(90, 21);
-            this.CombB1A.TabIndex = 59;
-            // 
-            // CombB4
-            // 
-            this.CombB4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombB4.FormattingEnabled = true;
-            this.CombB4.Location = new System.Drawing.Point(166, 203);
-            this.CombB4.Margin = new System.Windows.Forms.Padding(5);
-            this.CombB4.Name = "CombB4";
-            this.CombB4.Size = new System.Drawing.Size(90, 21);
-            this.CombB4.TabIndex = 58;
-            // 
-            // label13
-            // 
-            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(1, 199);
-            this.label13.Margin = new System.Windows.Forms.Padding(5);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(55, 26);
-            this.label13.TabIndex = 57;
-            this.label13.Text = "CombineB\r\n3 | 4";
-            this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // CombB3
-            // 
-            this.CombB3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombB3.FormattingEnabled = true;
-            this.CombB3.Location = new System.Drawing.Point(66, 203);
-            this.CombB3.Margin = new System.Windows.Forms.Padding(5);
-            this.CombB3.Name = "CombB3";
-            this.CombB3.Size = new System.Drawing.Size(90, 21);
-            this.CombB3.TabIndex = 56;
-            // 
-            // CombB2
-            // 
-            this.CombB2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombB2.FormattingEnabled = true;
-            this.CombB2.Location = new System.Drawing.Point(166, 167);
-            this.CombB2.Margin = new System.Windows.Forms.Padding(5);
-            this.CombB2.Name = "CombB2";
-            this.CombB2.Size = new System.Drawing.Size(90, 21);
-            this.CombB2.TabIndex = 55;
-            // 
-            // label15
-            // 
-            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(1, 163);
-            this.label15.Margin = new System.Windows.Forms.Padding(5);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(55, 26);
-            this.label15.TabIndex = 54;
-            this.label15.Text = "CombineB\r\n1 | 2";
-            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // CombB1
-            // 
-            this.CombB1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombB1.FormattingEnabled = true;
-            this.CombB1.Location = new System.Drawing.Point(66, 167);
-            this.CombB1.Margin = new System.Windows.Forms.Padding(5);
-            this.CombB1.Name = "CombB1";
-            this.CombB1.Size = new System.Drawing.Size(90, 21);
-            this.CombB1.TabIndex = 53;
-            // 
-            // CombA4A
-            // 
-            this.CombA4A.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombA4A.FormattingEnabled = true;
-            this.CombA4A.Location = new System.Drawing.Point(166, 112);
-            this.CombA4A.Margin = new System.Windows.Forms.Padding(5);
-            this.CombA4A.Name = "CombA4A";
-            this.CombA4A.Size = new System.Drawing.Size(90, 21);
-            this.CombA4A.TabIndex = 52;
-            // 
-            // label14
-            // 
-            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(1, 108);
-            this.label14.Margin = new System.Windows.Forms.Padding(5);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(55, 26);
-            this.label14.TabIndex = 51;
-            this.label14.Text = "CombineA\r\n3A | 4A";
-            this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // CombA3A
-            // 
-            this.CombA3A.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombA3A.FormattingEnabled = true;
-            this.CombA3A.Location = new System.Drawing.Point(66, 112);
-            this.CombA3A.Margin = new System.Windows.Forms.Padding(5);
-            this.CombA3A.Name = "CombA3A";
-            this.CombA3A.Size = new System.Drawing.Size(90, 21);
-            this.CombA3A.TabIndex = 50;
-            // 
-            // CombA2A
-            // 
-            this.CombA2A.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombA2A.FormattingEnabled = true;
-            this.CombA2A.Location = new System.Drawing.Point(166, 81);
-            this.CombA2A.Margin = new System.Windows.Forms.Padding(5);
-            this.CombA2A.Name = "CombA2A";
-            this.CombA2A.Size = new System.Drawing.Size(90, 21);
-            this.CombA2A.TabIndex = 40;
-            // 
-            // label11
-            // 
-            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(1, 77);
-            this.label11.Margin = new System.Windows.Forms.Padding(5);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(55, 26);
-            this.label11.TabIndex = 39;
-            this.label11.Text = "CombineA\r\n1A | 2A";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // CombA1A
-            // 
-            this.CombA1A.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombA1A.FormattingEnabled = true;
-            this.CombA1A.Location = new System.Drawing.Point(66, 81);
-            this.CombA1A.Margin = new System.Windows.Forms.Padding(5);
-            this.CombA1A.Name = "CombA1A";
-            this.CombA1A.Size = new System.Drawing.Size(90, 21);
-            this.CombA1A.TabIndex = 38;
-            // 
-            // CombA4
-            // 
-            this.CombA4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombA4.FormattingEnabled = true;
-            this.CombA4.Location = new System.Drawing.Point(166, 45);
-            this.CombA4.Margin = new System.Windows.Forms.Padding(5);
-            this.CombA4.Name = "CombA4";
-            this.CombA4.Size = new System.Drawing.Size(90, 21);
-            this.CombA4.TabIndex = 37;
-            // 
-            // label10
-            // 
-            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(1, 41);
-            this.label10.Margin = new System.Windows.Forms.Padding(5);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(55, 26);
-            this.label10.TabIndex = 36;
-            this.label10.Text = "CombineA\r\n3 | 4";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // CombA3
-            // 
-            this.CombA3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombA3.FormattingEnabled = true;
-            this.CombA3.Location = new System.Drawing.Point(66, 45);
-            this.CombA3.Margin = new System.Windows.Forms.Padding(5);
-            this.CombA3.Name = "CombA3";
-            this.CombA3.Size = new System.Drawing.Size(90, 21);
-            this.CombA3.TabIndex = 35;
-            // 
-            // CombA2
-            // 
-            this.CombA2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombA2.FormattingEnabled = true;
-            this.CombA2.Location = new System.Drawing.Point(166, 9);
-            this.CombA2.Margin = new System.Windows.Forms.Padding(5);
-            this.CombA2.Name = "CombA2";
-            this.CombA2.Size = new System.Drawing.Size(90, 21);
-            this.CombA2.TabIndex = 34;
-            // 
-            // label8
-            // 
-            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(1, 5);
-            this.label8.Margin = new System.Windows.Forms.Padding(5);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(55, 26);
-            this.label8.TabIndex = 33;
-            this.label8.Text = "CombineA\r\n1 | 2";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // CombA1
-            // 
-            this.CombA1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombA1.FormattingEnabled = true;
-            this.CombA1.Location = new System.Drawing.Point(66, 9);
-            this.CombA1.Margin = new System.Windows.Forms.Padding(5);
-            this.CombA1.Name = "CombA1";
-            this.CombA1.Size = new System.Drawing.Size(90, 21);
-            this.CombA1.TabIndex = 32;
+            this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(7, 437);
+            this.label17.Margin = new System.Windows.Forms.Padding(5);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(52, 26);
+            this.label17.TabIndex = 47;
+            this.label17.Text = "Overwrite\r\nBitmap";
             // 
             // label16
             // 
@@ -461,23 +191,12 @@
             this.GeoModeBox.TabIndex = 44;
             this.GeoModeBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.GeoModeBox_ItemCheck);
             // 
-            // StandardPanel
-            // 
-            this.StandardPanel.Controls.Add(this.label2);
-            this.StandardPanel.Controls.Add(this.CombineBoxB);
-            this.StandardPanel.Controls.Add(this.label22);
-            this.StandardPanel.Controls.Add(this.CombineBoxA);
-            this.StandardPanel.Location = new System.Drawing.Point(5, 415);
-            this.StandardPanel.Name = "StandardPanel";
-            this.StandardPanel.Size = new System.Drawing.Size(274, 58);
-            this.StandardPanel.TabIndex = 43;
-            // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(1, 5);
+            this.label2.Location = new System.Drawing.Point(6, 383);
             this.label2.Margin = new System.Windows.Forms.Padding(5);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(55, 13);
@@ -488,7 +207,7 @@
             // 
             this.CombineBoxB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CombineBoxB.FormattingEnabled = true;
-            this.CombineBoxB.Location = new System.Drawing.Point(64, 33);
+            this.CombineBoxB.Location = new System.Drawing.Point(69, 411);
             this.CombineBoxB.Margin = new System.Windows.Forms.Padding(5);
             this.CombineBoxB.Name = "CombineBoxB";
             this.CombineBoxB.Size = new System.Drawing.Size(201, 21);
@@ -500,7 +219,7 @@
             this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(1, 36);
+            this.label22.Location = new System.Drawing.Point(6, 414);
             this.label22.Margin = new System.Windows.Forms.Padding(5);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(55, 13);
@@ -511,24 +230,12 @@
             // 
             this.CombineBoxA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CombineBoxA.FormattingEnabled = true;
-            this.CombineBoxA.Location = new System.Drawing.Point(64, 2);
+            this.CombineBoxA.Location = new System.Drawing.Point(69, 380);
             this.CombineBoxA.Margin = new System.Windows.Forms.Padding(5);
             this.CombineBoxA.Name = "CombineBoxA";
             this.CombineBoxA.Size = new System.Drawing.Size(201, 21);
             this.CombineBoxA.TabIndex = 32;
             this.CombineBoxA.SelectedIndexChanged += new System.EventHandler(this.CombineBoxA_SelectedIndexChanged);
-            // 
-            // AdvanceBox
-            // 
-            this.AdvanceBox.AutoSize = true;
-            this.AdvanceBox.Enabled = false;
-            this.AdvanceBox.Location = new System.Drawing.Point(121, 389);
-            this.AdvanceBox.Name = "AdvanceBox";
-            this.AdvanceBox.Size = new System.Drawing.Size(149, 17);
-            this.AdvanceBox.TabIndex = 42;
-            this.AdvanceBox.Text = "Advanced Combine Mode";
-            this.AdvanceBox.UseVisualStyleBackColor = true;
-            this.AdvanceBox.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // label1
             // 
@@ -834,60 +541,6 @@
             this.bitm.TabStop = false;
             this.bitm.UseWaitCursor = true;
             // 
-            // OverWriteIndexBox
-            // 
-            this.OverWriteIndexBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.OverWriteIndexBox.FormattingEnabled = true;
-            this.OverWriteIndexBox.Location = new System.Drawing.Point(69, 486);
-            this.OverWriteIndexBox.Margin = new System.Windows.Forms.Padding(5);
-            this.OverWriteIndexBox.Name = "OverWriteIndexBox";
-            this.OverWriteIndexBox.Size = new System.Drawing.Size(35, 21);
-            this.OverWriteIndexBox.TabIndex = 46;
-            this.OverWriteIndexBox.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-            // 
-            // label17
-            // 
-            this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(7, 481);
-            this.label17.Margin = new System.Windows.Forms.Padding(5);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(52, 26);
-            this.label17.TabIndex = 47;
-            this.label17.Text = "Overwrite\r\nBitmap";
-            // 
-            // OverWriteBox
-            // 
-            this.OverWriteBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.OverWriteBox.FormattingEnabled = true;
-            this.OverWriteBox.Location = new System.Drawing.Point(114, 486);
-            this.OverWriteBox.Margin = new System.Windows.Forms.Padding(5);
-            this.OverWriteBox.Name = "OverWriteBox";
-            this.OverWriteBox.Size = new System.Drawing.Size(96, 21);
-            this.OverWriteBox.TabIndex = 48;
-            this.OverWriteBox.SelectedIndexChanged += new System.EventHandler(this.OverWriteBox_SelectedIndexChanged);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(218, 484);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(23, 23);
-            this.button1.TabIndex = 49;
-            this.button1.Text = "+";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(247, 484);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(23, 23);
-            this.button2.TabIndex = 50;
-            this.button2.Text = "-";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // TextureEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -895,14 +548,10 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.bitm);
             this.Name = "TextureEditor";
-            this.Size = new System.Drawing.Size(289, 1025);
+            this.Size = new System.Drawing.Size(289, 735);
             this.Load += new System.EventHandler(this.TextureEditor_Load);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            this.AdvancedPanel.ResumeLayout(false);
-            this.AdvancedPanel.PerformLayout();
-            this.StandardPanel.ResumeLayout(false);
-            this.StandardPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bitm)).EndInit();
             this.ResumeLayout(false);
 
@@ -940,33 +589,6 @@
         public System.Windows.Forms.ComboBox RenderBoxB;
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.ComboBox BitBox;
-        private System.Windows.Forms.Panel StandardPanel;
-        private System.Windows.Forms.CheckBox AdvanceBox;
-        private System.Windows.Forms.Panel AdvancedPanel;
-        public System.Windows.Forms.ComboBox CombA2;
-        private System.Windows.Forms.Label label8;
-        public System.Windows.Forms.ComboBox CombA1;
-        public System.Windows.Forms.ComboBox CombA2A;
-        private System.Windows.Forms.Label label11;
-        public System.Windows.Forms.ComboBox CombA1A;
-        public System.Windows.Forms.ComboBox CombA4;
-        private System.Windows.Forms.Label label10;
-        public System.Windows.Forms.ComboBox CombA3;
-        public System.Windows.Forms.ComboBox CombA4A;
-        private System.Windows.Forms.Label label14;
-        public System.Windows.Forms.ComboBox CombA3A;
-        public System.Windows.Forms.ComboBox CombB4A;
-        private System.Windows.Forms.Label label9;
-        public System.Windows.Forms.ComboBox CombB3A;
-        public System.Windows.Forms.ComboBox CombB2A;
-        private System.Windows.Forms.Label label12;
-        public System.Windows.Forms.ComboBox CombB1A;
-        public System.Windows.Forms.ComboBox CombB4;
-        private System.Windows.Forms.Label label13;
-        public System.Windows.Forms.ComboBox CombB3;
-        public System.Windows.Forms.ComboBox CombB2;
-        private System.Windows.Forms.Label label15;
-        public System.Windows.Forms.ComboBox CombB1;
         private System.Windows.Forms.CheckedListBox GeoModeBox;
         private System.Windows.Forms.Label label16;
         public System.Windows.Forms.ComboBox OverWriteIndexBox;

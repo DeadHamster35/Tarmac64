@@ -76,6 +76,7 @@ namespace Tarmac64_Library
                     HitboxData[CurrentBox].Scale = TarmacSettings.ImportScale;
                     HitboxData[CurrentBox].CollideResult = 0;
                     HitboxData[CurrentBox].HitResult = 0;
+                    HitboxData[CurrentBox].SolidObject = true;
 
 
                     string VectorInput = FileData[CurrentLine++];
@@ -123,28 +124,6 @@ namespace Tarmac64_Library
             
 
             return HitboxData;
-        }
-
-
-
-        public OK64Collide[] LoadHitbox(Scene FBX)
-        {
-            List<OK64Collide> Hitbox = new List<OK64Collide>();
-            Node Base = FBX.RootNode.FindNode("Collide Objects");
-            for (int ThisChild = 0; ThisChild < Base.ChildCount; ThisChild++)
-            {
-                Hitbox.Add(new OK64Collide(ThisChild.ToString()));
-                Matrix4x4 OPrime = TarmacGeometry.GetTotalTransform(Base.Children[ThisChild], FBX);
-                Hitbox[ThisChild].Origin = new short[3] { Convert.ToInt16(OPrime.A4 * 100), Convert.ToInt16(OPrime.B4 * 100), Convert.ToInt16(OPrime.C4 * 100) };
-                Hitbox[ThisChild].Size = new short[3] { 5, 5, 5 };
-                Hitbox[ThisChild].Status = 0;
-                Hitbox[ThisChild].Effect = 0;
-                Hitbox[ThisChild].Name = Base.Children[ThisChild].Name;
-
-            }
-
-
-            return Hitbox.ToArray();
         }
 
 
