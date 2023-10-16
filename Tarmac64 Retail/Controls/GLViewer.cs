@@ -624,7 +624,7 @@ namespace Tarmac64_Retail
                         //for hover over object. flashing color.
                         if (CourseObjects.Count > 0)
                         {
-                            if (TargetedObject != -1)
+                            if ((TargetedObject < CourseObjects.Count) && (TargetedObject != -1))
                             {
                                     TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[TargetedObject], ObjectTypes[CourseObjects[TargetedObject].ObjectIndex], LocalCamera.flashWhite);
                             }

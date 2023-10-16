@@ -20,6 +20,7 @@ using System.Security.Permissions;
 using System.Windows;
 using Tarmac64_Library;
 using SharpDX;
+
 using F3DSharp;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -2033,6 +2034,18 @@ namespace Tarmac64_Library
             return outputObjects;
         }
 
+        public OK64F3DObject[] CreateMasterNoHeader(Assimp.Scene fbx, OK64Texture[] textureArray)
+        {
+            List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
+            int currentObject = 0;
+            for (int TargetOBJ = 0; TargetOBJ < fbx.RootNode.ChildCount; TargetOBJ++)
+            {
+                masterObjects.Add(createObject(fbx, fbx.RootNode.Children[TargetOBJ], textureArray, false, false));
+                currentObject++;
+            }
+            OK64F3DObject[] outputObjects = NaturalSort(masterObjects).ToArray();
+            return outputObjects;
+        }
 
 
         public OK64F3DObject[] LoadCollisions(Assimp.Scene fbx, int sectionCount, int simpleFormat, OK64Texture[] textureArray)
@@ -2091,6 +2104,50 @@ namespace Tarmac64_Library
             }
             return surfaceObjects.ToArray();
         }
+
+        public OK64F3DObject[] CreateCollisionsNoHeader(Assimp.Scene fbx, OK64Texture[] textureArray)
+        {
+            int totalIndexCount = 0;
+            int totalIndex = 0;
+            var surfaceNode = fbx.RootNode;
+            List<OK64F3DObject> surfaceObjects = new List<OK64F3DObject>();
+            float[] colorValues = new float[3];
+            for (int currentSection = 0; currentSection < 1; currentSection++)
+            {
+                int subobjectCount = fbx.RootNode.ChildCount;
+                for (int currentsubObject = 0; currentsubObject < subobjectCount; currentsubObject++)
+                {
+                    surfaceObjects.Add(createObject(fbx, surfaceNode.Children[currentsubObject], textureArray, true));
+                    int currentObject = surfaceObjects.Count - 1;
+                    surfaceObjects[currentObject].surfaceID = currentSection + 1;
+                    surfaceObjects[currentObject].objectColor = colorValues;
+                    string[] surfaceID = surfaceObjects[currentObject].objectName.Split('_');
+                    byte SurfaceStorageByte = 0;
+                    if (surfaceID[0].Length != 0)
+                    {
+                        bool TestResult = byte.TryParse(surfaceID[0], out SurfaceStorageByte);
+                        if (!TestResult)
+                        {
+                            MessageBox.Show("ERROR- Bad Surface Index - " + surfaceObjects[currentObject].objectName);
+                        }
+                        surfaceObjects[currentObject].surfaceMaterial = SurfaceStorageByte;
+                    }
+                    else
+                    {
+                        bool TestResult = byte.TryParse(surfaceID[1], out SurfaceStorageByte);
+                        if (!TestResult)
+                        {
+                            MessageBox.Show("ERROR- Bad Surface Index - " + surfaceObjects[currentObject].objectName);
+                        }
+                        surfaceObjects[currentObject].surfaceMaterial = SurfaceStorageByte;
+                    }
+                    surfaceObjects[currentObject].materialID = 1;
+                    totalIndex++;
+                }
+            }
+            return surfaceObjects.ToArray();
+        }
+
 
 
         public OK64SectionList[] LoadSection(Assimp.Scene fbx, int sectionCount, OK64F3DObject[] masterObjects)
@@ -2350,10 +2407,6 @@ namespace Tarmac64_Library
             OK64SectionList[] sectionList = new OK64SectionList[sectionCount];
 
 
-
-            //DEBUG
-            //sectionCount = 1;
-            //DEBUG
             for (int ThisSection= 0; ThisSection < sectionCount; ThisSection++)
             {
 
@@ -2367,7 +2420,6 @@ namespace Tarmac64_Library
 
 
             for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-            //Parallel.For(0,sectionCount,currentSection=>
             {
                 for (int currentView = 0; currentView < 1; currentView++)
                 {
@@ -2376,64 +2428,13 @@ namespace Tarmac64_Library
                     for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
                     {
                         searchList.Add(currentMaster);
-                        /*
-                        switch (currentView)
-                        {
-                            case 0:
-                                {
-                                    if (masterObjects[currentMaster].pathfindingObject.highY >= surfaceBoundaries[currentSection].lowY - 10)
-                                    {
-                                        searchList.Add(currentMaster);
-                                    }
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    if (masterObjects[currentMaster].pathfindingObject.highX >= surfaceBoundaries[currentSection].lowX - 10)
-                                    {
-                                        searchList.Add(currentMaster);
-                                    }
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    if (masterObjects[currentMaster].pathfindingObject.lowY <= surfaceBoundaries[currentSection].highY + 10)
-                                    {
-                                        searchList.Add(currentMaster);
-                                    }
-                                    break;
-                                }
-                            case 3:
-                                {
-                                    if (masterObjects[currentMaster].pathfindingObject.lowX <= surfaceBoundaries[currentSection].highX + 10)
-                                    {
-                                        searchList.Add(currentMaster);
-                                    }
-                                    break;
-                                }
-                        }
-                        */
                     }
-
-                    /*
-                    if (raycastBoolean > 0)
-                    {
-                        ConcurrentBag<int> raycastList = new ConcurrentBag<int>();
-
-                        raycastList = RayTest(currentSection, searchList, surfaceObjects, masterObjects);
-                        sectionList[currentSection].viewList[currentView].objectList = raycastList.ToArray();
-                    }
-                    else
-                    {
-                        sectionList[currentSection].viewList[currentView].objectList = searchList.ToArray();
-                    }
-                    */
 
 
                     sectionList[currentSection].viewList[currentView].objectList = searchList.ToArray();
                 }
 
-            }//);
+            }
 
 
             return sectionList;
@@ -3702,11 +3703,44 @@ namespace Tarmac64_Library
 
             return memoryStream.ToArray();
         }
-
+        
         public int ZSort(OK64Texture TextureObject)
         {
             int[] Check = new int[]
             {
+                0,
+                0,
+                5,
+                5,
+                2,
+                2,
+                7,
+                7,
+                1,
+                1,
+                6,
+                6,
+                5,
+                5,
+                0,
+                0,
+                3,
+                3,
+                4,
+                4,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3,
+                3,
+                0,
+                0,
+                0,
+                0,
+                0,
                 0,
                 0,
                 5,
@@ -5378,24 +5412,37 @@ namespace Tarmac64_Library
 
         public int GetModelFormat(Scene fbx)
         {
-            int modelFormat;
+            int modelFormat = -1;
             Assimp.Node masterNode = fbx.RootNode.FindNode("Course Master Objects");
-            if (masterNode == null)
+            if (masterNode != null)
             {
-                modelFormat = 0;
-            }
-            else
-            {
-                Assimp.Node searchNode = fbx.RootNode.FindNode("Section 1 North");
-                if (searchNode == null)
+                masterNode = fbx.RootNode.FindNode("Section 1 North");
+                if (masterNode != null)
                 {
-                    modelFormat = 1;
+                    modelFormat = 2;  //advanced mode
                 }
                 else
                 {
-                    modelFormat = 2;
+                    masterNode = fbx.RootNode.FindNode("Section 1");
+                    if (masterNode != null)
+                    {
+                        modelFormat = 1;  //normal mode
+                    }
                 }
             }
+            else
+            {
+                masterNode = fbx.RootNode.FindNode("Section 1");
+                if (masterNode != null)
+                {
+                    modelFormat = 0; //simple mode
+                }
+                else
+                {
+                    modelFormat = 3; //mystery mode
+                }
+            }    
+
             return modelFormat;
         }
 

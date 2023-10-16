@@ -29,17 +29,17 @@
         private void InitializeComponent()
         {
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
+            this.CombineBoxB = new System.Windows.Forms.ComboBox();
+            this.label22 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.CombineBoxA = new System.Windows.Forms.ComboBox();
             this.OverWriteBox = new System.Windows.Forms.ComboBox();
             this.OverWriteIndexBox = new System.Windows.Forms.ComboBox();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.GeoModeBox = new System.Windows.Forms.CheckedListBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.CombineBoxB = new System.Windows.Forms.ComboBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.CombineBoxA = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.BitBox = new System.Windows.Forms.ComboBox();
@@ -115,6 +115,18 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Enter += new System.EventHandler(this.groupBox5_Enter);
             // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(6, 383);
+            this.label2.Margin = new System.Windows.Forms.Padding(5);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(55, 13);
+            this.label2.TabIndex = 33;
+            this.label2.Text = "CombineA";
+            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(247, 440);
@@ -125,6 +137,29 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // CombineBoxB
+            // 
+            this.CombineBoxB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.CombineBoxB.FormattingEnabled = true;
+            this.CombineBoxB.Location = new System.Drawing.Point(69, 411);
+            this.CombineBoxB.Margin = new System.Windows.Forms.Padding(5);
+            this.CombineBoxB.Name = "CombineBoxB";
+            this.CombineBoxB.Size = new System.Drawing.Size(201, 21);
+            this.CombineBoxB.TabIndex = 7;
+            this.CombineBoxB.SelectedIndexChanged += new System.EventHandler(this.CombineBoxB_SelectedIndexChanged);
+            // 
+            // label22
+            // 
+            this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label22.Location = new System.Drawing.Point(6, 414);
+            this.label22.Margin = new System.Windows.Forms.Padding(5);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(55, 13);
+            this.label22.TabIndex = 14;
+            this.label22.Text = "CombineB";
+            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(218, 440);
@@ -134,6 +169,17 @@
             this.button1.Text = "+";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // CombineBoxA
+            // 
+            this.CombineBoxA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.CombineBoxA.FormattingEnabled = true;
+            this.CombineBoxA.Location = new System.Drawing.Point(69, 380);
+            this.CombineBoxA.Margin = new System.Windows.Forms.Padding(5);
+            this.CombineBoxA.Name = "CombineBoxA";
+            this.CombineBoxA.Size = new System.Drawing.Size(201, 21);
+            this.CombineBoxA.TabIndex = 32;
+            this.CombineBoxA.SelectedIndexChanged += new System.EventHandler(this.CombineBoxA_SelectedIndexChanged);
             // 
             // OverWriteBox
             // 
@@ -190,52 +236,6 @@
             this.GeoModeBox.Size = new System.Drawing.Size(201, 79);
             this.GeoModeBox.TabIndex = 44;
             this.GeoModeBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.GeoModeBox_ItemCheck);
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(6, 383);
-            this.label2.Margin = new System.Windows.Forms.Padding(5);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(55, 13);
-            this.label2.TabIndex = 33;
-            this.label2.Text = "CombineA";
-            // 
-            // CombineBoxB
-            // 
-            this.CombineBoxB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombineBoxB.FormattingEnabled = true;
-            this.CombineBoxB.Location = new System.Drawing.Point(69, 411);
-            this.CombineBoxB.Margin = new System.Windows.Forms.Padding(5);
-            this.CombineBoxB.Name = "CombineBoxB";
-            this.CombineBoxB.Size = new System.Drawing.Size(201, 21);
-            this.CombineBoxB.TabIndex = 7;
-            this.CombineBoxB.SelectedIndexChanged += new System.EventHandler(this.CombineBoxB_SelectedIndexChanged);
-            // 
-            // label22
-            // 
-            this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label22.AutoSize = true;
-            this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(6, 414);
-            this.label22.Margin = new System.Windows.Forms.Padding(5);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(55, 13);
-            this.label22.TabIndex = 14;
-            this.label22.Text = "CombineB";
-            // 
-            // CombineBoxA
-            // 
-            this.CombineBoxA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CombineBoxA.FormattingEnabled = true;
-            this.CombineBoxA.Location = new System.Drawing.Point(69, 380);
-            this.CombineBoxA.Margin = new System.Windows.Forms.Padding(5);
-            this.CombineBoxA.Name = "CombineBoxA";
-            this.CombineBoxA.Size = new System.Drawing.Size(201, 21);
-            this.CombineBoxA.TabIndex = 32;
-            this.CombineBoxA.SelectedIndexChanged += new System.EventHandler(this.CombineBoxA_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -533,13 +533,14 @@
             // bitm
             // 
             this.bitm.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.bitm.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.bitm.Location = new System.Drawing.Point(24, 9);
             this.bitm.Name = "bitm";
             this.bitm.Size = new System.Drawing.Size(240, 240);
             this.bitm.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.bitm.TabIndex = 11;
             this.bitm.TabStop = false;
-            this.bitm.UseWaitCursor = true;
+            this.bitm.Paint += new System.Windows.Forms.PaintEventHandler(this.bitm_Paint);
             // 
             // TextureEditor
             // 

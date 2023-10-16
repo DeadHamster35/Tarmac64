@@ -202,7 +202,7 @@ namespace Tarmac64_Retail
 
                 FlagBox.Text = OKObjectList[ObjectListBox.SelectedIndex].Flag.ToString();
 
-                if (OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex == 4)
+                if (OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex == 5)
                 {
                     ModeBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].GameMode;
                     ClassBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].ObjectiveClass;
@@ -451,7 +451,7 @@ namespace Tarmac64_Retail
                     OKObjectList[ObjectListBox.SelectedIndex].Flag = Parse;
                 }
 
-                if (OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex == 4)
+                if (OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex == 5)
                 {
                     OKObjectList[ObjectListBox.SelectedIndex].GameMode = Convert.ToInt16(ModeBox.SelectedIndex);
 

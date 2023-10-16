@@ -24,11 +24,17 @@ using System.Drawing.Imaging;
 using Cereal64.Microcodes.F3DEX.DataElements;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using F3DSharp;
+using System.Drawing.Drawing2D;
 
 namespace Tarmac64_Retail
 {
+
+
+
+
     public partial class TextureEditor : UserControl
     {
+
         public TextureEditor()
         {
             InitializeComponent();
@@ -41,7 +47,7 @@ namespace Tarmac64_Retail
 
         public event EventHandler UpdateParent;
 
-        public bool Loaded, Locked = false;
+        public bool Loaded = false, Locked = false;
         int[] PanelXY = new int[] { 5, 415 };
         public bool UpdateTextureDisplay()
         {
@@ -51,7 +57,11 @@ namespace Tarmac64_Retail
                 if (textureArray[textureBox.SelectedIndex].texturePath != null)
                 {
 
-                    bitm.ImageLocation = textureArray[textureBox.SelectedIndex].texturePath;
+                    //bitm.ImageLocation = textureArray[textureBox.SelectedIndex].texturePath;
+                    bitm.Invalidate();
+                    bitm.Update();
+                    bitm.Refresh();
+
                     heightBox.Text = textureArray[textureBox.SelectedIndex].textureHeight.ToString();
                     widthBox.Text = textureArray[textureBox.SelectedIndex].textureWidth.ToString();
 
@@ -101,7 +111,13 @@ namespace Tarmac64_Retail
                 }
                 else
                 {
-
+                    Loaded = false;
+                    {
+                        bitm.Invalidate();
+                        bitm.Update();
+                        bitm.Refresh();
+                    }
+                    Loaded = true;
                     BitBox.SelectedIndex = -1;
                     CodecBox.SelectedIndex = -1;
 
@@ -512,6 +528,53 @@ namespace Tarmac64_Retail
         private void OverWriteBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateTextureData();
+        }
+
+        private void bitm_Paint(object sender, PaintEventArgs e)
+        {
+            if ((Loaded) && (textureBox.SelectedIndex >= 0))
+            {
+                if (!File.Exists(textureArray[textureBox.SelectedIndex].texturePath))
+                {
+                    return;
+                }
+                if (textureArray[textureBox.SelectedIndex].textureHeight == 0)
+                {
+                    return;
+                }
+
+
+                int THeight = textureArray[textureBox.SelectedIndex].textureHeight;
+                int TWidth = textureArray[textureBox.SelectedIndex].textureWidth;
+
+                if (THeight > TWidth)
+                {
+                    TWidth = Convert.ToInt32(bitm.Height * ((Convert.ToSingle(TWidth) / (Convert.ToSingle(THeight)))));
+                    THeight = bitm.Height;
+                }
+                else
+                {
+                    THeight = Convert.ToInt32(bitm.Height * ((Convert.ToSingle(THeight) / (Convert.ToSingle(TWidth)))));
+                    TWidth = bitm.Height;
+                }
+                int XOff = Convert.ToInt32((bitm.Width - TWidth) / 2.0f);
+                int YOff = Convert.ToInt32((bitm.Height - THeight) / 2.0f);
+                e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                Bitmap Draw = new Bitmap(textureArray[textureBox.SelectedIndex].texturePath);
+                e.Graphics.DrawImage(
+                   Draw,
+                    new Rectangle(XOff, YOff, TWidth, THeight),
+                    // destination rectangle 
+                    0,
+                    0,           // upper-left corner of source rectangle
+                    textureArray[textureBox.SelectedIndex].textureWidth,       // width of source rectangle
+                    textureArray[textureBox.SelectedIndex].textureHeight,      // height of source rectangle
+                    GraphicsUnit.Pixel);
+            }
+            else
+            {
+                
+            }
         }
 
         private void textureCodecBox_SelectedIndexChanged(object sender, EventArgs e)

@@ -31,6 +31,7 @@
             this.KillObjBtn = new System.Windows.Forms.Button();
             this.AddObjBtn = new System.Windows.Forms.Button();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.RandomZBox = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.ClassBox = new System.Windows.Forms.ComboBox();
             this.FlagBox = new System.Windows.Forms.TextBox();
@@ -63,7 +64,6 @@
             this.LocationXBox = new System.Windows.Forms.TextBox();
             this.LocationZBox = new System.Windows.Forms.TextBox();
             this.ObjectListBox = new System.Windows.Forms.ListBox();
-            this.RandomZBox = new System.Windows.Forms.CheckBox();
             this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -129,6 +129,15 @@
             this.groupBox8.TabIndex = 3;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Object Information";
+            // 
+            // RandomZBox
+            // 
+            this.RandomZBox.AutoSize = true;
+            this.RandomZBox.Location = new System.Drawing.Point(153, 164);
+            this.RandomZBox.Name = "RandomZBox";
+            this.RandomZBox.Size = new System.Drawing.Size(15, 14);
+            this.RandomZBox.TabIndex = 245;
+            this.RandomZBox.UseVisualStyleBackColor = true;
             // 
             // label4
             // 
@@ -516,15 +525,6 @@
             this.ObjectListBox.TabIndex = 0;
             this.ObjectListBox.SelectedIndexChanged += new System.EventHandler(this.ObjectListBox_SelectedIndexChanged);
             this.ObjectListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ObjectListBox_MouseDoubleClick);
-            // 
-            // RandomZBox
-            // 
-            this.RandomZBox.AutoSize = true;
-            this.RandomZBox.Location = new System.Drawing.Point(153, 164);
-            this.RandomZBox.Name = "RandomZBox";
-            this.RandomZBox.Size = new System.Drawing.Size(15, 14);
-            this.RandomZBox.TabIndex = 245;
-            this.RandomZBox.UseVisualStyleBackColor = true;
             // 
             // ObjectEditor
             // 

@@ -797,7 +797,7 @@ namespace Tarmac64_Library
 
         private void LoadModel()
         {
-            MessageBox.Show("Select .FBX File");
+            MessageBox.Show("Select .FBX or .OBJ File");
 
             Tarmac64_Retail.LoadBarWindow LoadBarForm = new Tarmac64_Retail.LoadBarWindow();
             LoadBarForm.Show();
@@ -809,8 +809,8 @@ namespace Tarmac64_Library
 
             OpenFileDialog OpenFile = new OpenFileDialog();
             OpenFile.InitialDirectory = okSettings.ProjectDirectory;
-            OpenFile.Title = "FBX File";
-            OpenFile.Filter = "FBX Model|*.FBX|All Files (*.*)|*.*";
+            OpenFile.Title = "FBX | OBJ File Loading";
+            OpenFile.Filter = "FBX Model|*.FBX|OBJ Model|*.OBJ|All Files (*.*)|*.*";
             OpenFile.FileName = null;
 
             if (OpenFile.ShowDialog() == DialogResult.OK)
@@ -829,7 +829,15 @@ namespace Tarmac64_Library
 
                     
                     int modelFormat = TarmacGeometry.GetModelFormat(fbx);
-                    sectionCount = TarmacGeometry.GetSectionCount(fbx); ;
+                    if (modelFormat < 3)
+                    {
+                        sectionCount = TarmacGeometry.GetSectionCount(fbx); ;
+                    }
+                    else
+                    {
+                        sectionCount = 1;
+                    }
+                    
 
                     //
                     // Textures
@@ -877,6 +885,7 @@ namespace Tarmac64_Library
                         {
                             case 0:
                                 {
+                                    //simple
                                     masterObjects = TarmacGeometry.CreateMasters(fbx, sectionCount, textureArray, okSettings.AlphaCH2);
                                     surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
                                     TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
@@ -886,6 +895,7 @@ namespace Tarmac64_Library
                                 }
                             case 1:
                                 {
+                                    //normal
                                     masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray, okSettings.AlphaCH2);
                                     surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
                                     TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
@@ -895,10 +905,21 @@ namespace Tarmac64_Library
                                 }
                             case 2:
                                 {
+                                    //manual sections
                                     masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray, okSettings.AlphaCH2);
                                     surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
                                     sectionList = TarmacGeometry.LoadSection(fbx, sectionCount, masterObjects);
                                     XLUSectionList = TarmacGeometry.LoadSection(fbx, sectionCount, masterObjects);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    //magical mystery mode
+                                    masterObjects = TarmacGeometry.CreateMasterNoHeader(fbx, textureArray);
+                                    surfaceObjects = TarmacGeometry.CreateCollisionsNoHeader(fbx, textureArray);
+                                    TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, 1);
+                                    sectionList = TarmacGeometry.AutomateSection(1, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
+                                    XLUSectionList = TarmacGeometry.AutomateSection(1, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
                                     break;
                                 }
                         }

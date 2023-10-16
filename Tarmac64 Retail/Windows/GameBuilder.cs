@@ -48,14 +48,70 @@ namespace Tarmac64_Library
             RemoveCourse();
         }
 
+        private void button4_Click(object sender, EventArgs e)
+        {
+            TM64 Tarmac = new TM64();
+
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            okSettings.LoadSettings();
+
+            TM64_Course TarmacCourse = new TM64_Course();
+            OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.Filter = "Tarmac Course|*.ok64.Course|All Files (*.*)|*.*";
+            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            if (FileOpen.ShowDialog() == DialogResult.OK)
+            {
+                byte[] FileData = File.ReadAllBytes(FileOpen.FileName);
+                TM64_Course.Course NewCourse = TarmacCourse.LoadOK64Course(FileData);
+
+
+
+                if (NewCourse.Gametype == 0)
+                {
+                    MessageBox.Show("Wrong Course Type (Race)");
+                }
+                else
+                {
+                    int Index;
+                    if (NewCourse.Name.Length > 0)
+                    {
+                        Index = NameBox.Items.Add(NewCourse.Name);
+                    }
+                    else
+                    {
+                        Index = NameBox.Items.Add(FileOpen.FileName);
+                    }
+
+
+                    if (BattleCourse > 3)
+                    {
+                        BattleCourse = 0;
+                        BattleSet++;
+                    }
+                    if (BattleSet > 4)
+                    {
+                        MessageBox.Show("FATAL ERROR - TOO MANY LEVELS");
+                    }
+                    else
+                    {
+                        CourseData.Add(NewCourse);
+                        CourseSet ThisSet = new CourseSet();
+                        BattleCourse++;
+                    }
+                    NameBox.SelectedIndex = Index;
+                }
+
+
+            }
+        }
+
         private void RemoveCourse()
         {
-            if (NameBox.Items.Count >= 0)
+            if (NameBox.Items.Count >= 1)
             {
                 int Index = NameBox.SelectedIndex;
                 NameBox.Items.RemoveAt(Index);
                 CourseData.RemoveAt(Index);
-                SetCollection.RemoveAt(Index);
 
                 Course--;
                 if (Course < 0)
@@ -118,48 +174,13 @@ namespace Tarmac64_Library
                     else
                     {
                         CourseData.Add(NewCourse);
-                        CourseSet ThisSet = new CourseSet();
-                        ThisSet.Course = Course;
-                        ThisSet.Cup = Cup;
-                        ThisSet.Set = Set;
-                        SetCollection.Add(ThisSet);
                         Course++;
                     }
                     NameBox.SelectedIndex = Index;
                 }
                 else
                 {
-                    int Index;
-                    if (NewCourse.Name.Length > 0)
-                    {
-                        Index = NameBox.Items.Add(NewCourse.Name);
-                    }
-                    else
-                    {
-                        Index = NameBox.Items.Add(FileOpen.FileName);
-                    }
-                    
-                    
-                    if (BattleCourse > 3)
-                    {
-                        BattleCourse = 0;
-                        BattleSet++;
-                    }
-                    if (BattleSet > 4)
-                    {
-                        MessageBox.Show("FATAL ERROR - TOO MANY LEVELS");
-                    }
-                    else
-                    {
-                        CourseData.Add(NewCourse);
-                        CourseSet ThisSet = new CourseSet();
-                        ThisSet.Course = BattleCourse;                        
-                        ThisSet.Set = BattleSet;
-                        ThisSet.Cup = 4; //battle
-                        SetCollection.Add(ThisSet);
-                        BattleCourse++;
-                    }
-                    NameBox.SelectedIndex = Index;
+                    MessageBox.Show("Wrong Course Type (Battle)");
                 }
                     
 
@@ -199,10 +220,15 @@ namespace Tarmac64_Library
 
                     string outputDirectory = FolderOpen.FileName;
                     byte[] rom = File.ReadAllBytes(FileName);
+                    int SetID = 0;
                     for (int ThisCourse = 0; ThisCourse < CourseData.Count; ThisCourse++)
                     {
-                        rom = TarmacCourse.CompileOverKart(CourseData[ThisCourse], rom, (SetCollection[ThisCourse].Cup * 4) + SetCollection[ThisCourse].Course, SetCollection[ThisCourse].Set, HeaderAddress);
-                        
+                        rom = TarmacCourse.CompileOverKart(CourseData[ThisCourse], rom, Convert.ToInt32(ThisCourse % 16), SetID, HeaderAddress);
+                        if (ThisCourse % 16 == 15)
+                        {
+                            SetID++;
+                        }
+
                         
                         /*
                         File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString()+ " Segment6.bin", CourseData[ThisCourse].Segment6);
