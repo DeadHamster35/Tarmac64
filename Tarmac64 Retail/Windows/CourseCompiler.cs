@@ -917,9 +917,10 @@ namespace Tarmac64_Library
                                     //magical mystery mode
                                     masterObjects = TarmacGeometry.CreateMasterNoHeader(fbx, textureArray);
                                     surfaceObjects = TarmacGeometry.CreateCollisionsNoHeader(fbx, textureArray);
-                                    TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, 1);
-                                    sectionList = TarmacGeometry.AutomateSection(1, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
-                                    XLUSectionList = TarmacGeometry.AutomateSection(1, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
+                                    surfaceObjects = TarmacGeometry.UpdateSectionIndexNoHeader(surfaceObjects, ref sectionCount);
+                                    TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
+                                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
+                                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
                                     break;
                                 }
                         }

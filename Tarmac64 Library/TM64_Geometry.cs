@@ -2105,6 +2105,33 @@ namespace Tarmac64_Library
             return surfaceObjects.ToArray();
         }
 
+        public OK64F3DObject[] UpdateSectionIndexNoHeader(OK64F3DObject[] SurfaceObjects, ref int SectionCount)
+        {
+
+            SectionCount = 1;
+            
+            for (int ThisObject = 0;ThisObject < SurfaceObjects.Length; ThisObject++)
+            {
+                string[] Split = SurfaceObjects[ThisObject].objectName.Split('_');
+                if (Split.Length >= 2)
+                {
+                    int Result;
+                    if (int.TryParse(Split[1], out Result))
+                    {
+                        SurfaceObjects[ThisObject].surfaceID = Result;
+                        if (Result > SectionCount)
+                        {
+                            SectionCount = Result;
+                        }
+                    }
+                }
+            }
+
+
+
+
+            return SurfaceObjects.ToArray();
+        }
         public OK64F3DObject[] CreateCollisionsNoHeader(Assimp.Scene fbx, OK64Texture[] textureArray)
         {
             int totalIndexCount = 0;
