@@ -2113,7 +2113,7 @@ namespace Tarmac64_Library
             for (int ThisObject = 0;ThisObject < SurfaceObjects.Length; ThisObject++)
             {
                 string[] Split = SurfaceObjects[ThisObject].objectName.Split('_');
-                if (Split.Length >= 2)
+                if (Split.Length > 2)
                 {
                     int Result;
                     if (int.TryParse(Split[1], out Result))
@@ -2123,6 +2123,10 @@ namespace Tarmac64_Library
                         {
                             SectionCount = Result;
                         }
+                    }
+                    else
+                    {
+                        SurfaceObjects[ThisObject].surfaceID = 1;
                     }
                 }
             }
