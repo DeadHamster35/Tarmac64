@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.CombineBoxB = new System.Windows.Forms.ComboBox();
@@ -65,6 +66,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.widthBox = new System.Windows.Forms.TextBox();
             this.bitm = new System.Windows.Forms.PictureBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bitm)).BeginInit();
             this.SuspendLayout();
@@ -73,6 +75,8 @@
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox5.Controls.Add(this.textBox1);
+            this.groupBox5.Controls.Add(this.checkBox1);
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.button2);
             this.groupBox5.Controls.Add(this.CombineBoxB);
@@ -110,10 +114,23 @@
             this.groupBox5.Controls.Add(this.widthBox);
             this.groupBox5.Location = new System.Drawing.Point(3, 253);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(282, 479);
+            this.groupBox5.Size = new System.Drawing.Size(282, 500);
             this.groupBox5.TabIndex = 0;
             this.groupBox5.TabStop = false;
             this.groupBox5.Enter += new System.EventHandler(this.groupBox5_Enter);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox1.Location = new System.Drawing.Point(2, 445);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(5);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(79, 17);
+            this.checkBox1.TabIndex = 51;
+            this.checkBox1.Text = "AlphaMask";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // label2
             // 
@@ -129,7 +146,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(247, 440);
+            this.button2.Location = new System.Drawing.Point(247, 471);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(23, 23);
             this.button2.TabIndex = 50;
@@ -162,7 +179,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(218, 440);
+            this.button1.Location = new System.Drawing.Point(218, 471);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(23, 23);
             this.button1.TabIndex = 49;
@@ -185,7 +202,7 @@
             // 
             this.OverWriteBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.OverWriteBox.FormattingEnabled = true;
-            this.OverWriteBox.Location = new System.Drawing.Point(114, 442);
+            this.OverWriteBox.Location = new System.Drawing.Point(114, 473);
             this.OverWriteBox.Margin = new System.Windows.Forms.Padding(5);
             this.OverWriteBox.Name = "OverWriteBox";
             this.OverWriteBox.Size = new System.Drawing.Size(96, 21);
@@ -196,7 +213,7 @@
             // 
             this.OverWriteIndexBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.OverWriteIndexBox.FormattingEnabled = true;
-            this.OverWriteIndexBox.Location = new System.Drawing.Point(69, 442);
+            this.OverWriteIndexBox.Location = new System.Drawing.Point(69, 473);
             this.OverWriteIndexBox.Margin = new System.Windows.Forms.Padding(5);
             this.OverWriteIndexBox.Name = "OverWriteIndexBox";
             this.OverWriteIndexBox.Size = new System.Drawing.Size(35, 21);
@@ -208,7 +225,7 @@
             this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(7, 437);
+            this.label17.Location = new System.Drawing.Point(7, 468);
             this.label17.Margin = new System.Windows.Forms.Padding(5);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(52, 26);
@@ -542,6 +559,14 @@
             this.bitm.TabStop = false;
             this.bitm.Paint += new System.Windows.Forms.PaintEventHandler(this.bitm_Paint);
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(91, 442);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(5);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(179, 20);
+            this.textBox1.TabIndex = 52;
+            // 
             // TextureEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -549,7 +574,7 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.bitm);
             this.Name = "TextureEditor";
-            this.Size = new System.Drawing.Size(289, 735);
+            this.Size = new System.Drawing.Size(289, 755);
             this.Load += new System.EventHandler(this.TextureEditor_Load);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
@@ -597,5 +622,7 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         public System.Windows.Forms.ComboBox OverWriteBox;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }

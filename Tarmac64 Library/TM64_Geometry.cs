@@ -3447,7 +3447,7 @@ namespace Tarmac64_Library
 
             return memoryStream.ToArray();
         }
-        public void CompileCourseObjects(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic, bool BoundingToggle = false)
+        public bool CompileCourseObjects(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic, bool BoundingToggle = false)
         {
 
 
@@ -3604,6 +3604,7 @@ namespace Tarmac64_Library
                         if (CheckST(cObj, textureObject[cObj.materialID]))
                         {
                             MessageBox.Show("Fatal UV Error " + cObj.objectName);
+                            return false;
                         }
                         if (textureObject[cObj.materialID].SFlag == -1)
                         {
@@ -3710,6 +3711,8 @@ namespace Tarmac64_Library
             outseg7 = seg7m.ToArray();
 
             outMagic = relativeZero;
+
+            return true;
         }
 
         public byte[] RGBADemo(OK64Texture TextureObject)

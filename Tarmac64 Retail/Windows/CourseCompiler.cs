@@ -308,8 +308,15 @@ namespace Tarmac64_Library
 
 
                 textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5, Convert.ToBoolean(courseData.Fog.FogToggle) );
-                TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic, true);
-                TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic, false);
+                if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic, true))
+                {
+                    return;
+                }
+                if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic, false))
+                {
+                    return;
+                }
+                    
 
                 renderList = TarmacGeometry.CompileF3DList(ref sectionList, masterObjects, sectionList, textureArray);
                 XLUList = TarmacGeometry.CompileXLUList(ref XLUSectionList, masterObjects, XLUSectionList, textureArray);
@@ -423,8 +430,14 @@ namespace Tarmac64_Library
 
 
                 textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + ListData.Length, 5, Convert.ToBoolean(courseData.Fog.FogToggle));
-                TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic);
-                TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic);
+                if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic))
+                {
+                    return;
+                }
+                if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic))
+                {
+                    return;
+                }
 
                 renderList = TarmacGeometry.CompileBattleList(masterObjects, textureArray);
                 XLUList = TarmacGeometry.CompileBattleXLU(masterObjects, textureArray);
@@ -1643,7 +1656,7 @@ namespace Tarmac64_Library
                             GLControl.SectionList = new int[0];
                             GLControl.CourseObjects = new List<TM64_Course.OKObject>();
                             GLControl.ObjectTypes = new TM64_Course.OKObjectType[0];
-                            GLControl.TargetMode = -1;
+                            GLControl.TargetMode = 2;
                             break;
                         }
                     case 4:

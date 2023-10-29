@@ -161,18 +161,39 @@ namespace Tarmac64_Retail
             long OldTime = DateTime.Now.Ticks;
             if (Keyboard.IsKeyDown(Key.LeftShift))
             {
-                UpdateDraw = true;
+                if (Keyboard.IsKeyDown(Key.W))
+                {
+                    UpdateDraw = true;
+                    TarmacGL.MoveCamera(0, LocalCamera, MoveSpeed * Delta * 3.0f);
+                }
+                if (Keyboard.IsKeyDown(Key.S))
+                {
+                    UpdateDraw = true;
+                    TarmacGL.MoveCamera(1, LocalCamera, MoveSpeed * Delta * 3.0f);
+                }
+
+                if (Keyboard.IsKeyDown(Key.A))
+                {
+                    UpdateDraw = true;
+                    TarmacGL.MoveCamera(5, LocalCamera, MoveSpeed * Delta * 3.0f);
+
+                }
+                if (Keyboard.IsKeyDown(Key.D))
+                {
+
+                    UpdateDraw = true;
+                    TarmacGL.MoveCamera(4, LocalCamera, MoveSpeed * Delta * 3.0f);
+
+                }
                 if (Keyboard.IsKeyDown(Key.R))
                 {
                     UpdateDraw = true;
-                    float RadTurn = Convert.ToSingle((MoveSpeed * Delta / 2.0f) * (Math.PI / 180.0f));
-                    LocalCamera.rotation[1] += RadTurn;
+                    TarmacGL.MoveCamera(2, LocalCamera, MoveSpeed * Delta * 3.0f);
                 }
                 if (Keyboard.IsKeyDown(Key.F))
                 {
                     UpdateDraw = true;
-                    float RadTurn = Convert.ToSingle((MoveSpeed * Delta / 2.0f) * (Math.PI / 180.0f));
-                    LocalCamera.rotation[1] -= RadTurn;
+                    TarmacGL.MoveCamera(3, LocalCamera, MoveSpeed * Delta * 3.0f);
                 }
             }
             else
@@ -385,7 +406,7 @@ namespace Tarmac64_Retail
                         {
 
 
-                            if(!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
+                            if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
                             {
                                 TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
 
@@ -461,7 +482,7 @@ namespace Tarmac64_Retail
 
 
                     // For drawing textured screens
-                    
+
 
 
                     if (RenderCheckbox.Checked)
@@ -508,10 +529,10 @@ namespace Tarmac64_Retail
                             }
                         }
                     }
-                    
+
                 }
 
-                        GL.End();
+                GL.End();
                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
                 GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                 GL.Enable(OpenGL.GL_BLEND);
@@ -589,6 +610,7 @@ namespace Tarmac64_Retail
                     }
                 }
             }
+            
 
 
             GL.End();

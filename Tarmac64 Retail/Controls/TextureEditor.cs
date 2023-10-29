@@ -577,6 +577,11 @@ namespace Tarmac64_Retail
             }
         }
 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
         private void textureCodecBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateTextureData();
