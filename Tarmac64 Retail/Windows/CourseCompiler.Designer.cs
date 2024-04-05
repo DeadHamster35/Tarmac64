@@ -115,7 +115,7 @@
             this.SurfaceMap.Cursor = System.Windows.Forms.Cursors.Default;
             this.SurfaceMap.Location = new System.Drawing.Point(4, 22);
             this.SurfaceMap.Name = "SurfaceMap";
-            this.SurfaceMap.Size = new System.Drawing.Size(307, 602);
+            this.SurfaceMap.Size = new System.Drawing.Size(192, 74);
             this.SurfaceMap.TabIndex = 3;
             this.SurfaceMap.Text = "Surfaces";
             this.SurfaceMap.UseVisualStyleBackColor = true;
@@ -142,7 +142,7 @@
             this.groupBox6.Controls.Add(this.label23);
             this.groupBox6.Controls.Add(this.surfsectionBox);
             this.groupBox6.Controls.Add(this.label17);
-            this.groupBox6.Location = new System.Drawing.Point(3, 429);
+            this.groupBox6.Location = new System.Drawing.Point(3, -99);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(281, 170);
             this.groupBox6.TabIndex = 1;
@@ -362,7 +362,7 @@
             this.surfaceobjectBox.FormattingEnabled = true;
             this.surfaceobjectBox.Location = new System.Drawing.Point(3, 9);
             this.surfaceobjectBox.Name = "surfaceobjectBox";
-            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 407);
+            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 4);
             this.surfaceobjectBox.TabIndex = 0;
             this.surfaceobjectBox.SelectedIndexChanged += new System.EventHandler(this.SurfaceobjectBox_SelectedIndexChanged);
             // 
@@ -379,7 +379,7 @@
             this.SectionViews.Location = new System.Drawing.Point(4, 22);
             this.SectionViews.Name = "SectionViews";
             this.SectionViews.Padding = new System.Windows.Forms.Padding(3);
-            this.SectionViews.Size = new System.Drawing.Size(307, 602);
+            this.SectionViews.Size = new System.Drawing.Size(192, 74);
             this.SectionViews.TabIndex = 0;
             this.SectionViews.Text = "Sections";
             this.SectionViews.UseVisualStyleBackColor = true;
@@ -494,7 +494,7 @@
             this.groupBox2.Controls.Add(this.FiftyBoxR);
             this.groupBox2.Controls.Add(this.TTBoxR);
             this.groupBox2.Controls.Add(this.GPBoxR);
-            this.groupBox2.Location = new System.Drawing.Point(3, 529);
+            this.groupBox2.Location = new System.Drawing.Point(3, 1);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(279, 67);
             this.groupBox2.TabIndex = 13;
@@ -624,7 +624,7 @@
             this.masterBox.HideSelection = false;
             this.masterBox.Location = new System.Drawing.Point(3, 123);
             this.masterBox.Name = "masterBox";
-            this.masterBox.Size = new System.Drawing.Size(279, 400);
+            this.masterBox.Size = new System.Drawing.Size(279, 0);
             this.masterBox.TabIndex = 2;
             this.masterBox.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterCheck);
             this.masterBox.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterSelect);
@@ -646,7 +646,7 @@
             this.TextureData.Location = new System.Drawing.Point(4, 22);
             this.TextureData.Name = "TextureData";
             this.TextureData.Padding = new System.Windows.Forms.Padding(3);
-            this.TextureData.Size = new System.Drawing.Size(192, 74);
+            this.TextureData.Size = new System.Drawing.Size(307, 602);
             this.TextureData.TabIndex = 1;
             this.TextureData.Text = "Textures";
             this.TextureData.UseVisualStyleBackColor = true;
@@ -656,7 +656,7 @@
             // 
             this.TextureControl.Location = new System.Drawing.Point(0, 0);
             this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 780);
+            this.TextureControl.Size = new System.Drawing.Size(289, 790);
             this.TextureControl.TabIndex = 0;
             this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
             // 
@@ -713,7 +713,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ObjectControl.Location = new System.Drawing.Point(3, 3);
             this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 34);
+            this.ObjectControl.Size = new System.Drawing.Size(289, 0);
             this.ObjectControl.TabIndex = 1;
             this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
@@ -743,6 +743,7 @@
             // 
             // TypeBox
             // 
+            this.TypeBox.Enabled = false;
             this.TypeBox.FormattingEnabled = true;
             this.TypeBox.Items.AddRange(new object[] {
             "Race",
@@ -757,7 +758,7 @@
             // 
             this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(1085, 13);
+            this.pictureBox2.Location = new System.Drawing.Point(1086, 13);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(164, 23);
             this.pictureBox2.TabIndex = 97;

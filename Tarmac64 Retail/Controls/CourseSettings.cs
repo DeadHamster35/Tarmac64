@@ -23,7 +23,7 @@ namespace Tarmac64_Retail
 
         public string[] songNames = new string[] { "None", "Title", "Menu", "Raceways", "Moo Moo Farm", "Choco Mountain", "Koopa Troopa Beach", "Banshee Boardwalk", "Snowland", "Bowser's Castle", "Kalimari Desert", "#- GP Startup", "#- Final Lap", "#- Final Lap (1st)", "#- Final Lap 2-4", "#- You Lose", "#- Race Results", "Star Music", "Rainbow Road", "DK Parkway", "#- Credits Failure", "Toad's Turnpike", "#- VS/Battle Start", "#- VS/Battle Results", "#- Retry/Quit", "Big Donut / Skyscraper", "#- Trophy A", "#- Trophy B1 (Win)", "Credits", "#- Trophy B2 (Lose)" };
         public string[] pathTypes = new string[] { "Echo", "Color", "Camera", "AirControl", "Long Jump", "AI Area", "3D Weather" };
-        public string[] waterTypes = new string[] { "Water", "Void", "Lava", "Ice" };
+        public string[] waterTypes = new string[] { "Water", "Void", "Lava", "Ice", "Fire" };
         public int[] bombPoints = new int[] { 40, 100, 265, 285, 420, 0, 0 };
         public int[] bompTypeIDs = new int[] { 3, 3, 3, 1, 1, 0, 0 };
         public string[] bombTypes = new string[] { "Null", "Rotate L", "Rotate R", "Stop" };

@@ -111,6 +111,7 @@
             // 
             // button4
             // 
+            this.button4.Enabled = false;
             this.button4.Location = new System.Drawing.Point(43, 38);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(25, 23);
@@ -121,6 +122,7 @@
             // 
             // BattleCourseBox
             // 
+            this.BattleCourseBox.Enabled = false;
             this.BattleCourseBox.FormattingEnabled = true;
             this.BattleCourseBox.Location = new System.Drawing.Point(74, 40);
             this.BattleCourseBox.Name = "BattleCourseBox";
@@ -129,6 +131,7 @@
             // 
             // BattleKeyBox
             // 
+            this.BattleKeyBox.Enabled = false;
             this.BattleKeyBox.Location = new System.Drawing.Point(251, 41);
             this.BattleKeyBox.Name = "BattleKeyBox";
             this.BattleKeyBox.Size = new System.Drawing.Size(161, 20);
@@ -138,6 +141,7 @@
             // 
             // button5
             // 
+            this.button5.Enabled = false;
             this.button5.Location = new System.Drawing.Point(12, 38);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(25, 23);

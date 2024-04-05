@@ -24,6 +24,7 @@ using Cereal64.Common.DataElements;
 using Cereal64.Common.Rom;
 using Cereal64.Common.Utils.Encoding;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Drawing.Drawing2D;
 
 namespace Tarmac64_Library
 {
@@ -71,6 +72,7 @@ namespace Tarmac64_Library
             public string ROMDirectory { get; set; }
             public float ImportScale { get; set; }
             public bool AlphaCH2 { get; set; }
+            public bool BlenderImport { get; set; }
             public string JRDirectory { get; set; }
             public bool Valid { get; set; }
 
@@ -84,13 +86,14 @@ namespace Tarmac64_Library
                 if (File.Exists(SettingsPath))
                 {
                     InputData = File.ReadAllLines(SettingsPath);
-                    if (InputData.Length == 5)
+                    if (InputData.Length == 6)
                     {
                         ProjectDirectory = InputData[0];
                         ObjectDirectory = InputData[1];
                         ROMDirectory = InputData[2];
                         ImportScale = Convert.ToSingle(InputData[3]);
                         AlphaCH2 = Convert.ToBoolean(InputData[4]);
+                        BlenderImport = Convert.ToBoolean(InputData[5]);
                         return this;
                     }
                     
@@ -99,8 +102,9 @@ namespace Tarmac64_Library
                 ProjectDirectory = "";
                 ObjectDirectory = "";
                 ROMDirectory = "";
-                ImportScale = 0.01f;
+                ImportScale = 1.0f;
                 AlphaCH2 = true;
+                BlenderImport = true;
                 return this;
                 
             }
@@ -111,12 +115,13 @@ namespace Tarmac64_Library
                 string[] settings = new string[0];
 
 
-                string[] SaveData = new string[5];
+                string[] SaveData = new string[6];
                 SaveData[0] = ProjectDirectory;
                 SaveData[1] = ObjectDirectory;
                 SaveData[2] = ROMDirectory;
                 SaveData[3] = Convert.ToString(ImportScale);
                 SaveData[4] = Convert.ToString(AlphaCH2);
+                SaveData[5] = Convert.ToString(BlenderImport);
                 File.WriteAllLines(SettingsPath, SaveData);
             }
         }
@@ -152,6 +157,116 @@ namespace Tarmac64_Library
             public int flag { get; set; }
 
         }
+        
+
+        public byte[] ApplyPatch(byte[] InputData, byte[] PatchData)
+        {
+            MemoryStream PatchStream = new MemoryStream();
+            BinaryReader PatchReader = new BinaryReader(PatchStream);
+            PatchStream.Write(PatchData, 0, PatchData.Length);
+            PatchStream.Position = 0;
+
+            MemoryStream InputStream = new MemoryStream();
+            BinaryWriter InputWriter = new BinaryWriter(InputStream);
+            InputStream.Write(InputData, 0, InputData.Length);
+            InputStream.Position = 0;
+
+            int CurrentByte = 0;
+            while(CurrentByte < PatchData.Length)
+            {
+                int Offset = PatchReader.ReadInt32();
+                int Length = PatchReader.ReadInt32();
+                
+                
+                byte[] CopyData = new byte[Length];
+                Array.Copy(PatchData, CurrentByte + 8, CopyData, 0, Length);
+
+                InputWriter.BaseStream.Position = Offset;
+                InputWriter.Write(CopyData);
+
+                PatchReader.BaseStream.Position += Length;
+                CurrentByte += Length + 8;
+            }
+
+
+
+
+            return InputStream.ToArray();
+        }
+
+
+        public byte[] CreatePatch(byte[] InputData, byte[] PatchedData)
+        {
+            MemoryStream PatchStream = new MemoryStream();
+            BinaryReader PatchReader = new BinaryReader(PatchStream);
+            PatchStream.Write(PatchedData, 0, PatchedData.Length);
+            PatchStream.Position = 0;
+
+            MemoryStream InputStream = new MemoryStream();
+            BinaryReader InputReader = new BinaryReader(InputStream);
+            PatchStream.Write(InputData, 0, InputData.Length);
+            PatchStream.Position = 0;
+
+            MemoryStream NewData = new MemoryStream();
+            BinaryWriter OutputData = new BinaryWriter(NewData);
+
+
+            
+            int Length = PatchedData.Length;
+            
+            
+            for (int ThisByte = 0; ThisByte < Length; ThisByte++)
+            {
+                int PatchBytes = 0;
+                int InitialOffset = 0;
+                List<byte> PatchData = new List<byte>();
+                
+                if (ThisByte < InputData.Length)
+                {
+
+                    if (InputData[ThisByte] != PatchedData[ThisByte])
+                    {
+                        InitialOffset = ThisByte;
+
+                        while (true)
+                        {
+                            PatchData.Add(PatchedData[ThisByte]);
+                            PatchBytes++;
+                            if (InputData[ThisByte + 1] == PatchedData[ThisByte + 1])
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                ThisByte++;
+                            }
+                        }
+                        OutputData.Write(InitialOffset);
+                        OutputData.Write(PatchBytes);
+                        OutputData.Write(PatchData.ToArray(), 0, PatchData.Count);
+                    }
+                }
+                else
+                {
+                    byte[] EndData = new byte[Length - ThisByte];
+                    Array.Copy(PatchedData, ThisByte, EndData, 0, EndData.Length);
+
+                    OutputData.Write(InputData.Length);
+                    OutputData.Write(EndData.Length);
+                    for (int ThisEnd = 0; ThisEnd < EndData.Length; ThisEnd++)
+                    {
+                        OutputData.Write(EndData[ThisEnd]);
+                    }
+                    ThisByte = Length;
+                }
+
+
+            }
+
+            return NewData.ToArray();
+        }
+
+
         public byte[] decompressSMSR(byte[]inputData)
         {
             MemoryStream memoryStream = new MemoryStream(inputData);

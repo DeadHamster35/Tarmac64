@@ -127,5 +127,37 @@ namespace Tarmac64_Retail
 
         }
 
+        private void patchTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TM64 Tarmac = new TM64();
+            OpenFileDialog FileOp = new OpenFileDialog();
+            FileOp.ShowDialog();
+            byte[] Data = File.ReadAllBytes(FileOp.FileName);
+            FileOp.ShowDialog();
+            byte[] Data2 = File.ReadAllBytes(FileOp.FileName);
+            SaveFileDialog FileSa = new SaveFileDialog();
+
+            byte[] Data3 = Tarmac.CreatePatch(Data, Data2);
+
+            FileSa.ShowDialog();
+            File.WriteAllBytes(FileSa.FileName, Data3);
+
+        }
+
+        private void applyPatchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TM64 Tarmac = new TM64();
+            OpenFileDialog FileOp = new OpenFileDialog();
+            FileOp.ShowDialog();
+            byte[] Data = File.ReadAllBytes(FileOp.FileName);
+            FileOp.ShowDialog();
+            byte[] Data2 = File.ReadAllBytes(FileOp.FileName);
+            SaveFileDialog FileSa = new SaveFileDialog();
+
+            byte[] Data3 = Tarmac.ApplyPatch(Data, Data2);
+
+            FileSa.ShowDialog();
+            File.WriteAllBytes(FileSa.FileName, Data3);
+        }
     }
 }

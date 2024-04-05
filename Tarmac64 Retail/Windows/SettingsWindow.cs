@@ -30,6 +30,7 @@ namespace Tarmac64_Retail
                 ObjectDIRBox.Text = TarmacSettings.ObjectDirectory;
                 ScaleBox.Text = Convert.ToString(TarmacSettings.ImportScale);
                 AlphaBox.Checked = TarmacSettings.AlphaCH2;
+                BlenderCheck.Checked = TarmacSettings.BlenderImport;
             }
         }
 
@@ -40,6 +41,7 @@ namespace Tarmac64_Retail
             TarmacSettings.ProjectDirectory = CourseDIRBox.Text;
             TarmacSettings.ObjectDirectory = ObjectDIRBox.Text;
             TarmacSettings.ROMDirectory = ROMDIRBox.Text;
+            TarmacSettings.BlenderImport = BlenderCheck.Checked;
             if (float.TryParse(ScaleBox.Text, out ParseF))
             {
                 TarmacSettings.ImportScale = ParseF;
@@ -100,6 +102,16 @@ namespace Tarmac64_Retail
             {
                 ROMDIRBox.Text = FileOpen.FileName;
             }
+        }
+
+        private void AlphaBox_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ScaleBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -239,7 +239,7 @@ namespace Tarmac64_Retail
             }
         }
 
-        public int LoadSettings(string[] ObjectSettings)
+        public int LoadSettings(string[] ObjectSettings, int Version = 5)
         {
 
             TM64.OK64Settings okSettings = new TM64.OK64Settings();
@@ -311,6 +311,12 @@ namespace Tarmac64_Retail
                 NewObject.GameMode = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.BattlePlayer = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.ObjectiveClass = Convert.ToInt16(ObjectSettings[ThisLine++]);
+
+                if (Version > 5)
+                {
+                    NewObject.Flag = Convert.ToInt16(ObjectSettings[ThisLine++]);
+                }
+
                 NewObject.OriginPosition = new short[3];
                 NewObject.OriginPosition[0] = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.OriginPosition[1] = Convert.ToInt16(ObjectSettings[ThisLine++]);
@@ -343,7 +349,7 @@ namespace Tarmac64_Retail
 
             return ThisLine;
         }
-        public string[] SaveSettings()
+        public string[] SaveSettings(int Version)
         {
             List<string> Output = new List<string>();
 
@@ -359,6 +365,10 @@ namespace Tarmac64_Retail
                 Output.Add(OKObjectList[This].GameMode.ToString());
                 Output.Add(OKObjectList[This].BattlePlayer.ToString());
                 Output.Add(OKObjectList[This].ObjectiveClass.ToString());
+                if (Version > 5)
+                {
+                    Output.Add(OKObjectList[This].Flag.ToString());
+                }
                 Output.Add(OKObjectList[This].OriginPosition[0].ToString());
                 Output.Add(OKObjectList[This].OriginPosition[1].ToString());
                 Output.Add(OKObjectList[This].OriginPosition[2].ToString());

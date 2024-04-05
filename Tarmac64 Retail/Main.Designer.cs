@@ -41,6 +41,8 @@
             this.courseLoaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetFoldersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label5 = new System.Windows.Forms.Label();
+            this.patchTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.applyPatchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -102,7 +104,9 @@
             this.ToolsStripMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compilersToolStripMenuItem,
             this.extractorsToolStripMenuItem,
-            this.courseLoaderToolStripMenuItem});
+            this.courseLoaderToolStripMenuItem,
+            this.patchTestToolStripMenuItem,
+            this.applyPatchToolStripMenuItem});
             this.ToolsStripMenu.Name = "ToolsStripMenu";
             this.ToolsStripMenu.Size = new System.Drawing.Size(87, 20);
             this.ToolsStripMenu.Text = "Tools           +";
@@ -115,7 +119,7 @@
             this.textureCompilerToolStripMenuItem1,
             this.modelCompilerToolStripMenuItem1});
             this.compilersToolStripMenuItem.Name = "compilersToolStripMenuItem";
-            this.compilersToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.compilersToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.compilersToolStripMenuItem.Text = "Compilers";
             this.compilersToolStripMenuItem.Click += new System.EventHandler(this.compilersToolStripMenuItem_Click);
             // 
@@ -169,7 +173,7 @@
             this.songExtractorToolStripMenuItem,
             this.ghostExtractorToolStripMenuItem});
             this.extractorsToolStripMenuItem.Name = "extractorsToolStripMenuItem";
-            this.extractorsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.extractorsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.extractorsToolStripMenuItem.Text = "Extractors";
             // 
             // songExtractorToolStripMenuItem
@@ -189,7 +193,7 @@
             // courseLoaderToolStripMenuItem
             // 
             this.courseLoaderToolStripMenuItem.Name = "courseLoaderToolStripMenuItem";
-            this.courseLoaderToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.courseLoaderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.courseLoaderToolStripMenuItem.Text = "Game Builder";
             this.courseLoaderToolStripMenuItem.Click += new System.EventHandler(this.courseLoaderToolStripMenuItem_Click);
             // 
@@ -209,6 +213,20 @@
             this.label5.TabIndex = 32;
             this.label5.Text = "Triclon\r\nqueueRAM\r\nRenaKunisaki\r\nOx\r\nshygoo\r\nMt. Zuul\r\nDaniel McCarthy\r\ndwmkerr\r\n" +
     "";
+            // 
+            // patchTestToolStripMenuItem
+            // 
+            this.patchTestToolStripMenuItem.Name = "patchTestToolStripMenuItem";
+            this.patchTestToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.patchTestToolStripMenuItem.Text = "PatchTest";
+            this.patchTestToolStripMenuItem.Click += new System.EventHandler(this.patchTestToolStripMenuItem_Click);
+            // 
+            // applyPatchToolStripMenuItem
+            // 
+            this.applyPatchToolStripMenuItem.Name = "applyPatchToolStripMenuItem";
+            this.applyPatchToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.applyPatchToolStripMenuItem.Text = "ApplyPatch";
+            this.applyPatchToolStripMenuItem.Click += new System.EventHandler(this.applyPatchToolStripMenuItem_Click);
             // 
             // TarmacAbout
             // 
@@ -254,6 +272,7 @@
         private System.Windows.Forms.ToolStripMenuItem extractorsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem songExtractorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ghostExtractorToolStripMenuItem;
-        
+        private System.Windows.Forms.ToolStripMenuItem patchTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem applyPatchToolStripMenuItem;
     }
 }

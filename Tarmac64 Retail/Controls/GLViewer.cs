@@ -337,7 +337,7 @@ namespace Tarmac64_Retail
                                         double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
                                         TextureObjects[ThisTexture].GLShiftT -= Add;
                                         Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
-                                        TextureObjects[ThisTexture].GLShiftS += Add;
+                                        TextureObjects[ThisTexture].GLShiftS -= Add;
 
 
                                         while (TextureObjects[ThisTexture].GLShiftT > 1)
@@ -415,7 +415,7 @@ namespace Tarmac64_Retail
                                 double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
                                 TextureObjects[ThisTexture].GLShiftT -= Add;
                                 Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
-                                TextureObjects[ThisTexture].GLShiftS += Add;
+                                TextureObjects[ThisTexture].GLShiftS -= Add;
 
                                 while (TextureObjects[ThisTexture].GLShiftT > 1)
                                 {
@@ -500,7 +500,7 @@ namespace Tarmac64_Retail
                                     double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
                                     TextureObjects[ThisTexture].GLShiftT -= Add;
                                     Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
-                                    TextureObjects[ThisTexture].GLShiftS += Add;
+                                    TextureObjects[ThisTexture].GLShiftS -= Add;
 
                                     while (TextureObjects[ThisTexture].GLShiftT > 1)
                                     {
@@ -902,7 +902,7 @@ namespace Tarmac64_Retail
                     CourseObjects.Add(ThisObject);
                     RequestMode = 1;
                 }
-                else if ((Keyboard.IsKeyDown(Key.LeftShift)) && (OKSelectedObject != -1))
+                else if ((Keyboard.IsKeyDown(Key.LeftShift)) && (OKSelectedObject != -1) && (e.Button != MouseButtons.Middle))
                 {
                     CourseObjects[OKSelectedObject].OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker.X), Convert.ToInt16(LocalCamera.marker.Y), Convert.ToInt16(LocalCamera.marker.Z) };
                     RequestMode = 2;

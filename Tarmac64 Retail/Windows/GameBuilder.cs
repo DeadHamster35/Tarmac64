@@ -254,7 +254,7 @@ namespace Tarmac64_Library
                     }
 
                     binaryWriter.BaseStream.Position = 0xBFFFFC;
-                    byte[] flip = BitConverter.GetBytes(binaryWriter.BaseStream.Length);
+                    byte[] flip = BitConverter.GetBytes(Convert.ToInt32(binaryWriter.BaseStream.Length));
                     Array.Reverse(flip);
                     binaryWriter.Write(flip);
 

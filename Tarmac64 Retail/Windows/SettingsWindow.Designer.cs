@@ -41,6 +41,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.ROMDIRBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.BlenderCheck = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -106,6 +107,7 @@
             this.ScaleBox.Name = "ScaleBox";
             this.ScaleBox.Size = new System.Drawing.Size(64, 20);
             this.ScaleBox.TabIndex = 7;
+            this.ScaleBox.TextChanged += new System.EventHandler(this.ScaleBox_TextChanged);
             // 
             // label3
             // 
@@ -126,6 +128,7 @@
             this.AlphaBox.TabIndex = 8;
             this.AlphaBox.Text = "Vertex Alpha - Channel 2";
             this.AlphaBox.UseVisualStyleBackColor = true;
+            this.AlphaBox.CheckedChanged += new System.EventHandler(this.AlphaBox_CheckedChanged);
             // 
             // button3
             // 
@@ -165,11 +168,23 @@
             this.label4.TabIndex = 10;
             this.label4.Text = "ROM Directory";
             // 
+            // BlenderCheck
+            // 
+            this.BlenderCheck.AutoSize = true;
+            this.BlenderCheck.Location = new System.Drawing.Point(14, 135);
+            this.BlenderCheck.Margin = new System.Windows.Forms.Padding(5);
+            this.BlenderCheck.Name = "BlenderCheck";
+            this.BlenderCheck.Size = new System.Drawing.Size(124, 17);
+            this.BlenderCheck.TabIndex = 13;
+            this.BlenderCheck.Text = "Blender Import Scale";
+            this.BlenderCheck.UseVisualStyleBackColor = true;
+            // 
             // SettingsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(344, 177);
+            this.Controls.Add(this.BlenderCheck);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.ROMDIRBox);
             this.Controls.Add(this.label4);
@@ -207,5 +222,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox ROMDIRBox;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox BlenderCheck;
     }
 }

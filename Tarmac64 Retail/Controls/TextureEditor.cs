@@ -25,6 +25,7 @@ using Cereal64.Microcodes.F3DEX.DataElements;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using F3DSharp;
 using System.Drawing.Drawing2D;
+using Texture64;
 
 namespace Tarmac64_Retail
 {
@@ -67,6 +68,7 @@ namespace Tarmac64_Retail
 
                     BitBox.SelectedIndex = textureArray[textureBox.SelectedIndex].BitSize;
                     CodecBox.SelectedIndex = textureArray[textureBox.SelectedIndex].TextureFormat;
+                    FilterBox.SelectedIndex = textureArray[textureBox.SelectedIndex].TextureFilter;
 
                     SFlagBox.SelectedIndex = textureArray[textureBox.SelectedIndex].SFlag;
                     TFlagBox.SelectedIndex = textureArray[textureBox.SelectedIndex].TFlag;
@@ -105,7 +107,12 @@ namespace Tarmac64_Retail
                         OverWriteIndexBox.SelectedIndex = -1;
                         OverWriteBox.SelectedIndex = -1;
                     }
+
+                    alphaMaskBox.Text = textureArray[textureBox.SelectedIndex].alphaPath;
+
+                    AlphaMaskCheckbox.Checked = (alphaMaskBox.Text != "");
                     
+
                     Locked = false;
                     return true;
                 }
@@ -120,6 +127,7 @@ namespace Tarmac64_Retail
                     Loaded = true;
                     BitBox.SelectedIndex = -1;
                     CodecBox.SelectedIndex = -1;
+                    FilterBox.SelectedIndex = -1;
 
                     SFlagBox.SelectedIndex = -1;
                     TFlagBox.SelectedIndex = -1;
@@ -141,6 +149,8 @@ namespace Tarmac64_Retail
 
                     RenderBoxA.SelectedIndex = textureArray[textureBox.SelectedIndex].RenderModeA;
                     RenderBoxB.SelectedIndex = textureArray[textureBox.SelectedIndex].RenderModeB;
+
+                    alphaMaskBox.Text = "";
 
                     Locked = false;
                     return true;
@@ -197,6 +207,10 @@ namespace Tarmac64_Retail
             {
                 CodecBox.Items.Add(ThisName);
             }
+            foreach (var ThisName in F3DEX095_Parameters.TextureFilterNames)
+            {
+                FilterBox.Items.Add(ThisName);
+            }
             foreach (var ThisName in F3DEX095_Parameters.RenderModeNames)
             {
                 RenderBoxA.Items.Add(ThisName);
@@ -210,7 +224,7 @@ namespace Tarmac64_Retail
             
         }
 
-        public int LoadTextureSettings(string[] TextureSettings, TM64_Geometry.OK64Texture[] CurrentArray)
+        public int LoadTextureSettings(string[] TextureSettings, TM64_Geometry.OK64Texture[] CurrentArray, int Version = 5)
         {
             int ThisLine = 0;
             int Count = Convert.ToInt32(TextureSettings[ThisLine++]);
@@ -224,8 +238,12 @@ namespace Tarmac64_Retail
                 textureArray[This] = new TM64_Geometry.OK64Texture();
                 textureArray[This].textureName = TextureSettings[ThisLine++];
                 textureArray[This].texturePath = CurrentArray[This].texturePath;
-                textureArray[This].textureWidth = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].textureHeight = Convert.ToInt32(TextureSettings[ThisLine++]);
+                textureArray[This].textureBitmap = CurrentArray[This].textureBitmap;
+                textureArray[This].textureBitmap = CurrentArray[This].textureBitmap;
+                textureArray[This].alphaPath = CurrentArray[This].alphaPath;
+                textureArray[This].textureWidth = CurrentArray[This].textureWidth;
+                textureArray[This].textureHeight = CurrentArray[This].textureHeight;
+                ThisLine += 2; //skip height width 
 
                 textureArray[This].SFlag = Convert.ToInt32(TextureSettings[ThisLine++]);
                 textureArray[This].TFlag = Convert.ToInt32(TextureSettings[ThisLine++]);
@@ -252,6 +270,12 @@ namespace Tarmac64_Retail
                 textureArray[This].BitSize = Convert.ToInt32(TextureSettings[ThisLine++]);
                 textureArray[This].TextureFormat = Convert.ToInt32(TextureSettings[ThisLine++]);
 
+                if (Version > 6)
+                {
+                    textureArray[This].TextureFormat = Convert.ToInt32(TextureSettings[ThisLine++]);
+                }
+                
+
 
                 textureArray[This].textureScrollS = Convert.ToInt32(TextureSettings[ThisLine++]);
                 textureArray[This].textureScrollT = Convert.ToInt32(TextureSettings[ThisLine++]);
@@ -273,7 +297,7 @@ namespace Tarmac64_Retail
             return ThisLine;
         }
 
-        public string[] SaveTextureSettings()
+        public string[] SaveTextureSettings(int Version)
         {
             List<string> Output = new List<string>();
 
@@ -308,6 +332,11 @@ namespace Tarmac64_Retail
 
                 Output.Add(textureArray[This].BitSize.ToString());
                 Output.Add(textureArray[This].TextureFormat.ToString());
+                if (Version > 6)
+                {
+                    Output.Add(textureArray[This].TextureFilter.ToString());
+                }
+
 
                 Output.Add(textureArray[This].textureScrollS.ToString());
                 Output.Add(textureArray[This].textureScrollT.ToString());
@@ -398,6 +427,7 @@ namespace Tarmac64_Retail
 
                 textureArray[textureBox.SelectedIndex].BitSize = BitBox.SelectedIndex;
                 textureArray[textureBox.SelectedIndex].TextureFormat = CodecBox.SelectedIndex;
+                textureArray[textureBox.SelectedIndex].TextureFilter = FilterBox.SelectedIndex;
 
                 if (OverWriteIndexBox.SelectedIndex != -1)
                 {
@@ -580,6 +610,46 @@ namespace Tarmac64_Retail
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void AlphaMaskCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if ((Loaded) && (!Locked))
+            {
+                Locked = true;
+
+                if (!AlphaMaskCheckbox.Checked)
+                {
+                    textureArray[textureBox.SelectedIndex].alphaPath = "";
+                }
+                else
+                {
+                    OpenFileDialog FileOpen = new OpenFileDialog();
+                    MessageBox.Show("Select Alpha Mask Texture");
+                    if (FileOpen.ShowDialog()==DialogResult.OK)
+                    {
+                        if (File.Exists(FileOpen.FileName))
+                        {
+                            textureArray[textureBox.SelectedIndex].alphaPath = FileOpen.FileName;
+                        }
+                    }
+
+                }
+                alphaMaskBox.Text = textureArray[textureBox.SelectedIndex].alphaPath;
+                Locked = false;
+            }
+
+            
+        }
+
+        private void FilterBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateTextureData();
         }
 
         private void textureCodecBox_SelectedIndexChanged(object sender, EventArgs e)

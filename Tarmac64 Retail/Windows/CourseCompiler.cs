@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace Tarmac64_Library
 {
@@ -108,12 +109,12 @@ namespace Tarmac64_Library
             "Dirt Off-Road", "Train Tracks", "Cave Interior", "Rickety Wood Bridge", "Solid Wood Bridge",
             "C-FastOOB", "C-Water", "C-Mushroom Boost","C-Feather Jump", "C-Tornado Jump","C-SpinOut Saveable",
             "C-SpinOut", "C-Failed Start", "C-GreenShell Hit", "C-RedShell Hit", "C-Object Hit", "C-Shrunken",
-            "C-Star Power", "C-Boo", "C-Get Item", "C-Trick Jump", "C-Gap Jump", "C-Lava", "DK Parkyway Boost", "Out-Of-Bounds", "Royal Raceway Boost", "Walls" };
+            "C-Star Power", "C-Boo", "C-Get Item", "C-Trick Jump", "C-Gap Jump", "C-Lava", "C-ForceJump", "DK Parkyway Boost", "Out-Of-Bounds", "Royal Raceway Boost", "Walls" };
 
         Byte[] surfaceTypeID = new Byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 
             0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 
             0x10, 0x11, 0xFB, 0xFA, 0xF9, 0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 
-            0xF3, 0xF2, 0xF1, 0xF0, 0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xEA, 0xFC, 0xFD, 0xFE, 0xFF };
+            0xF3, 0xF2, 0xF1, 0xF0, 0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xEA, 0xE9, 0xFC, 0xFD, 0xFE, 0xFF };
 
         
 
@@ -188,7 +189,7 @@ namespace Tarmac64_Library
 
 
             
-            // This command writes all the bitmaps to the end of the ROM
+            
 
             TarmacGeometry.BuildTextures(textureArray);
                     
@@ -290,7 +291,7 @@ namespace Tarmac64_Library
 
 
                 courseData.PathOffsets = new UInt32[4] { 0x800DC778, 0x800DC778, 0x800DC778, 0x800DC778 };
-                courseData.PathSurface = new int[4];                
+                          
                 courseData.PathOffsets[0] = Convert.ToUInt32(0x06000000 + ListData.Length + 8);
                 PathListData = tm64Path.popMarker(pathGroups[0].pathList[0], 0);
                 ListStream.Write(PathListData, 0, PathListData.Length);
@@ -1715,17 +1716,43 @@ namespace Tarmac64_Library
             {
                 Output.Add(Line);
             }
-            foreach (var Line in TextureControl.SaveTextureSettings())
+
+            if (Keyboard.IsKeyDown(Key.LeftShift))
             {
-                Output.Add(Line);
+                foreach (var Line in TextureControl.SaveTextureSettings(5))
+                {
+                    Output.Add(Line);
+                }
             }
-            foreach (var Line in ObjectControl.SaveSettings())
+            else
             {
-                Output.Add(Line);
+                foreach (var Line in TextureControl.SaveTextureSettings(6))
+                {
+                    Output.Add(Line);
+                }
+            }
+            if (Keyboard.IsKeyDown(Key.LeftShift))
+            {
+
+                foreach (var Line in ObjectControl.SaveSettings(5))
+                {
+                    Output.Add(Line);
+                }
+            }
+            else
+            {
+
+                foreach (var Line in ObjectControl.SaveSettings(6))
+                {
+                    Output.Add(Line);
+                }
             }
             SaveFileDialog FileSave = new SaveFileDialog();
+            okSettings.LoadSettings();
+
 
             FileSave.Filter = "Tarmac Backup|*.ok64.Backup|All Files (*.*)|*.*";
+            FileSave.InitialDirectory = okSettings.ProjectDirectory;
             if (FileSave.ShowDialog() == DialogResult.OK)
             {
                 File.WriteAllLines(FileSave.FileName, Output.ToArray());
@@ -1736,7 +1763,12 @@ namespace Tarmac64_Library
         {
             MessageBox.Show("Load OK64Backup");
             OpenFileDialog FileOpen = new OpenFileDialog();
+
+            okSettings.LoadSettings();
+
+            
             FileOpen.Filter = "Tarmac Backup|*.ok64.Backup|All Files (*.*)|*.*";
+            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
                 string[] SettingsFile = File.ReadAllLines(FileOpen.FileName);
@@ -1801,11 +1833,28 @@ namespace Tarmac64_Library
 
                 SubSettings = new string[SettingsFile.Length - ThisLine];
                 Array.Copy(SettingsFile, ThisLine, SubSettings, 0, SettingsFile.Length - ThisLine);
-                ThisLine += TextureControl.LoadTextureSettings(SubSettings, textureArray);
+                if (Keyboard.IsKeyDown(Key.LeftShift))
+                {
+                    ThisLine += TextureControl.LoadTextureSettings(SubSettings, textureArray, 5);
+                }
+                else
+                {
+                    ThisLine += TextureControl.LoadTextureSettings(SubSettings, textureArray, 6);
+                }
+                    
 
                 SubSettings = new string[SettingsFile.Length - ThisLine];
                 Array.Copy(SettingsFile, ThisLine, SubSettings, 0, SettingsFile.Length - ThisLine);
-                ObjectControl.LoadSettings(SubSettings);
+
+                if (Keyboard.IsKeyDown(Key.LeftShift))
+                {
+                    ObjectControl.LoadSettings(SubSettings, 5);
+                }
+                else
+                {
+                    ObjectControl.LoadSettings(SubSettings, 6);
+                }
+                   
 
                 GLControl.SkyColors = new float[3, 3]
                 {

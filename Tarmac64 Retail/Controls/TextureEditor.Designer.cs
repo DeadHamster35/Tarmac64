@@ -29,7 +29,8 @@
         private void InitializeComponent()
         {
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.alphaMaskBox = new System.Windows.Forms.TextBox();
+            this.AlphaMaskCheckbox = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.CombineBoxB = new System.Windows.Forms.ComboBox();
@@ -66,7 +67,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.widthBox = new System.Windows.Forms.TextBox();
             this.bitm = new System.Windows.Forms.PictureBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.FilterBox = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bitm)).BeginInit();
             this.SuspendLayout();
@@ -75,8 +77,10 @@
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox5.Controls.Add(this.textBox1);
-            this.groupBox5.Controls.Add(this.checkBox1);
+            this.groupBox5.Controls.Add(this.FilterBox);
+            this.groupBox5.Controls.Add(this.label8);
+            this.groupBox5.Controls.Add(this.alphaMaskBox);
+            this.groupBox5.Controls.Add(this.AlphaMaskCheckbox);
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.button2);
             this.groupBox5.Controls.Add(this.CombineBoxB);
@@ -114,30 +118,38 @@
             this.groupBox5.Controls.Add(this.widthBox);
             this.groupBox5.Location = new System.Drawing.Point(3, 253);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(282, 500);
+            this.groupBox5.Size = new System.Drawing.Size(282, 545);
             this.groupBox5.TabIndex = 0;
             this.groupBox5.TabStop = false;
             this.groupBox5.Enter += new System.EventHandler(this.groupBox5_Enter);
             // 
-            // checkBox1
+            // alphaMaskBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox1.Location = new System.Drawing.Point(2, 445);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(5);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(79, 17);
-            this.checkBox1.TabIndex = 51;
-            this.checkBox1.Text = "AlphaMask";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.alphaMaskBox.Location = new System.Drawing.Point(91, 51);
+            this.alphaMaskBox.Margin = new System.Windows.Forms.Padding(5);
+            this.alphaMaskBox.Name = "alphaMaskBox";
+            this.alphaMaskBox.Size = new System.Drawing.Size(179, 20);
+            this.alphaMaskBox.TabIndex = 52;
+            // 
+            // AlphaMaskCheckbox
+            // 
+            this.AlphaMaskCheckbox.AutoSize = true;
+            this.AlphaMaskCheckbox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.AlphaMaskCheckbox.Location = new System.Drawing.Point(2, 54);
+            this.AlphaMaskCheckbox.Margin = new System.Windows.Forms.Padding(5);
+            this.AlphaMaskCheckbox.Name = "AlphaMaskCheckbox";
+            this.AlphaMaskCheckbox.Size = new System.Drawing.Size(79, 17);
+            this.AlphaMaskCheckbox.TabIndex = 51;
+            this.AlphaMaskCheckbox.Text = "AlphaMask";
+            this.AlphaMaskCheckbox.UseVisualStyleBackColor = true;
+            this.AlphaMaskCheckbox.CheckedChanged += new System.EventHandler(this.AlphaMaskCheckbox_CheckedChanged);
             // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(6, 383);
+            this.label2.Location = new System.Drawing.Point(6, 415);
             this.label2.Margin = new System.Windows.Forms.Padding(5);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(55, 13);
@@ -146,7 +158,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(247, 471);
+            this.button2.Location = new System.Drawing.Point(247, 503);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(23, 23);
             this.button2.TabIndex = 50;
@@ -158,7 +170,7 @@
             // 
             this.CombineBoxB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CombineBoxB.FormattingEnabled = true;
-            this.CombineBoxB.Location = new System.Drawing.Point(69, 411);
+            this.CombineBoxB.Location = new System.Drawing.Point(69, 443);
             this.CombineBoxB.Margin = new System.Windows.Forms.Padding(5);
             this.CombineBoxB.Name = "CombineBoxB";
             this.CombineBoxB.Size = new System.Drawing.Size(201, 21);
@@ -170,7 +182,7 @@
             this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(6, 414);
+            this.label22.Location = new System.Drawing.Point(6, 446);
             this.label22.Margin = new System.Windows.Forms.Padding(5);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(55, 13);
@@ -179,7 +191,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(218, 471);
+            this.button1.Location = new System.Drawing.Point(218, 503);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(23, 23);
             this.button1.TabIndex = 49;
@@ -191,7 +203,7 @@
             // 
             this.CombineBoxA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CombineBoxA.FormattingEnabled = true;
-            this.CombineBoxA.Location = new System.Drawing.Point(69, 380);
+            this.CombineBoxA.Location = new System.Drawing.Point(69, 412);
             this.CombineBoxA.Margin = new System.Windows.Forms.Padding(5);
             this.CombineBoxA.Name = "CombineBoxA";
             this.CombineBoxA.Size = new System.Drawing.Size(201, 21);
@@ -202,7 +214,7 @@
             // 
             this.OverWriteBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.OverWriteBox.FormattingEnabled = true;
-            this.OverWriteBox.Location = new System.Drawing.Point(114, 473);
+            this.OverWriteBox.Location = new System.Drawing.Point(114, 505);
             this.OverWriteBox.Margin = new System.Windows.Forms.Padding(5);
             this.OverWriteBox.Name = "OverWriteBox";
             this.OverWriteBox.Size = new System.Drawing.Size(96, 21);
@@ -213,7 +225,7 @@
             // 
             this.OverWriteIndexBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.OverWriteIndexBox.FormattingEnabled = true;
-            this.OverWriteIndexBox.Location = new System.Drawing.Point(69, 473);
+            this.OverWriteIndexBox.Location = new System.Drawing.Point(69, 505);
             this.OverWriteIndexBox.Margin = new System.Windows.Forms.Padding(5);
             this.OverWriteIndexBox.Name = "OverWriteIndexBox";
             this.OverWriteIndexBox.Size = new System.Drawing.Size(35, 21);
@@ -225,7 +237,7 @@
             this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(7, 468);
+            this.label17.Location = new System.Drawing.Point(7, 500);
             this.label17.Margin = new System.Windows.Forms.Padding(5);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(52, 26);
@@ -237,7 +249,7 @@
             this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(5, 258);
+            this.label16.Location = new System.Drawing.Point(5, 290);
             this.label16.Margin = new System.Windows.Forms.Padding(5);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(52, 26);
@@ -248,7 +260,7 @@
             // GeoModeBox
             // 
             this.GeoModeBox.FormattingEnabled = true;
-            this.GeoModeBox.Location = new System.Drawing.Point(69, 231);
+            this.GeoModeBox.Location = new System.Drawing.Point(69, 263);
             this.GeoModeBox.Name = "GeoModeBox";
             this.GeoModeBox.Size = new System.Drawing.Size(201, 79);
             this.GeoModeBox.TabIndex = 44;
@@ -259,7 +271,7 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(17, 175);
+            this.label1.Location = new System.Drawing.Point(17, 206);
             this.label1.Margin = new System.Windows.Forms.Padding(5);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(42, 13);
@@ -271,7 +283,7 @@
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(11, 321);
+            this.label6.Location = new System.Drawing.Point(11, 353);
             this.label6.Margin = new System.Windows.Forms.Padding(5);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(48, 13);
@@ -282,7 +294,7 @@
             // 
             this.BitBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.BitBox.FormattingEnabled = true;
-            this.BitBox.Location = new System.Drawing.Point(69, 172);
+            this.BitBox.Location = new System.Drawing.Point(69, 203);
             this.BitBox.Margin = new System.Windows.Forms.Padding(5);
             this.BitBox.Name = "BitBox";
             this.BitBox.Size = new System.Drawing.Size(201, 21);
@@ -293,7 +305,7 @@
             // 
             this.RenderBoxA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RenderBoxA.FormattingEnabled = true;
-            this.RenderBoxA.Location = new System.Drawing.Point(69, 318);
+            this.RenderBoxA.Location = new System.Drawing.Point(69, 350);
             this.RenderBoxA.Margin = new System.Windows.Forms.Padding(5);
             this.RenderBoxA.Name = "RenderBoxA";
             this.RenderBoxA.Size = new System.Drawing.Size(201, 21);
@@ -304,7 +316,7 @@
             // 
             this.RenderBoxB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RenderBoxB.FormattingEnabled = true;
-            this.RenderBoxB.Location = new System.Drawing.Point(69, 349);
+            this.RenderBoxB.Location = new System.Drawing.Point(69, 381);
             this.RenderBoxB.Margin = new System.Windows.Forms.Padding(5);
             this.RenderBoxB.Name = "RenderBoxB";
             this.RenderBoxB.Size = new System.Drawing.Size(201, 21);
@@ -316,7 +328,7 @@
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(11, 352);
+            this.label7.Location = new System.Drawing.Point(11, 384);
             this.label7.Margin = new System.Windows.Forms.Padding(5);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(48, 13);
@@ -327,7 +339,7 @@
             // 
             this.CodecBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CodecBox.FormattingEnabled = true;
-            this.CodecBox.Location = new System.Drawing.Point(69, 141);
+            this.CodecBox.Location = new System.Drawing.Point(69, 172);
             this.CodecBox.Margin = new System.Windows.Forms.Padding(5);
             this.CodecBox.Name = "CodecBox";
             this.CodecBox.Size = new System.Drawing.Size(201, 21);
@@ -339,7 +351,7 @@
             this.label55.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label55.AutoSize = true;
             this.label55.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label55.Location = new System.Drawing.Point(22, 144);
+            this.label55.Location = new System.Drawing.Point(22, 175);
             this.label55.Margin = new System.Windows.Forms.Padding(5);
             this.label55.Name = "label55";
             this.label55.Size = new System.Drawing.Size(37, 13);
@@ -349,7 +361,7 @@
             // textureScrollTBox
             // 
             this.textureScrollTBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textureScrollTBox.Location = new System.Drawing.Point(200, 111);
+            this.textureScrollTBox.Location = new System.Drawing.Point(200, 142);
             this.textureScrollTBox.Margin = new System.Windows.Forms.Padding(5);
             this.textureScrollTBox.Name = "textureScrollTBox";
             this.textureScrollTBox.Size = new System.Drawing.Size(70, 20);
@@ -368,7 +380,7 @@
             "Mid-Right",
             "Bottom-Left",
             "Bottom-Right"});
-            this.screenBox.Location = new System.Drawing.Point(69, 203);
+            this.screenBox.Location = new System.Drawing.Point(69, 474);
             this.screenBox.Margin = new System.Windows.Forms.Padding(5);
             this.screenBox.Name = "screenBox";
             this.screenBox.Size = new System.Drawing.Size(201, 21);
@@ -378,7 +390,7 @@
             // textureScrollSBox
             // 
             this.textureScrollSBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textureScrollSBox.Location = new System.Drawing.Point(69, 111);
+            this.textureScrollSBox.Location = new System.Drawing.Point(69, 142);
             this.textureScrollSBox.Margin = new System.Windows.Forms.Padding(5);
             this.textureScrollSBox.Name = "textureScrollSBox";
             this.textureScrollSBox.Size = new System.Drawing.Size(70, 20);
@@ -390,7 +402,7 @@
             this.label62.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label62.AutoSize = true;
             this.label62.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label62.Location = new System.Drawing.Point(19, 206);
+            this.label62.Location = new System.Drawing.Point(19, 477);
             this.label62.Margin = new System.Windows.Forms.Padding(5);
             this.label62.Name = "label62";
             this.label62.Size = new System.Drawing.Size(40, 13);
@@ -402,7 +414,7 @@
             this.label58.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label58.AutoSize = true;
             this.label58.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label58.Location = new System.Drawing.Point(150, 114);
+            this.label58.Location = new System.Drawing.Point(150, 145);
             this.label58.Margin = new System.Windows.Forms.Padding(5);
             this.label58.Name = "label58";
             this.label58.Size = new System.Drawing.Size(40, 13);
@@ -414,7 +426,7 @@
             this.label59.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label59.AutoSize = true;
             this.label59.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label59.Location = new System.Drawing.Point(15, 114);
+            this.label59.Location = new System.Drawing.Point(15, 145);
             this.label59.Margin = new System.Windows.Forms.Padding(5);
             this.label59.Name = "label59";
             this.label59.Size = new System.Drawing.Size(42, 13);
@@ -426,7 +438,7 @@
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(153, 53);
+            this.label4.Location = new System.Drawing.Point(153, 84);
             this.label4.Margin = new System.Windows.Forms.Padding(5);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
@@ -437,7 +449,7 @@
             // 
             this.heightBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.heightBox.Enabled = false;
-            this.heightBox.Location = new System.Drawing.Point(200, 50);
+            this.heightBox.Location = new System.Drawing.Point(200, 81);
             this.heightBox.Margin = new System.Windows.Forms.Padding(5);
             this.heightBox.Name = "heightBox";
             this.heightBox.Size = new System.Drawing.Size(70, 20);
@@ -448,7 +460,7 @@
             this.label56.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label56.AutoSize = true;
             this.label56.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label56.Location = new System.Drawing.Point(148, 83);
+            this.label56.Location = new System.Drawing.Point(148, 114);
             this.label56.Margin = new System.Windows.Forms.Padding(5);
             this.label56.Name = "label56";
             this.label56.Size = new System.Drawing.Size(42, 13);
@@ -465,7 +477,7 @@
             "Mirror",
             "Clamp",
             "Mirrored Clamp"});
-            this.TFlagBox.Location = new System.Drawing.Point(200, 80);
+            this.TFlagBox.Location = new System.Drawing.Point(200, 111);
             this.TFlagBox.Margin = new System.Windows.Forms.Padding(5);
             this.TFlagBox.Name = "TFlagBox";
             this.TFlagBox.Size = new System.Drawing.Size(70, 21);
@@ -477,7 +489,7 @@
             this.label33.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label33.AutoSize = true;
             this.label33.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label33.Location = new System.Drawing.Point(12, 83);
+            this.label33.Location = new System.Drawing.Point(12, 114);
             this.label33.Margin = new System.Windows.Forms.Padding(5);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(47, 13);
@@ -494,7 +506,7 @@
             "Mirror",
             "Clamp",
             "Mirrored Clamp"});
-            this.SFlagBox.Location = new System.Drawing.Point(69, 80);
+            this.SFlagBox.Location = new System.Drawing.Point(69, 111);
             this.SFlagBox.Margin = new System.Windows.Forms.Padding(5);
             this.SFlagBox.Name = "SFlagBox";
             this.SFlagBox.Size = new System.Drawing.Size(70, 21);
@@ -505,7 +517,7 @@
             // 
             this.textureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.textureBox.FormattingEnabled = true;
-            this.textureBox.Location = new System.Drawing.Point(41, 19);
+            this.textureBox.Location = new System.Drawing.Point(41, 21);
             this.textureBox.Margin = new System.Windows.Forms.Padding(5);
             this.textureBox.Name = "textureBox";
             this.textureBox.Size = new System.Drawing.Size(229, 21);
@@ -517,7 +529,7 @@
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(26, 53);
+            this.label5.Location = new System.Drawing.Point(26, 84);
             this.label5.Margin = new System.Windows.Forms.Padding(5);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(33, 13);
@@ -529,7 +541,7 @@
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(18, 22);
+            this.label3.Location = new System.Drawing.Point(18, 24);
             this.label3.Margin = new System.Windows.Forms.Padding(5);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(13, 13);
@@ -540,7 +552,7 @@
             // 
             this.widthBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.widthBox.Enabled = false;
-            this.widthBox.Location = new System.Drawing.Point(69, 50);
+            this.widthBox.Location = new System.Drawing.Point(69, 81);
             this.widthBox.Margin = new System.Windows.Forms.Padding(5);
             this.widthBox.Name = "widthBox";
             this.widthBox.Size = new System.Drawing.Size(70, 20);
@@ -559,13 +571,28 @@
             this.bitm.TabStop = false;
             this.bitm.Paint += new System.Windows.Forms.PaintEventHandler(this.bitm_Paint);
             // 
-            // textBox1
+            // FilterBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(91, 442);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(5);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(179, 20);
-            this.textBox1.TabIndex = 52;
+            this.FilterBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.FilterBox.FormattingEnabled = true;
+            this.FilterBox.Location = new System.Drawing.Point(69, 234);
+            this.FilterBox.Margin = new System.Windows.Forms.Padding(5);
+            this.FilterBox.Name = "FilterBox";
+            this.FilterBox.Size = new System.Drawing.Size(201, 21);
+            this.FilterBox.TabIndex = 53;
+            this.FilterBox.SelectedIndexChanged += new System.EventHandler(this.FilterBox_SelectedIndexChanged);
+            // 
+            // label8
+            // 
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(19, 237);
+            this.label8.Margin = new System.Windows.Forms.Padding(5);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(29, 13);
+            this.label8.TabIndex = 54;
+            this.label8.Text = "Filter";
             // 
             // TextureEditor
             // 
@@ -574,7 +601,7 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.bitm);
             this.Name = "TextureEditor";
-            this.Size = new System.Drawing.Size(289, 755);
+            this.Size = new System.Drawing.Size(289, 800);
             this.Load += new System.EventHandler(this.TextureEditor_Load);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
@@ -622,7 +649,9 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         public System.Windows.Forms.ComboBox OverWriteBox;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.CheckBox AlphaMaskCheckbox;
+        private System.Windows.Forms.TextBox alphaMaskBox;
+        public System.Windows.Forms.ComboBox FilterBox;
+        private System.Windows.Forms.Label label8;
     }
 }

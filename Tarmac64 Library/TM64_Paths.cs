@@ -258,7 +258,7 @@ namespace Tarmac64_Library
                             float[] pointA = new float[3];
                             pointA[0] = Convert.ToSingle(tempList[pindex].pathmarker[marker].xval);
                             pointA[1] = Convert.ToSingle(tempList[pindex].pathmarker[marker].yval);
-                            pointA[2] = Convert.ToSingle(tempList[pindex].pathmarker[marker].zval + 50);
+                            pointA[2] = Convert.ToSingle(tempList[pindex].pathmarker[marker].zval + 20);
                             //custom Path Flag routine
                             //uses surfaceObjects and raycasts to determine appropriate surface section.
                             Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
@@ -285,7 +285,7 @@ namespace Tarmac64_Library
                                     }
                                 }
                             }
-                            if (objectID > 0)
+                            if (objectID >= 0)
                             {
                                 tempList[pindex].pathmarker[marker].flag = Convert.ToInt32(surfaceObjects[objectID].surfaceID);
                             }
