@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CourseCompiler));
-            this.actionBtn = new System.Windows.Forms.Button();
             this.SurfaceMap = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.BattleBoxC = new System.Windows.Forms.CheckBox();
@@ -74,17 +73,16 @@
             this.masterBox = new System.Windows.Forms.TreeView();
             this.sectionBox = new System.Windows.Forms.ComboBox();
             this.TextureData = new System.Windows.Forms.TabPage();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.Settings = new System.Windows.Forms.TabPage();
-            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Object = new System.Windows.Forms.TabPage();
-            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
-            this.ExportBtn = new System.Windows.Forms.Button();
-            this.ImportBtn = new System.Windows.Forms.Button();
-            this.TypeBox = new System.Windows.Forms.ComboBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GLControl = new Tarmac64_Retail.GLViewer();
+            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
+            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
@@ -95,18 +93,8 @@
             this.tabControl1.SuspendLayout();
             this.Object.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // actionBtn
-            // 
-            this.actionBtn.AutoSize = true;
-            this.actionBtn.Location = new System.Drawing.Point(14, 11);
-            this.actionBtn.Name = "actionBtn";
-            this.actionBtn.Size = new System.Drawing.Size(50, 23);
-            this.actionBtn.TabIndex = 0;
-            this.actionBtn.Text = "Load";
-            this.actionBtn.UseVisualStyleBackColor = true;
-            this.actionBtn.Click += new System.EventHandler(this.LoadBtn_Click);
             // 
             // SurfaceMap
             // 
@@ -115,7 +103,7 @@
             this.SurfaceMap.Cursor = System.Windows.Forms.Cursors.Default;
             this.SurfaceMap.Location = new System.Drawing.Point(4, 22);
             this.SurfaceMap.Name = "SurfaceMap";
-            this.SurfaceMap.Size = new System.Drawing.Size(192, 74);
+            this.SurfaceMap.Size = new System.Drawing.Size(307, 643);
             this.SurfaceMap.TabIndex = 3;
             this.SurfaceMap.Text = "Surfaces";
             this.SurfaceMap.UseVisualStyleBackColor = true;
@@ -142,7 +130,7 @@
             this.groupBox6.Controls.Add(this.label23);
             this.groupBox6.Controls.Add(this.surfsectionBox);
             this.groupBox6.Controls.Add(this.label17);
-            this.groupBox6.Location = new System.Drawing.Point(3, -99);
+            this.groupBox6.Location = new System.Drawing.Point(3, 470);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(281, 170);
             this.groupBox6.TabIndex = 1;
@@ -362,7 +350,7 @@
             this.surfaceobjectBox.FormattingEnabled = true;
             this.surfaceobjectBox.Location = new System.Drawing.Point(3, 9);
             this.surfaceobjectBox.Name = "surfaceobjectBox";
-            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 4);
+            this.surfaceobjectBox.Size = new System.Drawing.Size(281, 563);
             this.surfaceobjectBox.TabIndex = 0;
             this.surfaceobjectBox.SelectedIndexChanged += new System.EventHandler(this.SurfaceobjectBox_SelectedIndexChanged);
             // 
@@ -379,7 +367,7 @@
             this.SectionViews.Location = new System.Drawing.Point(4, 22);
             this.SectionViews.Name = "SectionViews";
             this.SectionViews.Padding = new System.Windows.Forms.Padding(3);
-            this.SectionViews.Size = new System.Drawing.Size(192, 74);
+            this.SectionViews.Size = new System.Drawing.Size(307, 643);
             this.SectionViews.TabIndex = 0;
             this.SectionViews.Text = "Sections";
             this.SectionViews.UseVisualStyleBackColor = true;
@@ -494,7 +482,7 @@
             this.groupBox2.Controls.Add(this.FiftyBoxR);
             this.groupBox2.Controls.Add(this.TTBoxR);
             this.groupBox2.Controls.Add(this.GPBoxR);
-            this.groupBox2.Location = new System.Drawing.Point(3, 1);
+            this.groupBox2.Location = new System.Drawing.Point(3, 570);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(279, 67);
             this.groupBox2.TabIndex = 13;
@@ -624,7 +612,7 @@
             this.masterBox.HideSelection = false;
             this.masterBox.Location = new System.Drawing.Point(3, 123);
             this.masterBox.Name = "masterBox";
-            this.masterBox.Size = new System.Drawing.Size(279, 0);
+            this.masterBox.Size = new System.Drawing.Size(279, 569);
             this.masterBox.TabIndex = 2;
             this.masterBox.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterCheck);
             this.masterBox.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterSelect);
@@ -646,19 +634,11 @@
             this.TextureData.Location = new System.Drawing.Point(4, 22);
             this.TextureData.Name = "TextureData";
             this.TextureData.Padding = new System.Windows.Forms.Padding(3);
-            this.TextureData.Size = new System.Drawing.Size(307, 602);
+            this.TextureData.Size = new System.Drawing.Size(307, 643);
             this.TextureData.TabIndex = 1;
             this.TextureData.Text = "Textures";
             this.TextureData.UseVisualStyleBackColor = true;
             this.TextureData.Click += new System.EventHandler(this.TextureData_Click);
-            // 
-            // TextureControl
-            // 
-            this.TextureControl.Location = new System.Drawing.Point(0, 0);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 790);
-            this.TextureControl.TabIndex = 0;
-            this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
             // 
             // Settings
             // 
@@ -666,19 +646,11 @@
             this.Settings.Controls.Add(this.SettingsControl);
             this.Settings.Location = new System.Drawing.Point(4, 22);
             this.Settings.Name = "Settings";
-            this.Settings.Size = new System.Drawing.Size(307, 602);
+            this.Settings.Size = new System.Drawing.Size(307, 623);
             this.Settings.TabIndex = 2;
             this.Settings.Text = "Settings";
             this.Settings.UseVisualStyleBackColor = true;
             this.Settings.Click += new System.EventHandler(this.CourseInfo_Click);
-            // 
-            // SettingsControl
-            // 
-            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
-            this.SettingsControl.Name = "SettingsControl";
-            this.SettingsControl.Size = new System.Drawing.Size(289, 1300);
-            this.SettingsControl.TabIndex = 0;
-            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 
             // tabControl1
             // 
@@ -689,10 +661,10 @@
             this.tabControl1.Controls.Add(this.SectionViews);
             this.tabControl1.Controls.Add(this.SurfaceMap);
             this.tabControl1.Controls.Add(this.Object);
-            this.tabControl1.Location = new System.Drawing.Point(16, 42);
+            this.tabControl1.Location = new System.Drawing.Point(16, 31);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(315, 628);
+            this.tabControl1.Size = new System.Drawing.Size(315, 649);
             this.tabControl1.TabIndex = 2;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -702,10 +674,64 @@
             this.Object.Controls.Add(this.ObjectControl);
             this.Object.Location = new System.Drawing.Point(4, 22);
             this.Object.Name = "Object";
-            this.Object.Size = new System.Drawing.Size(192, 74);
+            this.Object.Size = new System.Drawing.Size(307, 643);
             this.Object.TabIndex = 4;
             this.Object.Text = "Objects";
             this.Object.UseVisualStyleBackColor = true;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.InitialImage")));
+            this.pictureBox2.Location = new System.Drawing.Point(1142, 11);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(110, 25);
+            this.pictureBox2.TabIndex = 97;
+            this.pictureBox2.TabStop = false;
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1264, 24);
+            this.menuStrip1.TabIndex = 99;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // GLControl
+            // 
+            this.GLControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.GLControl.Location = new System.Drawing.Point(337, 12);
+            this.GLControl.Name = "GLControl";
+            this.GLControl.Size = new System.Drawing.Size(915, 668);
+            this.GLControl.TabIndex = 3;
+            this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
+            // 
+            // SettingsControl
+            // 
+            this.SettingsControl.Location = new System.Drawing.Point(0, 0);
+            this.SettingsControl.Name = "SettingsControl";
+            this.SettingsControl.Size = new System.Drawing.Size(289, 1300);
+            this.SettingsControl.TabIndex = 0;
+            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
+            // 
+            // TextureControl
+            // 
+            this.TextureControl.Location = new System.Drawing.Point(0, 0);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(289, 790);
+            this.TextureControl.TabIndex = 0;
+            this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
             // 
             // ObjectControl
             // 
@@ -713,80 +739,20 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ObjectControl.Location = new System.Drawing.Point(3, 3);
             this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 0);
+            this.ObjectControl.Size = new System.Drawing.Size(289, 620);
             this.ObjectControl.TabIndex = 1;
             this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
-            // 
-            // ExportBtn
-            // 
-            this.ExportBtn.AutoSize = true;
-            this.ExportBtn.Enabled = false;
-            this.ExportBtn.Location = new System.Drawing.Point(225, 11);
-            this.ExportBtn.Name = "ExportBtn";
-            this.ExportBtn.Size = new System.Drawing.Size(50, 23);
-            this.ExportBtn.TabIndex = 4;
-            this.ExportBtn.Text = "Export";
-            this.ExportBtn.UseVisualStyleBackColor = true;
-            this.ExportBtn.Click += new System.EventHandler(this.ExportBtn_Click);
-            // 
-            // ImportBtn
-            // 
-            this.ImportBtn.AutoSize = true;
-            this.ImportBtn.Enabled = false;
-            this.ImportBtn.Location = new System.Drawing.Point(281, 11);
-            this.ImportBtn.Name = "ImportBtn";
-            this.ImportBtn.Size = new System.Drawing.Size(50, 23);
-            this.ImportBtn.TabIndex = 5;
-            this.ImportBtn.Text = "Import";
-            this.ImportBtn.UseVisualStyleBackColor = true;
-            this.ImportBtn.Click += new System.EventHandler(this.Import_Click);
-            // 
-            // TypeBox
-            // 
-            this.TypeBox.Enabled = false;
-            this.TypeBox.FormattingEnabled = true;
-            this.TypeBox.Items.AddRange(new object[] {
-            "Race",
-            "Battle"});
-            this.TypeBox.Location = new System.Drawing.Point(70, 11);
-            this.TypeBox.Name = "TypeBox";
-            this.TypeBox.Size = new System.Drawing.Size(93, 21);
-            this.TypeBox.TabIndex = 98;
-            this.TypeBox.SelectedIndexChanged += new System.EventHandler(this.TypeBox_SelectedIndexChanged);
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(1086, 13);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(164, 23);
-            this.pictureBox2.TabIndex = 97;
-            this.pictureBox2.TabStop = false;
-            // 
-            // GLControl
-            // 
-            this.GLControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.GLControl.Location = new System.Drawing.Point(337, 11);
-            this.GLControl.Name = "GLControl";
-            this.GLControl.Size = new System.Drawing.Size(915, 659);
-            this.GLControl.TabIndex = 3;
-            this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
             // 
             // CourseCompiler
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-            this.ClientSize = new System.Drawing.Size(1264, 682);
-            this.Controls.Add(this.TypeBox);
+            this.ClientSize = new System.Drawing.Size(1264, 692);
             this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.ImportBtn);
-            this.Controls.Add(this.ExportBtn);
             this.Controls.Add(this.GLControl);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.actionBtn);
+            this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximumSize = new System.Drawing.Size(1920, 1080);
             this.MinimumSize = new System.Drawing.Size(640, 480);
             this.Name = "CourseCompiler";
@@ -805,13 +771,14 @@
             this.tabControl1.ResumeLayout(false);
             this.Object.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Button actionBtn;
         private System.Windows.Forms.TabPage SurfaceMap;
         private System.Windows.Forms.ListBox surfaceobjectBox;
         private System.Windows.Forms.GroupBox groupBox6;
@@ -838,14 +805,11 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private Tarmac64_Retail.GLViewer GLControl;
         private Tarmac64_Retail.ObjectEditor ObjectControl;
-        private System.Windows.Forms.Button ExportBtn;
-        private System.Windows.Forms.Button ImportBtn;
         private System.Windows.Forms.ComboBox surfmaterialBox;
         private System.Windows.Forms.Label label20;
         private Tarmac64_Retail.TextureEditor TextureControl;
         private Tarmac64_Retail.CourseSettings SettingsControl;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ComboBox TypeBox;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox ExtraBoxR;
         private System.Windows.Forms.CheckBox HundredFiftyBoxR;
@@ -867,5 +831,7 @@
         private System.Windows.Forms.Button SVL3Load;
         private System.Windows.Forms.Button CopyBtn;
         private System.Windows.Forms.ComboBox CopySectionIndexBox;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
     }
 }

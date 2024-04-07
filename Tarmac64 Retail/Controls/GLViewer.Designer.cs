@@ -241,12 +241,12 @@
             this.GLWindow.DrawFPS = false;
             this.GLWindow.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.GLWindow.FrameRate = 120;
-            this.GLWindow.Location = new System.Drawing.Point(3, 3);
+            this.GLWindow.Location = new System.Drawing.Point(0, 0);
             this.GLWindow.Name = "GLWindow";
             this.GLWindow.OpenGLVersion = SharpGL.Version.OpenGLVersion.OpenGL2_1;
             this.GLWindow.RenderContextType = SharpGL.RenderContextType.NativeWindow;
             this.GLWindow.RenderTrigger = SharpGL.RenderTrigger.TimerBased;
-            this.GLWindow.Size = new System.Drawing.Size(923, 669);
+            this.GLWindow.Size = new System.Drawing.Size(929, 675);
             this.GLWindow.TabIndex = 0;
             this.GLWindow.TabStop = false;
             this.GLWindow.OpenGLDraw += new SharpGL.RenderEventHandler(this.GLWindow_OpenGLDraw);

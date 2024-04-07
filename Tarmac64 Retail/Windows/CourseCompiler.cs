@@ -82,7 +82,6 @@ namespace Tarmac64_Library
             TextureControl.UpdateParent += TextureRequestUpdate;
             SettingsControl.UpdateParent += SettingsRequestUpdate;
 
-            TypeBox.SelectedIndex = 0;
             tabControl1.SelectedIndex = 0;
             tabControl1.SelectedIndex = 1;
             tabControl1.SelectedIndex = 2;
@@ -833,7 +832,7 @@ namespace Tarmac64_Library
                 if (File.Exists(OpenFile.FileName))
                 {
                     string FBXfilePath = OpenFile.FileName;
-                    levelFormat = TypeBox.SelectedIndex;
+                    levelFormat = 0;
 
                     AssimpContext importer = new AssimpContext();
 
@@ -1016,14 +1015,7 @@ namespace Tarmac64_Library
                     LoadBarForm.LoadingBar.Value = 65;
                     LoadBarForm.Update();
 
-                    ExportBtn.Enabled = true;
-                    ImportBtn.Enabled = true;
-                    ImportBtn.Visible = true;
-                    ExportBtn.Visible = true;
-                    TypeBox.Enabled = false;
-                    TypeBox.Visible = false;
                     GLControl.UpdateDraw = true;
-                    actionBtn.Text = "Compile";
 
                     LoadBarForm.LoadingBar.Value = 70;
                     LoadBarForm.LoadingLabel.Text = "Loading POP Data";                    

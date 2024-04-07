@@ -298,9 +298,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="kart64_tTF_icon.ico" />
+    <None Include="Resources\TextLogo.png" />
+    <None Include="Resources\LogoText.bmp" />
     <None Include="Resources\Tree1.png" />
     <None Include="Resources\Tree1.bmp" />
-    <None Include="Resources\TextLogo.png" />
     <None Include="Resources\controls2.png" />
     <None Include="Resources\controls1.png" />
     <None Include="Resources\controls.png" />
