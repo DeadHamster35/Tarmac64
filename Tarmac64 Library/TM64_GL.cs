@@ -53,7 +53,7 @@ namespace Tarmac64_Library
 
         public void DrawMarker( OpenGL gl, Texture glTexture, TM64_Geometry.Face subFace, float[] Color, TM64_Paths.Marker Point)
         {
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            
             float[] ThisColor = new float[4];
             if (Color.Length == 3)
             {
@@ -332,7 +332,7 @@ namespace Tarmac64_Library
             }
         }
 
-        public void DrawGouraud(OpenGL gl, Texture glTexture, TM64_Geometry.OK64F3DObject TargetObject)
+        public void DrawGouraud(OpenGL gl, TM64_Geometry.OK64F3DObject TargetObject)
         {
 
             gl.Begin(OpenGL.GL_TRIANGLES);
@@ -341,6 +341,21 @@ namespace Tarmac64_Library
                 foreach (var subVert in subFace.VertData)
                 {
                     gl.Color(subVert.color.R, subVert.color.G, subVert.color.B, subVert.color.A);
+                    gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
+                }
+            }
+        }
+
+
+        public void DrawGouraudObjectColor(OpenGL gl, TM64_Geometry.OK64F3DObject TargetObject)
+        {
+
+            gl.Begin(OpenGL.GL_TRIANGLES);
+            foreach (var subFace in TargetObject.modelGeometry)
+            {
+                foreach (var subVert in subFace.VertData)
+                {
+                    gl.Color(TargetObject.objectColor[0], TargetObject.objectColor[1], TargetObject.objectColor[2], 255);
                     gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
                 }
             }
@@ -468,6 +483,8 @@ namespace Tarmac64_Library
         }
         public void DrawTexturedNoFlush(OpenGL gl, TM64_Geometry.OK64Texture TextureObject, TM64_Geometry.OK64F3DObject targetObject)
         {
+
+            gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.Begin(OpenGL.GL_TRIANGLES);
             foreach (var subFace in targetObject.modelGeometry)
             {
@@ -689,10 +706,9 @@ namespace Tarmac64_Library
         }
 
 
-        public void DrawWire(OpenGL gl, TM64_Geometry.OK64Texture[] textureArray, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
+        public void DrawWire(OpenGL gl, TM64_Geometry.OK64F3DObject targetObject)
         {
             
-            glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
             gl.Begin(OpenGL.GL_TRIANGLES);
             foreach (var subFace in targetObject.modelGeometry)
@@ -715,7 +731,6 @@ namespace Tarmac64_Library
                     }
                 }
             }
-            
         }
 
 

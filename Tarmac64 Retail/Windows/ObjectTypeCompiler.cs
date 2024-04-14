@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using Tarmac64_Library;
 using System.IO;
 using System.Reflection;
+using Fluent;
 
 namespace Tarmac64_Retail
 {
@@ -182,17 +183,49 @@ namespace Tarmac64_Retail
             
 
         }
-
+        public class ParameterObject
+        {
+            public string Name;
+            public string Value;
+        }
         private void ObjectTypeCompiler_Load(object sender, EventArgs e)
         {
+
+            ParameterView.Theme = OLVTheme.VistaExplorer;
+            ParameterView.ItemFont = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+
+
+            // display the the file name as the list item label
+            ParameterView.Properties.Name = "Name";
+            ParameterView.Properties.ColumnNames = new List<string>
+            {
+                "Value"
+            };
+
+            
+
+            ParameterView.Properties.Columns = new List<string>
+            {
+                "Value"
+            };
+
+            ParameterView.Properties.Description = "Description";
+
+            ParameterView.Items = new List<ParameterObject>();
+            ParameterView.EnableCellEditing = true;
+
+            ParameterView.InnerList.CellEditActivation = Fluent.Lists.AdvancedListView.CellEditActivateMode.DoubleClick;
+
+            ParameterObject NewPar = new ParameterObject();
+            NewPar.Name = "Speed";
+            NewPar.Value = "5.0";
+            ParameterView.Items.Add(NewPar);
+            ParameterView.Redraw();
+
+
+
             TarmacSettings.LoadSettings();
             PropertyInfo[] properties = typeof(TM64_Course.OKObjectBehaviorSearch).GetProperties();
-            foreach (PropertyInfo ThisProp in properties)
-            {
-                int RowIndex = BElementTable.Rows.Add();
-                BElementTable.Rows[RowIndex].Cells[0].Value = ThisProp.Name;
-                BElementTable.Rows[RowIndex].Cells[1].Value = 0;
-            }
 
             string BehaviorPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Behaviors.txt");
 
@@ -337,5 +370,14 @@ namespace Tarmac64_Retail
 
         }
 
+        private void FListView_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

@@ -32,9 +32,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.BElementTable = new System.Windows.Forms.DataGridView();
-            this.Element = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DataValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label10 = new System.Windows.Forms.Label();
             this.FlagBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -83,9 +80,9 @@
             this.LoadBtn = new System.Windows.Forms.Button();
             this.ModelBox = new System.Windows.Forms.TextBox();
             this.BuildBtn = new System.Windows.Forms.Button();
+            this.ParameterView = new Fluent.FluentListView();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BElementTable)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -110,7 +107,7 @@
             // panel2
             // 
             this.panel2.AutoScroll = true;
-            this.panel2.Controls.Add(this.BElementTable);
+            this.panel2.Controls.Add(this.ParameterView);
             this.panel2.Controls.Add(this.label10);
             this.panel2.Controls.Add(this.FlagBox);
             this.panel2.Controls.Add(this.label3);
@@ -147,34 +144,9 @@
             this.panel2.Controls.Add(this.ModelBox);
             this.panel2.Location = new System.Drawing.Point(12, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(246, 562);
+            this.panel2.Size = new System.Drawing.Size(246, 600);
             this.panel2.TabIndex = 240;
-            // 
-            // BElementTable
-            // 
-            this.BElementTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.BElementTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Element,
-            this.DataValue});
-            this.BElementTable.Location = new System.Drawing.Point(3, 525);
-            this.BElementTable.Name = "BElementTable";
-            this.BElementTable.Size = new System.Drawing.Size(219, 150);
-            this.BElementTable.TabIndex = 294;
-            this.BElementTable.Visible = false;
-            // 
-            // Element
-            // 
-            this.Element.HeaderText = "Element";
-            this.Element.Name = "Element";
-            this.Element.ReadOnly = true;
-            this.Element.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // DataValue
-            // 
-            this.DataValue.HeaderText = "Value";
-            this.DataValue.Name = "DataValue";
-            this.DataValue.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.DataValue.Width = 75;
+            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
             // label10
             // 
@@ -656,6 +628,28 @@
             this.BuildBtn.UseVisualStyleBackColor = true;
             this.BuildBtn.Click += new System.EventHandler(this.BuildBtn_Click);
             // 
+            // ParameterView
+            // 
+            this.ParameterView.ColumnWidth = 100;
+            this.ParameterView.EnableCellEditing = true;
+            this.ParameterView.EnableDragDropItems = false;
+            this.ParameterView.EnableDrop = false;
+            this.ParameterView.EnableDropFiles = false;
+            this.ParameterView.EnableGifs = false;
+            this.ParameterView.EnableRenaming = false;
+            this.ParameterView.EnableTileView = false;
+            this.ParameterView.ItemFont = null;
+            this.ParameterView.Location = new System.Drawing.Point(3, 525);
+            this.ParameterView.Name = "ParameterView";
+            this.ParameterView.ShowColumns = true;
+            this.ParameterView.ShowDescription = true;
+            this.ParameterView.ShowGroups = true;
+            this.ParameterView.ShowIcons = false;
+            this.ParameterView.Size = new System.Drawing.Size(218, 227);
+            this.ParameterView.TabIndex = 294;
+            this.ParameterView.Theme = Fluent.OLVTheme.VistaExplorer;
+            this.ParameterView.Load += new System.EventHandler(this.FListView_Load);
+            // 
             // ObjectTypeCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -674,7 +668,6 @@
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BElementTable)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -735,8 +728,6 @@
         private System.Windows.Forms.TextBox HitboxBox;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox FlagBox;
-        private System.Windows.Forms.DataGridView BElementTable;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Element;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DataValue;
+        private Fluent.FluentListView ParameterView;
     }
 }

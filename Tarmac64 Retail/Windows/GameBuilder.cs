@@ -73,9 +73,9 @@ namespace Tarmac64_Library
                 else
                 {
                     int Index;
-                    if (NewCourse.Name.Length > 0)
+                    if (NewCourse.Settings.Name.Length > 0)
                     {
-                        Index = NameBox.Items.Add(NewCourse.Name);
+                        Index = NameBox.Items.Add(NewCourse.Settings.Name);
                     }
                     else
                     {
@@ -147,9 +147,9 @@ namespace Tarmac64_Library
                 if (NewCourse.Gametype == 0)
                 {
                     int Index;
-                    if (NewCourse.Name.Length > 0)
+                    if (NewCourse.Settings.Name.Length > 0)
                     {
-                        Index = NameBox.Items.Add(NewCourse.Name);
+                        Index = NameBox.Items.Add(NewCourse.Settings.Name);
                     }
                     else
                     {

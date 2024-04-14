@@ -26,13 +26,27 @@ namespace Tarmac64_Retail
 
         float MoveSpeed = 5;
 
+
+        public enum ControlMode
+        {
+            Scene,
+            Section,
+            Render,
+            Surface,
+            Objects,
+        }
+
         TM64 Tarmac = new TM64();
         TM64_Course TarmacCourse = new TM64_Course();
         TM64_GL TarmacGL = new TM64_GL();
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
         double FPS;
         public TM64_GL.TMCamera LocalCamera = new TM64_GL.TMCamera();
-        public int TargetMode = 0;
+
+        public ControlMode TargetingMode = ControlMode.Scene;
+        public int SelectedRender, SelectedSection, SelectedSurface, SelectedObject;
+        public int TargetedRender, TargetedSection, TargetedSurface, TargetedObject;
+
 
         long FrameTime;
         int FPSStall = 0;
@@ -45,8 +59,9 @@ namespace Tarmac64_Retail
         public TM64_Geometry.OK64F3DObject[] SurfaceModel = new TM64_Geometry.OK64F3DObject[0];
         public List<TM64_Course.OKObject> CourseObjects = new List<TM64_Course.OKObject>();
         public TM64_Course.OKObjectType[] ObjectTypes = new TM64_Course.OKObjectType[0];
-
         public TM64_Geometry.OK64Texture[] TextureObjects = new TM64_Geometry.OK64Texture[0];
+
+
         public Bitmap[] BitmapData = new Bitmap[0];
         public int[] SectionList = new int[0];
 
@@ -68,7 +83,7 @@ namespace Tarmac64_Retail
 
         public event EventHandler UpdateParent;
 
-        public int TargetedObject, SelectedObject, RequestMode, OKObjectIndex, OKSelectedObject = -1;
+        public int RequestMode, OKObjectIndex, OKSelectedObject = -1;
 
 
         public bool SpeedChangeLock = false;
@@ -296,376 +311,443 @@ namespace Tarmac64_Retail
         }
 
 
-        private void DrawScene()
+        private void ShiftST(int ThisTexture)
         {
-            if (CheckboxTextured.Checked)
+            double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
+            TextureObjects[ThisTexture].GLShiftT -= Add;
+            Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
+            TextureObjects[ThisTexture].GLShiftS -= Add;
+
+            while (TextureObjects[ThisTexture].GLShiftT > 1)
             {
+                TextureObjects[ThisTexture].GLShiftT -= 1;
+            }
+            while (TextureObjects[ThisTexture].GLShiftT < 0)
+            {
+                TextureObjects[ThisTexture].GLShiftT += 1;
+            }
+            while (TextureObjects[ThisTexture].GLShiftS > 1)
+            {
+                TextureObjects[ThisTexture].GLShiftS -= 1;
+            }
+            while (TextureObjects[ThisTexture].GLShiftS < 0)
+            {
+                TextureObjects[ThisTexture].GLShiftS += 1;
+            }
+        }
 
 
 
 
-
-                GL.End();
-                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-
-                GL.AlphaFunc(OpenGL.GL_GREATER, Convert.ToSingle(0.1));
-                GL.Enable(OpenGL.GL_ALPHA_TEST);
-                GL.Enable(OpenGL.GL_BLEND);
-                GL.BlendEquation(OpenGL.GL_ADD);
-                GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-                GL.ShadeModel(OpenGL.GL_SMOOTH);
-                GL.Enable(OpenGL.GL_COLOR_MATERIAL);
-                GL.Enable(OpenGL.GL_TEXTURE_2D);
-                GL.FrontFace(OpenGL.GL_CCW);
-                if (TargetMode == 1)
+        private void DrawSection()
+        {
+            for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
+            {
+                if (TextureObjects[ThisTexture].texturePath != null)
                 {
-                    for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
+                    //check if this is a Framebuffer-Texture
+                    if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
                     {
-                        if (TextureObjects[ThisTexture].texturePath != null)
+                        //Draw Regular Textured Objects.
+
+                        ShiftST(ThisTexture);
+                        TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
+                        TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+
+                        for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
                         {
-
-                            if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
+                            if (CourseModel[ThisObject].materialID == ThisTexture)
                             {
-                                TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
-
-                                TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
-
-                                for (int ThisObject = 0; ThisObject < SectionList.Length; ThisObject++)
+                                if (SectionList.Contains(ThisObject))
                                 {
-                                    if (CourseModel[SectionList[ThisObject]].materialID == ThisTexture)
-                                    {
-                                        double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
-                                        TextureObjects[ThisTexture].GLShiftT -= Add;
-                                        Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
-                                        TextureObjects[ThisTexture].GLShiftS -= Add;
-
-
-                                        while (TextureObjects[ThisTexture].GLShiftT > 1)
-                                        {
-                                            TextureObjects[ThisTexture].GLShiftT -= 1;
-                                        }
-                                        while (TextureObjects[ThisTexture].GLShiftT < 0)
-                                        {
-                                            TextureObjects[ThisTexture].GLShiftT += 1;
-                                        }
-                                        while (TextureObjects[ThisTexture].GLShiftS > 1)
-                                        {
-                                            TextureObjects[ThisTexture].GLShiftS -= 1;
-                                        }
-                                        while (TextureObjects[ThisTexture].GLShiftS < 0)
-                                        {
-                                            TextureObjects[ThisTexture].GLShiftS += 1;
-                                        }
-
-                                        TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[SectionList[ThisObject]]);
-
-
-
-
-                                    }
+                                    TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[ThisObject]);
                                 }
                             }
                         }
-                        else
+
+                        
+                    }
+                    else
+                    {
+                        //Draw Framebuffer Textured Objects.
+
+                        ShiftST(ThisTexture);
+                        TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
+                        TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+
+                        for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
                         {
-                            //disable old textures
-
-                            GL.Disable(OpenGL.GL_CULL_FACE);
-                            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-                            GL.Enable(OpenGL.GL_BLEND);
-                            //GLTexture[GLShadeIndex].Destroy(GL);
-                            GLTexture[GLShadeIndex].Bind(GL);
-
-                            for (int ThisObject = 0; ThisObject < SectionList.Length; ThisObject++)
+                            if (CourseModel[ThisObject].materialID == ThisTexture)
                             {
-                                if (CourseModel[SectionList[ThisObject]].materialID == ThisTexture)
+                                if (SectionList.Contains(ThisObject))
                                 {
-                                    TarmacGL.DrawGouraud(GL, GLTexture[ThisTexture], CourseModel[SectionList[ThisObject]]);
+                                    TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[ThisObject]);
                                 }
                             }
-
-
-                            //re-enable textured polygons
-                            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                            GL.Enable(OpenGL.GL_TEXTURE_2D);
-                            GL.Enable(OpenGL.GL_BLEND);
-                            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-                            GL.ShadeModel(OpenGL.GL_SMOOTH);
-                            GL.Enable(OpenGL.GL_COLOR_MATERIAL);
-                            GL.Enable(OpenGL.GL_TEXTURE_2D);
-                            GL.FrontFace(OpenGL.GL_CCW);
                         }
                     }
                 }
                 else
                 {
-                    for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
-                    {
-                        if (TextureObjects[ThisTexture].texturePath != null)
-                        {
+                    //Draw Gouraud Objects
 
+                    GL.Disable(OpenGL.GL_CULL_FACE);
+                    GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                    GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+                    GL.Enable(OpenGL.GL_BLEND);
+                    //GLTexture[GLShadeIndex].Destroy(GL);
+                    GLTexture[GLShadeIndex].Bind(GL);
 
-                            if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
-                            {
-                                TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
-
-                                TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
-
-                                double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
-                                TextureObjects[ThisTexture].GLShiftT -= Add;
-                                Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
-                                TextureObjects[ThisTexture].GLShiftS -= Add;
-
-                                while (TextureObjects[ThisTexture].GLShiftT > 1)
-                                {
-                                    TextureObjects[ThisTexture].GLShiftT -= 1;
-                                }
-                                while (TextureObjects[ThisTexture].GLShiftT < 0)
-                                {
-                                    TextureObjects[ThisTexture].GLShiftT += 1;
-                                }
-                                while (TextureObjects[ThisTexture].GLShiftS > 1)
-                                {
-                                    TextureObjects[ThisTexture].GLShiftS -= 1;
-                                }
-                                while (TextureObjects[ThisTexture].GLShiftS < 0)
-                                {
-                                    TextureObjects[ThisTexture].GLShiftS += 1;
-                                }
-
-
-                                for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
-                                {
-                                    if (CourseModel[ThisObject].materialID == ThisTexture)
-                                    {
-
-
-                                        TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[ThisObject]);
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            //disable old textures
-                            GL.Disable(OpenGL.GL_CULL_FACE);
-                            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-                            GL.Enable(OpenGL.GL_BLEND);
-                            //GLTexture[GLShadeIndex].Destroy(GL);
-                            GLTexture[GLShadeIndex].Bind(GL);
-
-
-                            for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
-                            {
-                                if (CourseModel[ThisObject].materialID == ThisTexture)
-                                {
-                                    TarmacGL.DrawGouraud(GL, GLTexture[ThisTexture], CourseModel[ThisObject]);
-                                }
-                            }
-
-
-
-                            //re-enable textured polygons
-                            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                            GL.Enable(OpenGL.GL_TEXTURE_2D);
-                            GL.Enable(OpenGL.GL_BLEND);
-                            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-                            GL.ShadeModel(OpenGL.GL_SMOOTH);
-                            GL.Enable(OpenGL.GL_COLOR_MATERIAL);
-                            GL.Enable(OpenGL.GL_TEXTURE_2D);
-                            GL.FrontFace(OpenGL.GL_CCW);
-                        }
-
-                    }
-
-
-                    // For drawing textured screens
-
-
-
-                    if (RenderCheckbox.Checked)
-                    {
-                        for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
-                        {
-                            if (TextureObjects[ThisTexture].texturePath != null)
-                            {
-                                if (TextureObjects[ThisTexture].textureScreen > 0)
-                                {
-                                    TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
-
-                                    TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
-
-                                    double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
-                                    TextureObjects[ThisTexture].GLShiftT -= Add;
-                                    Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
-                                    TextureObjects[ThisTexture].GLShiftS -= Add;
-
-                                    while (TextureObjects[ThisTexture].GLShiftT > 1)
-                                    {
-                                        TextureObjects[ThisTexture].GLShiftT -= 1;
-                                    }
-                                    while (TextureObjects[ThisTexture].GLShiftT < 0)
-                                    {
-                                        TextureObjects[ThisTexture].GLShiftT += 1;
-                                    }
-                                    while (TextureObjects[ThisTexture].GLShiftS > 1)
-                                    {
-                                        TextureObjects[ThisTexture].GLShiftS -= 1;
-                                    }
-                                    while (TextureObjects[ThisTexture].GLShiftS < 0)
-                                    {
-                                        TextureObjects[ThisTexture].GLShiftS += 1;
-                                    }
-                                    for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
-                                    {
-                                        if (CourseModel[ThisObject].materialID == ThisTexture)
-                                        {
-                                            TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[ThisObject]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-
-                GL.End();
-                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-                GL.Enable(OpenGL.GL_BLEND);
-                //GLTexture[GLShadeIndex].Destroy(GL);
-                GLTexture[GLShadeIndex].Bind(GL);
-                foreach (var Geometry in SurfaceModel)
-                {
-                    TarmacGL.DrawShaded(GL, GLTexture[GLShadeIndex], Geometry, LocalCamera.flashRed);
-                }
-                if (TargetMode == 3)
-                {
-                    for (int ThisObject = 0; ThisObject < CourseObjects.Count; ThisObject++)
-                    {
-                        if ((ThisObject != TargetedObject) && (ThisObject != OKSelectedObject))
-                        {
-                            if (ObjectTypes[CourseObjects[ThisObject].ObjectIndex].TextureData != null)
-                            {
-                                GL.End();
-                                GL.Enable(OpenGL.GL_TEXTURE_2D);
-                                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                                TarmacGL.DrawOKObjectTextured(GL, GLTexture[GLObjectIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
-                            }
-                            else
-                            {
-                                GL.End();
-                                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                                GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-                                GL.Enable(OpenGL.GL_BLEND);
-                                GLTexture[GLShadeIndex].Bind(GL);
-                                TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
-                            }
-
-                        }
-                    }
-                }
-            }
-            else
-            {
-
-
-                GL.End();
-                GL.Disable(OpenGL.GL_CULL_FACE);
-                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-                GL.Enable(OpenGL.GL_BLEND);
-                //GLTexture[GLShadeIndex].Destroy(GL);
-                GLTexture[GLShadeIndex].Bind(GL);
-                if (TargetMode == 1)
-                {
                     for (int ThisObject = 0; ThisObject < SectionList.Length; ThisObject++)
                     {
-                        TarmacGL.DrawShaded(GL, GLTexture[GLShadeIndex], CourseModel[SectionList[ThisObject]], CourseModel[SectionList[ThisObject]].objectColor);
+                        if (CourseModel[SectionList[ThisObject]].materialID == ThisTexture)
+                        {
+                            TarmacGL.DrawGouraud(GL, CourseModel[SectionList[ThisObject]]);
+                        }
+                    }
+
+                    //re-enable textured polygons
+                    GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                    GL.Enable(OpenGL.GL_TEXTURE_2D);
+                    GL.Enable(OpenGL.GL_BLEND);
+                    GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+                    GL.ShadeModel(OpenGL.GL_SMOOTH);
+                    GL.Enable(OpenGL.GL_COLOR_MATERIAL);
+                    GL.Enable(OpenGL.GL_TEXTURE_2D);
+                    GL.FrontFace(OpenGL.GL_CCW);
+                }
+            }
+            if (chkWireframe.Checked)
+            {
+                GL.End();
+                GLTexture[GLShadeIndex].Bind(GL);
+                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
+
+                for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
+                {
+                    if (!SectionList.Contains(ThisObject))
+                    {
+                        TarmacGL.DrawWire(GL, CourseModel[ThisObject]);
+                    }
+                }
+            }
+            GL.End();
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.Begin(OpenGL.GL_TRIANGLES);
+
+        }
+
+
+
+
+
+        private void DrawDefault()
+        {
+            for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
+            {
+                if (TextureObjects[ThisTexture].texturePath != null)
+                {
+                    //check if this is a Framebuffer-Texture
+                    if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
+                    {
+                        //Draw Regular Textured Objects.
+
+                        ShiftST(ThisTexture);
+                        TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
+                        TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+
+                        
+                        for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
+                        {
+                            if (CourseModel[ThisObject].materialID == ThisTexture)
+                            {
+                                TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[ThisObject]);
+                            }
+                        }
+
+
+                    }
+                    else
+                    {
+                        //Draw Framebuffer Textured Objects.
+
+                        ShiftST(ThisTexture);
+                        TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
+                        TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+
+                        for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
+                        {
+                            if (CourseModel[ThisObject].materialID == ThisTexture)
+                            {
+                                TarmacGL.DrawTexturedNoFlush(GL, TextureObjects[ThisTexture], CourseModel[ThisObject]);
+                            }
+                        }
                     }
                 }
                 else
                 {
+                    //Draw Gouraud Objects
+
+                    GL.Disable(OpenGL.GL_CULL_FACE);
+                    GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                    GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+                    GL.Enable(OpenGL.GL_BLEND);
+                    //GLTexture[GLShadeIndex].Destroy(GL);
+                    GLTexture[GLShadeIndex].Bind(GL);
+
+
                     for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
                     {
-                        TarmacGL.DrawShaded(GL, GLTexture[GLShadeIndex], CourseModel[ThisObject], CourseModel[ThisObject].objectColor);
-                    }
-                }
-
-                foreach (var Geometry in SurfaceModel)
-                {
-                    TarmacGL.DrawShaded(GL, GLTexture[GLShadeIndex], Geometry, LocalCamera.flashRed);
-                }
-                if (TargetMode == 3)
-                {
-                    for (int ThisObject = 0; ThisObject < CourseObjects.Count; ThisObject++)
-                    {
-                        if ((ThisObject != TargetedObject) && (ThisObject != OKSelectedObject))
+                        if (CourseModel[ThisObject].materialID == ThisTexture)
                         {
-                            TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
+                            TarmacGL.DrawGouraud(GL, CourseModel[ThisObject]);
                         }
                     }
+
+                    //re-enable textured polygons
+                    GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                    GL.Enable(OpenGL.GL_TEXTURE_2D);
+                    GL.Enable(OpenGL.GL_BLEND);
+                    GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+                    GL.ShadeModel(OpenGL.GL_SMOOTH);
+                    GL.Enable(OpenGL.GL_COLOR_MATERIAL);
+                    GL.Enable(OpenGL.GL_TEXTURE_2D);
+                    GL.FrontFace(OpenGL.GL_CCW);
                 }
             }
-            
+        }
 
 
-            GL.End();
-            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-
+        private void DrawDefaultGouraud()
+        {
+            GL.Disable(OpenGL.GL_CULL_FACE);
             GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             GL.Enable(OpenGL.GL_BLEND);
+            //GLTexture[GLShadeIndex].Destroy(GL);
+            GLTexture[GLShadeIndex].Bind(GL);
 
-            switch (TargetMode)
+            for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
             {
-                case 0:
-                default:
-                    {
-                        break;
-                    }
-                case 1:
-                case 2:
-                    {
-                        if (TargetedObject != -1)
-                        {
-                            TarmacGL.DrawShaded(GL, GLTexture[GLShadeIndex], CourseModel[TargetedObject], LocalCamera.flashWhite);
-                        }
-                        if (SelectedObject != -1)
-                        {
-                            TarmacGL.DrawShaded(GL, GLTexture[GLShadeIndex], CourseModel[SelectedObject], LocalCamera.flashWhite);
-                        }
-                        break;
-                    }
-                case 3:
-                    {
-
-                        //for hover over object. flashing color.
-                        if (CourseObjects.Count > 0)
-                        {
-                            if ((TargetedObject < CourseObjects.Count) && (TargetedObject != -1))
-                            {
-                                    TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[TargetedObject], ObjectTypes[CourseObjects[TargetedObject].ObjectIndex], LocalCamera.flashWhite);
-                            }
-                            if (OKSelectedObject != -1)
-                            {
-                                TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[OKSelectedObject], ObjectTypes[CourseObjects[OKSelectedObject].ObjectIndex], LocalCamera.flashWhite);
-                            }
-                        }
-                        break;
-                    }
+                TarmacGL.DrawGouraudObjectColor(GL, CourseModel[ThisObject]);
             }
 
 
-            GL.Disable(OpenGL.GL_CULL_FACE);
+            //re-enable textured polygons
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.Enable(OpenGL.GL_TEXTURE_2D);
+            GL.Enable(OpenGL.GL_BLEND);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.ShadeModel(OpenGL.GL_SMOOTH);
+            GL.Enable(OpenGL.GL_COLOR_MATERIAL);
+            GL.Enable(OpenGL.GL_TEXTURE_2D);
+            GL.FrontFace(OpenGL.GL_CCW);
+        }
 
-            TarmacGL.DrawCursor(GL, LocalCamera, GLTexture[GLShadeIndex]);
+        private void DrawSectionGouraud()
+        {
+            GL.Disable(OpenGL.GL_CULL_FACE);
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.Enable(OpenGL.GL_BLEND);
+            //GLTexture[GLShadeIndex].Destroy(GL);
+            GLTexture[GLShadeIndex].Bind(GL);
+
+            
+            for (int ThisObject = 0; ThisObject < SectionList.Length; ThisObject++)
+            {
+                TarmacGL.DrawGouraudObjectColor(GL, CourseModel[SectionList[ThisObject]]);
+            }
+
+
+
+            if (chkWireframe.Checked)
+            {
+                GL.End();
+                GLTexture[GLShadeIndex].Bind(GL);
+                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
+
+                for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
+                {
+                    if (!SectionList.Contains(ThisObject))
+                    {
+                        TarmacGL.DrawWire(GL, CourseModel[ThisObject]);
+                    }
+                }
+            }
+
+
+            //re-enable textured polygons
+            GL.End();
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.Enable(OpenGL.GL_TEXTURE_2D);
+            GL.Enable(OpenGL.GL_BLEND);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.ShadeModel(OpenGL.GL_SMOOTH);
+            GL.Enable(OpenGL.GL_COLOR_MATERIAL);
+            GL.Enable(OpenGL.GL_TEXTURE_2D);
+            GL.FrontFace(OpenGL.GL_CCW);
+            GL.Begin(OpenGL.GL_TRIANGLES);
+        }
+
+
+
+
+        private void DrawSurface()
+        {
+            GL.Disable(OpenGL.GL_CULL_FACE);
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.Enable(OpenGL.GL_BLEND);
+            //GLTexture[GLShadeIndex].Destroy(GL);
+            GLTexture[GLShadeIndex].Bind(GL);
+
+            for (int ThisObject = 0; ThisObject < SurfaceModel.Length; ThisObject++)
+            {                
+                TarmacGL.DrawGouraudObjectColor(GL, SurfaceModel[ThisObject]);
+            }
+            
+
+            //re-enable textured polygons
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.Enable(OpenGL.GL_TEXTURE_2D);
+            GL.Enable(OpenGL.GL_BLEND);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.ShadeModel(OpenGL.GL_SMOOTH);
+            GL.Enable(OpenGL.GL_COLOR_MATERIAL);
+            GL.Enable(OpenGL.GL_TEXTURE_2D);
+            GL.FrontFace(OpenGL.GL_CCW);
+        }
+
+        private void DrawOKObjects()
+        {
+            for (int ThisObject = 0; ThisObject < CourseObjects.Count; ThisObject++)
+            {
+                if ((ThisObject != TargetedObject) && (ThisObject != OKSelectedObject))
+                {
+                    if (ObjectTypes[CourseObjects[ThisObject].ObjectIndex].TextureData != null)
+                    {
+                        GL.End();
+                        GL.Enable(OpenGL.GL_TEXTURE_2D);
+                        GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                        TarmacGL.DrawOKObjectTextured(GL, GLTexture[GLObjectIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
+                    }
+                    else
+                    {
+                        GL.End();
+                        GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                        GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+                        GL.Enable(OpenGL.GL_BLEND);
+                        GLTexture[GLShadeIndex].Bind(GL);
+                        TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
+                    }
+
+                }
+            }
+        }
+        private void DrawOKObjectsGouaraud()
+        {
+            for (int ThisObject = 0; ThisObject < CourseObjects.Count; ThisObject++)
+            {
+                if ((ThisObject != TargetedObject) && (ThisObject != OKSelectedObject))
+                {
+                    GL.End();
+                    GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                    GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+                    GL.Enable(OpenGL.GL_BLEND);
+                    GLTexture[GLShadeIndex].Bind(GL);
+                    TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
+                }
+            }
+        }
+        private void DrawScene()
+        {
+            GL.End();
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+
+            GL.AlphaFunc(OpenGL.GL_GREATER, Convert.ToSingle(0.1));
+            GL.Enable(OpenGL.GL_ALPHA_TEST);
+            GL.Enable(OpenGL.GL_BLEND);
+            GL.BlendEquation(OpenGL.GL_ADD);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.ShadeModel(OpenGL.GL_SMOOTH);
+            GL.Enable(OpenGL.GL_COLOR_MATERIAL);
+            GL.Enable(OpenGL.GL_TEXTURE_2D);
+            GL.FrontFace(OpenGL.GL_CCW);
+
+            //draw course model first
+
+            switch (TargetingMode)
+            {
+                case ControlMode.Scene:
+                    {
+                        if (CheckboxTextured.Checked)
+                        {
+                            DrawDefault();
+                        }
+                        else
+                        {
+                            DrawDefaultGouraud();
+                        }                        
+                        break;
+                    }
+
+                case ControlMode.Section:
+                    {
+                        if (CheckboxTextured.Checked)
+                        {
+                            DrawSection();
+                        }
+                        else
+                        {
+                            DrawSectionGouraud();
+                        }
+                        break;
+                    }
+
+                case ControlMode.Render:
+                    {
+                        if (CheckboxTextured.Checked)
+                        {
+                            DrawDefault();
+                        }
+                        else
+                        {
+                            DrawDefaultGouraud();
+                        }
+                        break;
+                    }
+
+                case ControlMode.Surface:
+                    {
+                        DrawSurface();
+                        break;
+                    }
+
+                case ControlMode.Objects:
+                    {
+                        if (CheckboxTextured.Checked)
+                        {
+                            DrawDefault();
+                            DrawOKObjects();
+                        }
+                        else
+                        {
+                            DrawDefaultGouraud();
+                            DrawOKObjectsGouaraud();
+                        }
+                        break;
+                    }
+
+            }
+
+
+
 
             TM64_Geometry TarmacGeo = new TM64_Geometry();
             TM64_Geometry.Face[] Marker = TarmacGeo.CreateStandard(Convert.ToSingle(5.0));
+
+            
             if (CheckboxPaths.Checked)
             {
                 foreach (var ThisPath in PathMarker)
@@ -689,7 +771,18 @@ namespace Tarmac64_Retail
                 int TempInt = 240;
                 if (int.TryParse(FPSBox.Text, out TempInt))
                 {
+                    if (TempInt > 144)
+                    {
+                        TempInt = 144;
+                    }
+                    if (TempInt < 0)
+                    {
+                        TempInt = 0;
+                    }
+
+                    FPSBox.Text = TempInt.ToString();
                     GLWindow.FrameRate = TempInt * 2;
+
                 };
 
                 UpdateDraw = true;
@@ -739,9 +832,6 @@ namespace Tarmac64_Retail
                 UpdateDraw = true;
 
 
-
-
-
                 if (FPSStall > 10)
                 {
                     FPSStall = 0;
@@ -751,6 +841,7 @@ namespace Tarmac64_Retail
                 {
                     FPSStall++;
                 }
+
                 ScreenRenderIndex++;
                 if (ScreenRenderIndex == 6)
                 {
@@ -760,12 +851,7 @@ namespace Tarmac64_Retail
 
                 GL.LookAt(LocalCamera.position.X, LocalCamera.position.Y, LocalCamera.position.Z, LocalCamera.target.X, LocalCamera.target.Y, LocalCamera.target.Z, 0, 0, 1);
 
-
-
-
                 DrawScene();
-
-
                 GL.End();
 
 
@@ -864,57 +950,92 @@ namespace Tarmac64_Retail
         {
             UpdateDraw = true;
 
-            if ((TargetedObject != -1) && (TargetMode == 1))
+            switch(TargetingMode)
             {
-
-                //Section List
-                if (e.Button == MouseButtons.Right)
-                {
-                    List<int> TempList = SectionList.ToList();
-                    if (TempList.Contains(TargetedObject))
+                case (ControlMode.Scene):
                     {
-                        TempList.Remove(TargetedObject);
+                        break;
                     }
-                    else
+                case (ControlMode.Render):
                     {
-                        TempList.Add(TargetedObject);
+                        if (TargetedRender != -1)
+                        {
+                            //Render Scene
+                            if (e.Button == MouseButtons.Left)
+                            {
+                                SelectedRender = TargetedRender;
+                                RequestMode = 2;
+                            }
+                        }
+                        break;
                     }
-                    SectionList = TempList.ToArray();
-
-                    RequestMode = 1;
-                }
-                if (e.Button == MouseButtons.Left)
-                {
-                    SelectedObject = TargetedObject;
-
-                    RequestMode = 2;
-                }
-            }
-
-            if (TargetMode == 3)
-            {
-                // Custom Objects
-                if (e.Button == MouseButtons.Right)
-                {
-                    TM64_Course.OKObject ThisObject = TarmacCourse.NewOKObject();
-                    ThisObject.OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker.X), Convert.ToInt16(LocalCamera.marker.Y), Convert.ToInt16(LocalCamera.marker.Z + 3) };
-                    ThisObject.ObjectIndex = Convert.ToInt16(OKObjectIndex);
-                    CourseObjects.Add(ThisObject);
-                    RequestMode = 1;
-                }
-                else if ((Keyboard.IsKeyDown(Key.LeftShift)) && (OKSelectedObject != -1) && (e.Button != MouseButtons.Middle))
-                {
-                    CourseObjects[OKSelectedObject].OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker.X), Convert.ToInt16(LocalCamera.marker.Y), Convert.ToInt16(LocalCamera.marker.Z) };
-                    RequestMode = 2;
-                }
-                else
-                {
-                    if (TargetedObject != -1)
+                case (ControlMode.Surface):
                     {
-                        OKSelectedObject = TargetedObject;
+                        if (TargetedSurface != -1)
+                        {
+                            //Render Scene
+                            if (e.Button == MouseButtons.Left)
+                            {
+                                SelectedSurface = TargetedSurface;
+                                RequestMode = 2;
+                            }
+                        }
+                        break;
                     }
-                    RequestMode = 3;
-                }
+                case (ControlMode.Section):
+                    {
+                        if (TargetedSection != -1)
+                        {
+                            //Section List
+                            if (e.Button == MouseButtons.Right)
+                            {
+
+                                List<int> TempList = SectionList.ToList();
+                                if (TempList.Contains(TargetedSection))
+                                {
+                                    TempList.Remove(TargetedSection);
+                                }
+                                else
+                                {
+                                    TempList.Add(TargetedSection);
+                                }
+                                SectionList = TempList.ToArray();
+                                RequestMode = 1;
+                            }
+                            if (e.Button == MouseButtons.Left)
+                            {
+                                SelectedSection = TargetedSection;
+                                RequestMode = 2;
+                            }
+                        }                        
+                        break;
+                    }
+                case (ControlMode.Objects):
+                    {
+                        if (e.Button == MouseButtons.Right)
+                        {
+                            TM64_Course.OKObject ThisObject = TarmacCourse.NewOKObject();
+                            ThisObject.OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker.X), Convert.ToInt16(LocalCamera.marker.Y), Convert.ToInt16(LocalCamera.marker.Z + 3) };
+                            ThisObject.ObjectIndex = Convert.ToInt16(OKObjectIndex);
+                            CourseObjects.Add(ThisObject);
+                            RequestMode = 1;
+                        }
+                        else if ((Keyboard.IsKeyDown(Key.LeftShift)) && (OKSelectedObject != -1) && (e.Button != MouseButtons.Middle))
+                        {
+                            CourseObjects[OKSelectedObject].OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker.X), Convert.ToInt16(LocalCamera.marker.Y), Convert.ToInt16(LocalCamera.marker.Z) };
+                            RequestMode = 2;
+                        }
+                        else
+                        {
+                            if (TargetedObject != -1)
+                            {
+                                OKSelectedObject = TargetedObject;
+                            }
+                            RequestMode = 3;
+                        }
+                        
+                        break;
+                    }
             }
 
             if (UpdateParent != null)
@@ -952,21 +1073,22 @@ namespace Tarmac64_Retail
             }
         }
 
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CheckboxPaths_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
         private void GLWindow_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             OldMouseCoords[0] = -1;
             OldMouseCoords[1] = -1;
         }
 
-        public static void SetCursorPos(int X, int Y)
-        {
-            // create X,Y point (0,0) explicitly with System.Drawing 
-            System.Drawing.Point leftTop = new System.Drawing.Point(X, Y);
-
-            // set mouse position
-            System.Windows.Forms.Cursor.Position = leftTop;
-
-        }
         int[] OldMouseCoords = new int[2] {-1,-1};
         private void GLWindow_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -1017,18 +1139,19 @@ namespace Tarmac64_Retail
             }
 
             float objectDistance = -1;
-            TargetedObject = -1;
-            SelectedObject = -1;
+            
 
-            switch (TargetMode)
+            switch (TargetingMode)
             {
-                case 0:
+                case ControlMode.Scene:
                 default:
                     {
                         break;
                     }
-                case 1:
+                case ControlMode.Section:
                     {
+                        TargetedSection = -1;
+                        SelectedSection = -1;
                         //Section List
                         if (Keyboard.IsKeyDown(Key.LeftShift))
                         {
@@ -1039,7 +1162,7 @@ namespace Tarmac64_Retail
                                     if ((objectDistance == -1) || (objectDistance > Intersection.X))
                                     {
                                         objectDistance = Intersection.X;
-                                        TargetedObject = SectionList[ThisObject];
+                                        TargetedSection = SectionList[ThisObject];
                                     }
                                 }
                             }
@@ -1055,7 +1178,7 @@ namespace Tarmac64_Retail
                                         if ((objectDistance == -1) || (objectDistance > Intersection.X))
                                         {
                                             objectDistance = Intersection.X;
-                                            TargetedObject = ThisObject;
+                                            TargetedSection = ThisObject;
                                         }
                                     }
                                 }
@@ -1070,7 +1193,7 @@ namespace Tarmac64_Retail
                                     if ((objectDistance == -1) || (objectDistance > Intersection.X))
                                     {
                                         objectDistance = Intersection.X;
-                                        TargetedObject = ThisObject;
+                                        TargetedSection = ThisObject;
                                     }
                                 }
                                 
@@ -1078,7 +1201,7 @@ namespace Tarmac64_Retail
                         }
                         break;
                     }
-                case 2:
+                case ControlMode.Surface:
                     {
                         // Surface Model
                         for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
@@ -1088,13 +1211,13 @@ namespace Tarmac64_Retail
                                 if ((objectDistance == -1) || (objectDistance > Intersection.X))
                                 {
                                     objectDistance = Intersection.X;
-                                    TargetedObject = ThisObject;
+                                    TargetedSurface = ThisObject;
                                 }
                             }
                         }
                         break;
-                    }           
-                case 3:
+                    }
+                case ControlMode.Objects:
                     {
                         // Custom Objects
                         for (int ThisList = 0; ThisList < CourseObjects.Count; ThisList++)
@@ -1123,6 +1246,25 @@ namespace Tarmac64_Retail
                                 }
                             }
                         }
+                        break;
+                    }
+                case ControlMode.Render:
+                    {
+                        //Section List
+                        
+                        for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
+                        {
+                            if (MouseTest(out Intersection, CourseModel[ThisObject], RayOrigin, RayTarget))
+                            {
+                                if ((objectDistance == -1) || (objectDistance > Intersection.X))
+                                {
+                                    objectDistance = Intersection.X;
+                                    TargetedRender = ThisObject;
+                                }
+                            }
+
+                        }
+                        
                         break;
                     }
             }

@@ -28,12 +28,15 @@ using System.Collections.Concurrent;
 using System.Windows.Media.Imaging;
 using System.Data;
 using System.Security.Policy;
+using SharpGL.SceneGraph;
+using static Tarmac64_Library.TM64_Geometry;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace Tarmac64_Library
 {
     public class TM64_Geometry
     {
-        
+
         /// These are various functions for decompressing and handling the segment data for Mario Kart 64.
 
         string[] viewString = new string[4] { "North", "East", "South", "West" };
@@ -50,37 +53,43 @@ namespace Tarmac64_Library
         UInt32 value32 = new UInt32();
         public class Face
         {
-            public VertIndex VertIndex { get; set; }
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter BWrite = new BinaryWriter(Data);
+
+                BWrite.Write(Material);
+
+                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                {
+                    BWrite.Write(VertData[ThisVert].SaveData());
+                }
+
+                return Data.ToArray();
+            }
+
+            public Face(MemoryStream Input)
+            {
+                //LoadData
+                BinaryReader BRead = new BinaryReader(Input);
+
+                Material = BRead.ReadInt32();
+
+                VertData = new Vertex[3];
+                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                {
+                    VertData[ThisVert] = new Vertex(Input);
+                }
+            }
+            public Face()
+            {
+
+            }
+
             public int Material { get; set; }
             public Vertex[] VertData { get; set; }
-            public Assimp.Vector3D CenterPosition { get; set; }
-            public float HighX { get; set; }
-            public float HighY { get; set; }
-            public float LowX { get; set; }
-            public float LowY { get; set; }
         }
 
-        public class VertIndex
-        {
-            public int IndexA { get; set; }
-            public int IndexB { get; set; }
-            public int IndexC { get; set; }
-
-        }
-
-        public class OK64JRSet
-        {
-            public OK64JRBlock[] BlockObject { get; set; }
-            public TM64_Paths.Pathgroup PathGroup { get; set; }
-        }
-
-        public class OK64JRSpace
-        {
-            public int BlockID { get; set; }
-            public int XIndex { get; set; }
-            public int YIndex { get; set; }
-            public int ZIndex { get; set; }
-        }
 
         public class OK64JRBlock
         {
@@ -93,23 +102,165 @@ namespace Tarmac64_Library
 
         public class OK64SectionList
         {
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter BWrite = new BinaryWriter(Data);
+
+                BWrite.Write(viewList.Length);
+
+                for (int ThisView = 0; ThisView < viewList.Length; ThisView++)
+                {
+                    BWrite.Write(viewList[ThisView].objectList.Length);
+                    for (int ThisObj = 0; ThisObj < viewList[ThisView].objectList.Length; ThisObj++)
+                    {
+                        BWrite.Write(viewList[ThisView].objectList[ThisObj]);
+                    }
+                }
+
+                return Data.ToArray();
+            }
+
+            public OK64SectionList()
+            {
+
+            }
+            public OK64SectionList(MemoryStream Input)
+            {
+                BinaryReader BRead = new BinaryReader(Input);
+
+                viewList = new OK64ViewList[BRead.ReadInt32()];
+
+                for (int ThisView = 0; ThisView < viewList.Length; ThisView++)
+                {
+                    viewList[ThisView].objectList = new int[BRead.ReadInt32()];
+                    for (int ThisObj = 0; ThisObj < viewList[ThisView].objectList.Length; ThisObj++)
+                    {   
+                        viewList[ThisView].objectList[ThisObj] = BRead.ReadInt32();
+                    }
+                }
+            }
+
+
             public OK64ViewList[] viewList { get; set; }
+            public int segmentPosition { get; set; }
         }
 
         public class OK64ViewList
         {
             public int[] objectList { get; set; }
+            
+        }
+
+
+        public class OK64TextureRaw
+        {
+            public Image textureBitmap { get; set; }
+
+            public byte[] compressedTexture { get; set; }
+            public byte[] PaletteData { get; set; }
+            public byte[] TextureData { get; set; }
+            public int compressedSize { get; set; }
+            public int fileSize { get; set; }
             public int segmentPosition { get; set; }
+            public int palettePosition { get; set; }
+            public int paletteSize { get; set; }
+            public int romPosition { get; set; }
+            public int f3dexPosition { get; set; }
+
         }
         public class OK64Texture
         {
+            public OK64Texture()
+            {
+                RawTexture = new OK64TextureRaw();
+            }
+
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter BWrite = new BinaryWriter(Data);
+                BWrite.Write(textureName);
+                BWrite.Write(texturePath);
+                BWrite.Write(alphaPath);
+                BWrite.Write(CombineModeA);
+                BWrite.Write(CombineModeB);
+                BWrite.Write(RenderModeA);
+                BWrite.Write(RenderModeB);
+                BWrite.Write(GeometryModes);
+                BWrite.Write(BitSize);
+                BWrite.Write(TextureFilter);
+                BWrite.Write(TextureFormat);
+
+                BWrite.Write(SFlag);
+                BWrite.Write(TFlag);
+
+                BWrite.Write(textureScrollS);
+                BWrite.Write(textureScrollT);
+
+                BWrite.Write(textureScreen);
+                BWrite.Write(GLShiftS);
+                BWrite.Write(GLShiftT);
+
+                BWrite.Write(TextureOverWrite.Length);
+                for (int ThisOver = 0; ThisOver < TextureOverWrite.Length; ThisOver++)
+                {
+                    BWrite.Write(TextureOverWrite[ThisOver]);
+                }
+
+
+                return Data.ToArray();
+            }
+
+
+            public OK64Texture(MemoryStream Input)
+            {
+
+                BinaryReader BRead = new BinaryReader(Input);
+
+                textureName = BRead.ReadString();
+                texturePath = BRead.ReadString();
+                alphaPath = BRead.ReadString();
+                CombineModeA = BRead.ReadInt32();
+                CombineModeB = BRead.ReadInt32();
+
+                RenderModeA = BRead.ReadInt32();
+                RenderModeB = BRead.ReadInt32();
+                GeometryModes = BRead.ReadUInt32();
+                BitSize = BRead.ReadInt32();
+                TextureFilter = BRead.ReadInt32();
+                TextureFormat = BRead.ReadInt32();
+
+
+                SFlag = BRead.ReadInt32();
+                TFlag = BRead.ReadInt32();
+
+                textureScrollS = BRead.ReadInt32();
+                textureScrollT = BRead.ReadInt32();
+
+                textureScreen = BRead.ReadInt32();
+
+                GLShiftS = BRead.ReadDouble();
+                GLShiftT = BRead.ReadDouble();
+
+                TextureOverWrite = new int[BRead.ReadInt32()];
+
+                for (int ThisOver = 0; ThisOver < TextureOverWrite.Length; ThisOver++)
+                {
+                    TextureOverWrite[ThisOver] = BRead.ReadInt32();
+                }
+
+            }
+
+
+            public OK64TextureRaw RawTexture { get; set; }
+
             public string textureName { get; set; }
             public string texturePath { get; set; }
             public string alphaPath { get; set; }
             public int textureWidth { get; set; }
             public int textureHeight { get; set; }
             public bool AdvancedSettings { get; set; }
-            
             public UInt32[] CombineValuesA {get;set;}
             public UInt32[] CombineValuesB { get; set; }
             public int CombineModeA { get; set; }
@@ -126,22 +277,12 @@ namespace Tarmac64_Library
             public int textureScrollS { get; set; }
             public int textureScrollT { get; set; }
             public int textureScreen { get; set; }
-            public Image textureBitmap { get; set; }
-            public byte[] compressedTexture { get; set; }
-            public byte[] PaletteData { get; set; }
-            public byte[] rawTexture { get; set; }
-            public int compressedSize { get; set; }
-            public int fileSize { get; set; }
-            public int segmentPosition { get; set; }
-            public int palettePosition { get; set; }
-            public int paletteSize { get; set; }
-            public int romPosition { get; set; }
-            public int f3dexPosition { get; set; }
-            public int vertAlpha { get; set; }
             public double GLShiftS { get; set; }
             public double GLShiftT { get; set; }
             public int[] TextureOverWrite { get; set; }
         }
+
+
         public class OK64F3DGroup
         {
             public int[] subIndexes { get; set; }
@@ -186,6 +327,98 @@ namespace Tarmac64_Library
 
         public class OK64F3DObject
         {
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter BWrite = new BinaryWriter(Data);
+
+                BWrite.Write(objectName);
+                BWrite.Write(vertCount);
+                BWrite.Write(faceCount);
+                BWrite.Write(materialID);
+                BWrite.Write(surfaceID);
+                BWrite.Write(surfaceMaterial);
+
+                BWrite.Write(meshID.Length);
+                for (int ThisMesh = 0; ThisMesh < meshID.Length; ThisMesh++)
+                {
+                    BWrite.Write(meshID[ThisMesh]);
+                }
+
+                BWrite.Write(modelGeometry.Length);
+                for (int ThisMesh = 0; ThisMesh < modelGeometry.Length; ThisMesh++)
+                {
+                    BWrite.Write(modelGeometry[ThisMesh].SaveData());
+                }
+
+                for (int ThisColor = 0; ThisColor < 3; ThisColor++)
+                {
+                    BWrite.Write(objectColor[ThisColor]);
+                }
+
+                BWrite.Write(surfaceProperty);
+
+                BWrite.Write(pathfindingObject.SaveData());
+
+                BWrite.Write(BoneName);
+                for (int ThisBool = 0; ThisBool < 8; ThisBool++)
+                {
+                    BWrite.Write(KillDisplayList[ThisBool]);
+                }
+
+                BWrite.Write(WaveObject);
+
+                return Data.ToArray();
+            }
+
+            public OK64F3DObject(MemoryStream Input)
+            {
+                BinaryReader BRead = new BinaryReader(Input);
+                objectName = BRead.ReadString();
+                vertCount = BRead.ReadInt32();
+                faceCount = BRead.ReadInt32();
+                materialID = BRead.ReadInt32();
+                surfaceID = BRead.ReadInt32();
+                surfaceMaterial = BRead.ReadByte();
+
+                meshID = new int[BRead.ReadInt32()];
+                for (int ThisMesh = 0; ThisMesh < meshID.Length; ThisMesh++)
+                {
+                    meshID[ThisMesh] = BRead.ReadInt32();
+                }
+
+                modelGeometry = new Face[BRead.ReadInt32()];
+                for (int ThisMesh = 0; ThisMesh < modelGeometry.Length; ThisMesh++)
+                {
+                    modelGeometry[ThisMesh] = new Face(Input);
+                }
+
+                objectColor = new float[3];
+                for (int ThisColor = 0; ThisColor < 3; ThisColor++)
+                {
+                    objectColor[ThisColor] = BRead.ReadSingle();
+                }
+
+                surfaceProperty = BRead.ReadInt32();
+
+                pathfindingObject = new PathfindingObject(Input);
+
+                BoneName = BRead.ReadString();
+
+                KillDisplayList = new bool[8];
+                for (int ThisBool = 0; ThisBool < 8; ThisBool++)
+                {
+                    KillDisplayList[ThisBool] = BRead.ReadBoolean();
+                }
+                WaveObject = BRead.ReadBoolean();
+            }
+            public OK64F3DObject()
+            {
+
+            }
+
+
+            //pre-compilation data
             public string objectName { get; set; }
             public int vertCount { get; set; }
             public int faceCount { get; set; }
@@ -193,35 +426,93 @@ namespace Tarmac64_Library
             public int surfaceID { get; set; }
             public Byte surfaceMaterial { get; set; }
             public int[] meshID { get; set; }
-            public int[] meshPosition { get; set; }
-            public int VertCachePosition { get; set; }
             public Face[] modelGeometry { get; set; }
-            public OK64F3DModel F3DModel { get; set; }
             public float[] objectColor { get; set; }
             public int surfaceProperty { get; set; }
             public PathfindingObject pathfindingObject { get; set; }
             public string BoneName { get; set; }
-            public int ListPosition { get; set; }
             public bool[] KillDisplayList { get; set; }
             public bool WaveObject { get; set; }
-            public bool ForceXLU { get; set; }
+
+            //post-compilation data
+
+            public int[] meshPosition { get; set; }
+            public int VertCachePosition { get; set; }
+            public int ListPosition { get; set; }
 
         }
         public class PathfindingObject
         {
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter BWrite = new BinaryWriter(Data);
+
+                BWrite.Write(highX);
+                BWrite.Write(highY);
+                BWrite.Write(highZ);
+                BWrite.Write(lowX);
+                BWrite.Write(lowY);
+                BWrite.Write(lowZ);
+
+                return Data.ToArray();
+            }
+
+            public PathfindingObject(MemoryStream Input)
+            {
+                //LoadData
+                
+                BinaryReader BRead = new BinaryReader(Input);
+
+                highX = BRead.ReadSingle();
+                highY = BRead.ReadSingle();
+                highZ = BRead.ReadSingle();
+                lowX = BRead.ReadSingle();
+                lowY = BRead.ReadSingle();
+                lowZ = BRead.ReadSingle();
+
+            }
+            public PathfindingObject()
+            {
+
+            }
             public float highX { get; set; }
             public float highY { get; set; }
+            public float highZ { get; set; }
             public float lowX { get; set; }
             public float lowY { get; set; }
-            public float highZ{get;set;}
             public float lowZ { get; set; }
 
-            public bool surfaceBoolean { get; set; }
 
         }
 
         public class Vertex
         {
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter BWrite = new BinaryWriter(Data);
+
+                BWrite.Write(position.SaveData());
+                BWrite.Write(color.SaveData());
+
+                return Data.ToArray();
+
+            }
+
+            public Vertex(MemoryStream Input)
+            {
+                //LoadData
+                BinaryReader BRead = new BinaryReader(Input);
+
+                position = new Position(Input);
+                color = new OK64Color(Input);
+
+            }
+            public Vertex()
+            {
+
+            }
             public Position position { get; set; }
             public OK64Color color { get; set; }
             
@@ -229,6 +520,46 @@ namespace Tarmac64_Library
 
         public class OK64Color
         {
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter BWrite = new BinaryWriter(Data);
+
+
+                BWrite.Write(R);
+                BWrite.Write(G);
+                BWrite.Write(B);
+                BWrite.Write(A);
+                BWrite.Write(RFloat);
+                BWrite.Write(GFloat);
+                BWrite.Write(BFloat);
+                BWrite.Write(AFloat);
+
+                return Data.ToArray();
+            }
+
+
+            public OK64Color(MemoryStream Input)
+            {
+                //LoadData
+                BinaryReader BRead = new BinaryReader(Input);
+
+                R = BRead.ReadByte();
+                G = BRead.ReadByte();
+                B = BRead.ReadByte();
+                A = BRead.ReadByte();
+
+                RFloat = BRead.ReadSingle();
+                GFloat = BRead.ReadSingle();
+                BFloat = BRead.ReadSingle();
+                AFloat = BRead.ReadSingle();
+
+            }
+            public OK64Color()
+            {
+
+            }
+
             public Byte R { get; set; }
             public Byte G { get; set; }
             public Byte B { get; set; }
@@ -241,7 +572,50 @@ namespace Tarmac64_Library
 
         public class Position
         {
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter BWrite = new BinaryWriter(Data);
 
+                BWrite.Write(x);
+                BWrite.Write(y);
+                BWrite.Write(z);
+                BWrite.Write(s);
+                BWrite.Write(t);
+                BWrite.Write(sBase);
+                BWrite.Write(tBase);
+                BWrite.Write(sPure);
+                BWrite.Write(tPure);
+                BWrite.Write(u);
+                BWrite.Write(v);
+
+                return Data.ToArray();
+            }
+
+            public Position(MemoryStream Input)
+            {
+                //LoadData
+                BinaryReader BRead = new BinaryReader(Input);
+
+                x = BRead.ReadInt16();
+                y = BRead.ReadInt16();
+                z = BRead.ReadInt16();
+                s = BRead.ReadInt16();
+                t = BRead.ReadInt16();
+
+                sBase = BRead.ReadSingle();
+                tBase = BRead.ReadSingle();
+                sPure = BRead.ReadSingle();
+                tPure = BRead.ReadSingle();
+
+                u = BRead.ReadSingle();
+                v = BRead.ReadSingle();
+
+            }
+            public Position()
+            {
+
+            }
             public Int16 x { get; set; }
             public Int16 y { get; set; }
             public Int16 z { get; set; }
@@ -1163,7 +1537,6 @@ namespace Tarmac64_Library
                                 break;
                             }
                     }
-                    textureArray[materialIndex].vertAlpha = 255;
                     //fbx.Materials[materialIndex].TextureDiffuse.WrapModeU
 
                     textureArray[materialIndex].TextureFormat = Array.IndexOf(F3DEX095_Parameters.TextureFormats, F3DEX095_Parameters.G_IM_FMT_RGBA);
@@ -1174,10 +1547,10 @@ namespace Tarmac64_Library
                     {
                         using (var fs = new FileStream(textureArray[materialIndex].texturePath, FileMode.Open, FileAccess.Read))
                         {
-                            textureArray[materialIndex].textureBitmap = Image.FromStream(fs);                            
+                            textureArray[materialIndex].RawTexture.textureBitmap = Image.FromStream(fs);                            
                         }
-                        textureArray[materialIndex].textureHeight = textureArray[materialIndex].textureBitmap.Height;
-                        textureArray[materialIndex].textureWidth = textureArray[materialIndex].textureBitmap.Width;
+                        textureArray[materialIndex].textureHeight = textureArray[materialIndex].RawTexture.textureBitmap.Height;
+                        textureArray[materialIndex].textureWidth = textureArray[materialIndex].RawTexture.textureBitmap.Width;
 
                         int TextureMass = (textureArray[materialIndex].textureHeight * textureArray[materialIndex].textureWidth);
 
@@ -1441,7 +1814,6 @@ namespace Tarmac64_Library
                     binaryWriter.Write(TextureData[ThisTexture].BitSize);
 
 
-                    binaryWriter.Write(TextureData[ThisTexture].vertAlpha);
 
                     binaryWriter.Write(TextureData[ThisTexture].textureWidth);
                     binaryWriter.Write(TextureData[ThisTexture].textureHeight);
@@ -1481,16 +1853,6 @@ namespace Tarmac64_Library
                 binaryWriter.Write(ModelData[ThisModel].modelGeometry.Length);
                 for (int ThisGeo = 0; ThisGeo < ModelData[ThisModel].modelGeometry.Length; ThisGeo++)
                 {
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].LowX);
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].HighX);
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].LowY);
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].HighY);
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].CenterPosition.X);
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].CenterPosition.Y);
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].CenterPosition.Z);
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex.IndexA);
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex.IndexB);
-                    binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex.IndexC);
 
                     for (int ThisVert = 0; ThisVert < 3; ThisVert++)
                     {
@@ -1628,15 +1990,10 @@ namespace Tarmac64_Library
                     newObject.modelGeometry[currentFace] = new Face();
                     newObject.modelGeometry[currentFace].VertData = new Vertex[3];
 
-                    newObject.modelGeometry[currentFace].VertIndex = new VertIndex();
-
                     if (childPoly.IndexCount != 3)
                     {
                         MessageBox.Show("FATAL ERROR - INDEX COUNT " + childPoly.IndexCount + "-" + newObject.objectName);
                     }
-                    newObject.modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
-                    newObject.modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);
-                    newObject.modelGeometry[currentFace].VertIndex.IndexC = Convert.ToInt16(childPoly.Indices[2]);
 
                     for (int currentVert = 0; currentVert < 3; currentVert++)
                     { 
@@ -1689,22 +2046,6 @@ namespace Tarmac64_Library
 
 
 
-                        if (newObject.modelGeometry[currentFace].VertData[currentVert].position.x > newObject.modelGeometry[currentFace].HighX)
-                        {
-                            newObject.modelGeometry[currentFace].HighX = newObject.modelGeometry[currentFace].VertData[currentVert].position.x;
-                        }
-                        if (newObject.modelGeometry[currentFace].VertData[currentVert].position.x < newObject.modelGeometry[currentFace].LowX)
-                        {
-                            newObject.modelGeometry[currentFace].LowX = newObject.modelGeometry[currentFace].VertData[currentVert].position.x;
-                        }
-                        if (newObject.modelGeometry[currentFace].VertData[currentVert].position.y > newObject.modelGeometry[currentFace].HighY)
-                        {
-                            newObject.modelGeometry[currentFace].HighY = newObject.modelGeometry[currentFace].VertData[currentVert].position.y;
-                        }
-                        if (newObject.modelGeometry[currentFace].VertData[currentVert].position.y < newObject.modelGeometry[currentFace].LowY)
-                        {
-                            newObject.modelGeometry[currentFace].LowY = newObject.modelGeometry[currentFace].VertData[currentVert].position.y;
-                        }
 
 
                         newObject.modelGeometry[currentFace].VertData[currentVert].color = new OK64Color();
@@ -1746,14 +2087,6 @@ namespace Tarmac64_Library
                         newObject.modelGeometry[currentFace].VertData[currentVert].color.AFloat = Convert.ToSingle(newObject.modelGeometry[currentFace].VertData[currentVert].color.A) / 255;                        
                         
                     }
-
-
-                    float centerX = Convert.ToSingle((l_xValues[0] + l_xValues[1] + l_xValues[2]) / 3.0);
-                    float centerY = Convert.ToSingle((l_yValues[0] + l_yValues[1] + l_yValues[2]) / 3.0);
-                    float centerZ = Convert.ToSingle((l_zValues[0] + l_zValues[1] + l_zValues[2]) / 3.0);
-
-                    newObject.modelGeometry[currentFace].CenterPosition = new Assimp.Vector3D(centerX, centerY, centerZ);
-
 
 
 
@@ -2099,7 +2432,7 @@ namespace Tarmac64_Library
                     surfaceObjects.Add(createObject(fbx,surfaceNode.Children[currentsubObject], textureArray, true));
                     int currentObject = surfaceObjects.Count - 1;
                     surfaceObjects[currentObject].surfaceID = currentSection + 1;
-                    surfaceObjects[currentObject].objectColor = colorValues;
+                    surfaceObjects[currentObject].objectColor = new float[3] { colorValues[0], colorValues[1], colorValues[2] };
                     string[] surfaceID = surfaceObjects[currentObject].objectName.Split('_');
                     byte SurfaceStorageByte = 0;
                     if (surfaceID[0].Length != 0)
@@ -2634,168 +2967,6 @@ namespace Tarmac64_Library
             return tempList;            
         }
 
-        public ConcurrentBag<int> RayTest(int currentSection, ConcurrentBag<int> searchList, OK64F3DObject[] surfaceObjects, OK64F3DObject[] masterObjects)
-        {
-            ConcurrentBag<int> tempList = new ConcurrentBag<int>();
-            Assimp.Vector3D raycastOrigin = new Assimp.Vector3D();
-            Assimp.Vector3D raycastVector = new Assimp.Vector3D();
-
-            
-            int closestMaster = 0;
-            
-            int masterIndex = 0;
-
-            for(int targetMO = 0; targetMO < searchList.Count - 1; targetMO++)
-            {
-                bool MOFound = false;
-                bool MOBlocked = false;
-                int MOIndex = 0;
-                lock (searchList)
-                {
-                    MOIndex = searchList.ToList<int>()[targetMO];
-                }
-                
-                for (int SOIndex = 0; SOIndex < surfaceObjects.Length; SOIndex++)
-                {
-                    if (MOFound)
-                    {
-                        break;
-                    }
-                    if (surfaceObjects[SOIndex].surfaceID == (currentSection + 1))
-                    {
-
-                        foreach (var targetSOFace in surfaceObjects[SOIndex].modelGeometry)
-                        {
-                            if (MOFound)
-                            {
-                                break;
-                            }
-                            raycastOrigin = targetSOFace.CenterPosition;
-                            raycastOrigin.Z += 10;
-                            foreach (var targetMOFace in masterObjects[MOIndex].modelGeometry)
-                            {
-                                if (MOFound)
-                                {
-                                    break;
-                                }
-                                raycastVector = targetMOFace.CenterPosition;
-                                
-                                raycastVector.X = Convert.ToSingle(raycastVector.X - raycastOrigin.X) * 2;
-                                raycastVector.Y = Convert.ToSingle(raycastVector.Y - raycastOrigin.Y) * 2;
-                                raycastVector.Z = Convert.ToSingle(raycastVector.Z - raycastOrigin.Z) * 2;
-                                Assimp.Vector3D MOPoint = testIntersect(raycastOrigin, raycastVector, targetMOFace.VertData[0], targetMOFace.VertData[1], targetMOFace.VertData[2]); ;
-
-                                if (MOPoint.X > 0)
-                                {
-                                    foreach (var OcclusionSearch in searchList)
-                                    {
-                                        if (MOBlocked)
-                                        {
-                                            break;
-                                        }
-                                        foreach (var searchFace in masterObjects[OcclusionSearch].modelGeometry)
-                                        {
-                                            Assimp.Vector3D OcclusionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]); ;
-                                            if (OcclusionPoint.X > 0)
-                                            {
-                                                if (OcclusionPoint.X < MOPoint.X)
-                                                {
-                                                    //Object is blocked                                                            
-                                                    MOBlocked = true;
-                                                    break;
-
-                                                }
-                                            }
-                                        }
-                                    }
-
-
-                                    if (!MOBlocked)
-                                    {
-                                        //We found a direct line to the object, so this must be rendered.
-                                        masterIndex = Array.IndexOf(tempList.ToArray(), MOIndex);
-                                        if (masterIndex == -1)
-                                        {
-                                            tempList.Add(MOIndex);
-                                        }
-                                        MOFound = true;// break out to next object.
-                                    }
-                                }
-
-
-                                //Okay so we've checked the center of each face. 
-                                //If we've been occluded, we will check the verts too
-                                //If we can see them we'll add the list
-
-
-                                //We were occluded by another object that was closer.
-                                //check the verts of each face, see if those are clear.
-                                if (!MOFound)
-                                {
-                                    for (int TargetVert = 0; TargetVert < 3; TargetVert++)
-                                    {
-                                        if (MOFound)
-                                        {
-                                            break;
-                                        }
-                                        MOBlocked = false;
-                                        //reset MOFound flag to false. Re-checking new occlusion
-
-                                        raycastVector = new Assimp.Vector3D(targetMOFace.VertData[TargetVert].position.x, targetMOFace.VertData[TargetVert].position.y, targetMOFace.VertData[TargetVert].position.z);                                        
-                                        raycastVector.X = Convert.ToSingle(raycastVector.X - raycastOrigin.X) * 2;
-                                        raycastVector.Y = Convert.ToSingle(raycastVector.Y - raycastOrigin.Y) * 2;
-                                        raycastVector.Z = Convert.ToSingle(raycastVector.Z - raycastOrigin.Z) * 2;
-                                        Assimp.Vector3D MOVertexPoint = testIntersect(raycastOrigin, raycastVector, targetMOFace.VertData[0], targetMOFace.VertData[1], targetMOFace.VertData[2]);
-
-
-
-                                        if (MOVertexPoint.X > 0)
-                                        {
-                                            foreach (var OcclusionSearch in searchList)
-                                            {
-                                                if (MOBlocked)
-                                                {
-                                                    break;
-                                                }
-                                                foreach (var searchFace in masterObjects[OcclusionSearch].modelGeometry)
-                                                {
-                                                    Assimp.Vector3D OcclusionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]); ;
-                                                    if (OcclusionPoint.X > 0)
-                                                    {
-                                                        if (OcclusionPoint.X < MOVertexPoint.X)
-                                                        {
-                                                            //Object is blocked                                                            
-                                                            MOBlocked = true;
-                                                            break;
-
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-
-
-                                        if (!MOBlocked)
-                                        {
-                                            //We found a direct line to the object, so this must be rendered.
-                                            masterIndex = Array.IndexOf(tempList.ToArray(), MOIndex);
-                                            if (masterIndex == -1)
-                                            {
-                                                tempList.Add(MOIndex);
-                                            }
-                                            MOFound = true;// break out to next object.
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }       
-            return tempList;
-        }
-
 
         public byte[] WriteRawTextures(byte[] SegmentData, OK64Texture[] textureObject, int DataLength)
         {
@@ -2844,10 +3015,10 @@ namespace Tarmac64_Library
 
                     // finish setting texture parameters based on new texture and compressed data.
 
-                    textureObject[currentTexture].compressedSize = imageData.Length;
-                    textureObject[currentTexture].fileSize = imageData.Length;
-                    textureObject[currentTexture].segmentPosition = Convert.ToInt32(binaryWriter.BaseStream.Position + DataLength);  // we need this to build out F3DEX commands later. 
-                    TextureSize = TextureSize + textureObject[currentTexture].fileSize;
+                    textureObject[currentTexture].RawTexture.compressedSize = imageData.Length;
+                    textureObject[currentTexture].RawTexture.fileSize = imageData.Length;
+                    textureObject[currentTexture].RawTexture.segmentPosition = Convert.ToInt32(binaryWriter.BaseStream.Position + DataLength);  // we need this to build out F3DEX commands later. 
+                    TextureSize = TextureSize + textureObject[currentTexture].RawTexture.fileSize;
 
 
                     //adjust the MIO0 offset to an 8-byte address as required for N64.
@@ -2867,23 +3038,23 @@ namespace Tarmac64_Library
 
                     // write compressed MIO0 texture to end of ROM.
 
-                    textureObject[currentTexture].romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
+                    textureObject[currentTexture].RawTexture.romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
                     binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
                     binaryWriter.Write(imageData);
 
                     int SegPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
                     if (paletteData != null)
                     {
-                        textureObject[currentTexture].PaletteData = paletteData;
-                        textureObject[currentTexture].paletteSize = paletteData.Length;
-                        textureObject[currentTexture].palettePosition = SegPosition;
-                        SegPosition += textureObject[currentTexture].paletteSize;
+                        textureObject[currentTexture].RawTexture.PaletteData = paletteData;
+                        textureObject[currentTexture].RawTexture.paletteSize = paletteData.Length;
+                        textureObject[currentTexture].RawTexture.palettePosition = SegPosition;
+                        SegPosition += textureObject[currentTexture].RawTexture.paletteSize;
                         addressAlign = 0x1000 - (SegPosition % 0x1000);
                         if (addressAlign == 0x1000)
                             addressAlign = 0;
                         SegPosition += addressAlign;
 
-                        binaryWriter.Write(textureObject[currentTexture].PaletteData);
+                        binaryWriter.Write(textureObject[currentTexture].RawTexture.PaletteData);
                         addressAlign = 0x1000 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 0x1000);
                         if (addressAlign == 0x1000)
                             addressAlign = 0;
@@ -2985,31 +3156,31 @@ namespace Tarmac64_Library
 
                     // finish setting texture parameters based on new texture and compressed data.
 
-                    textureObject[currentTexture].compressedSize = imageData.Length;
-                    textureObject[currentTexture].fileSize = imageData.Length;
-                    textureObject[currentTexture].segmentPosition = Convert.ToInt32(binaryWriter.BaseStream.Position + DataLength);
+                    textureObject[currentTexture].RawTexture.compressedSize = imageData.Length;
+                    textureObject[currentTexture].RawTexture.fileSize = imageData.Length;
+                    textureObject[currentTexture].RawTexture.segmentPosition = Convert.ToInt32(binaryWriter.BaseStream.Position + DataLength);
 
 
                     // write compressed MIO0 texture to end of ROM.
 
-                    textureObject[currentTexture].romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
+                    textureObject[currentTexture].RawTexture.romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
                     binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
-                    textureObject[currentTexture].rawTexture = imageData;                    
+                    textureObject[currentTexture].RawTexture.TextureData = imageData;                    
                     binaryWriter.Write(imageData);
 
                     int SegPosition = Convert.ToInt32(binaryWriter.BaseStream.Length) + DataLength;
                     if (paletteData != null)
                     {
-                        textureObject[currentTexture].PaletteData = paletteData;
-                        textureObject[currentTexture].paletteSize = paletteData.Length;
-                        textureObject[currentTexture].palettePosition = SegPosition;
-                        SegPosition += textureObject[currentTexture].paletteSize;
+                        textureObject[currentTexture].RawTexture.PaletteData = paletteData;
+                        textureObject[currentTexture].RawTexture.paletteSize = paletteData.Length;
+                        textureObject[currentTexture].RawTexture.segmentPosition = SegPosition;
+                        SegPosition += textureObject[currentTexture].RawTexture.paletteSize;
                         addressAlign = 0x1000 - (SegPosition % 0x1000);
                         if (addressAlign == 0x1000)
                             addressAlign = 0;
                         SegPosition += addressAlign;
 
-                        binaryWriter.Write(textureObject[currentTexture].PaletteData);
+                        binaryWriter.Write(textureObject[currentTexture].RawTexture.PaletteData);
                         addressAlign = 0x1000 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 0x1000);
                         if (addressAlign == 0x1000)
                             addressAlign = 0;
@@ -3109,21 +3280,21 @@ namespace Tarmac64_Library
                             N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[TextureArray[currentTexture].TextureFormat][TextureArray[currentTexture].BitSize], TextureData);
                         }
 
-                        TextureArray[currentTexture].compressedTexture = Tarmac.CompressMIO0(imageData);
-                        TextureArray[currentTexture].rawTexture = imageData;
-                        TextureArray[currentTexture].PaletteData = paletteData;
+                        TextureArray[currentTexture].RawTexture.compressedTexture = Tarmac.CompressMIO0(imageData);
+                        TextureArray[currentTexture].RawTexture.TextureData = imageData;
+                        TextureArray[currentTexture].RawTexture.PaletteData = paletteData;
 
                         // finish setting texture parameters based on new texture and compressed data.
 
-                        TextureArray[currentTexture].compressedSize = TextureArray[currentTexture].compressedTexture.Length;
-                        TextureArray[currentTexture].fileSize = imageData.Length;
-                        TextureArray[currentTexture].segmentPosition = segment5Position;  // we need this to build out F3DEX commands later.                     
-                        segment5Position += TextureArray[currentTexture].fileSize;
+                        TextureArray[currentTexture].RawTexture.compressedSize = TextureArray[currentTexture].RawTexture.compressedTexture.Length;
+                        TextureArray[currentTexture].RawTexture.fileSize = imageData.Length;
+                        TextureArray[currentTexture].RawTexture.segmentPosition = segment5Position;  // we need this to build out F3DEX commands later.                     
+                        segment5Position += TextureArray[currentTexture].RawTexture.fileSize;
                         if (paletteData != null)
                         {
-                            TextureArray[currentTexture].paletteSize = paletteData.Length;
-                            TextureArray[currentTexture].palettePosition = segment5Position;
-                            segment5Position += TextureArray[currentTexture].paletteSize;
+                            TextureArray[currentTexture].RawTexture.paletteSize = paletteData.Length;
+                            TextureArray[currentTexture].RawTexture.palettePosition = segment5Position;
+                            segment5Position += TextureArray[currentTexture].RawTexture.paletteSize;
                             int addressAlign = 0x1000 - (segment5Position % 0x1000);
                             if (addressAlign == 0x1000)
                                 addressAlign = 0;
@@ -3136,7 +3307,7 @@ namespace Tarmac64_Library
 
         public byte[] WriteTextures(byte[] FileData, TM64_Course.Course Course)
         {
-            OK64Texture[] TextureArray = Course.TextureObjects;
+            OK64Texture[] TextureArray = Course.ModelData.TextureObjects;
             MemoryStream memoryStream = new MemoryStream();
             BinaryReader binaryReader = new BinaryReader(memoryStream);
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -3167,12 +3338,12 @@ namespace Tarmac64_Library
 
                     // write compressed MIO0 texture to end of ROM.
 
-                    TextureArray[CurrentTexture].romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length);
+                    TextureArray[CurrentTexture].RawTexture.romPosition = Convert.ToInt32(binaryWriter.BaseStream.Length);
                     binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
-                    binaryWriter.Write(TextureArray[CurrentTexture].rawTexture);
-                    if (TextureArray[CurrentTexture].PaletteData != null)
+                    binaryWriter.Write(TextureArray[CurrentTexture].RawTexture.TextureData);
+                    if (TextureArray[CurrentTexture].RawTexture.PaletteData != null)
                     {
-                        binaryWriter.Write(TextureArray[CurrentTexture].PaletteData);
+                        binaryWriter.Write(TextureArray[CurrentTexture].RawTexture.PaletteData);
                         int addressAlign = 0x1000 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 0x1000);
                         if (addressAlign == 0x1000)
                             addressAlign = 0;
@@ -3209,7 +3380,7 @@ namespace Tarmac64_Library
 
         public byte[] CompileTextureTable(TM64_Course.Course CourseData)
         {
-            OK64Texture[] textureObject = CourseData.TextureObjects;
+            OK64Texture[] textureObject = CourseData.ModelData.TextureObjects;
             MemoryStream memoryStream = new MemoryStream();
             BinaryReader binaryReader = new BinaryReader(memoryStream);
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -3813,7 +3984,7 @@ namespace Tarmac64_Library
                 F3DEX095_Parameters.G_IM_SIZ_16b, Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight), 0, 0, F3DEX095_Parameters.G_TX_NOMIRROR, 5, 0, F3DEX095_Parameters.G_TX_NOMIRROR, 5, 0)
                 );
             
-            binaryWriter.Write(F3D.gsNinLoadTextureImage(Convert.ToUInt32(TextureObject.segmentPosition), F3DEX095_Parameters.G_IM_FMT_RGBA,
+            binaryWriter.Write(F3D.gsNinLoadTextureImage(Convert.ToUInt32(TextureObject.RawTexture.segmentPosition), F3DEX095_Parameters.G_IM_FMT_RGBA,
                 F3DEX095_Parameters.G_IM_SIZ_16b, Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight), 0, 7)
                 );
 
@@ -4345,7 +4516,7 @@ namespace Tarmac64_Library
             //Load Texture Data
             binaryWriter.Write(
                 F3D.gsNinLoadTextureImage(
-                    Convert.ToUInt32(TextureObject.segmentPosition | Convert.ToUInt32(Segment << 24)),
+                    Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | Convert.ToUInt32(Segment << 24)),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                     F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                     Convert.ToUInt32(TextureObject.textureWidth),
@@ -4382,11 +4553,11 @@ namespace Tarmac64_Library
             UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
 
             binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DSharp.F3DEX095_Parameters.G_TT_RGBA16));
-            binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | SegmentID)));
+            binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.RawTexture.palettePosition | SegmentID)));
             if (TextureObject.BitSize < 2)
             {
                 //Macro 4-bit Texture Load
-                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
                     0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
             }
@@ -4411,7 +4582,7 @@ namespace Tarmac64_Library
                 );
                 //Load Texture Data
                 binaryWriter.Write(F3D.gsDPLoadTextureBlock(
-                    Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                    Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                     F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                     Convert.ToUInt32(TextureObject.textureWidth),
@@ -4606,7 +4777,7 @@ namespace Tarmac64_Library
             if (TextureObject.BitSize < 2)
             {
                 //Macro 4-bit Texture Load
-                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
+                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | 0x05000000),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
                     0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
             }
@@ -4631,7 +4802,7 @@ namespace Tarmac64_Library
                 );
                 //Load Texture Data
                 binaryWriter.Write(F3D.gsDPLoadTextureBlock(
-                    Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
+                    Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | 0x05000000),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                     F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                     Convert.ToUInt32(TextureObject.textureWidth),
@@ -4827,7 +4998,7 @@ namespace Tarmac64_Library
                     if ((textureObject[materialID].texturePath != null) && (textureObject[materialID].texturePath != "NULL"))
                     {
                         //Textured Polygons (Slow)
-                        textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
+                        textureObject[materialID].RawTexture.f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
                         switch (textureObject[materialID].TextureFormat)
                         {
 
@@ -4860,7 +5031,7 @@ namespace Tarmac64_Library
                     else
                     {
                         // Gouraud or Flat Shading (Fast)
-                        textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
+                        textureObject[materialID].RawTexture.f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
                         seg7w.Write(UntexturedPolygons(textureObject[materialID], true, FogToggle));
 
                     }
@@ -4868,7 +5039,7 @@ namespace Tarmac64_Library
                 else
                 {
                     //SkippedMaterial - No Texutre Load Commands
-                    textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
+                    textureObject[materialID].RawTexture.f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
                     seg7w.Write(F3DMaterial(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle));
                 }
             }
@@ -4928,7 +5099,7 @@ namespace Tarmac64_Library
                 if ((textureObject[materialID].texturePath != null) && (textureObject[materialID].texturePath != "NULL"))
                 {
                     //Textured Polygons (Slow)
-                    textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
+                    textureObject[materialID].RawTexture.f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
                     switch (textureObject[materialID].TextureFormat)
                     {
 
@@ -4961,7 +5132,7 @@ namespace Tarmac64_Library
                 else
                 {
                     // Gouraud or Flat Shading (Fast)
-                    textureObject[materialID].f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
+                    textureObject[materialID].RawTexture.f3dexPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
                     seg7w.Write(UntexturedPolygons(textureObject[materialID], GeometryMode, FogToggle));
 
                 }
@@ -5005,7 +5176,7 @@ namespace Tarmac64_Library
                             Array.Reverse(byteArray);
                             seg6w.Write(byteArray);
 
-                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | (SegmentID << 24));
+                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].RawTexture.f3dexPosition | (SegmentID << 24));
                             Array.Reverse(byteArray);
                             seg6w.Write(byteArray);
 
@@ -5024,7 +5195,7 @@ namespace Tarmac64_Library
                         }
                     }
                 }
-                if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
+                if (textureWritten && (textureObject[currentTexture].RawTexture.paletteSize > 0))
                 {
                     seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
                     seg6w.Write(
@@ -5082,7 +5253,7 @@ namespace Tarmac64_Library
                 {
 
                     int objectCount = sectionList[currentSection].viewList[0].objectList.Length;
-                    sectionList[currentSection].viewList[0].segmentPosition = Convert.ToInt32(seg6m.Position);
+                    sectionList[currentSection].segmentPosition = Convert.ToInt32(seg6m.Position);
 
 
 
@@ -5112,7 +5283,7 @@ namespace Tarmac64_Library
                                                 Array.Reverse(byteArray);
                                                 seg6w.Write(byteArray);
 
-                                                byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | 0x06000000);
+                                                byteArray = BitConverter.GetBytes(textureObject[currentTexture].RawTexture.f3dexPosition | 0x06000000);
                                                 Array.Reverse(byteArray);
                                                 seg6w.Write(byteArray);
 
@@ -5134,7 +5305,7 @@ namespace Tarmac64_Library
                                 }
 
 
-                                if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
+                                if (textureWritten && (textureObject[currentTexture].RawTexture.paletteSize > 0))
                                 {
                                     seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
                                     //set MIP levels to 0.
@@ -5213,7 +5384,7 @@ namespace Tarmac64_Library
                 {
 
                     int objectCount = sectionList[currentSection].viewList[0].objectList.Length;
-                    sectionList[currentSection].viewList[0].segmentPosition = Convert.ToInt32(seg6m.Position);
+                    sectionList[currentSection].segmentPosition = Convert.ToInt32(seg6m.Position);
 
 
                     for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
@@ -5235,7 +5406,7 @@ namespace Tarmac64_Library
                                         Array.Reverse(byteArray);
                                         seg6w.Write(byteArray);
 
-                                        byteArray = BitConverter.GetBytes(textureObject[TargetTexture].f3dexPosition | 0x06000000);
+                                        byteArray = BitConverter.GetBytes(textureObject[TargetTexture].RawTexture.f3dexPosition | 0x06000000);
                                         Array.Reverse(byteArray);
                                         seg6w.Write(byteArray);
 
@@ -5284,7 +5455,7 @@ namespace Tarmac64_Library
                                                 Array.Reverse(byteArray);
                                                 seg6w.Write(byteArray);
 
-                                                byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | 0x06000000);
+                                                byteArray = BitConverter.GetBytes(textureObject[currentTexture].RawTexture.f3dexPosition | 0x06000000);
                                                 Array.Reverse(byteArray);
                                                 seg6w.Write(byteArray);
 
@@ -5305,7 +5476,7 @@ namespace Tarmac64_Library
 
                                     }
 
-                                    if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
+                                    if (textureWritten && (textureObject[currentTexture].RawTexture.paletteSize > 0))
                                     {
                                         seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
                                         seg6w.Write(
@@ -5367,7 +5538,7 @@ namespace Tarmac64_Library
                                     Array.Reverse(byteArray);
                                     seg6w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | 0x06000000);
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].RawTexture.f3dexPosition | 0x06000000);
                                     Array.Reverse(byteArray);
                                     seg6w.Write(byteArray);
 
@@ -5429,7 +5600,7 @@ namespace Tarmac64_Library
                                     Array.Reverse(byteArray);
                                     seg6w.Write(byteArray);
 
-                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | 0x06000000);
+                                    byteArray = BitConverter.GetBytes(textureObject[currentTexture].RawTexture.f3dexPosition | 0x06000000);
                                     Array.Reverse(byteArray);
                                     seg6w.Write(byteArray);
 
@@ -5527,7 +5698,7 @@ namespace Tarmac64_Library
             {
                 for (int currentView = 0; currentView < 4; currentView++)
                 {
-                    byteArray = BitConverter.GetBytes(0x06000000 | (sectionList[currentSection].viewList[0].segmentPosition + magic));
+                    byteArray = BitConverter.GetBytes(0x06000000 | (sectionList[currentSection].segmentPosition + magic));
                     Array.Reverse(byteArray);
                     seg6w.Write(byteArray);
                 }
@@ -5551,43 +5722,24 @@ namespace Tarmac64_Library
         
 
 
-        public int GetModelFormat(Scene fbx)
+        public int GetModelFormat(Assimp.Scene fbx)
         {
             int modelFormat = -1;
             Assimp.Node masterNode = fbx.RootNode.FindNode("Course Master Objects");
+
+            masterNode = fbx.RootNode.FindNode("Section 1");
             if (masterNode != null)
             {
-                masterNode = fbx.RootNode.FindNode("Section 1 North");
-                if (masterNode != null)
-                {
-                    modelFormat = 2;  //advanced mode
-                }
-                else
-                {
-                    masterNode = fbx.RootNode.FindNode("Section 1");
-                    if (masterNode != null)
-                    {
-                        modelFormat = 1;  //normal mode
-                    }
-                }
+                modelFormat = 0;  //normal mode
             }
             else
             {
-                masterNode = fbx.RootNode.FindNode("Section 1");
-                if (masterNode != null)
-                {
-                    modelFormat = 0; //simple mode
-                }
-                else
-                {
-                    modelFormat = 3; //mystery mode
-                }
-            }    
-
+                modelFormat = 1; //OBJ mode
+            }
             return modelFormat;
         }
 
-        public int GetSectionCount(Scene fbx)
+        public int GetSectionCount(Assimp.Scene fbx)
         {
             int sectionCount = 0;
             for (int searchSection = 1; ; searchSection++)
@@ -5605,7 +5757,7 @@ namespace Tarmac64_Library
             return sectionCount;
         }
 
-        public Matrix4x4 GetTotalTransform(Node Base, Scene FBX)
+        public Matrix4x4 GetTotalTransform(Node Base, Assimp.Scene FBX)
         {
             Matrix4x4 OutTransform = Base.Transform;
             while (Base.Parent != FBX.RootNode)
@@ -5619,7 +5771,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64Bone LoadBone(Node Base, Scene FBX, float ModelScale)
+        public OK64Bone LoadBone(Node Base, Assimp.Scene FBX, float ModelScale)
         {
             OK64Bone NewBone = new OK64Bone();
             NewBone.Name = Base.Name;
@@ -5703,7 +5855,7 @@ namespace Tarmac64_Library
             {
                 if (SaveObject.ModelData[ThisObject].BoneName == Skeleton.Name)
                 {
-                    flip2 = BitConverter.GetBytes(SaveObject.TextureData[SaveObject.ModelData[ThisObject].materialID].f3dexPosition);
+                    flip2 = BitConverter.GetBytes(SaveObject.TextureData[SaveObject.ModelData[ThisObject].materialID].RawTexture.f3dexPosition);
                     Array.Reverse(flip2);
                     binaryWriter.Write(flip2);
 
@@ -6318,7 +6470,7 @@ namespace Tarmac64_Library
             return Skeleton;
         }
 
-        public OK64Bone ParseAnimation(Scene FBX, NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
+        public OK64Bone ParseAnimation(Assimp.Scene FBX, NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
         {
 
             if (Bone.Name == AnimeChannel.NodeName)
@@ -6332,7 +6484,7 @@ namespace Tarmac64_Library
             }
             return Bone;
         }
-        public OK64Bone LoadSkeleton (Scene FBX, float ModelScale)
+        public OK64Bone LoadSkeleton (Assimp.Scene FBX, float ModelScale)
         {
             
             Node Base = FBX.RootNode.FindNode("BodyBone");
@@ -6354,7 +6506,7 @@ namespace Tarmac64_Library
         {
             int R, G, B, A;
             int ThisPixel = (Height * TextureObject.textureWidth) + Width;
-            return "0x" + TextureObject.rawTexture[ThisPixel * 2].ToString("X").PadLeft(2, '0') + TextureObject.rawTexture[1 + (ThisPixel * 2)].ToString("X").PadLeft(2, '0') + ", ";
+            return "0x" + TextureObject.RawTexture.TextureData[ThisPixel * 2].ToString("X").PadLeft(2, '0') + TextureObject.RawTexture.TextureData[1 + (ThisPixel * 2)].ToString("X").PadLeft(2, '0') + ", ";
         }
 
 
@@ -6390,7 +6542,7 @@ namespace Tarmac64_Library
             {
                 TextureData.Add("unsigned short " + TextureObject.textureName + "[] = {");
 
-                MemoryStream memoryStream = new MemoryStream(TextureObject.rawTexture);
+                MemoryStream memoryStream = new MemoryStream(TextureObject.RawTexture.TextureData);
                 BinaryReader binaryReader = new BinaryReader(memoryStream);
                 binaryReader.BaseStream.Position = 0;
                 while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
@@ -6406,11 +6558,11 @@ namespace Tarmac64_Library
                 TextureData.Add("};");
                 TextureData.Add("");
 
-                if (TextureObject.PaletteData != null)
+                if (TextureObject.RawTexture.PaletteData != null)
                 {
                     TextureData.Add("unsigned short " + TextureObject.textureName + "_PAL[] = {");
 
-                    memoryStream = new MemoryStream(TextureObject.PaletteData);
+                    memoryStream = new MemoryStream(TextureObject.RawTexture.PaletteData);
                     binaryReader = new BinaryReader(memoryStream);
                     binaryReader.BaseStream.Position = 0;
                     while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)

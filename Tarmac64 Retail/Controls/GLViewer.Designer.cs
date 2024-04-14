@@ -37,7 +37,6 @@
             this.SpeedBox = new System.Windows.Forms.TextBox();
             this.CheckboxPaths = new System.Windows.Forms.CheckBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.chkPop = new System.Windows.Forms.CheckBox();
             this.chkWireframe = new System.Windows.Forms.CheckBox();
             this.CheckboxHover = new System.Windows.Forms.CheckBox();
             this.CheckboxTextured = new System.Windows.Forms.CheckBox();
@@ -62,14 +61,13 @@
             this.SettingsPanel.Controls.Add(this.SpeedBox);
             this.SettingsPanel.Controls.Add(this.CheckboxPaths);
             this.SettingsPanel.Controls.Add(this.pictureBox2);
-            this.SettingsPanel.Controls.Add(this.chkPop);
             this.SettingsPanel.Controls.Add(this.chkWireframe);
             this.SettingsPanel.Controls.Add(this.CheckboxHover);
             this.SettingsPanel.Controls.Add(this.CheckboxTextured);
             this.SettingsPanel.Location = new System.Drawing.Point(6, 472);
             this.SettingsPanel.Name = "SettingsPanel";
             this.SettingsPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.SettingsPanel.Size = new System.Drawing.Size(627, 196);
+            this.SettingsPanel.Size = new System.Drawing.Size(372, 196);
             this.SettingsPanel.TabIndex = 2;
             this.SettingsPanel.Visible = false;
             // 
@@ -128,7 +126,7 @@
             this.CheckboxPaths.AutoSize = true;
             this.CheckboxPaths.Checked = true;
             this.CheckboxPaths.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckboxPaths.Location = new System.Drawing.Point(6, 88);
+            this.CheckboxPaths.Location = new System.Drawing.Point(6, 109);
             this.CheckboxPaths.Margin = new System.Windows.Forms.Padding(2);
             this.CheckboxPaths.Name = "CheckboxPaths";
             this.CheckboxPaths.Size = new System.Drawing.Size(81, 17);
@@ -136,6 +134,7 @@
             this.CheckboxPaths.TabStop = false;
             this.CheckboxPaths.Text = "Draw Paths";
             this.CheckboxPaths.UseVisualStyleBackColor = true;
+            this.CheckboxPaths.CheckedChanged += new System.EventHandler(this.CheckboxPaths_CheckedChanged);
             // 
             // pictureBox2
             // 
@@ -144,23 +143,10 @@
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.Location = new System.Drawing.Point(123, 7);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(500, 182);
+            this.pictureBox2.Size = new System.Drawing.Size(242, 182);
             this.pictureBox2.TabIndex = 105;
             this.pictureBox2.TabStop = false;
-            // 
-            // chkPop
-            // 
-            this.chkPop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.chkPop.AutoSize = true;
-            this.chkPop.Checked = true;
-            this.chkPop.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkPop.Location = new System.Drawing.Point(6, 151);
-            this.chkPop.Margin = new System.Windows.Forms.Padding(2);
-            this.chkPop.Name = "chkPop";
-            this.chkPop.Size = new System.Drawing.Size(102, 17);
-            this.chkPop.TabIndex = 3;
-            this.chkPop.Text = "Draw POP Data";
-            this.chkPop.UseVisualStyleBackColor = true;
+            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
             // chkWireframe
             // 
@@ -168,7 +154,7 @@
             this.chkWireframe.AutoSize = true;
             this.chkWireframe.Checked = true;
             this.chkWireframe.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkWireframe.Location = new System.Drawing.Point(6, 130);
+            this.chkWireframe.Location = new System.Drawing.Point(6, 151);
             this.chkWireframe.Margin = new System.Windows.Forms.Padding(2);
             this.chkWireframe.Name = "chkWireframe";
             this.chkWireframe.Size = new System.Drawing.Size(111, 17);
@@ -182,7 +168,7 @@
             this.CheckboxHover.AutoSize = true;
             this.CheckboxHover.Checked = true;
             this.CheckboxHover.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckboxHover.Location = new System.Drawing.Point(6, 109);
+            this.CheckboxHover.Location = new System.Drawing.Point(6, 130);
             this.CheckboxHover.Margin = new System.Windows.Forms.Padding(2);
             this.CheckboxHover.Name = "CheckboxHover";
             this.CheckboxHover.Size = new System.Drawing.Size(83, 17);
@@ -196,7 +182,7 @@
             this.CheckboxTextured.AutoSize = true;
             this.CheckboxTextured.Checked = true;
             this.CheckboxTextured.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckboxTextured.Location = new System.Drawing.Point(6, 67);
+            this.CheckboxTextured.Location = new System.Drawing.Point(6, 88);
             this.CheckboxTextured.Margin = new System.Windows.Forms.Padding(2);
             this.CheckboxTextured.Name = "CheckboxTextured";
             this.CheckboxTextured.Size = new System.Drawing.Size(68, 17);
@@ -311,7 +297,6 @@
 
         private System.Windows.Forms.Panel SettingsPanel;
         private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.CheckBox chkPop;
         private System.Windows.Forms.CheckBox chkWireframe;
         private System.Windows.Forms.CheckBox CheckboxHover;
         private System.Windows.Forms.Button button4;

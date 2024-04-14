@@ -17,7 +17,7 @@ namespace Tarmac64_Retail
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);                        
-            Application.Run(new Tarmac64_Retail.TarmacAbout());
+            Application.Run(new Tarmac64_Retail.Main());
         }
     }
 }

@@ -44,13 +44,6 @@
             this.WaterTypeBox = new System.Windows.Forms.ComboBox();
             this.label51 = new System.Windows.Forms.Label();
             this.waterBox = new System.Windows.Forms.TextBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.BombPointBox = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.BombTypeBox = new System.Windows.Forms.ComboBox();
-            this.BombIndexBox = new System.Windows.Forms.ComboBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.label61 = new System.Windows.Forms.Label();
             this.songBtn = new System.Windows.Forms.Button();
@@ -160,37 +153,6 @@
             this.label59 = new System.Windows.Forms.Label();
             this.label58 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.PathCountBox = new System.Windows.Forms.TextBox();
-            this.DistributeBox = new System.Windows.Forms.CheckBox();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
-            this.PathSurfaceBox = new System.Windows.Forms.TextBox();
-            this.PathSurfaceSelect = new System.Windows.Forms.ComboBox();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.EchoStartBox = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.EchoStopBox = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.ColorPickBase = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.PathIndexBox = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.PathTypeBox = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.EchoPowerBox = new System.Windows.Forms.TextBox();
-            this.BaseB = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.BaseG = new System.Windows.Forms.TextBox();
-            this.BaseR = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.ColorPickAdjust = new System.Windows.Forms.Button();
-            this.AdjB = new System.Windows.Forms.TextBox();
-            this.AdjG = new System.Windows.Forms.TextBox();
-            this.AdjR = new System.Windows.Forms.TextBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label22 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
@@ -207,24 +169,13 @@
             this.FogEndBox = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.FogToggleBox = new System.Windows.Forms.CheckBox();
-            this.LapBox = new System.Windows.Forms.TextBox();
-            this.label78 = new System.Windows.Forms.Label();
-            this.GoalBannerBox = new System.Windows.Forms.CheckBox();
-            this.DragBox = new System.Windows.Forms.CheckBox();
-            this.DragLengthBox = new System.Windows.Forms.TextBox();
-            this.label55 = new System.Windows.Forms.Label();
-            this.LapFinishLine = new System.Windows.Forms.GroupBox();
-            this.groupBox3.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            this.groupBox5.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.LapFinishLine.SuspendLayout();
             this.SuspendLayout();
             // 
             // label63
@@ -357,10 +308,10 @@
             // WaterTypeBox
             // 
             this.WaterTypeBox.FormattingEnabled = true;
-            this.WaterTypeBox.Location = new System.Drawing.Point(6, 162);
+            this.WaterTypeBox.Location = new System.Drawing.Point(5, 162);
             this.WaterTypeBox.Margin = new System.Windows.Forms.Padding(5);
             this.WaterTypeBox.Name = "WaterTypeBox";
-            this.WaterTypeBox.Size = new System.Drawing.Size(196, 21);
+            this.WaterTypeBox.Size = new System.Drawing.Size(197, 21);
             this.WaterTypeBox.TabIndex = 8;
             this.WaterTypeBox.SelectedIndexChanged += new System.EventHandler(this.WaterTypeBox_SelectedIndexChanged);
             // 
@@ -385,82 +336,6 @@
             this.waterBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.waterBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Controls.Add(this.BombPointBox);
-            this.groupBox3.Controls.Add(this.label14);
-            this.groupBox3.Controls.Add(this.label1);
-            this.groupBox3.Controls.Add(this.BombTypeBox);
-            this.groupBox3.Controls.Add(this.BombIndexBox);
-            this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox3.Location = new System.Drawing.Point(2, 1220);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(280, 71);
-            this.groupBox3.TabIndex = 18;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "VS Bombs";
-            // 
-            // label10
-            // 
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(199, 47);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(55, 13);
-            this.label10.TabIndex = 281;
-            this.label10.Text = "Marker";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // BombPointBox
-            // 
-            this.BombPointBox.Location = new System.Drawing.Point(201, 21);
-            this.BombPointBox.Margin = new System.Windows.Forms.Padding(5);
-            this.BombPointBox.Name = "BombPointBox";
-            this.BombPointBox.Size = new System.Drawing.Size(55, 19);
-            this.BombPointBox.TabIndex = 2;
-            this.BombPointBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.BombPointBox.TextChanged += new System.EventHandler(this.BombPointBox_TextChanged);
-            // 
-            // label14
-            // 
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(103, 47);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(85, 13);
-            this.label14.TabIndex = 279;
-            this.label14.Text = "Type";
-            this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(34, 47);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(33, 13);
-            this.label1.TabIndex = 199;
-            this.label1.Text = "Index";
-            // 
-            // BombTypeBox
-            // 
-            this.BombTypeBox.FormattingEnabled = true;
-            this.BombTypeBox.Location = new System.Drawing.Point(106, 21);
-            this.BombTypeBox.Margin = new System.Windows.Forms.Padding(5);
-            this.BombTypeBox.Name = "BombTypeBox";
-            this.BombTypeBox.Size = new System.Drawing.Size(85, 21);
-            this.BombTypeBox.TabIndex = 1;
-            this.BombTypeBox.SelectedIndexChanged += new System.EventHandler(this.BombTypeBox_SelectedIndexChanged);
-            // 
-            // BombIndexBox
-            // 
-            this.BombIndexBox.FormattingEnabled = true;
-            this.BombIndexBox.Location = new System.Drawing.Point(11, 21);
-            this.BombIndexBox.Margin = new System.Windows.Forms.Padding(5);
-            this.BombIndexBox.Name = "BombIndexBox";
-            this.BombIndexBox.Size = new System.Drawing.Size(85, 21);
-            this.BombIndexBox.TabIndex = 0;
-            this.BombIndexBox.SelectedIndexChanged += new System.EventHandler(this.BombSelectBox_SelectedIndexChanged);
-            // 
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.label61);
@@ -469,7 +344,7 @@
             this.groupBox9.Controls.Add(this.songBox);
             this.groupBox9.Controls.Add(this.label40);
             this.groupBox9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox9.Location = new System.Drawing.Point(1, 1130);
+            this.groupBox9.Location = new System.Drawing.Point(4, 751);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(280, 84);
             this.groupBox9.TabIndex = 17;
@@ -840,7 +715,7 @@
             this.groupBox2.Controls.Add(this.label30);
             this.groupBox2.Controls.Add(this.label31);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox2.Location = new System.Drawing.Point(1, 940);
+            this.groupBox2.Location = new System.Drawing.Point(4, 561);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(280, 184);
             this.groupBox2.TabIndex = 16;
@@ -1710,376 +1585,12 @@
             this.groupBox7.Controls.Add(this.startYBox);
             this.groupBox7.Controls.Add(this.startXBox);
             this.groupBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox7.Location = new System.Drawing.Point(1, 714);
+            this.groupBox7.Location = new System.Drawing.Point(5, 335);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(280, 220);
             this.groupBox7.TabIndex = 15;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Radar Map";
-            // 
-            // PathCountBox
-            // 
-            this.PathCountBox.Location = new System.Drawing.Point(147, 48);
-            this.PathCountBox.Margin = new System.Windows.Forms.Padding(5);
-            this.PathCountBox.Name = "PathCountBox";
-            this.PathCountBox.Size = new System.Drawing.Size(45, 19);
-            this.PathCountBox.TabIndex = 296;
-            this.PathCountBox.Text = "1";
-            this.PathCountBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.PathCountBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // DistributeBox
-            // 
-            this.DistributeBox.AutoSize = true;
-            this.DistributeBox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.DistributeBox.Location = new System.Drawing.Point(7, 50);
-            this.DistributeBox.Name = "DistributeBox";
-            this.DistributeBox.Size = new System.Drawing.Size(132, 17);
-            this.DistributeBox.TabIndex = 295;
-            this.DistributeBox.Text = "Force Path Distribution";
-            this.DistributeBox.UseVisualStyleBackColor = true;
-            this.DistributeBox.CheckedChanged += new System.EventHandler(this.UpdateUIHandler);
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(200, 51);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(60, 13);
-            this.label20.TabIndex = 297;
-            this.label20.Text = "Path Count";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(201, 24);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(68, 13);
-            this.label19.TabIndex = 294;
-            this.label19.Text = "Path Surface";
-            // 
-            // PathSurfaceBox
-            // 
-            this.PathSurfaceBox.Location = new System.Drawing.Point(148, 21);
-            this.PathSurfaceBox.Margin = new System.Windows.Forms.Padding(5);
-            this.PathSurfaceBox.Name = "PathSurfaceBox";
-            this.PathSurfaceBox.Size = new System.Drawing.Size(45, 19);
-            this.PathSurfaceBox.TabIndex = 293;
-            this.PathSurfaceBox.Text = "1";
-            this.PathSurfaceBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.PathSurfaceBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // PathSurfaceSelect
-            // 
-            this.PathSurfaceSelect.FormattingEnabled = true;
-            this.PathSurfaceSelect.Location = new System.Drawing.Point(7, 21);
-            this.PathSurfaceSelect.Margin = new System.Windows.Forms.Padding(5);
-            this.PathSurfaceSelect.Name = "PathSurfaceSelect";
-            this.PathSurfaceSelect.Size = new System.Drawing.Size(131, 21);
-            this.PathSurfaceSelect.TabIndex = 292;
-            this.PathSurfaceSelect.SelectedIndexChanged += new System.EventHandler(this.UpdateUI);
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.PathSurfaceSelect);
-            this.groupBox5.Controls.Add(this.PathSurfaceBox);
-            this.groupBox5.Controls.Add(this.label19);
-            this.groupBox5.Controls.Add(this.label20);
-            this.groupBox5.Controls.Add(this.DistributeBox);
-            this.groupBox5.Controls.Add(this.PathCountBox);
-            this.groupBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox5.Location = new System.Drawing.Point(2, 630);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(278, 78);
-            this.groupBox5.TabIndex = 300;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Course Paths";
-            // 
-            // label11
-            // 
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label11.Location = new System.Drawing.Point(9, 53);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(55, 13);
-            this.label11.TabIndex = 239;
-            this.label11.Text = "Start";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // EchoStartBox
-            // 
-            this.EchoStartBox.Location = new System.Drawing.Point(10, 71);
-            this.EchoStartBox.Margin = new System.Windows.Forms.Padding(5);
-            this.EchoStartBox.Name = "EchoStartBox";
-            this.EchoStartBox.Size = new System.Drawing.Size(55, 19);
-            this.EchoStartBox.TabIndex = 4;
-            this.EchoStartBox.Text = "0";
-            this.EchoStartBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.EchoStartBox.TextChanged += new System.EventHandler(this.EchoPowerBox_TextChanged_1);
-            this.EchoStartBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // label12
-            // 
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label12.Location = new System.Drawing.Point(74, 53);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(55, 13);
-            this.label12.TabIndex = 240;
-            this.label12.Text = "End";
-            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // EchoStopBox
-            // 
-            this.EchoStopBox.Location = new System.Drawing.Point(74, 71);
-            this.EchoStopBox.Margin = new System.Windows.Forms.Padding(5);
-            this.EchoStopBox.Name = "EchoStopBox";
-            this.EchoStopBox.Size = new System.Drawing.Size(55, 19);
-            this.EchoStopBox.TabIndex = 5;
-            this.EchoStopBox.Text = "0";
-            this.EchoStopBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.EchoStopBox.TextChanged += new System.EventHandler(this.EchoPowerBox_TextChanged_1);
-            this.EchoStopBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(232, 121);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(31, 13);
-            this.label8.TabIndex = 181;
-            this.label8.Text = "Base";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(249, 21);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(25, 23);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "-";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // ColorPickBase
-            // 
-            this.ColorPickBase.BackColor = System.Drawing.Color.Fuchsia;
-            this.ColorPickBase.Location = new System.Drawing.Point(202, 115);
-            this.ColorPickBase.Name = "ColorPickBase";
-            this.ColorPickBase.Size = new System.Drawing.Size(24, 23);
-            this.ColorPickBase.TabIndex = 10;
-            this.ColorPickBase.UseVisualStyleBackColor = false;
-            this.ColorPickBase.Click += new System.EventHandler(this.ColorPickBase_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(218, 21);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(25, 23);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "+";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // label6
-            // 
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label6.Location = new System.Drawing.Point(74, 96);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(55, 13);
-            this.label6.TabIndex = 183;
-            this.label6.Text = "G";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // PathIndexBox
-            // 
-            this.PathIndexBox.FormattingEnabled = true;
-            this.PathIndexBox.Location = new System.Drawing.Point(148, 23);
-            this.PathIndexBox.Margin = new System.Windows.Forms.Padding(5);
-            this.PathIndexBox.Name = "PathIndexBox";
-            this.PathIndexBox.Size = new System.Drawing.Size(62, 21);
-            this.PathIndexBox.TabIndex = 1;
-            this.PathIndexBox.SelectedIndexChanged += new System.EventHandler(this.EchoIndexBox_SelectedIndexChanged);
-            // 
-            // label5
-            // 
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label5.Location = new System.Drawing.Point(139, 96);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(55, 13);
-            this.label5.TabIndex = 184;
-            this.label5.Text = "B";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // PathTypeBox
-            // 
-            this.PathTypeBox.FormattingEnabled = true;
-            this.PathTypeBox.Location = new System.Drawing.Point(10, 23);
-            this.PathTypeBox.Margin = new System.Windows.Forms.Padding(5);
-            this.PathTypeBox.Name = "PathTypeBox";
-            this.PathTypeBox.Size = new System.Drawing.Size(128, 21);
-            this.PathTypeBox.TabIndex = 0;
-            this.PathTypeBox.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
-            // 
-            // label4
-            // 
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label4.Location = new System.Drawing.Point(9, 96);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(55, 13);
-            this.label4.TabIndex = 182;
-            this.label4.Text = "R";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // EchoPowerBox
-            // 
-            this.EchoPowerBox.Location = new System.Drawing.Point(139, 71);
-            this.EchoPowerBox.Margin = new System.Windows.Forms.Padding(5);
-            this.EchoPowerBox.Name = "EchoPowerBox";
-            this.EchoPowerBox.Size = new System.Drawing.Size(55, 19);
-            this.EchoPowerBox.TabIndex = 6;
-            this.EchoPowerBox.Text = "0";
-            this.EchoPowerBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.EchoPowerBox.TextChanged += new System.EventHandler(this.EchoPowerBox_TextChanged_1);
-            this.EchoPowerBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // BaseB
-            // 
-            this.BaseB.Location = new System.Drawing.Point(139, 117);
-            this.BaseB.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.BaseB.Name = "BaseB";
-            this.BaseB.Size = new System.Drawing.Size(55, 19);
-            this.BaseB.TabIndex = 9;
-            this.BaseB.Text = "0";
-            this.BaseB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.BaseB.TextChanged += new System.EventHandler(this.EchoPowerBox_TextChanged_1);
-            this.BaseB.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // label3
-            // 
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.label3.Location = new System.Drawing.Point(139, 53);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(55, 13);
-            this.label3.TabIndex = 284;
-            this.label3.Text = "Power";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // BaseG
-            // 
-            this.BaseG.Location = new System.Drawing.Point(74, 117);
-            this.BaseG.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.BaseG.Name = "BaseG";
-            this.BaseG.Size = new System.Drawing.Size(55, 19);
-            this.BaseG.TabIndex = 8;
-            this.BaseG.Text = "0";
-            this.BaseG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.BaseG.TextChanged += new System.EventHandler(this.EchoPowerBox_TextChanged_1);
-            this.BaseG.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // BaseR
-            // 
-            this.BaseR.Location = new System.Drawing.Point(9, 117);
-            this.BaseR.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.BaseR.Name = "BaseR";
-            this.BaseR.Size = new System.Drawing.Size(55, 19);
-            this.BaseR.TabIndex = 7;
-            this.BaseR.Text = "0";
-            this.BaseR.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.BaseR.TextChanged += new System.EventHandler(this.EchoPowerBox_TextChanged_1);
-            this.BaseR.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(232, 154);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(22, 13);
-            this.label9.TabIndex = 289;
-            this.label9.Text = "Adj";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // ColorPickAdjust
-            // 
-            this.ColorPickAdjust.BackColor = System.Drawing.Color.Fuchsia;
-            this.ColorPickAdjust.Location = new System.Drawing.Point(202, 148);
-            this.ColorPickAdjust.Name = "ColorPickAdjust";
-            this.ColorPickAdjust.Size = new System.Drawing.Size(24, 23);
-            this.ColorPickAdjust.TabIndex = 14;
-            this.ColorPickAdjust.UseVisualStyleBackColor = false;
-            this.ColorPickAdjust.Click += new System.EventHandler(this.ColorPickAdjust_Click);
-            // 
-            // AdjB
-            // 
-            this.AdjB.Location = new System.Drawing.Point(139, 150);
-            this.AdjB.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.AdjB.Name = "AdjB";
-            this.AdjB.Size = new System.Drawing.Size(55, 19);
-            this.AdjB.TabIndex = 13;
-            this.AdjB.Text = "0";
-            this.AdjB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.AdjB.TextChanged += new System.EventHandler(this.EchoPowerBox_TextChanged_1);
-            this.AdjB.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // AdjG
-            // 
-            this.AdjG.Location = new System.Drawing.Point(74, 150);
-            this.AdjG.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.AdjG.Name = "AdjG";
-            this.AdjG.Size = new System.Drawing.Size(55, 19);
-            this.AdjG.TabIndex = 12;
-            this.AdjG.Text = "0";
-            this.AdjG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.AdjG.TextChanged += new System.EventHandler(this.EchoPowerBox_TextChanged_1);
-            this.AdjG.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // AdjR
-            // 
-            this.AdjR.Location = new System.Drawing.Point(9, 150);
-            this.AdjR.Margin = new System.Windows.Forms.Padding(5, 8, 5, 5);
-            this.AdjR.Name = "AdjR";
-            this.AdjR.Size = new System.Drawing.Size(55, 19);
-            this.AdjR.TabIndex = 11;
-            this.AdjR.Text = "0";
-            this.AdjR.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.AdjR.TextChanged += new System.EventHandler(this.EchoPowerBox_TextChanged_1);
-            this.AdjR.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.AdjR);
-            this.groupBox1.Controls.Add(this.AdjG);
-            this.groupBox1.Controls.Add(this.AdjB);
-            this.groupBox1.Controls.Add(this.ColorPickAdjust);
-            this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.BaseR);
-            this.groupBox1.Controls.Add(this.BaseG);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.BaseB);
-            this.groupBox1.Controls.Add(this.EchoPowerBox);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.PathTypeBox);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.PathIndexBox);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Controls.Add(this.ColorPickBase);
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.EchoStopBox);
-            this.groupBox1.Controls.Add(this.label12);
-            this.groupBox1.Controls.Add(this.EchoStartBox);
-            this.groupBox1.Controls.Add(this.label11);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox1.Location = new System.Drawing.Point(1, 443);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(280, 181);
-            this.groupBox1.TabIndex = 14;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Path FX";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // label22
             // 
@@ -2246,7 +1757,7 @@
             this.groupBox4.Controls.Add(this.label23);
             this.groupBox4.Controls.Add(this.label22);
             this.groupBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox4.Location = new System.Drawing.Point(1, 329);
+            this.groupBox4.Location = new System.Drawing.Point(5, 221);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(279, 108);
             this.groupBox4.TabIndex = 298;
@@ -2265,88 +1776,6 @@
             this.FogToggleBox.UseVisualStyleBackColor = true;
             this.FogToggleBox.CheckedChanged += new System.EventHandler(this.UpdateUIHandler);
             // 
-            // LapBox
-            // 
-            this.LapBox.Enabled = false;
-            this.LapBox.Location = new System.Drawing.Point(8, 58);
-            this.LapBox.Margin = new System.Windows.Forms.Padding(5);
-            this.LapBox.Name = "LapBox";
-            this.LapBox.Size = new System.Drawing.Size(55, 19);
-            this.LapBox.TabIndex = 301;
-            this.LapBox.Text = "3";
-            this.LapBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label78
-            // 
-            this.label78.AutoSize = true;
-            this.label78.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label78.Location = new System.Drawing.Point(69, 61);
-            this.label78.Name = "label78";
-            this.label78.Size = new System.Drawing.Size(56, 13);
-            this.label78.TabIndex = 302;
-            this.label78.Text = "Lap Count";
-            // 
-            // GoalBannerBox
-            // 
-            this.GoalBannerBox.AutoSize = true;
-            this.GoalBannerBox.Location = new System.Drawing.Point(11, 31);
-            this.GoalBannerBox.Margin = new System.Windows.Forms.Padding(5);
-            this.GoalBannerBox.Name = "GoalBannerBox";
-            this.GoalBannerBox.Size = new System.Drawing.Size(123, 17);
-            this.GoalBannerBox.TabIndex = 299;
-            this.GoalBannerBox.Text = "Disable Goal Banner";
-            this.GoalBannerBox.UseVisualStyleBackColor = true;
-            this.GoalBannerBox.CheckedChanged += new System.EventHandler(this.GoalBannerBox_CheckedChanged);
-            // 
-            // DragBox
-            // 
-            this.DragBox.AutoSize = true;
-            this.DragBox.Enabled = false;
-            this.DragBox.Location = new System.Drawing.Point(144, 31);
-            this.DragBox.Margin = new System.Windows.Forms.Padding(5);
-            this.DragBox.Name = "DragBox";
-            this.DragBox.Size = new System.Drawing.Size(112, 17);
-            this.DragBox.TabIndex = 303;
-            this.DragBox.Text = "Drag Race (1 Lap)";
-            this.DragBox.UseVisualStyleBackColor = true;
-            // 
-            // DragLengthBox
-            // 
-            this.DragLengthBox.Enabled = false;
-            this.DragLengthBox.Location = new System.Drawing.Point(139, 58);
-            this.DragLengthBox.Margin = new System.Windows.Forms.Padding(5);
-            this.DragLengthBox.Name = "DragLengthBox";
-            this.DragLengthBox.Size = new System.Drawing.Size(55, 19);
-            this.DragLengthBox.TabIndex = 304;
-            this.DragLengthBox.Text = "1000";
-            this.DragLengthBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label55
-            // 
-            this.label55.AutoSize = true;
-            this.label55.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label55.Location = new System.Drawing.Point(200, 61);
-            this.label55.Name = "label55";
-            this.label55.Size = new System.Drawing.Size(66, 13);
-            this.label55.TabIndex = 305;
-            this.label55.Text = "Drag Length";
-            // 
-            // LapFinishLine
-            // 
-            this.LapFinishLine.Controls.Add(this.label55);
-            this.LapFinishLine.Controls.Add(this.DragLengthBox);
-            this.LapFinishLine.Controls.Add(this.DragBox);
-            this.LapFinishLine.Controls.Add(this.GoalBannerBox);
-            this.LapFinishLine.Controls.Add(this.label78);
-            this.LapFinishLine.Controls.Add(this.LapBox);
-            this.LapFinishLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.LapFinishLine.Location = new System.Drawing.Point(2, 234);
-            this.LapFinishLine.Name = "LapFinishLine";
-            this.LapFinishLine.Size = new System.Drawing.Size(277, 89);
-            this.LapFinishLine.TabIndex = 303;
-            this.LapFinishLine.TabStop = false;
-            this.LapFinishLine.Text = "Laps | Finish Line";
-            // 
             // CourseSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2354,17 +1783,13 @@
             this.Controls.Add(this.label57);
             this.Controls.Add(this.label56);
             this.Controls.Add(this.TempoTTBox);
-            this.Controls.Add(this.LapFinishLine);
-            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.WaterTypeBox);
             this.Controls.Add(this.label51);
             this.Controls.Add(this.waterBox);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label63);
             this.Controls.Add(this.CourseNameBox);
             this.Controls.Add(this.label13);
@@ -2379,10 +1804,8 @@
             this.Controls.Add(this.label15);
             this.Controls.Add(this.CreditsBox);
             this.Name = "CourseSettings";
-            this.Size = new System.Drawing.Size(289, 1300);
+            this.Size = new System.Drawing.Size(289, 845);
             this.Load += new System.EventHandler(this.CourseSettings_Load);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -2395,14 +1818,8 @@
             this.groupBox11.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.LapFinishLine.ResumeLayout(false);
-            this.LapFinishLine.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2425,13 +1842,6 @@
         private System.Windows.Forms.ComboBox WaterTypeBox;
         private System.Windows.Forms.Label label51;
         private System.Windows.Forms.TextBox waterBox;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox BombPointBox;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox BombTypeBox;
-        private System.Windows.Forms.ComboBox BombIndexBox;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.Label label61;
         private System.Windows.Forms.Button songBtn;
@@ -2541,37 +1951,6 @@
         private System.Windows.Forms.Label label59;
         private System.Windows.Forms.Label label58;
         private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.TextBox PathCountBox;
-        private System.Windows.Forms.CheckBox DistributeBox;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.TextBox PathSurfaceBox;
-        private System.Windows.Forms.ComboBox PathSurfaceSelect;
-        private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.TextBox EchoStartBox;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox EchoStopBox;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button ColorPickBase;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ComboBox PathIndexBox;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox PathTypeBox;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox EchoPowerBox;
-        private System.Windows.Forms.TextBox BaseB;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox BaseG;
-        private System.Windows.Forms.TextBox BaseR;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Button ColorPickAdjust;
-        private System.Windows.Forms.TextBox AdjB;
-        private System.Windows.Forms.TextBox AdjG;
-        private System.Windows.Forms.TextBox AdjR;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label label21;
@@ -2587,13 +1966,6 @@
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.TextBox FogEndBox;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.TextBox LapBox;
-        private System.Windows.Forms.Label label78;
-        private System.Windows.Forms.CheckBox GoalBannerBox;
-        private System.Windows.Forms.CheckBox DragBox;
-        private System.Windows.Forms.TextBox DragLengthBox;
-        private System.Windows.Forms.Label label55;
-        private System.Windows.Forms.GroupBox LapFinishLine;
         private System.Windows.Forms.CheckBox FogToggleBox;
     }
 }

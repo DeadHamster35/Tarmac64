@@ -53,9 +53,9 @@ namespace Tarmac64_Retail
             CourseData.SkyColors.BotColor = new TM64_Geometry.OK64Color();
             CourseData.EchoColor = new TM64_Geometry.OK64Color();
             CourseData.EchoAdjustColor = new TM64_Geometry.OK64Color();
-            CourseData.PathEffects = new TM64_Course.PathEffect[0];
+            CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[0];
             CourseData.BombArray = new TM64_Course.VSBomb[7];
-            CourseData.PathSurface = new int[4];
+            CourseData.PathSettings.PathSurface = new int[4];
             CourseData.Fog = new TM64_Course.OKFog();
             CourseData.Fog.FogToggle = 0;
             CourseData.Fog.StartDistance = 900;
@@ -99,41 +99,20 @@ namespace Tarmac64_Retail
             skyBox.SelectedIndex = 0;
             weatherBox.SelectedIndex = 0;
 
-            PathSurfaceSelect.Items.Add("Path 0");
-            PathSurfaceSelect.Items.Add("Path 1");
-            PathSurfaceSelect.Items.Add("Path 2");
-            PathSurfaceSelect.Items.Add("Path 3");
-            PathSurfaceSelect.SelectedIndex = 0;
 
-            foreach (var BombType in bombTypes)
-            {   
-                BombTypeBox.Items.Add(BombType);
-            }
-            for (int currentBomb = 0; currentBomb < 7; currentBomb++)
-            {
-                BombIndexBox.Items.Add("Bomb " + currentBomb.ToString());
-                CourseData.BombArray[currentBomb] = new TM64_Course.VSBomb();
-                CourseData.BombArray[currentBomb].Point = Convert.ToInt16(bombPoints[currentBomb]);
-                CourseData.BombArray[currentBomb].Type = Convert.ToInt16(bompTypeIDs[currentBomb]);
-            }
 
             for (int songIndex = 0; songIndex < songNames.Length; songIndex++)
             {
                 songBox.Items.Add(songNames[songIndex]);
             }
 
-            for (int pathIndex = 0; pathIndex < pathTypes.Length; pathIndex++)
-            {
-                PathTypeBox.Items.Add(pathTypes[pathIndex]);
-            }
 
             for (int waterIndex = 0; waterIndex < waterTypes.Length; waterIndex++)
             {
                 WaterTypeBox.Items.Add(waterTypes[waterIndex]);
             }
             WaterTypeBox.SelectedIndex = 0;
-            PathTypeBox.SelectedIndex = 0;
-            BombIndexBox.SelectedIndex = 0;
+
             songBox.SelectedIndex = 3;
 
 
@@ -146,46 +125,44 @@ namespace Tarmac64_Retail
         public int LoadCourseSettings(string[] SettingsInfo)
         {
             int ThisLine = 0;
-            CourseData.Credits = SettingsInfo[ThisLine++];
-            CourseData.Name = SettingsInfo[ThisLine++];
-            CourseData.PreviewPath = SettingsInfo[ThisLine++];
-            CourseData.BannerPath = SettingsInfo[ThisLine++];
+            CourseData.Settings.Credits = SettingsInfo[ThisLine++];
+            CourseData.Settings.Name = SettingsInfo[ThisLine++];
+            CourseData.Settings.PreviewPath = SettingsInfo[ThisLine++];
+            CourseData.Settings.BannerPath = SettingsInfo[ThisLine++];
             CourseData.GhostPath = SettingsInfo[ThisLine++];
             CourseData.OK64HeaderData.WaterType = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.OK64HeaderData.WaterLevel = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.ManualTempo = Convert.ToInt32(SettingsInfo[ThisLine++]);
             CourseData.GoalBannerBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
             CourseData.SkyboxBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
-            CourseData.PathSurface = new int[4];
-            CourseData.PathSurface[0] = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.PathSurface[1] = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.PathSurface[2] = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.PathSurface[3] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.PathSettings.PathSurface = new int[4];
+            CourseData.PathSettings.PathSurface[0] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.PathSettings.PathSurface[1] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.PathSettings.PathSurface[2] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.PathSettings.PathSurface[3] = Convert.ToInt32(SettingsInfo[ThisLine++]);
 
             CourseData.PathCount = Convert.ToInt16(SettingsInfo[ThisLine++]);
             CourseData.DistributeBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
 
             int Count = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.PathEffects = new TM64_Course.PathEffect[Count];
-            PathIndexBox.Items.Clear();
+            CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[Count];
             for (int This = 0; This < Count; This++)
             {
-                CourseData.PathEffects[This] = new TM64_Course.PathEffect();
-                CourseData.PathEffects[This].Type = Convert.ToInt32(SettingsInfo[ThisLine++]);
-                CourseData.PathEffects[This].StartIndex = Convert.ToInt32(SettingsInfo[ThisLine++]);
-                CourseData.PathEffects[This].EndIndex = Convert.ToInt32(SettingsInfo[ThisLine++]);
-                CourseData.PathEffects[This].Power = Convert.ToInt32(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This] = new TM64_Course.PathEffect();
+                CourseData.PathSettings.PathEffects[This].Type = Convert.ToInt32(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].StartIndex = Convert.ToInt32(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].EndIndex = Convert.ToInt32(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].Power = Convert.ToInt32(SettingsInfo[ThisLine++]);
 
-                CourseData.PathEffects[This].AdjColor = new TM64_Geometry.OK64Color();
-                CourseData.PathEffects[This].AdjColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
-                CourseData.PathEffects[This].AdjColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
-                CourseData.PathEffects[This].AdjColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].AdjColor = new TM64_Geometry.OK64Color();
+                CourseData.PathSettings.PathEffects[This].AdjColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].AdjColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].AdjColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
 
-                CourseData.PathEffects[This].BodyColor = new TM64_Geometry.OK64Color();
-                CourseData.PathEffects[This].BodyColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
-                CourseData.PathEffects[This].BodyColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
-                CourseData.PathEffects[This].BodyColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
-                PathIndexBox.Items.Add("P " + (PathIndexBox.Items.Count).ToString());
+                CourseData.PathSettings.PathEffects[This].BodyColor = new TM64_Geometry.OK64Color();
+                CourseData.PathSettings.PathEffects[This].BodyColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].BodyColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].BodyColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
             }
 
 
@@ -261,36 +238,36 @@ namespace Tarmac64_Retail
         {
             List<string> Output = new List<string>();
 
-            Output.Add(CourseData.Credits);
-            Output.Add(CourseData.Name);
-            Output.Add(CourseData.PreviewPath);
-            Output.Add(CourseData.BannerPath);
+            Output.Add(CourseData.Settings.Credits);
+            Output.Add(CourseData.Settings.Name);
+            Output.Add(CourseData.Settings.PreviewPath);
+            Output.Add(CourseData.Settings.BannerPath);
             Output.Add(CourseData.GhostPath);
             Output.Add(CourseData.OK64HeaderData.WaterType.ToString());
             Output.Add(CourseData.OK64HeaderData.WaterLevel.ToString());
             Output.Add(CourseData.ManualTempo.ToString());
             Output.Add(CourseData.GoalBannerBool.ToString());
             Output.Add(CourseData.SkyboxBool.ToString());
-            Output.Add(CourseData.PathSurface[0].ToString());
-            Output.Add(CourseData.PathSurface[1].ToString());
-            Output.Add(CourseData.PathSurface[2].ToString());
-            Output.Add(CourseData.PathSurface[3].ToString());
+            Output.Add(CourseData.PathSettings.PathSurface[0].ToString());
+            Output.Add(CourseData.PathSettings.PathSurface[1].ToString());
+            Output.Add(CourseData.PathSettings.PathSurface[2].ToString());
+            Output.Add(CourseData.PathSettings.PathSurface[3].ToString());
             Output.Add(CourseData.PathCount.ToString());
             Output.Add(CourseData.DistributeBool.ToString());
 
-            Output.Add(CourseData.PathEffects.Length.ToString());
-            for (int ThisPath = 0; ThisPath < CourseData.PathEffects.Length; ThisPath++)
+            Output.Add(CourseData.PathSettings.PathEffects.Length.ToString());
+            for (int ThisPath = 0; ThisPath < CourseData.PathSettings.PathEffects.Length; ThisPath++)
             {
-                Output.Add(CourseData.PathEffects[ThisPath].Type.ToString());
-                Output.Add(CourseData.PathEffects[ThisPath].StartIndex.ToString());
-                Output.Add(CourseData.PathEffects[ThisPath].EndIndex.ToString());
-                Output.Add(CourseData.PathEffects[ThisPath].Power.ToString());
-                Output.Add(CourseData.PathEffects[ThisPath].AdjColor.R.ToString());
-                Output.Add(CourseData.PathEffects[ThisPath].AdjColor.G.ToString());
-                Output.Add(CourseData.PathEffects[ThisPath].AdjColor.B.ToString());
-                Output.Add(CourseData.PathEffects[ThisPath].BodyColor.R.ToString());
-                Output.Add(CourseData.PathEffects[ThisPath].BodyColor.G.ToString());
-                Output.Add(CourseData.PathEffects[ThisPath].BodyColor.B.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].Type.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].StartIndex.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].EndIndex.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].Power.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].AdjColor.R.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].AdjColor.G.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].AdjColor.B.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].BodyColor.R.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].BodyColor.G.ToString());
+                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].BodyColor.B.ToString());
             }
 
             Output.Add(CourseData.MapData.MinimapPath.ToString());
@@ -353,18 +330,16 @@ namespace Tarmac64_Retail
 
             int ParseInt, ParseInt2 = 0;
             float ParseFloat, ParseFloat2 = 0;
-            int Index = PathIndexBox.SelectedIndex;
 
 
-            CourseData.Credits = CreditsBox.Text;
-            CourseData.Name = CourseNameBox.Text;
-            CourseData.PreviewPath = previewBox.Text;
-            CourseData.BannerPath = bannerBox.Text;
+            CourseData.Settings.Credits = CreditsBox.Text;
+            CourseData.Settings.Name = CourseNameBox.Text;
+            CourseData.Settings.PreviewPath = previewBox.Text;
+            CourseData.Settings.BannerPath = bannerBox.Text;
             CourseData.GhostPath = ghostBox.Text;
 
             CourseData.Fog.FogToggle = Convert.ToInt16(FogToggleBox.Checked);
 
-            CourseData.GoalBannerBool = Convert.ToInt16(!GoalBannerBox.Checked);  //Inverse
             CourseData.SkyboxBool = Convert.ToInt16(SkyBoxCheckBox.Checked);  
 
 
@@ -398,17 +373,6 @@ namespace Tarmac64_Retail
 
             CourseData.OK64HeaderData.WaterType = WaterTypeBox.SelectedIndex;
 
-            if (int.TryParse(PathSurfaceBox.Text, out ParseInt))
-            {
-                CourseData.PathSurface[PathSurfaceSelect.SelectedIndex] = ParseInt;
-            }
-
-            if (int.TryParse(PathCountBox.Text, out ParseInt))
-            {
-                CourseData.PathCount = Convert.ToInt16(ParseInt);
-            }
-            CourseData.DistributeBool = Convert.ToInt16(DistributeBox.Checked);
-
             if (float.TryParse(waterBox.Text, out ParseFloat))
             {
                 CourseData.OK64HeaderData.WaterLevel = ParseFloat;
@@ -421,62 +385,7 @@ namespace Tarmac64_Retail
             
 
 
-            if (int.TryParse(BombPointBox.Text, out ParseInt))
-            {
-                CourseData.BombArray[BombIndexBox.SelectedIndex].Point = Convert.ToInt16(ParseInt);
-            }
-            CourseData.BombArray[BombIndexBox.SelectedIndex].Type = Convert.ToInt16(BombTypeBox.SelectedIndex);
-
-
-            byte ParseByte = new byte();
-            if (Index != -1)
-            {
-                if (int.TryParse(EchoStartBox.Text, out ParseInt))
-                {
-                    PathFX[Index].StartIndex = ParseInt;
-                }
-                if (int.TryParse(EchoStopBox.Text, out ParseInt))
-                {
-                    PathFX[Index].EndIndex = ParseInt;
-                }
-                if (int.TryParse(EchoPowerBox.Text, out ParseInt))
-                {
-                    PathFX[Index].Power = ParseInt;
-                }
-
-                
-
-                if (byte.TryParse(BaseR.Text, out ParseByte))
-                {
-                    PathFX[Index].BodyColor.R = Convert.ToByte(ParseByte);
-                }
-                if (byte.TryParse(BaseG.Text, out ParseByte))
-                {
-                    PathFX[Index].BodyColor.G = Convert.ToByte(ParseByte);
-                }
-                if (byte.TryParse(BaseB.Text, out ParseByte))
-                {
-                    PathFX[Index].BodyColor.B = Convert.ToByte(ParseByte);
-                }
-                if (byte.TryParse(AdjR.Text, out ParseByte))
-                {
-                    PathFX[Index].AdjColor.R = Convert.ToByte(ParseByte);
-                }
-                if (byte.TryParse(AdjG.Text, out ParseByte))
-                {
-                    PathFX[Index].AdjColor.G = Convert.ToByte(ParseByte);
-                }
-                if (byte.TryParse(AdjB.Text, out ParseByte))
-                {
-                    PathFX[Index].AdjColor.B = Convert.ToByte(ParseByte);
-                }
-                PathFX[Index].Type = PathTypeBox.SelectedIndex;
-            }
-
-
             
-
-
             if (int.TryParse(mapXBox.Text, out ParseInt))
             {
                 if (int.TryParse(mapYBox.Text, out ParseInt2))
@@ -501,6 +410,8 @@ namespace Tarmac64_Retail
                     CourseData.MapData.LineCoord = new Assimp.Vector2D(ParseInt, ParseInt2);
                 }
             }
+
+            byte ParseByte;
 
             float.TryParse(MapScaleBox.Text, out ParseFloat);
             CourseData.MapData.MapScale = ParseFloat;
@@ -568,10 +479,8 @@ namespace Tarmac64_Retail
 
             CourseData.MusicID = songBox.SelectedIndex;
             CourseData.OK64SongPath = oksongBox.Text;
-            CourseData.PathEffects = PathFX.ToArray();
+            CourseData.PathSettings.PathEffects = PathFX.ToArray();
 
-            CourseData.BombArray[BombIndexBox.SelectedIndex].Type = Convert.ToInt16(BombTypeBox.SelectedIndex);
-            CourseData.BombArray[BombIndexBox.SelectedIndex].Point = Convert.ToInt16(BombPointBox.Text);
             if (UpdateParent != null)
             {
                 UpdateParent(null, null);
@@ -588,18 +497,16 @@ namespace Tarmac64_Retail
                 return;
             }
             
-            PathFX = CourseData.PathEffects.ToList();
+            PathFX = CourseData.PathSettings.PathEffects.ToList();
             int ParseInt, ParseInt2 = 0;
             float ParseFloat, ParseFloat2 = 0;
-            int Index = PathIndexBox.SelectedIndex;
 
-            CreditsBox.Text = CourseData.Credits;
-            CourseNameBox.Text = CourseData.Name;
-            previewBox.Text = CourseData.PreviewPath;
-            bannerBox.Text = CourseData.BannerPath;
+            CreditsBox.Text = CourseData.Settings.Credits;
+            CourseNameBox.Text = CourseData.Settings.Name;
+            previewBox.Text = CourseData.Settings.PreviewPath;
+            bannerBox.Text = CourseData.Settings.BannerPath;
             ghostBox.Text = ghostBox.Text;
             WaterTypeBox.SelectedIndex = CourseData.OK64HeaderData.WaterType;
-            BombTypeBox.SelectedIndex = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;
             waterBox.Text = CourseData.OK64HeaderData.WaterLevel.ToString();
 
             FogToggleBox.Checked = Convert.ToBoolean(CourseData.Fog.FogToggle);
@@ -611,27 +518,8 @@ namespace Tarmac64_Retail
             FogABox.Text = CourseData.Fog.FogColor.A.ToString();
 
 
-            if (Index != -1)
-            {
 
-                EchoStartBox.Text = PathFX[Index].StartIndex.ToString();
-                EchoStopBox.Text = PathFX[Index].EndIndex.ToString();
-                EchoPowerBox.Text = PathFX[Index].Power.ToString();
 
-                BaseR.Text = PathFX[Index].BodyColor.R.ToString();
-                BaseG.Text = PathFX[Index].BodyColor.G.ToString();
-                BaseB.Text = PathFX[Index].BodyColor.B.ToString();
-
-                AdjR.Text = PathFX[Index].AdjColor.R.ToString();
-                AdjG.Text = PathFX[Index].AdjColor.G.ToString();
-                AdjB.Text = PathFX[Index].AdjColor.B.ToString();
-                PathTypeBox.SelectedIndex = PathFX[Index].Type;
-            }
-
-            PathSurfaceBox.Text = CourseData.PathSurface[PathSurfaceSelect.SelectedIndex].ToString();
-            PathCountBox.Text = CourseData.PathCount.ToString();
-
-            GoalBannerBox.Checked = !Convert.ToBoolean(CourseData.GoalBannerBool);
             SkyBoxCheckBox.Checked = Convert.ToBoolean(CourseData.SkyboxBool);
 
 
@@ -670,7 +558,7 @@ namespace Tarmac64_Retail
             songBox.SelectedIndex = CourseData.MusicID;
             oksongBox.Text = CourseData.OK64SongPath;
 
-            BombTypeBox.SelectedIndex = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;
+            
         }
 
 
@@ -799,40 +687,6 @@ namespace Tarmac64_Retail
             ColorPickMap.BackColor = buttonColor;
 
 
-            colorInt[0] = 0;
-            int.TryParse(BaseR.Text, out colorInt[0]);
-            colorInt[1] = 0;
-            int.TryParse(BaseG.Text, out colorInt[1]);
-            colorInt[2] = 0;
-            int.TryParse(BaseB.Text, out colorInt[2]);
-            if (colorInt[0] < 256 & colorInt[0] > -1 & colorInt[1] < 256 & colorInt[1] > -1 & colorInt[2] < 256 & colorInt[2] > -1)
-            {
-                buttonColor = System.Drawing.Color.FromArgb(colorInt[0], colorInt[1], colorInt[2]);
-            }
-            else
-            {
-                buttonColor = System.Drawing.Color.FromArgb(0, 0, 0);
-            }
-            ColorPickBase.BackColor = buttonColor;
-
-
-            colorInt[0] = 0;
-            int.TryParse(AdjR.Text, out colorInt[0]);
-            colorInt[1] = 0;
-            int.TryParse(AdjG.Text, out colorInt[1]);
-            colorInt[2] = 0;
-            int.TryParse(AdjB.Text, out colorInt[2]);
-            if (colorInt[0] < 256 & colorInt[0] > -1 & colorInt[1] < 256 & colorInt[1] > -1 & colorInt[2] < 256 & colorInt[2] > -1)
-            {
-                buttonColor = System.Drawing.Color.FromArgb(colorInt[0], colorInt[1], colorInt[2]);
-            }
-            else
-            {
-                buttonColor = System.Drawing.Color.FromArgb(0, 0, 0);
-            }
-            ColorPickAdjust.BackColor = buttonColor;
-
-
 
 
             colorInt[0] = 0;
@@ -903,29 +757,12 @@ namespace Tarmac64_Retail
             int Index = PathFX.Count - 1;
             PathFX[Index].AdjColor = new TM64_Geometry.OK64Color();
             PathFX[Index].BodyColor = new TM64_Geometry.OK64Color();
-            PathTypeBox.SelectedIndex = 0;
-            EchoStartBox.Text = "0";
-            EchoStopBox.Text = "0";
-            EchoPowerBox.Text = "0";
-            BaseR.Text = "0";
-            BaseG.Text = "0";
-            BaseB.Text = "0";
-            AdjR.Text = "0";
-            AdjG.Text = "0";
-            AdjB.Text = "0";
-
-            PathIndexBox.SelectedIndex = PathIndexBox.Items.Add("P " + (PathIndexBox.Items.Count).ToString());
 
             loaded = Backup;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (PathIndexBox.Items.Count > 0)
-            {
-                PathFX.RemoveAt(PathIndexBox.SelectedIndex);
-                PathIndexBox.Items.RemoveAt(PathIndexBox.SelectedIndex);
-            }
         }
 
         private void EchoIndexBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -933,18 +770,6 @@ namespace Tarmac64_Retail
             bool Backup = loaded;
             loaded = false;
 
-            int Index = PathIndexBox.SelectedIndex;
-            PathTypeBox.SelectedIndex = PathFX[Index].Type;
-            EchoStartBox.Text = PathFX[Index].StartIndex.ToString();
-            EchoStopBox.Text = PathFX[Index].EndIndex.ToString();
-            EchoPowerBox.Text = PathFX[Index].Power.ToString();
-            BaseR.Text = PathFX[Index].BodyColor.R.ToString();
-            BaseG.Text = PathFX[Index].BodyColor.G.ToString();
-            BaseB.Text = PathFX[Index].BodyColor.B.ToString();
-
-            AdjR.Text = PathFX[Index].AdjColor.R.ToString();
-            AdjG.Text = PathFX[Index].AdjColor.G.ToString();
-            AdjB.Text = PathFX[Index].AdjColor.B.ToString();
 
             loaded = Backup;
         }
@@ -984,9 +809,7 @@ namespace Tarmac64_Retail
         {
             if (ColorPick.ShowDialog() == DialogResult.OK)
             {
-                BaseR.Text = ColorPick.Color.R.ToString();
-                BaseG.Text = ColorPick.Color.G.ToString();
-                BaseB.Text = ColorPick.Color.B.ToString();
+                
             }
             UpdateCourse();
         }
@@ -995,9 +818,6 @@ namespace Tarmac64_Retail
         {
             if (ColorPick.ShowDialog() == DialogResult.OK)
             {
-                AdjR.Text = ColorPick.Color.R.ToString();
-                AdjG.Text = ColorPick.Color.G.ToString();
-                AdjB.Text = ColorPick.Color.B.ToString();
             }
             UpdateCourse();
         }
@@ -1009,11 +829,6 @@ namespace Tarmac64_Retail
 
         private void BombSelectBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            bool Backup = loaded;
-            loaded = false;
-            BombTypeBox.SelectedIndex = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;
-            BombPointBox.Text = CourseData.BombArray[BombIndexBox.SelectedIndex].Point.ToString();
-            loaded = Backup;
         }
 
         private void BombPointBox_TextChanged(object sender, EventArgs e)

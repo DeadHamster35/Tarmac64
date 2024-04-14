@@ -26,6 +26,8 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using F3DSharp;
 using System.Drawing.Drawing2D;
 using Texture64;
+using Fluent;
+using System.Windows.Forms.VisualStyles;
 
 namespace Tarmac64_Retail
 {
@@ -47,6 +49,7 @@ namespace Tarmac64_Retail
 
 
         public event EventHandler UpdateParent;
+        public bool UpdateTextureCache = false;
 
         public bool Loaded = false, Locked = false;
         int[] PanelXY = new int[] { 5, 415 };
@@ -238,8 +241,8 @@ namespace Tarmac64_Retail
                 textureArray[This] = new TM64_Geometry.OK64Texture();
                 textureArray[This].textureName = TextureSettings[ThisLine++];
                 textureArray[This].texturePath = CurrentArray[This].texturePath;
-                textureArray[This].textureBitmap = CurrentArray[This].textureBitmap;
-                textureArray[This].textureBitmap = CurrentArray[This].textureBitmap;
+                textureArray[This].RawTexture.textureBitmap = CurrentArray[This].RawTexture.textureBitmap;
+                textureArray[This].RawTexture.textureBitmap = CurrentArray[This].RawTexture.textureBitmap;
                 textureArray[This].alphaPath = CurrentArray[This].alphaPath;
                 textureArray[This].textureWidth = CurrentArray[This].textureWidth;
                 textureArray[This].textureHeight = CurrentArray[This].textureHeight;
@@ -279,7 +282,6 @@ namespace Tarmac64_Retail
 
                 textureArray[This].textureScrollS = Convert.ToInt32(TextureSettings[ThisLine++]);
                 textureArray[This].textureScrollT = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].vertAlpha = Convert.ToInt32(TextureSettings[ThisLine++]);
                 textureArray[This].textureScreen = Convert.ToInt32(TextureSettings[ThisLine++]);
 
                 int OverWriteCount = Convert.ToInt32(TextureSettings[ThisLine++]);
@@ -340,7 +342,6 @@ namespace Tarmac64_Retail
 
                 Output.Add(textureArray[This].textureScrollS.ToString());
                 Output.Add(textureArray[This].textureScrollT.ToString());
-                Output.Add(textureArray[This].vertAlpha.ToString());
                 Output.Add(textureArray[This].textureScreen.ToString());
 
                 Output.Add(textureArray[This].TextureOverWrite.Length.ToString());                
@@ -447,6 +448,7 @@ namespace Tarmac64_Retail
             
             if (UpdateParent != null)
             {
+                UpdateTextureCache = false;
                 UpdateParent(this, EventArgs.Empty);
             }
         }
@@ -650,6 +652,160 @@ namespace Tarmac64_Retail
         private void FilterBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateTextureData();
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            okSettings.LoadSettings();
+
+            SaveFileDialog FileSave = new SaveFileDialog();
+            FileSave.InitialDirectory = okSettings.ProjectDirectory;
+            FileSave.Filter = "Tarmac Texture|*.ok64.Texture|All Files (*.*)|*.*";
+
+            TM64_Geometry.OK64Texture Local = textureArray[textureBox.SelectedIndex];
+
+            if (FileSave.ShowDialog() == DialogResult.OK)
+            {
+                List<string> Output = new List<string>();
+
+                Output.Add(Local.textureName);
+                Output.Add(Local.texturePath);
+                Output.Add(Local.alphaPath);
+                Output.Add(Local.CombineModeA.ToString());
+                Output.Add(Local.CombineModeB.ToString());
+                Output.Add(Local.RenderModeA.ToString());
+                Output.Add(Local.RenderModeB.ToString());
+                Output.Add(Local.GeometryModes.ToString());
+                Output.Add(Local.BitSize.ToString());
+                Output.Add(Local.TextureFilter.ToString());
+                Output.Add(Local.TextureFormat.ToString());
+                Output.Add(Local.SFlag.ToString());
+                Output.Add(Local.TFlag.ToString());
+                Output.Add(Local.textureScrollS.ToString());
+                Output.Add(Local.textureScrollT.ToString());
+                Output.Add(Local.textureScreen.ToString());
+                Output.Add(Local.GLShiftS.ToString());
+                Output.Add(Local.GLShiftT.ToString());
+
+                Output.Add(Local.TextureOverWrite.Length.ToString());
+                for (int ThisOver = 0; ThisOver < Local.TextureOverWrite.Length; ThisOver++)
+                {
+                    Output.Add(Local.TextureOverWrite[ThisOver].ToString());
+                }
+
+                File.WriteAllLines(FileSave.FileName, Output.ToArray());
+            }
+    
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            okSettings.LoadSettings();
+
+            OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            FileOpen.Filter = "Tarmac Texture|*.ok64.Texture|All Files (*.*)|*.*";
+
+            TM64_Geometry.OK64Texture Local = textureArray[textureBox.SelectedIndex];
+
+            if (FileOpen.ShowDialog() == DialogResult.OK)
+            {
+                string[] Input = File.ReadAllLines(FileOpen.FileName);
+                int ThisLine = 0;
+                Local.textureName = Input[ThisLine++];
+                Local.texturePath = Input[ThisLine++];
+                Local.alphaPath = Input[ThisLine++];
+                Local.CombineModeA = Convert.ToInt32(Input[ThisLine++]);
+                Local.CombineModeB = Convert.ToInt32(Input[ThisLine++]);
+
+                Local.RenderModeA = Convert.ToInt32(Input[ThisLine++]);
+                Local.RenderModeB = Convert.ToInt32(Input[ThisLine++]);
+
+                Local.GeometryModes = Convert.ToUInt32(Input[ThisLine++]);
+                Local.BitSize = Convert.ToInt32(Input[ThisLine++]);
+                Local.TextureFilter = Convert.ToInt32(Input[ThisLine++]);
+                Local.TextureFormat = Convert.ToInt32(Input[ThisLine++]);
+                Local.SFlag = Convert.ToInt32(Input[ThisLine++]);
+                Local.TFlag = Convert.ToInt32(Input[ThisLine++]);
+                Local.textureScrollS = Convert.ToInt32(Input[ThisLine++]);
+                Local.textureScrollT = Convert.ToInt32(Input[ThisLine++]);
+                Local.textureScreen = Convert.ToInt32(Input[ThisLine++]);
+                Local.GLShiftS = Convert.ToInt32(Input[ThisLine++]);
+                Local.GLShiftT = Convert.ToInt32(Input[ThisLine++]);
+
+                Local.TextureOverWrite = new int[Convert.ToInt32(Input[ThisLine++])];
+
+                for (int ThisOver = 0; ThisOver < Local.TextureOverWrite.Length; ThisOver++)
+                {
+                    Local.TextureOverWrite[ThisOver] = Convert.ToInt32(Input[ThisLine++]);
+                }
+
+                if (File.Exists(Local.texturePath))
+                {
+                    using (var fs = new FileStream(Local.texturePath, FileMode.Open, FileAccess.Read))
+                    {
+                        Local.RawTexture.textureBitmap = Image.FromStream(fs);
+                    }
+                }
+                Local.textureWidth = Local.RawTexture.textureBitmap.Width;
+                Local.textureHeight = Local.RawTexture.textureBitmap.Height;
+
+                int materialIndex = textureBox.SelectedIndex;
+
+
+                if (Local.texturePath != null)
+                {
+                    textureBox.Items[materialIndex] = ("Texture-" + materialIndex.ToString() + " " + Local.textureName);
+                }
+                else
+                {
+                    //MessageBox.Show("Warning! Material " + fbx.Materials[materialIndex].Name + " does not have a diffuse texture and cannot be used.");                    
+                    textureBox.Items[materialIndex] = ("Shaded- " + materialIndex.ToString() + " - " + Local.textureName);
+                }
+
+
+                textureArray[materialIndex] = Local;
+                if (UpdateParent != null)
+                {
+                    UpdateTextureCache = true;
+                    UpdateParent(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog FileOpen = new OpenFileDialog();
+            if (FileOpen.ShowDialog() == DialogResult.OK)
+            {
+                if (File.Exists(FileOpen.FileName))
+                {
+                    TM64_Geometry.OK64Texture Local = textureArray[textureBox.SelectedIndex];
+                    Local.texturePath = FileOpen.FileName;
+
+                    if (File.Exists(Local.texturePath))
+                    {
+                        using (var fs = new FileStream(Local.texturePath, FileMode.Open, FileAccess.Read))
+                        {
+                            Local.RawTexture.textureBitmap = Image.FromStream(fs);
+                        }
+                    }
+                    Local.textureWidth = Local.RawTexture.textureBitmap.Width;
+                    Local.textureHeight = Local.RawTexture.textureBitmap.Height;
+
+                    textureArray[textureBox.SelectedIndex] = Local;
+                    if (UpdateParent != null)
+                    {
+                        UpdateTextureCache = true;
+                        UpdateParent(this, EventArgs.Empty);
+                    }
+
+                }
+            }
+            
         }
 
         private void textureCodecBox_SelectedIndexChanged(object sender, EventArgs e)

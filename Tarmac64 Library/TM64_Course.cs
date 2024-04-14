@@ -151,12 +151,43 @@ namespace Tarmac64_Library
             public Tarmac64_Library.TM64_Geometry.OK64Color AdjColor { get; set; }
         }
 
-        public class Course
+
+        public class CourseSettings
         {
-            public TM64_Geometry.OK64F3DObject[] MasterObjects { get; set; }
+            public string Credits { get; set; }
+            public string Name { get; set; }
+            public string PreviewPath { get; set; }
+            public string BannerPath { get; set; }
+        }
+
+        public class PathSettings
+        {
+            public int[] PathSurface { get; set; }
+            public uint[] PathOffsets { get; set; }
+            public PathEffect[] PathEffects { get; set; }
+        }
+
+        public class CourseModelData
+        {
+            public TM64_Geometry.OK64F3DObject[] RenderObjects { get; set; }
             public TM64_Geometry.OK64F3DObject[] SurfaceObjects { get; set; }
             public TM64_Geometry.OK64Texture[] TextureObjects { get; set; }
+        }
+
+        public class Course
+        {
+
+
+            public Course()
+            {
+                Settings = new CourseSettings();
+                PathSettings = new PathSettings();
+                ModelData = new CourseModelData();
+            }
             public TM64_Geometry.OK64SectionList[] SectionList { get; set; }
+            public CourseSettings Settings { get; set; }
+            public PathSettings PathSettings { get; set; }
+            public CourseModelData ModelData { get; set; }
 
             public byte[] Segment4 { get; set; }
             public byte[] Segment6 { get; set; }
@@ -173,28 +204,19 @@ namespace Tarmac64_Library
             public byte[] ObjectHitboxData { get; set; }
             public byte[] ObjectListData { get; set; }
             public byte[] ObjectTypeData { get; set; }
-            public byte[] ObjectAnimationData { get; set; }
-            public string Credits { get; set; }
-            public string Name { get; set; }
-            public string PreviewPath { get; set; }
-            public string BannerPath { get; set; }
+            public byte[] ObjectAnimationData { get; set; }            
             public byte[] PreviewData { get; set; }
             public byte[] BannerData { get; set; }
             public byte[] RadarData { get; set; }
-            public string AssmeblyPath { get; set; }
             public string GhostPath { get; set; }
             public byte[] GhostData { get; set; }
             public int GhostCharacter { get; set; }
-            public int[] PathSurface { get; set; }
             public short PathCount { get; set; }
             public short DistributeBool { get; set; }
             public short GoalBannerBool { get; set; }
             public short SkyboxBool { get; set; }
-
             public int EchoOffset { get; set; }
             public int EchoEndOffset { get; set; }
-            public uint[] PathOffsets { get; set; }
-            public PathEffect[] PathEffects { get; set; }
             public TM64_Geometry.OK64Color EchoColor { get; set; }
             public TM64_Geometry.OK64Color EchoAdjustColor { get; set; }
             public int MusicID { get; set; }
@@ -209,6 +231,7 @@ namespace Tarmac64_Library
             public VSBomb[] BombArray { get; set; }
             public OKFog Fog { get; set; }
             public int ManualTempo { get; set; }
+
 
         }
         public class OKFog
@@ -597,7 +620,6 @@ namespace Tarmac64_Library
                     NewType.TextureData[ThisTexture].TextureFormat = binaryReader.ReadInt32();
                     NewType.TextureData[ThisTexture].BitSize = binaryReader.ReadInt32();
 
-                    NewType.TextureData[ThisTexture].vertAlpha = binaryReader.ReadInt32();
                     
                     NewType.TextureData[ThisTexture].textureWidth = binaryReader.ReadInt32();
                     NewType.TextureData[ThisTexture].textureHeight = binaryReader.ReadInt32();
@@ -634,19 +656,10 @@ namespace Tarmac64_Library
                 for (int ThisGeo = 0; ThisGeo < ModelLength; ThisGeo++)
                 {
                     NewType.ModelData[ThisModel].modelGeometry[ThisGeo] = new TM64_Geometry.Face();
-                    NewType.ModelData[ThisModel].modelGeometry[ThisGeo].LowX = binaryReader.ReadInt32();
-                    NewType.ModelData[ThisModel].modelGeometry[ThisGeo].HighX = binaryReader.ReadInt32();
-                    NewType.ModelData[ThisModel].modelGeometry[ThisGeo].LowY = binaryReader.ReadInt32();
-                    NewType.ModelData[ThisModel].modelGeometry[ThisGeo].HighY = binaryReader.ReadInt32();
                     int X, Y, Z;
                     X = binaryReader.ReadInt32();
                     Y = binaryReader.ReadInt32();
                     Z = binaryReader.ReadInt32();
-                    NewType.ModelData[ThisModel].modelGeometry[ThisGeo].CenterPosition = new Vector3D(X, Y, Z);
-                    NewType.ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex = new TM64_Geometry.VertIndex();
-                    NewType.ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex.IndexA = binaryReader.ReadInt32();
-                    NewType.ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex.IndexB = binaryReader.ReadInt32();
-                    NewType.ModelData[ThisModel].modelGeometry[ThisGeo].VertIndex.IndexC = binaryReader.ReadInt32();
                     NewType.ModelData[ThisModel].modelGeometry[ThisGeo].VertData = new TM64_Geometry.Vertex[3];
                     for (int ThisVert = 0; ThisVert < 3; ThisVert++)
                     {
@@ -821,7 +834,7 @@ namespace Tarmac64_Library
                         {
                             ModelCount++;
 
-                            binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].TextureData[SaveData[currentItem].ModelData[ThisModel].materialID].f3dexPosition));
+                            binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].TextureData[SaveData[currentItem].ModelData[ThisModel].materialID].RawTexture.f3dexPosition));
                             binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].ModelData[ThisModel].ListPosition));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[currentItem].ModelData[ThisModel].meshPosition.Length)));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[currentItem].ModelScale * 100)));
@@ -842,7 +855,7 @@ namespace Tarmac64_Library
                         {
                             ModelCount++;
                             
-                            binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].TextureData[SaveData[currentItem].ModelData[ThisModel].materialID].f3dexPosition));
+                            binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].TextureData[SaveData[currentItem].ModelData[ThisModel].materialID].RawTexture.f3dexPosition));
                             binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].ModelData[ThisModel].ListPosition));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[currentItem].ModelData[ThisModel].meshPosition.Length)));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[currentItem].ModelScale * 100)));
@@ -1270,8 +1283,8 @@ namespace Tarmac64_Library
             CourseData.Fog.FogColor.A = binaryReader.ReadByte();
 
             CourseData.Gametype = binaryReader.ReadInt32();
-            CourseData.Credits = binaryReader.ReadString();            
-            CourseData.Name = binaryReader.ReadString();
+            CourseData.Settings.Credits = binaryReader.ReadString();            
+            CourseData.Settings.Name = binaryReader.ReadString();
             CourseData.SerialNumber = binaryReader.ReadString();
 
 
@@ -1324,22 +1337,22 @@ namespace Tarmac64_Library
             CourseData.MapData.Width = binaryReader.ReadInt32();
 
             DataLength = binaryReader.ReadInt32();
-            CourseData.PathEffects = new PathEffect[DataLength];
+            CourseData.PathSettings.PathEffects = new PathEffect[DataLength];
             for (int ThisEcho = 0; ThisEcho < DataLength; ThisEcho++)
             {
-                CourseData.PathEffects[ThisEcho] = new PathEffect();
-                CourseData.PathEffects[ThisEcho].StartIndex = binaryReader.ReadInt32();
-                CourseData.PathEffects[ThisEcho].EndIndex = binaryReader.ReadInt32();
-                CourseData.PathEffects[ThisEcho].Type = binaryReader.ReadInt32();
-                CourseData.PathEffects[ThisEcho].Power = binaryReader.ReadInt32();
-                CourseData.PathEffects[ThisEcho].BodyColor = new TM64_Geometry.OK64Color();
-                CourseData.PathEffects[ThisEcho].BodyColor.R = binaryReader.ReadByte();
-                CourseData.PathEffects[ThisEcho].BodyColor.G = binaryReader.ReadByte();
-                CourseData.PathEffects[ThisEcho].BodyColor.B = binaryReader.ReadByte();
-                CourseData.PathEffects[ThisEcho].AdjColor = new TM64_Geometry.OK64Color();
-                CourseData.PathEffects[ThisEcho].AdjColor.R = binaryReader.ReadByte();
-                CourseData.PathEffects[ThisEcho].AdjColor.G = binaryReader.ReadByte();
-                CourseData.PathEffects[ThisEcho].AdjColor.B = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisEcho] = new PathEffect();
+                CourseData.PathSettings.PathEffects[ThisEcho].StartIndex = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[ThisEcho].EndIndex = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[ThisEcho].Type = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[ThisEcho].Power = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[ThisEcho].BodyColor = new TM64_Geometry.OK64Color();
+                CourseData.PathSettings.PathEffects[ThisEcho].BodyColor.R = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisEcho].BodyColor.G = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisEcho].BodyColor.B = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisEcho].AdjColor = new TM64_Geometry.OK64Color();
+                CourseData.PathSettings.PathEffects[ThisEcho].AdjColor.R = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisEcho].AdjColor.G = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisEcho].AdjColor.B = binaryReader.ReadByte();
             }
             CourseData.BombArray = new VSBomb[7];
             for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
@@ -1381,22 +1394,22 @@ namespace Tarmac64_Library
 
 
             DataLength = binaryReader.ReadInt32();
-            CourseData.TextureObjects = new TM64_Geometry.OK64Texture[DataLength];
-            for (int CurrentTexture = 0; CurrentTexture < CourseData.TextureObjects.Length; CurrentTexture++)
+            CourseData.ModelData.TextureObjects = new TM64_Geometry.OK64Texture[DataLength];
+            for (int CurrentTexture = 0; CurrentTexture < CourseData.ModelData.TextureObjects.Length; CurrentTexture++)
             {
-                CourseData.TextureObjects[CurrentTexture] = new TM64_Geometry.OK64Texture();
-                CourseData.TextureObjects[CurrentTexture].texturePath = binaryReader.ReadString();
-                if (CourseData.TextureObjects[CurrentTexture].texturePath != "NULL")
+                CourseData.ModelData.TextureObjects[CurrentTexture] = new TM64_Geometry.OK64Texture();
+                CourseData.ModelData.TextureObjects[CurrentTexture].texturePath = binaryReader.ReadString();
+                if (CourseData.ModelData.TextureObjects[CurrentTexture].texturePath != "NULL")
                 {
-                    CourseData.TextureObjects[CurrentTexture].compressedSize = binaryReader.ReadInt32();
-                    CourseData.TextureObjects[CurrentTexture].fileSize = binaryReader.ReadInt32();
-                    CourseData.TextureObjects[CurrentTexture].compressedTexture = binaryReader.ReadBytes(CourseData.TextureObjects[CurrentTexture].compressedSize);
-                    CourseData.TextureObjects[CurrentTexture].rawTexture = binaryReader.ReadBytes(CourseData.TextureObjects[CurrentTexture].fileSize);
+                    CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedSize = binaryReader.ReadInt32();
+                    CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.fileSize = binaryReader.ReadInt32();
+                    CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedTexture = binaryReader.ReadBytes(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedSize);
+                    CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.TextureData = binaryReader.ReadBytes(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.fileSize);
 
                     DataLength = binaryReader.ReadInt32();
                     if (DataLength != 0)
                     {
-                        CourseData.TextureObjects[CurrentTexture].PaletteData = binaryReader.ReadBytes(DataLength);
+                        CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.PaletteData = binaryReader.ReadBytes(DataLength);
                     }
                 }
             }
@@ -1433,21 +1446,21 @@ namespace Tarmac64_Library
             CourseData.OK64HeaderData.PathLength[1] = binaryReader.ReadInt16();
             CourseData.OK64HeaderData.PathLength[2] = binaryReader.ReadInt16();
             CourseData.OK64HeaderData.PathLength[3] = binaryReader.ReadInt16();
-            CourseData.PathSurface = new int[4];
-            CourseData.PathSurface[0] = binaryReader.ReadInt32();
-            CourseData.PathSurface[1] = binaryReader.ReadInt32();
-            CourseData.PathSurface[2] = binaryReader.ReadInt32();
-            CourseData.PathSurface[3] = binaryReader.ReadInt32();
+            CourseData.PathSettings.PathSurface = new int[4];
+            CourseData.PathSettings.PathSurface[0] = binaryReader.ReadInt32();
+            CourseData.PathSettings.PathSurface[1] = binaryReader.ReadInt32();
+            CourseData.PathSettings.PathSurface[2] = binaryReader.ReadInt32();
+            CourseData.PathSettings.PathSurface[3] = binaryReader.ReadInt32();
             CourseData.OK64HeaderData.WaterLevel = binaryReader.ReadSingle();
             CourseData.OK64HeaderData.WaterType = binaryReader.ReadInt32();
             CourseData.OK64HeaderData.SectionViewPosition = binaryReader.ReadInt32();
             CourseData.OK64HeaderData.XLUViewPosition = binaryReader.ReadInt32();
             CourseData.OK64HeaderData.SurfaceMapPosition = binaryReader.ReadInt32();
-            CourseData.PathOffsets = new uint[4];
-            CourseData.PathOffsets[0] = binaryReader.ReadUInt32();
-            CourseData.PathOffsets[1] = binaryReader.ReadUInt32();
-            CourseData.PathOffsets[2] = binaryReader.ReadUInt32();
-            CourseData.PathOffsets[3] = binaryReader.ReadUInt32();
+            CourseData.PathSettings.PathOffsets = new uint[4];
+            CourseData.PathSettings.PathOffsets[0] = binaryReader.ReadUInt32();
+            CourseData.PathSettings.PathOffsets[1] = binaryReader.ReadUInt32();
+            CourseData.PathSettings.PathOffsets[2] = binaryReader.ReadUInt32();
+            CourseData.PathSettings.PathOffsets[3] = binaryReader.ReadUInt32();
             CourseData.ManualTempo = binaryReader.ReadInt32();
 
 
@@ -1479,17 +1492,17 @@ namespace Tarmac64_Library
 
 
             binaryWriter.Write(CourseData.Gametype);
-            binaryWriter.Write(CourseData.Credits);            
-            binaryWriter.Write(CourseData.Name);
+            binaryWriter.Write(CourseData.Settings.Credits);            
+            binaryWriter.Write(CourseData.Settings.Name);
             binaryWriter.Write(CourseData.SerialNumber);
-            if (CourseData.BannerPath.Length > 0)
+            if (CourseData.Settings.BannerPath.Length > 0)
             {
                 N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
                 byte[] imageData = null;
                 byte[] paletteData = null;
-                if (File.Exists(CourseData.BannerPath))
+                if (File.Exists(CourseData.Settings.BannerPath))
                 {
-                    Bitmap bitmapData = new Bitmap(CourseData.BannerPath);
+                    Bitmap bitmapData = new Bitmap(CourseData.Settings.BannerPath);
                     N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
                     CourseData.BannerData = Tarmac.CompressMIO0(imageData);
                     binaryWriter.Write(CourseData.BannerData.Length);
@@ -1520,14 +1533,14 @@ namespace Tarmac64_Library
                 binaryWriter.Write(0);
             }
 
-            if (CourseData.PreviewPath.Length > 0)
+            if (CourseData.Settings.PreviewPath.Length > 0)
             {
                 N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
                 byte[] imageData = null;
                 byte[] paletteData = null;
-                if (File.Exists(CourseData.PreviewPath))
+                if (File.Exists(CourseData.Settings.PreviewPath))
                 {
-                    Bitmap bitmapData = new Bitmap(CourseData.PreviewPath);
+                    Bitmap bitmapData = new Bitmap(CourseData.Settings.PreviewPath);
                     N64Graphics.Convert(ref imageData, ref paletteData, N64Codec.RGBA16, bitmapData);
                     CourseData.PreviewData = Tarmac.CompressMIO0(imageData);
                     binaryWriter.Write(CourseData.PreviewData.Length);
@@ -1616,19 +1629,19 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.MapData.Height);
             binaryWriter.Write(CourseData.MapData.Width);
 
-            binaryWriter.Write(CourseData.PathEffects.Length);
-            for(int ThisEcho = 0; ThisEcho < CourseData.PathEffects.Length; ThisEcho++)
+            binaryWriter.Write(CourseData.PathSettings.PathEffects.Length);
+            for(int ThisEcho = 0; ThisEcho < CourseData.PathSettings.PathEffects.Length; ThisEcho++)
             {
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].StartIndex);
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].EndIndex);
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].Type);
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].Power);
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].BodyColor.R);
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].BodyColor.G);
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].BodyColor.B);
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].AdjColor.R);
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].AdjColor.G);
-                binaryWriter.Write(CourseData.PathEffects[ThisEcho].AdjColor.B);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].StartIndex);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].EndIndex);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].Type);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].Power);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].BodyColor.R);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].BodyColor.G);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].BodyColor.B);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].AdjColor.R);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].AdjColor.G);
+                binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisEcho].AdjColor.B);
             }
             
             for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
@@ -1663,28 +1676,28 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.SkyboxBool);
 
 
-            binaryWriter.Write(CourseData.TextureObjects.Length);
+            binaryWriter.Write(CourseData.ModelData.TextureObjects.Length);
             List<int> SkippedMaterials = new List<int>();
-            for (int CurrentTexture = 0; CurrentTexture < CourseData.TextureObjects.Length; CurrentTexture++)
+            for (int CurrentTexture = 0; CurrentTexture < CourseData.ModelData.TextureObjects.Length; CurrentTexture++)
             {
-                foreach (var Index in CourseData.TextureObjects[CurrentTexture].TextureOverWrite)
+                foreach (var Index in CourseData.ModelData.TextureObjects[CurrentTexture].TextureOverWrite)
                 {
                     SkippedMaterials.Add(Index);
                 }
             }
-            for (int CurrentTexture= 0;CurrentTexture < CourseData.TextureObjects.Length;CurrentTexture++)
+            for (int CurrentTexture= 0;CurrentTexture < CourseData.ModelData.TextureObjects.Length;CurrentTexture++)
             {
-                if (!SkippedMaterials.Contains(CurrentTexture) && ((CourseData.TextureObjects[CurrentTexture].texturePath != null) && (CourseData.TextureObjects[CurrentTexture].texturePath != "NULL")) )
+                if (!SkippedMaterials.Contains(CurrentTexture) && ((CourseData.ModelData.TextureObjects[CurrentTexture].texturePath != null) && (CourseData.ModelData.TextureObjects[CurrentTexture].texturePath != "NULL")) )
                 {
-                    binaryWriter.Write(CourseData.TextureObjects[CurrentTexture].texturePath);
-                    binaryWriter.Write(CourseData.TextureObjects[CurrentTexture].compressedSize);
-                    binaryWriter.Write(CourseData.TextureObjects[CurrentTexture].fileSize);                    
-                    binaryWriter.Write(CourseData.TextureObjects[CurrentTexture].compressedTexture);
-                    binaryWriter.Write(CourseData.TextureObjects[CurrentTexture].rawTexture);
-                    if (CourseData.TextureObjects[CurrentTexture].PaletteData != null)
+                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].texturePath);
+                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedSize);
+                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.fileSize);                    
+                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedTexture);
+                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.TextureData);
+                    if (CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.PaletteData != null)
                     {
-                        binaryWriter.Write(CourseData.TextureObjects[CurrentTexture].PaletteData.Length);
-                        binaryWriter.Write(CourseData.TextureObjects[CurrentTexture].PaletteData);
+                        binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.PaletteData.Length);
+                        binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.PaletteData);
                     }
                     else
                     {
@@ -1730,19 +1743,19 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.OK64HeaderData.PathLength[1]);
             binaryWriter.Write(CourseData.OK64HeaderData.PathLength[2]);
             binaryWriter.Write(CourseData.OK64HeaderData.PathLength[3]);
-            binaryWriter.Write(CourseData.PathSurface[0]);
-            binaryWriter.Write(CourseData.PathSurface[1]);
-            binaryWriter.Write(CourseData.PathSurface[2]);
-            binaryWriter.Write(CourseData.PathSurface[3]);
+            binaryWriter.Write(CourseData.PathSettings.PathSurface[0]);
+            binaryWriter.Write(CourseData.PathSettings.PathSurface[1]);
+            binaryWriter.Write(CourseData.PathSettings.PathSurface[2]);
+            binaryWriter.Write(CourseData.PathSettings.PathSurface[3]);
             binaryWriter.Write(CourseData.OK64HeaderData.WaterLevel);
             binaryWriter.Write(CourseData.OK64HeaderData.WaterType);
             binaryWriter.Write(CourseData.OK64HeaderData.SectionViewPosition);
             binaryWriter.Write(CourseData.OK64HeaderData.XLUViewPosition);
             binaryWriter.Write(CourseData.OK64HeaderData.SurfaceMapPosition);
-            binaryWriter.Write(CourseData.PathOffsets[0]);
-            binaryWriter.Write(CourseData.PathOffsets[1]);
-            binaryWriter.Write(CourseData.PathOffsets[2]);
-            binaryWriter.Write(CourseData.PathOffsets[3]);
+            binaryWriter.Write(CourseData.PathSettings.PathOffsets[0]);
+            binaryWriter.Write(CourseData.PathSettings.PathOffsets[1]);
+            binaryWriter.Write(CourseData.PathSettings.PathOffsets[2]);
+            binaryWriter.Write(CourseData.PathSettings.PathOffsets[3]);
             binaryWriter.Write(CourseData.ManualTempo);
             return Tarmac.CompressMIO0(memoryStream.ToArray());
 
@@ -1926,14 +1939,14 @@ namespace Tarmac64_Library
             }
 
             //Credits
-            if (courseData.Credits.Length > 0)
+            if (courseData.Settings.Credits.Length > 0)
             {
                 courseData.OK64HeaderData.Credits = Convert.ToInt32(binaryWriter.BaseStream.Position);
 
-                flip = BitConverter.GetBytes(Convert.ToInt32(courseData.Credits.Length));
+                flip = BitConverter.GetBytes(Convert.ToInt32(courseData.Settings.Credits.Length));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
-                binaryWriter.Write(Encoding.UTF8.GetBytes(courseData.Credits));
+                binaryWriter.Write(Encoding.UTF8.GetBytes(courseData.Settings.Credits));
                 binaryWriter.Write(0x00);
 
                 addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
@@ -1951,14 +1964,14 @@ namespace Tarmac64_Library
             //
 
             //Name
-            if (courseData.Name.Length > 0)
+            if (courseData.Settings.Name.Length > 0)
             {
                 courseData.OK64HeaderData.CourseName = Convert.ToInt32(binaryWriter.BaseStream.Position);
 
-                flip = BitConverter.GetBytes(Convert.ToInt32(courseData.Name.Length));
+                flip = BitConverter.GetBytes(Convert.ToInt32(courseData.Settings.Name.Length));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
-                binaryWriter.Write(Encoding.UTF8.GetBytes(courseData.Name));
+                binaryWriter.Write(Encoding.UTF8.GetBytes(courseData.Settings.Name));
                 binaryWriter.Write(0x00);
 
                 addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
@@ -2100,26 +2113,26 @@ namespace Tarmac64_Library
 
             //echo
             courseData.EchoOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            flip = BitConverter.GetBytes(Convert.ToInt32(courseData.PathEffects.Length));
+            flip = BitConverter.GetBytes(Convert.ToInt32(courseData.PathSettings.PathEffects.Length));
             Array.Reverse(flip);
             binaryWriter.Write(flip);
-            for (int ThisEcho = 0; ThisEcho < courseData.PathEffects.Length; ThisEcho++)
+            for (int ThisEcho = 0; ThisEcho < courseData.PathSettings.PathEffects.Length; ThisEcho++)
             {
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.PathEffects[ThisEcho].StartIndex));
+                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.PathSettings.PathEffects[ThisEcho].StartIndex));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
-                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.PathEffects[ThisEcho].EndIndex));
+                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.PathSettings.PathEffects[ThisEcho].EndIndex));
                 Array.Reverse(flip);
                 binaryWriter.Write(flip);
 
-                binaryWriter.Write(Convert.ToByte(courseData.PathEffects[ThisEcho].Type));
-                binaryWriter.Write(Convert.ToByte(courseData.PathEffects[ThisEcho].Power));
-                binaryWriter.Write(Convert.ToByte(courseData.PathEffects[ThisEcho].BodyColor.R));
-                binaryWriter.Write(Convert.ToByte(courseData.PathEffects[ThisEcho].BodyColor.G));
-                binaryWriter.Write(Convert.ToByte(courseData.PathEffects[ThisEcho].BodyColor.B));
-                binaryWriter.Write(Convert.ToByte(courseData.PathEffects[ThisEcho].AdjColor.R));
-                binaryWriter.Write(Convert.ToByte(courseData.PathEffects[ThisEcho].AdjColor.G));
-                binaryWriter.Write(Convert.ToByte(courseData.PathEffects[ThisEcho].AdjColor.B));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].Type));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].Power));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].BodyColor.R));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].BodyColor.G));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].BodyColor.B));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].AdjColor.R));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].AdjColor.G));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].AdjColor.B));
             }
             addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
             if (addressAlign == 16)
@@ -2237,10 +2250,10 @@ namespace Tarmac64_Library
 
             //PathOffsets
             courseData.OK64HeaderData.PathOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position);
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathOffsets[0]))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathOffsets[1]))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathOffsets[2]))));
-            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathOffsets[3]))));
+            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathSettings.PathOffsets[0]))));
+            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathSettings.PathOffsets[1]))));
+            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathSettings.PathOffsets[2]))));
+            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathSettings.PathOffsets[3]))));
 
 
             //WaterVertex (translucency) and Map Scrolling
@@ -2488,10 +2501,10 @@ namespace Tarmac64_Library
             //Padding
             binaryWriter.Write(Convert.ToByte(0xFF));
 
-            binaryWriter.Write(Convert.ToByte(courseData.PathSurface[0]));
-            binaryWriter.Write(Convert.ToByte(courseData.PathSurface[1]));
-            binaryWriter.Write(Convert.ToByte(courseData.PathSurface[2]));
-            binaryWriter.Write(Convert.ToByte(courseData.PathSurface[3]));
+            binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[0]));
+            binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[1]));
+            binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[2]));
+            binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[3]));
 
             binaryWriter.Write(F3D.BigEndian(courseData.MusicID));
 
