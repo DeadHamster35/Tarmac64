@@ -871,7 +871,11 @@ namespace Tarmac64_Library
                             {
                                 try
                                 {
-                                    TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
+                                    using (var fs = new FileStream(textureArray[ThisTex].texturePath, FileMode.Open))
+                                    {
+                                        TextureBitmaps[ThisTex] = new Bitmap(fs);
+                                        fs.Close();
+                                    }
                                 }
                                 catch
                                 {
