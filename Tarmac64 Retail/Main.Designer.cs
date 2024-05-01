@@ -58,8 +58,6 @@
             this.objectCountBox = new System.Windows.Forms.TextBox();
             this.faceBox = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.SVL3Load = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.masterBox = new System.Windows.Forms.TreeView();
             this.sectionBox = new System.Windows.Forms.ComboBox();
             this.TextureData = new System.Windows.Forms.TabPage();
@@ -68,7 +66,7 @@
             this.SettingsControl = new Tarmac64_Retail.CourseSettings();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.PathTab = new System.Windows.Forms.TabPage();
-            this.pathSettings1 = new Tarmac64_Retail.PathSettings();
+            this.PathControl = new Tarmac64_Retail.PathSettings();
             this.Object = new System.Windows.Forms.TabPage();
             this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -103,11 +101,11 @@
             this.replacePathsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectTypeCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.GLControl = new Tarmac64_Retail.GLViewer();
-            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
@@ -386,8 +384,6 @@
             this.SectionViews.Controls.Add(this.CopyBtn);
             this.SectionViews.Controls.Add(this.CopySectionIndexBox);
             this.SectionViews.Controls.Add(this.groupBox1);
-            this.SectionViews.Controls.Add(this.SVL3Load);
-            this.SectionViews.Controls.Add(this.button2);
             this.SectionViews.Controls.Add(this.masterBox);
             this.SectionViews.Controls.Add(this.sectionBox);
             this.SectionViews.Location = new System.Drawing.Point(4, 40);
@@ -415,7 +411,7 @@
             this.CopySectionIndexBox.FormattingEnabled = true;
             this.CopySectionIndexBox.Location = new System.Drawing.Point(81, 37);
             this.CopySectionIndexBox.Name = "CopySectionIndexBox";
-            this.CopySectionIndexBox.Size = new System.Drawing.Size(123, 21);
+            this.CopySectionIndexBox.Size = new System.Drawing.Size(201, 21);
             this.CopySectionIndexBox.TabIndex = 101;
             // 
             // groupBox1
@@ -474,28 +470,6 @@
             this.label8.Text = "Faces";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // SVL3Load
-            // 
-            this.SVL3Load.Location = new System.Drawing.Point(212, 36);
-            this.SVL3Load.Margin = new System.Windows.Forms.Padding(5);
-            this.SVL3Load.Name = "SVL3Load";
-            this.SVL3Load.Size = new System.Drawing.Size(70, 23);
-            this.SVL3Load.TabIndex = 100;
-            this.SVL3Load.Text = "Load SVL3";
-            this.SVL3Load.UseVisualStyleBackColor = true;
-            this.SVL3Load.Click += new System.EventHandler(this.SVL3Load_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(212, 5);
-            this.button2.Margin = new System.Windows.Forms.Padding(5);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(70, 23);
-            this.button2.TabIndex = 99;
-            this.button2.Text = "Save SVL3";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // masterBox
             // 
             this.masterBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -515,7 +489,7 @@
             this.sectionBox.FormattingEnabled = true;
             this.sectionBox.Location = new System.Drawing.Point(3, 6);
             this.sectionBox.Name = "sectionBox";
-            this.sectionBox.Size = new System.Drawing.Size(201, 21);
+            this.sectionBox.Size = new System.Drawing.Size(279, 21);
             this.sectionBox.TabIndex = 0;
             this.sectionBox.SelectedIndexChanged += new System.EventHandler(this.SectionBox_SelectedIndexChanged);
             // 
@@ -583,28 +557,28 @@
             // 
             // PathTab
             // 
-            this.PathTab.Controls.Add(this.pathSettings1);
-            this.PathTab.Location = new System.Drawing.Point(4, 22);
+            this.PathTab.Controls.Add(this.PathControl);
+            this.PathTab.Location = new System.Drawing.Point(4, 40);
             this.PathTab.Name = "PathTab";
-            this.PathTab.Size = new System.Drawing.Size(307, 623);
+            this.PathTab.Size = new System.Drawing.Size(307, 605);
             this.PathTab.TabIndex = 5;
             this.PathTab.Text = "Path Settings";
             this.PathTab.UseVisualStyleBackColor = true;
             // 
-            // pathSettings1
+            // PathControl
             // 
-            this.pathSettings1.Location = new System.Drawing.Point(0, 0);
-            this.pathSettings1.Name = "pathSettings1";
-            this.pathSettings1.Size = new System.Drawing.Size(289, 605);
-            this.pathSettings1.TabIndex = 0;
+            this.PathControl.Location = new System.Drawing.Point(0, 0);
+            this.PathControl.Name = "PathControl";
+            this.PathControl.Size = new System.Drawing.Size(289, 605);
+            this.PathControl.TabIndex = 0;
             // 
             // Object
             // 
             this.Object.AutoScroll = true;
             this.Object.Controls.Add(this.ObjectControl);
-            this.Object.Location = new System.Drawing.Point(4, 22);
+            this.Object.Location = new System.Drawing.Point(4, 40);
             this.Object.Name = "Object";
-            this.Object.Size = new System.Drawing.Size(307, 623);
+            this.Object.Size = new System.Drawing.Size(307, 605);
             this.Object.TabIndex = 4;
             this.Object.Text = "Course Objects";
             this.Object.UseVisualStyleBackColor = true;
@@ -615,7 +589,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ObjectControl.Location = new System.Drawing.Point(3, 3);
             this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 617);
+            this.ObjectControl.Size = new System.Drawing.Size(289, 599);
             this.ObjectControl.TabIndex = 1;
             this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
@@ -960,6 +934,13 @@
             this.objectTypeCompilerToolStripMenuItem.Text = "ObjectType Compiler";
             this.objectTypeCompilerToolStripMenuItem.Click += new System.EventHandler(this.objectTypeCompilerToolStripMenuItem_Click);
             // 
+            // testToolStripMenuItem
+            // 
+            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
+            this.testToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.testToolStripMenuItem.Text = "Test";
+            this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -994,13 +975,6 @@
             this.GLControl.Size = new System.Drawing.Size(915, 668);
             this.GLControl.TabIndex = 3;
             this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
-            // 
-            // testToolStripMenuItem
-            // 
-            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-            this.testToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.testToolStripMenuItem.Text = "Test";
-            this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
             // 
             // Main
             // 
@@ -1070,7 +1044,6 @@
         private System.Windows.Forms.Label label20;
         private Tarmac64_Retail.TextureEditor TextureControl;
         private Tarmac64_Retail.CourseSettings SettingsControl;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.CheckBox ExtraBoxC;
         private System.Windows.Forms.CheckBox HundredFiftyBoxC;
         private System.Windows.Forms.CheckBox HundredBoxC;
@@ -1079,7 +1052,6 @@
         private System.Windows.Forms.CheckBox GPBoxC;
         private System.Windows.Forms.CheckBox BattleBoxC;
         private System.Windows.Forms.CheckBox VSBoxC;
-        private System.Windows.Forms.Button SVL3Load;
         private System.Windows.Forms.Button CopyBtn;
         private System.Windows.Forms.ComboBox CopySectionIndexBox;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -1087,7 +1059,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;
         private System.Windows.Forms.TabPage PathTab;
-        private Tarmac64_Retail.PathSettings pathSettings1;
+        private Tarmac64_Retail.PathSettings PathControl;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem replaceModelToolStripMenuItem;

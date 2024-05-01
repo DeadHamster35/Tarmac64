@@ -349,44 +349,103 @@ namespace Tarmac64_Retail
 
             return ThisLine;
         }
-        public string[] SaveSettings(int Version)
-        {
-            List<string> Output = new List<string>();
 
-            Output.Add((OKObjectTypeList.Count - 6).ToString());
-            for (int This = 6; This < OKObjectTypeList.Count; This++)
+        public void LoadObjectSettings(MemoryStream memoryStream)
+        {
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+
+            int ObjectTypeCount = binaryReader.ReadInt32();
+
+            OKObjectTypeList.Clear();
+            ObjectTypeIndexBox.Items.Clear();
+            DefaultOKObjects();
+
+
+            //error handler
+            OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
+
+            for (int This = 0; This < ObjectTypeCount; This++)
             {
-                Output.Add(OKObjectTypeList[This].Path);
+                string TargetFile = binaryReader.ReadString();
+                if (!File.Exists(TargetFile))
+                {
+                    MessageBox.Show("Please select replacement OKObject for " + Environment.NewLine + TargetFile);
+                    if (FileOpen.ShowDialog() == DialogResult.OK)
+                    {
+                        TargetFile = FileOpen.FileName;
+                    }
+                }
+
+                TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(TargetFile);
+
+                for (int ThisTexture = 0; ThisTexture < NewType.TextureData.Length; ThisTexture++)
+                {
+                    if (
+                        (NewType.TextureData[ThisTexture].texturePath == null) ||
+                        (!File.Exists(NewType.TextureData[ThisTexture].texturePath))
+                    )
+                    {
+                        MessageBox.Show("Error loading texture " + NewType.TextureData[ThisTexture].textureName + " for " + NewType.Name);
+                        if (FileOpen.ShowDialog() == DialogResult.OK)
+                        {
+                            if (FileOpen.FileName != null)
+                            {
+                                if (File.Exists(FileOpen.FileName))
+                                {
+                                    NewType.TextureData[ThisTexture].texturePath = FileOpen.FileName;
+                                }
+                                else
+                                {
+                                    NewType.TextureData[ThisTexture].texturePath = null;
+                                    MessageBox.Show("File was not found - compiled map may be corrupt");
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+                OKObjectTypeList.Add(NewType);
+                ObjectTypeIndexBox.Items.Add(NewType.Name);
             }
-            Output.Add(OKObjectList.Count.ToString());
+
+
+
+
+            OKObjectList.Clear();
+            ObjectListBox.Items.Clear();
+
+            int ObjectCount = binaryReader.ReadInt32();
+            for (int ThisObj = 0; ThisObj < ObjectCount; ThisObj++)
+            {
+                TM64_Course.OKObject NewObj = new TM64_Course.OKObject(memoryStream);
+                OKObjectList.Add(NewObj);
+                ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObj.ObjectIndex].Name + ObjectListBox.Items.Count.ToString());
+            }
+        }
+        public byte[] SaveObjectSettings()
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+
+
+            binaryWriter.Write((OKObjectTypeList.Count - 6));
+            for (int This = 6; This < OKObjectTypeList.Count; This++)
+            {   
+                binaryWriter.Write(OKObjectTypeList[This].Path);
+            }
+
+            binaryWriter.Write(OKObjectList.Count);
             for (int This = 0; This < OKObjectList.Count; This++)
             {
-                Output.Add(OKObjectList[This].ObjectIndex.ToString());
-                Output.Add(OKObjectList[This].GameMode.ToString());
-                Output.Add(OKObjectList[This].BattlePlayer.ToString());
-                Output.Add(OKObjectList[This].ObjectiveClass.ToString());
-                if (Version > 5)
-                {
-                    Output.Add(OKObjectList[This].Flag.ToString());
-                }
-                Output.Add(OKObjectList[This].OriginPosition[0].ToString());
-                Output.Add(OKObjectList[This].OriginPosition[1].ToString());
-                Output.Add(OKObjectList[This].OriginPosition[2].ToString());
-
-                Output.Add(OKObjectList[This].OriginAngle[0].ToString());
-                Output.Add(OKObjectList[This].OriginAngle[1].ToString());
-                Output.Add(OKObjectList[This].OriginAngle[2].ToString());
-
-                Output.Add(OKObjectList[This].Velocity[0].ToString());
-                Output.Add(OKObjectList[This].Velocity[1].ToString());
-                Output.Add(OKObjectList[This].Velocity[2].ToString());
-
-                Output.Add(OKObjectList[This].AngularVelocity[0].ToString());
-                Output.Add(OKObjectList[This].AngularVelocity[1].ToString());
-                Output.Add(OKObjectList[This].AngularVelocity[2].ToString());
+                binaryWriter.Write(OKObjectList[This].SaveObjectType());
             }
 
-            return Output.ToArray();
+            return memoryStream.ToArray();
         }
 
         private void UpdateLocation()

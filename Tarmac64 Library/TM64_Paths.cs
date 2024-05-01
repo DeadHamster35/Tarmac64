@@ -24,6 +24,45 @@ namespace Tarmac64_Library
         BinaryReader binaryReader = new BinaryReader(Stream.Null);
         BinaryWriter binaryWriter = new BinaryWriter(Stream.Null);
         F3DEX095 F3D = new F3DEX095();
+
+        public class Pathgroup
+        {
+            public Pathlist[] pathList { get; set; }
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
+
+                binaryWriter.Write(pathList.Length);
+
+                for (int ThisMarker = 0; ThisMarker < pathList.Length; ThisMarker++)
+                {
+                    binaryWriter.Write(pathList[ThisMarker].SaveData());
+                }
+                return Data.ToArray();
+            }
+
+            public Pathgroup()
+            {
+
+            }
+            public Pathgroup(MemoryStream Input)
+            {
+                //LoadData
+
+                BinaryReader BRead = new BinaryReader(Input);
+
+                int Count = BRead.ReadInt32();
+                pathList = new Pathlist[Count];
+                for (int This = 0; This < Count; This++)
+                {
+                    pathList[This] = new Pathlist(Input);
+                }
+
+            }
+
+
+        }
         public class Pathlist
         {
             public List<Marker> pathmarker { get; set; }
@@ -31,14 +70,31 @@ namespace Tarmac64_Library
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
-                BinaryWriter BWrite = new BinaryWriter(Data);
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
 
-                BWrite.Write(pathmarker.Count);
+                binaryWriter.Write(pathmarker.Count);
                 for (int ThisMarker = 0; ThisMarker < pathmarker.Count; ThisMarker++)
                 {
-
+                    pathmarker[ThisMarker].SaveData();
                 }
                 return Data.ToArray();
+            }
+            public Pathlist()
+            {
+
+            }
+            public Pathlist(MemoryStream Input)
+            {
+                //LoadData
+
+                BinaryReader BRead = new BinaryReader(Input);
+                pathmarker = new List<Marker>();
+                int Count = BRead.ReadInt32();
+
+                for (int ThisMark = 0; ThisMark < Count; ThisMark++)
+                {
+                    Marker NewMark = new Marker(Input);
+                }
             }
             public void Add(short[] PositionArray)
             {
@@ -59,6 +115,40 @@ namespace Tarmac64_Library
             public int zval { get; set; }
             public int flag { get; set; }
             public float[] Color { get; set; }
+
+            public byte[] SaveData()
+            {
+                MemoryStream Data = new MemoryStream();
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
+
+                binaryWriter.Write(xval);
+                binaryWriter.Write(yval);
+                binaryWriter.Write(zval);
+                binaryWriter.Write(flag);
+                binaryWriter.Write(Color[0]);
+                binaryWriter.Write(Color[1]);
+                binaryWriter.Write(Color[2]);
+
+                return Data.ToArray();
+            }
+
+            public Marker(MemoryStream Input)
+            {
+                //LoadData 
+
+
+                BinaryReader BRead = new BinaryReader(Input);
+
+                xval = BRead.ReadInt32();
+                yval = BRead.ReadInt32();
+                zval = BRead.ReadInt32();
+                flag = BRead.ReadInt32();
+                Color = new float[3];
+                Color[0] = BRead.ReadSingle();
+                Color[1] = BRead.ReadSingle();
+                Color[2] = BRead.ReadSingle();
+
+            }
             public Marker()
             {
 

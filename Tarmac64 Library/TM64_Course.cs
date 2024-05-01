@@ -37,6 +37,67 @@ namespace Tarmac64_Library
             public short ObjectiveClass { get; set; }
             public short BattlePlayer { get; set; }
             public short Flag { get; set; }
+
+            public OKObject()
+            {
+
+            }
+            public OKObject(MemoryStream memoryStream)
+            {
+                BinaryReader binaryReader = new BinaryReader(memoryStream);
+
+                ObjectIndex = binaryReader.ReadInt16();
+                GameMode = binaryReader.ReadInt16();
+                BattlePlayer = binaryReader.ReadInt16();
+                ObjectiveClass = binaryReader.ReadInt16();
+                Flag = binaryReader.ReadInt16();
+
+                OriginPosition[0] = binaryReader.ReadInt16();
+                OriginPosition[1] = binaryReader.ReadInt16();
+                OriginPosition[2] = binaryReader.ReadInt16();
+
+                OriginAngle[0] = binaryReader.ReadInt16();
+                OriginAngle[1] = binaryReader.ReadInt16();
+                OriginAngle[2] = binaryReader.ReadInt16();
+
+                Velocity[0] = binaryReader.ReadInt16();
+                Velocity[1] = binaryReader.ReadInt16();
+                Velocity[2] = binaryReader.ReadInt16();
+
+                AngularVelocity[0] = binaryReader.ReadInt16();
+                AngularVelocity[1] = binaryReader.ReadInt16();
+                AngularVelocity[2] = binaryReader.ReadInt16();
+            }
+
+            public byte[] SaveObjectType()
+            {
+                MemoryStream memoryStream = new MemoryStream();
+                BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+                binaryWriter.Write(ObjectIndex);
+                binaryWriter.Write(GameMode);
+                binaryWriter.Write(BattlePlayer);
+                binaryWriter.Write(ObjectiveClass);
+                binaryWriter.Write(Flag);
+
+                binaryWriter.Write(OriginPosition[0]);
+                binaryWriter.Write(OriginPosition[1]);
+                binaryWriter.Write(OriginPosition[2]);
+
+                binaryWriter.Write(OriginAngle[0]);
+                binaryWriter.Write(OriginAngle[1]);
+                binaryWriter.Write(OriginAngle[2]);
+
+                binaryWriter.Write(Velocity[0]);
+                binaryWriter.Write(Velocity[1]);
+                binaryWriter.Write(Velocity[2]);
+
+                binaryWriter.Write(AngularVelocity[0]);
+                binaryWriter.Write(AngularVelocity[1]);
+                binaryWriter.Write(AngularVelocity[2]);
+
+                return memoryStream.ToArray();
+            }
         }
 
         public class OKObjectAnimations

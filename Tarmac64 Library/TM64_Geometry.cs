@@ -56,13 +56,13 @@ namespace Tarmac64_Library
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
-                BinaryWriter BWrite = new BinaryWriter(Data);
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
 
-                BWrite.Write(Material);
+                binaryWriter.Write(Material);
 
                 for (int ThisVert = 0; ThisVert < 3; ThisVert++)
                 {
-                    BWrite.Write(VertData[ThisVert].SaveData());
+                    binaryWriter.Write(VertData[ThisVert].SaveData());
                 }
 
                 return Data.ToArray();
@@ -91,30 +91,22 @@ namespace Tarmac64_Library
         }
 
 
-        public class OK64JRBlock
-        {
-            public string BlockName { get; set; }
-            public OK64F3DObject[] ObjectList { get; set; }
-            public OK64F3DObject[] SurfaceList { get; set; }
-            public TM64_Paths.Pathlist[] PathList { get; set; }
-        }
-
 
         public class OK64SectionList
         {
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
-                BinaryWriter BWrite = new BinaryWriter(Data);
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
 
-                BWrite.Write(viewList.Length);
+                binaryWriter.Write(viewList.Length);
 
                 for (int ThisView = 0; ThisView < viewList.Length; ThisView++)
                 {
-                    BWrite.Write(viewList[ThisView].objectList.Length);
+                    binaryWriter.Write(viewList[ThisView].objectList.Length);
                     for (int ThisObj = 0; ThisObj < viewList[ThisView].objectList.Length; ThisObj++)
                     {
-                        BWrite.Write(viewList[ThisView].objectList[ThisObj]);
+                        binaryWriter.Write(viewList[ThisView].objectList[ThisObj]);
                     }
                 }
 
@@ -179,33 +171,33 @@ namespace Tarmac64_Library
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
-                BinaryWriter BWrite = new BinaryWriter(Data);
-                BWrite.Write(textureName);
-                BWrite.Write(texturePath);
-                BWrite.Write(alphaPath);
-                BWrite.Write(CombineModeA);
-                BWrite.Write(CombineModeB);
-                BWrite.Write(RenderModeA);
-                BWrite.Write(RenderModeB);
-                BWrite.Write(GeometryModes);
-                BWrite.Write(BitSize);
-                BWrite.Write(TextureFilter);
-                BWrite.Write(TextureFormat);
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
+                binaryWriter.Write(textureName);
+                binaryWriter.Write(texturePath);
+                binaryWriter.Write(alphaPath);
+                binaryWriter.Write(CombineModeA);
+                binaryWriter.Write(CombineModeB);
+                binaryWriter.Write(RenderModeA);
+                binaryWriter.Write(RenderModeB);
+                binaryWriter.Write(GeometryModes);
+                binaryWriter.Write(BitSize);
+                binaryWriter.Write(TextureFilter);
+                binaryWriter.Write(TextureFormat);
 
-                BWrite.Write(SFlag);
-                BWrite.Write(TFlag);
+                binaryWriter.Write(SFlag);
+                binaryWriter.Write(TFlag);
 
-                BWrite.Write(textureScrollS);
-                BWrite.Write(textureScrollT);
+                binaryWriter.Write(textureScrollS);
+                binaryWriter.Write(textureScrollT);
 
-                BWrite.Write(textureScreen);
-                BWrite.Write(GLShiftS);
-                BWrite.Write(GLShiftT);
+                binaryWriter.Write(textureScreen);
+                binaryWriter.Write(GLShiftS);
+                binaryWriter.Write(GLShiftT);
 
-                BWrite.Write(TextureOverWrite.Length);
+                binaryWriter.Write(TextureOverWrite.Length);
                 for (int ThisOver = 0; ThisOver < TextureOverWrite.Length; ThisOver++)
                 {
-                    BWrite.Write(TextureOverWrite[ThisOver]);
+                    binaryWriter.Write(TextureOverWrite[ThisOver]);
                 }
 
 
@@ -330,43 +322,43 @@ namespace Tarmac64_Library
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
-                BinaryWriter BWrite = new BinaryWriter(Data);
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
 
-                BWrite.Write(objectName);
-                BWrite.Write(vertCount);
-                BWrite.Write(faceCount);
-                BWrite.Write(materialID);
-                BWrite.Write(surfaceID);
-                BWrite.Write(surfaceMaterial);
+                binaryWriter.Write(objectName);
+                binaryWriter.Write(vertCount);
+                binaryWriter.Write(faceCount);
+                binaryWriter.Write(materialID);
+                binaryWriter.Write(surfaceID);
+                binaryWriter.Write(surfaceMaterial);
 
-                BWrite.Write(meshID.Length);
+                binaryWriter.Write(meshID.Length);
                 for (int ThisMesh = 0; ThisMesh < meshID.Length; ThisMesh++)
                 {
-                    BWrite.Write(meshID[ThisMesh]);
+                    binaryWriter.Write(meshID[ThisMesh]);
                 }
 
-                BWrite.Write(modelGeometry.Length);
+                binaryWriter.Write(modelGeometry.Length);
                 for (int ThisMesh = 0; ThisMesh < modelGeometry.Length; ThisMesh++)
                 {
-                    BWrite.Write(modelGeometry[ThisMesh].SaveData());
+                    binaryWriter.Write(modelGeometry[ThisMesh].SaveData());
                 }
 
                 for (int ThisColor = 0; ThisColor < 3; ThisColor++)
                 {
-                    BWrite.Write(objectColor[ThisColor]);
+                    binaryWriter.Write(objectColor[ThisColor]);
                 }
 
-                BWrite.Write(surfaceProperty);
+                binaryWriter.Write(surfaceProperty);
 
-                BWrite.Write(pathfindingObject.SaveData());
+                binaryWriter.Write(pathfindingObject.SaveData());
 
-                BWrite.Write(BoneName);
+                binaryWriter.Write(BoneName);
                 for (int ThisBool = 0; ThisBool < 8; ThisBool++)
                 {
-                    BWrite.Write(KillDisplayList[ThisBool]);
+                    binaryWriter.Write(KillDisplayList[ThisBool]);
                 }
 
-                BWrite.Write(WaveObject);
+                binaryWriter.Write(WaveObject);
 
                 return Data.ToArray();
             }
@@ -446,14 +438,14 @@ namespace Tarmac64_Library
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
-                BinaryWriter BWrite = new BinaryWriter(Data);
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
 
-                BWrite.Write(highX);
-                BWrite.Write(highY);
-                BWrite.Write(highZ);
-                BWrite.Write(lowX);
-                BWrite.Write(lowY);
-                BWrite.Write(lowZ);
+                binaryWriter.Write(highX);
+                binaryWriter.Write(highY);
+                binaryWriter.Write(highZ);
+                binaryWriter.Write(lowX);
+                binaryWriter.Write(lowY);
+                binaryWriter.Write(lowZ);
 
                 return Data.ToArray();
             }
@@ -491,10 +483,10 @@ namespace Tarmac64_Library
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
-                BinaryWriter BWrite = new BinaryWriter(Data);
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
 
-                BWrite.Write(position.SaveData());
-                BWrite.Write(color.SaveData());
+                binaryWriter.Write(position.SaveData());
+                binaryWriter.Write(color.SaveData());
 
                 return Data.ToArray();
 
@@ -523,17 +515,17 @@ namespace Tarmac64_Library
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
-                BinaryWriter BWrite = new BinaryWriter(Data);
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
 
 
-                BWrite.Write(R);
-                BWrite.Write(G);
-                BWrite.Write(B);
-                BWrite.Write(A);
-                BWrite.Write(RFloat);
-                BWrite.Write(GFloat);
-                BWrite.Write(BFloat);
-                BWrite.Write(AFloat);
+                binaryWriter.Write(R);
+                binaryWriter.Write(G);
+                binaryWriter.Write(B);
+                binaryWriter.Write(A);
+                binaryWriter.Write(RFloat);
+                binaryWriter.Write(GFloat);
+                binaryWriter.Write(BFloat);
+                binaryWriter.Write(AFloat);
 
                 return Data.ToArray();
             }
@@ -575,19 +567,19 @@ namespace Tarmac64_Library
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
-                BinaryWriter BWrite = new BinaryWriter(Data);
+                BinaryWriter binaryWriter = new BinaryWriter(Data);
 
-                BWrite.Write(x);
-                BWrite.Write(y);
-                BWrite.Write(z);
-                BWrite.Write(s);
-                BWrite.Write(t);
-                BWrite.Write(sBase);
-                BWrite.Write(tBase);
-                BWrite.Write(sPure);
-                BWrite.Write(tPure);
-                BWrite.Write(u);
-                BWrite.Write(v);
+                binaryWriter.Write(x);
+                binaryWriter.Write(y);
+                binaryWriter.Write(z);
+                binaryWriter.Write(s);
+                binaryWriter.Write(t);
+                binaryWriter.Write(sBase);
+                binaryWriter.Write(tBase);
+                binaryWriter.Write(sPure);
+                binaryWriter.Write(tPure);
+                binaryWriter.Write(u);
+                binaryWriter.Write(v);
 
                 return Data.ToArray();
             }
@@ -1547,7 +1539,7 @@ namespace Tarmac64_Library
                     {
                         using (var fs = new FileStream(textureArray[materialIndex].texturePath, FileMode.Open, FileAccess.Read))
                         {
-                            textureArray[materialIndex].textureBitmap = Image.FromStream(fs);
+                            textureArray[materialIndex].RawTexture.textureBitmap = Image.FromStream(fs);
                             fs.Close();
                         }
                         textureArray[materialIndex].textureHeight = textureArray[materialIndex].RawTexture.textureBitmap.Height;
@@ -2537,225 +2529,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64SectionList[] LoadSection(Assimp.Scene fbx, int sectionCount, OK64F3DObject[] masterObjects)
-        {
-            OK64SectionList[] sectionList = new OK64SectionList[sectionCount];
-            List<OK64F3DObject> masterList = new List<OK64F3DObject>(masterObjects);
-            
-            for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-            {
-                
-                sectionList[currentSection] = new TM64_Geometry.OK64SectionList();
-                sectionList[currentSection].viewList = new TM64_Geometry.OK64ViewList[4];
-                for (int view = 0; view < 4; view++)
-                {
-                    sectionList[currentSection].viewList[view] = new TM64_Geometry.OK64ViewList();
 
-                    var parentNode = fbx.RootNode.FindNode("Section " + (currentSection + 1).ToString() + " " + viewString[view]);
-                    sectionList[currentSection].viewList[view].objectList = new int[parentNode.Children.Count];
-
-                    
-
-                    for (int currentObject = 0; currentObject < parentNode.Children.Count; currentObject++)
-                    {
-                        string searchObject = parentNode.Children[currentObject].Name;
-                        var foundObject = masterObjects.FirstOrDefault(b => b.objectName == searchObject);
-                        int masterIndex = Array.IndexOf(masterObjects, foundObject);
-                        if (masterIndex == -1)
-                        {
-                            MessageBox.Show("Error- Object not Found- :" + searchObject + ": - Section " + (currentSection + 1).ToString() + "- View " + viewString[view]);
-                        }
-                        else
-                        {
-                            sectionList[currentSection].viewList[view].objectList[currentObject] = masterIndex;
-                        }
-                    }
-                }
-
-            }
-            return sectionList;
-        }
-
-        public void ExportSVL2(string filePath, int masterLength, OK64SectionList[] sectionList, OK64F3DObject[] masterObjects)
-        {
-            
-            File.WriteAllText(filePath, "SVL2" + Environment.NewLine);
-            File.AppendAllText(filePath, masterLength.ToString() + Environment.NewLine);
-            File.AppendAllText(filePath, sectionList.Length.ToString() + Environment.NewLine);
-            foreach (var section in sectionList)
-            {
-                foreach (var view in section.viewList)
-                {
-                    File.AppendAllText(filePath, view.objectList.Length.ToString() + Environment.NewLine);
-                    foreach (var obj in view.objectList)
-                    {
-                        File.AppendAllText(filePath, masterObjects[obj].objectName + Environment.NewLine);
-                    }
-                }
-            }
-        }
-
-        public void ExportSVL3(string filePath, OK64SectionList[] sectionList, OK64SectionList[] XLUList, OK64F3DObject[] masterObjects)
-        {
-
-            File.WriteAllText(filePath, "SVL3" + Environment.NewLine);
-            File.AppendAllText(filePath, sectionList.Length.ToString() + Environment.NewLine);
-            foreach (var section in sectionList)
-            {
-                File.AppendAllText(filePath, section.viewList[0].objectList.Length.ToString() + Environment.NewLine);
-                foreach (var obj in section.viewList[0].objectList)
-                {
-                    File.AppendAllText(filePath, masterObjects[obj].objectName + Environment.NewLine);
-                }
-                
-            }
-            foreach (var section in XLUList)
-            {
-                File.AppendAllText(filePath, section.viewList[0].objectList.Length.ToString() + Environment.NewLine);
-                foreach (var obj in section.viewList[0].objectList)
-                {
-                    File.AppendAllText(filePath, masterObjects[obj].objectName + Environment.NewLine);
-                }
-                
-            }
-        }
-
-
-        public void ImportSVL3(out OK64SectionList[] sectionList, out OK64SectionList[] XLUList, string filePath, OK64F3DObject[] masterObjects)
-        {
-            string[] fileText = File.ReadAllLines(filePath);
-            sectionList = new OK64SectionList[0];
-            XLUList = new OK64SectionList[0];
-            if (fileText[0] == "SVL3")
-            {
-                int sectionCount = Convert.ToInt32(fileText[1]);
-                sectionList = new OK64SectionList[sectionCount];
-                int currentLine = 2;
-                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-                {
-                    sectionList[currentSection] = new OK64SectionList();
-                    sectionList[currentSection].viewList = new OK64ViewList[1];
-                    for (int currentView = 0; currentView < 1; currentView++)
-                    {
-                        sectionList[currentSection].viewList[currentView] = new OK64ViewList();
-                        int objectCount = Convert.ToInt32(fileText[currentLine++]);
-                        
-                        sectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
-
-                        string[] masterNames = new string[masterObjects.Length];
-
-                        for (int currentName = 0; currentName < masterObjects.Length; currentName++)
-                        {
-                            masterNames[currentName] = masterObjects[currentName].objectName;
-                        }
-
-                        for (int currentObject = 0; currentObject < objectCount; currentObject++)
-                        {
-                            sectionList[currentSection].viewList[currentView].objectList[currentObject] = Array.IndexOf(masterNames, fileText[currentLine++]);
-                            
-                        }
-                    }
-                }
-
-
-                XLUList = new OK64SectionList[sectionCount];
-                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-                {
-                    XLUList[currentSection] = new OK64SectionList();
-                    XLUList[currentSection].viewList = new OK64ViewList[1];
-                    for (int currentView = 0; currentView < 1; currentView++)
-                    {
-                        XLUList[currentSection].viewList[currentView] = new OK64ViewList();
-                        int objectCount = Convert.ToInt32(fileText[currentLine++]);
-                        XLUList[currentSection].viewList[currentView].objectList = new int[objectCount];
-
-                        string[] masterNames = new string[masterObjects.Length];
-
-                        for (int currentName = 0; currentName < masterObjects.Length; currentName++)
-                        {
-                            masterNames[currentName] = masterObjects[currentName].objectName;
-                        }
-
-                        for (int currentObject = 0; currentObject < objectCount; currentObject++)
-                        {
-                            XLUList[currentSection].viewList[currentView].objectList[currentObject] = Array.IndexOf(masterNames, fileText[currentLine++]);
-                        }
-                    }
-                }
-            }
-        }
-
-        public OK64SectionList[] ImportSVL2(string filePath, int masterCount, OK64F3DObject[] masterObjects)
-        {
-            string[] fileText = File.ReadAllLines(filePath);
-            OK64SectionList[] sectionList = new OK64SectionList[0];
-            if (fileText[0] == "SVL2")
-            {
-                int sectionCount = Convert.ToInt32(fileText[2]); 
-                sectionList = new OK64SectionList[sectionCount];
-                int currentLine = 3;
-                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-                {
-                    sectionList[currentSection] = new OK64SectionList();
-                    sectionList[currentSection].viewList = new OK64ViewList[4];
-                    for (int currentView = 0; currentView < 4; currentView++)
-                    {
-                        sectionList[currentSection].viewList[currentView] = new OK64ViewList();
-                        int objectCount = Convert.ToInt32(fileText[currentLine]);
-                        currentLine++;
-                        sectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
-
-                        string[] masterNames = new string[masterObjects.Length];
-
-                        for (int currentName = 0; currentName < masterObjects.Length; currentName++)
-                        {
-                            masterNames[currentName] = masterObjects[currentName].objectName;
-                        }
-
-                        for (int currentObject = 0; currentObject < objectCount; currentObject++)
-                        {
-                            sectionList[currentSection].viewList[currentView].objectList[currentObject] = Array.IndexOf(masterNames, fileText[currentLine]);
-                            currentLine++;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (fileText[0] != masterCount.ToString())
-                {
-
-                }
-                else
-                {
-
-                    int sectionCount = Convert.ToInt32(fileText[1]);
-                    sectionList = new OK64SectionList[sectionCount];
-                    int currentLine = 2;
-                    for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-                    {
-                        sectionList[currentSection] = new OK64SectionList();
-                        sectionList[currentSection].viewList = new OK64ViewList[4];
-                        for (int currentView = 0; currentView < 4; currentView++)
-                        {
-                            sectionList[currentSection].viewList[currentView] = new OK64ViewList();
-                            int objectCount = Convert.ToInt32(fileText[currentLine]);
-                            currentLine++;
-                            sectionList[currentSection].viewList[currentView].objectList = new int[objectCount];
-
-                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
-                            {
-                                sectionList[currentSection].viewList[currentView].objectList[currentObject] = Convert.ToInt32(fileText[currentLine]);
-                                currentLine++;
-                            }
-                        }
-                    }
-
-
-                }
-            }
-            return sectionList;
-        }
 
         public PathfindingObject[] SurfaceBounds(OK64F3DObject[] surfaceObjects, int sectionCount)
         {
@@ -4519,7 +4293,7 @@ namespace Tarmac64_Library
                 //Load Texture Data
                 binaryWriter.Write(
                     F3D.gsNinLoadTextureImage(
-                        Convert.ToUInt32(TextureObject.segmentPosition | Convert.ToUInt32(Segment << 24)),
+                        Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | Convert.ToUInt32(Segment << 24)),
                         F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                         F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                         Convert.ToUInt32(TextureObject.textureWidth),
@@ -4565,15 +4339,15 @@ namespace Tarmac64_Library
                 {
                     //Macro 4-bit Texture Load
 
-                    binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | SegmentID)));
-                    binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                    binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.RawTexture.palettePosition | SegmentID)));
+                    binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
                         F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
                         0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
                 }
                 else
                 {
 
-                    binaryWriter.Write(F3D.gsDPLoadTLUT_pal256(0, Convert.ToUInt32(TextureObject.palettePosition | SegmentID)));
+                    binaryWriter.Write(F3D.gsDPLoadTLUT_pal256(0, Convert.ToUInt32(TextureObject.RawTexture.palettePosition | SegmentID)));
 
                     //Load Texture Settings
                     binaryWriter.Write(
@@ -4594,7 +4368,7 @@ namespace Tarmac64_Library
                     );
                     //Load Texture Data
                     binaryWriter.Write(F3D.gsDPLoadTextureBlock(
-                        Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                        Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
                         F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                         F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                         Convert.ToUInt32(TextureObject.textureWidth),

@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 using Tarmac64_Library;
 
 namespace Tarmac64_Retail
@@ -22,7 +17,7 @@ namespace Tarmac64_Retail
         public event EventHandler UpdateParent;
 
         public string[] songNames = new string[] { "None", "Title", "Menu", "Raceways", "Moo Moo Farm", "Choco Mountain", "Koopa Troopa Beach", "Banshee Boardwalk", "Snowland", "Bowser's Castle", "Kalimari Desert", "#- GP Startup", "#- Final Lap", "#- Final Lap (1st)", "#- Final Lap 2-4", "#- You Lose", "#- Race Results", "Star Music", "Rainbow Road", "DK Parkway", "#- Credits Failure", "Toad's Turnpike", "#- VS/Battle Start", "#- VS/Battle Results", "#- Retry/Quit", "Big Donut / Skyscraper", "#- Trophy A", "#- Trophy B1 (Win)", "Credits", "#- Trophy B2 (Lose)" };
-        public string[] pathTypes = new string[] { "Echo", "Color", "Camera", "AirControl", "Long Jump", "AI Area", "3D Weather" };
+        
         public string[] waterTypes = new string[] { "Water", "Void", "Lava", "Ice", "Fire" };
         public int[] bombPoints = new int[] { 40, 100, 265, 285, 420, 0, 0 };
         public int[] bompTypeIDs = new int[] { 3, 3, 3, 1, 1, 0, 0 };
@@ -122,201 +117,260 @@ namespace Tarmac64_Retail
 
         }
 
-        public int LoadCourseSettings(string[] SettingsInfo)
+        public TM64_Course.Course UpdateCourse(TM64_Course.Course ThisCourse)
         {
-            int ThisLine = 0;
-            CourseData.Settings.Credits = SettingsInfo[ThisLine++];
-            CourseData.Settings.Name = SettingsInfo[ThisLine++];
-            CourseData.Settings.PreviewPath = SettingsInfo[ThisLine++];
-            CourseData.Settings.BannerPath = SettingsInfo[ThisLine++];
-            CourseData.GhostPath = SettingsInfo[ThisLine++];
-            CourseData.OK64HeaderData.WaterType = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.OK64HeaderData.WaterLevel = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.ManualTempo = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.GoalBannerBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
-            CourseData.SkyboxBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
+            ThisCourse.Settings.Credits = CourseData.Settings.Credits;
+            ThisCourse.Settings.Name = CourseData.Settings.Name;
+            ThisCourse.Settings.PreviewPath = CourseData.Settings.PreviewPath;
+            ThisCourse.Settings.BannerPath = CourseData.Settings.BannerPath;
+            ThisCourse.GhostPath = CourseData.GhostPath;
+
+            ThisCourse.OK64HeaderData.WaterType = CourseData.OK64HeaderData.WaterType;
+            ThisCourse.OK64HeaderData.WaterLevel = CourseData.OK64HeaderData.WaterLevel;
+
+            ThisCourse.ManualTempo = CourseData.ManualTempo;
+
+
+            ThisCourse.Fog.FogToggle = CourseData.Fog.FogToggle;
+
+            ThisCourse.Fog.FogColor = new TM64_Geometry.OK64Color();
+
+            ThisCourse.Fog.FogColor.R = CourseData.Fog.FogColor.R;
+            ThisCourse.Fog.FogColor.G = CourseData.Fog.FogColor.G;
+            ThisCourse.Fog.FogColor.B = CourseData.Fog.FogColor.B;
+            ThisCourse.Fog.FogColor.A = CourseData.Fog.FogColor.A;
+            ThisCourse.Fog.StartDistance = CourseData.Fog.StartDistance;
+            ThisCourse.Fog.StopDistance = CourseData.Fog.StopDistance;
+
+            ThisCourse.MapData.MapCoord = new Assimp.Vector2D
+            (
+                CourseData.MapData.MapCoord[0],
+                CourseData.MapData.MapCoord[1]
+            );
+
+            ThisCourse.MapData.StartCoord = new Assimp.Vector2D
+            (
+                CourseData.MapData.StartCoord[0],
+                CourseData.MapData.StartCoord[1]
+            );
+
+            ThisCourse.MapData.LineCoord = new Assimp.Vector2D
+            (
+                CourseData.MapData.LineCoord[0],
+                CourseData.MapData.LineCoord[1]
+            );
+
+
+            ThisCourse.MapData.MapScale = CourseData.MapData.MapScale;
+
+            ThisCourse.MapData.MapColor.R = CourseData.MapData.MapColor.R;
+            ThisCourse.MapData.MapColor.G = CourseData.MapData.MapColor.G;
+            ThisCourse.MapData.MapColor.B = CourseData.MapData.MapColor.B;
+
+            ThisCourse.MapData.MinimapPath = CourseData.MapData.MinimapPath;
+
+
+            ThisCourse.SkyboxBool = CourseData.SkyboxBool;
+
+            ThisCourse.SkyColors.TopColor.R = CourseData.SkyColors.TopColor.R;
+            ThisCourse.SkyColors.TopColor.G = CourseData.SkyColors.TopColor.G;
+            ThisCourse.SkyColors.TopColor.B = CourseData.SkyColors.TopColor.B;
+
+            ThisCourse.SkyColors.MidColor.R = CourseData.SkyColors.MidColor.R;
+            ThisCourse.SkyColors.MidColor.G = CourseData.SkyColors.MidColor.G;
+            ThisCourse.SkyColors.MidColor.B = CourseData.SkyColors.MidColor.B;
+
+            ThisCourse.SkyColors.BotColor.R = CourseData.SkyColors.BotColor.R;
+            ThisCourse.SkyColors.BotColor.G = CourseData.SkyColors.BotColor.G;
+            ThisCourse.SkyColors.BotColor.B = CourseData.SkyColors.BotColor.B;
+
+            ThisCourse.SkyColors.SkyType = CourseData.SkyColors.SkyType;
+            ThisCourse.SkyColors.WeatherType = CourseData.SkyColors.WeatherType;
+
+            ThisCourse.MusicID = CourseData.MusicID;
+            ThisCourse.OK64SongPath = CourseData.OK64SongPath;
+
+            return ThisCourse;
+        }
+
+
+        public void LoadCourseSettings(MemoryStream Input)
+        {
+            BinaryReader binaryReader = new BinaryReader(Input);
+
+            CourseData.Settings.Credits = binaryReader.ReadString();
+            CourseData.Settings.Name = binaryReader.ReadString();
+            CourseData.Settings.PreviewPath = binaryReader.ReadString();
+            CourseData.Settings.BannerPath = binaryReader.ReadString();
+            CourseData.GhostPath = binaryReader.ReadString();
+            CourseData.OK64HeaderData.WaterType = binaryReader.ReadInt32();
+            CourseData.OK64HeaderData.WaterLevel = binaryReader.ReadSingle();
+            CourseData.ManualTempo = binaryReader.ReadInt32();
+            CourseData.GoalBannerBool = binaryReader.ReadInt16();
+            CourseData.SkyboxBool = binaryReader.ReadInt16();
             CourseData.PathSettings.PathSurface = new int[4];
-            CourseData.PathSettings.PathSurface[0] = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.PathSettings.PathSurface[1] = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.PathSettings.PathSurface[2] = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.PathSettings.PathSurface[3] = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.PathSettings.PathSurface[0] = binaryReader.ReadInt32();
+            CourseData.PathSettings.PathSurface[1] = binaryReader.ReadInt32();
+            CourseData.PathSettings.PathSurface[2] = binaryReader.ReadInt32();
+            CourseData.PathSettings.PathSurface[3] = binaryReader.ReadInt32();
 
-            CourseData.PathCount = Convert.ToInt16(SettingsInfo[ThisLine++]);
-            CourseData.DistributeBool = Convert.ToInt16(SettingsInfo[ThisLine++]);
+            CourseData.PathCount = binaryReader.ReadInt16();
+            CourseData.DistributeBool = binaryReader.ReadInt16();
 
-            int Count = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            int Count = binaryReader.ReadInt32();
             CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[Count];
             for (int This = 0; This < Count; This++)
             {
                 CourseData.PathSettings.PathEffects[This] = new TM64_Course.PathEffect();
-                CourseData.PathSettings.PathEffects[This].Type = Convert.ToInt32(SettingsInfo[ThisLine++]);
-                CourseData.PathSettings.PathEffects[This].StartIndex = Convert.ToInt32(SettingsInfo[ThisLine++]);
-                CourseData.PathSettings.PathEffects[This].EndIndex = Convert.ToInt32(SettingsInfo[ThisLine++]);
-                CourseData.PathSettings.PathEffects[This].Power = Convert.ToInt32(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].Type = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[This].StartIndex = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[This].EndIndex = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[This].Power = binaryReader.ReadInt32();
 
                 CourseData.PathSettings.PathEffects[This].AdjColor = new TM64_Geometry.OK64Color();
-                CourseData.PathSettings.PathEffects[This].AdjColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
-                CourseData.PathSettings.PathEffects[This].AdjColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
-                CourseData.PathSettings.PathEffects[This].AdjColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].AdjColor.R = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[This].AdjColor.G = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[This].AdjColor.B = binaryReader.ReadByte();
 
                 CourseData.PathSettings.PathEffects[This].BodyColor = new TM64_Geometry.OK64Color();
-                CourseData.PathSettings.PathEffects[This].BodyColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
-                CourseData.PathSettings.PathEffects[This].BodyColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
-                CourseData.PathSettings.PathEffects[This].BodyColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
+                CourseData.PathSettings.PathEffects[This].BodyColor.R = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[This].BodyColor.G = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[This].BodyColor.B = binaryReader.ReadByte();
             }
 
 
-            CourseData.MapData.MinimapPath = SettingsInfo[ThisLine++];
+            CourseData.MapData.MinimapPath = binaryReader.ReadString();
             CourseData.MapData.MapCoord = new Assimp.Vector2D
                 (
-                    Convert.ToInt32(SettingsInfo[ThisLine++]),
-                    Convert.ToInt32(SettingsInfo[ThisLine++])
+                    (binaryReader.ReadSingle()),
+                    (binaryReader.ReadSingle())
                 );
             CourseData.MapData.StartCoord = new Assimp.Vector2D
                 (
-                    Convert.ToInt32(SettingsInfo[ThisLine++]),
-                    Convert.ToInt32(SettingsInfo[ThisLine++])
+                    (binaryReader.ReadSingle()),
+                    (binaryReader.ReadSingle())
                 );
             CourseData.MapData.LineCoord = new Assimp.Vector2D
                 (
-                    Convert.ToInt32(SettingsInfo[ThisLine++]),
-                    Convert.ToInt32(SettingsInfo[ThisLine++])
+                    (binaryReader.ReadSingle()),
+                    (binaryReader.ReadSingle())
                 );
-            CourseData.MapData.MapScale = Convert.ToSingle(SettingsInfo[ThisLine++]);
+            CourseData.MapData.MapScale = binaryReader.ReadSingle();
             CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
-            CourseData.MapData.MapColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.MapData.MapColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.MapData.MapColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
+            CourseData.MapData.MapColor.R = binaryReader.ReadByte();
+            CourseData.MapData.MapColor.G = binaryReader.ReadByte();
+            CourseData.MapData.MapColor.B = binaryReader.ReadByte();
 
             CourseData.SkyColors.TopColor = new TM64_Geometry.OK64Color();
-            CourseData.SkyColors.TopColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.SkyColors.TopColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.SkyColors.TopColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
+            CourseData.SkyColors.TopColor.R = binaryReader.ReadByte();
+            CourseData.SkyColors.TopColor.G = binaryReader.ReadByte();
+            CourseData.SkyColors.TopColor.B = binaryReader.ReadByte();
 
             CourseData.SkyColors.MidColor = new TM64_Geometry.OK64Color();
-            CourseData.SkyColors.MidColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.SkyColors.MidColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.SkyColors.MidColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
+            CourseData.SkyColors.MidColor.R = binaryReader.ReadByte();
+            CourseData.SkyColors.MidColor.G = binaryReader.ReadByte();
+            CourseData.SkyColors.MidColor.B = binaryReader.ReadByte();
 
             CourseData.SkyColors.BotColor = new TM64_Geometry.OK64Color();
-            CourseData.SkyColors.BotColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.SkyColors.BotColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.SkyColors.BotColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
+            CourseData.SkyColors.BotColor.R = binaryReader.ReadByte();
+            CourseData.SkyColors.BotColor.G = binaryReader.ReadByte();
+            CourseData.SkyColors.BotColor.B = binaryReader.ReadByte();
 
-            CourseData.SkyColors.SkyType = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.SkyColors.WeatherType = Convert.ToInt32(SettingsInfo[ThisLine++]);
+            CourseData.SkyColors.SkyType = binaryReader.ReadInt32();
+            CourseData.SkyColors.WeatherType = binaryReader.ReadInt32();
 
-            CourseData.MusicID = Convert.ToInt32(SettingsInfo[ThisLine++]);
-            CourseData.OK64SongPath = SettingsInfo[ThisLine++];
+            CourseData.MusicID = binaryReader.ReadInt32();
+            CourseData.OK64SongPath = binaryReader.ReadString();
 
             CourseData.BombArray = new TM64_Course.VSBomb[7];
             for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
             {
                 CourseData.BombArray[ThisBomb] = new TM64_Course.VSBomb();
-                CourseData.BombArray[ThisBomb].Point = Convert.ToInt16(SettingsInfo[ThisLine++]);
-                CourseData.BombArray[ThisBomb].Type = Convert.ToInt16(SettingsInfo[ThisLine++]);
+                CourseData.BombArray[ThisBomb].Point = binaryReader.ReadInt16();
+                CourseData.BombArray[ThisBomb].Type = binaryReader.ReadInt16();
             }
 
 
 
             CourseData.Fog = new TM64_Course.OKFog();
 
-            CourseData.Fog.FogToggle = Convert.ToInt16(SettingsInfo[ThisLine++]);
+            CourseData.Fog.FogToggle = binaryReader.ReadInt16();
             CourseData.Fog.FogColor = new TM64_Geometry.OK64Color();
-            CourseData.Fog.FogColor.R = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.Fog.FogColor.G = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.Fog.FogColor.B = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.Fog.FogColor.A = Convert.ToByte(SettingsInfo[ThisLine++]);
-            CourseData.Fog.StartDistance = Convert.ToInt16(SettingsInfo[ThisLine++]);
-            CourseData.Fog.StopDistance = Convert.ToInt16(SettingsInfo[ThisLine++]);
+            CourseData.Fog.FogColor.R = binaryReader.ReadByte();
+            CourseData.Fog.FogColor.G = binaryReader.ReadByte();
+            CourseData.Fog.FogColor.B = binaryReader.ReadByte();
+            CourseData.Fog.FogColor.A = binaryReader.ReadByte();
+            CourseData.Fog.StartDistance = binaryReader.ReadInt16();
+            CourseData.Fog.StopDistance = binaryReader.ReadInt16();
 
             UpdateUI();
-            return ThisLine;
         }
 
-        public string[] SaveCourseSettings()
+        public byte[] SaveCourseSettings()
         {
-            List<string> Output = new List<string>();
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
-            Output.Add(CourseData.Settings.Credits);
-            Output.Add(CourseData.Settings.Name);
-            Output.Add(CourseData.Settings.PreviewPath);
-            Output.Add(CourseData.Settings.BannerPath);
-            Output.Add(CourseData.GhostPath);
-            Output.Add(CourseData.OK64HeaderData.WaterType.ToString());
-            Output.Add(CourseData.OK64HeaderData.WaterLevel.ToString());
-            Output.Add(CourseData.ManualTempo.ToString());
-            Output.Add(CourseData.GoalBannerBool.ToString());
-            Output.Add(CourseData.SkyboxBool.ToString());
-            Output.Add(CourseData.PathSettings.PathSurface[0].ToString());
-            Output.Add(CourseData.PathSettings.PathSurface[1].ToString());
-            Output.Add(CourseData.PathSettings.PathSurface[2].ToString());
-            Output.Add(CourseData.PathSettings.PathSurface[3].ToString());
-            Output.Add(CourseData.PathCount.ToString());
-            Output.Add(CourseData.DistributeBool.ToString());
+            UpdateCourse();
 
-            Output.Add(CourseData.PathSettings.PathEffects.Length.ToString());
-            for (int ThisPath = 0; ThisPath < CourseData.PathSettings.PathEffects.Length; ThisPath++)
-            {
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].Type.ToString());
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].StartIndex.ToString());
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].EndIndex.ToString());
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].Power.ToString());
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].AdjColor.R.ToString());
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].AdjColor.G.ToString());
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].AdjColor.B.ToString());
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].BodyColor.R.ToString());
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].BodyColor.G.ToString());
-                Output.Add(CourseData.PathSettings.PathEffects[ThisPath].BodyColor.B.ToString());
-            }
+            binaryWriter.Write(CourseData.Settings.Credits);
+            binaryWriter.Write(CourseData.Settings.Name);
+            binaryWriter.Write(CourseData.Settings.PreviewPath);
+            binaryWriter.Write(CourseData.Settings.BannerPath);
+            binaryWriter.Write(CourseData.GhostPath);
+            binaryWriter.Write(CourseData.OK64HeaderData.WaterType);
+            binaryWriter.Write(CourseData.OK64HeaderData.WaterLevel);
+            binaryWriter.Write(CourseData.ManualTempo);
+            binaryWriter.Write(CourseData.GoalBannerBool);
+            binaryWriter.Write(CourseData.SkyboxBool);
 
-            Output.Add(CourseData.MapData.MinimapPath.ToString());
-            Output.Add(CourseData.MapData.MapCoord[0].ToString());
-            Output.Add(CourseData.MapData.MapCoord[1].ToString());
-            Output.Add(CourseData.MapData.StartCoord[0].ToString());
-            Output.Add(CourseData.MapData.StartCoord[1].ToString());
-            Output.Add(CourseData.MapData.LineCoord[0].ToString());
-            Output.Add(CourseData.MapData.LineCoord[1].ToString());
-            Output.Add(CourseData.MapData.MapScale.ToString());
+            binaryWriter.Write(CourseData.MapData.MinimapPath);
+            binaryWriter.Write(CourseData.MapData.MapCoord[0]);
+            binaryWriter.Write(CourseData.MapData.MapCoord[1]);
+            binaryWriter.Write(CourseData.MapData.StartCoord[0]);
+            binaryWriter.Write(CourseData.MapData.StartCoord[1]);
+            binaryWriter.Write(CourseData.MapData.LineCoord[0]);
+            binaryWriter.Write(CourseData.MapData.LineCoord[1]);
+            binaryWriter.Write(CourseData.MapData.MapScale);
 
-            Output.Add(CourseData.MapData.MapColor.R.ToString());
-            Output.Add(CourseData.MapData.MapColor.G.ToString());
-            Output.Add(CourseData.MapData.MapColor.B.ToString());
+            binaryWriter.Write(CourseData.MapData.MapColor.R);
+            binaryWriter.Write(CourseData.MapData.MapColor.G);
+            binaryWriter.Write(CourseData.MapData.MapColor.B);
 
-            Output.Add(CourseData.SkyColors.TopColor.R.ToString());
-            Output.Add(CourseData.SkyColors.TopColor.G.ToString());
-            Output.Add(CourseData.SkyColors.TopColor.B.ToString());
+            binaryWriter.Write(CourseData.SkyColors.TopColor.R);
+            binaryWriter.Write(CourseData.SkyColors.TopColor.G);
+            binaryWriter.Write(CourseData.SkyColors.TopColor.B);
 
-            Output.Add(CourseData.SkyColors.MidColor.R.ToString());
-            Output.Add(CourseData.SkyColors.MidColor.G.ToString());
-            Output.Add(CourseData.SkyColors.MidColor.B.ToString());
+            binaryWriter.Write(CourseData.SkyColors.MidColor.R);
+            binaryWriter.Write(CourseData.SkyColors.MidColor.G);
+            binaryWriter.Write(CourseData.SkyColors.MidColor.B);
 
-            Output.Add(CourseData.SkyColors.BotColor.R.ToString());
-            Output.Add(CourseData.SkyColors.BotColor.G.ToString());
-            Output.Add(CourseData.SkyColors.BotColor.B.ToString());
+            binaryWriter.Write(CourseData.SkyColors.BotColor.R);
+            binaryWriter.Write(CourseData.SkyColors.BotColor.G);
+            binaryWriter.Write(CourseData.SkyColors.BotColor.B);
 
-            Output.Add(CourseData.SkyColors.SkyType.ToString());
-            Output.Add(CourseData.SkyColors.WeatherType.ToString());
+            binaryWriter.Write(CourseData.SkyColors.SkyType);
+            binaryWriter.Write(CourseData.SkyColors.WeatherType);
 
 
-            Output.Add(CourseData.MusicID.ToString());
-            Output.Add(CourseData.OK64SongPath);
+            binaryWriter.Write(CourseData.MusicID);
+            binaryWriter.Write(CourseData.OK64SongPath);
             for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
             {
-                Output.Add(CourseData.BombArray[ThisBomb].Point.ToString());
-                Output.Add(CourseData.BombArray[ThisBomb].Type.ToString());
+                binaryWriter.Write(CourseData.BombArray[ThisBomb].Point);
+                binaryWriter.Write(CourseData.BombArray[ThisBomb].Type);
             }
 
-            Output.Add(CourseData.Fog.FogToggle.ToString());
-            Output.Add(CourseData.Fog.FogColor.R.ToString());
-            Output.Add(CourseData.Fog.FogColor.G.ToString());
-            Output.Add(CourseData.Fog.FogColor.B.ToString());
-            Output.Add(CourseData.Fog.FogColor.A.ToString());
-            Output.Add(CourseData.Fog.StartDistance.ToString());
-            Output.Add(CourseData.Fog.StopDistance.ToString());
+            binaryWriter.Write(CourseData.Fog.FogToggle);
+            binaryWriter.Write(CourseData.Fog.FogColor.R);
+            binaryWriter.Write(CourseData.Fog.FogColor.G);
+            binaryWriter.Write(CourseData.Fog.FogColor.B);
+            binaryWriter.Write(CourseData.Fog.FogColor.A);
+            binaryWriter.Write(CourseData.Fog.StartDistance);
+            binaryWriter.Write(CourseData.Fog.StopDistance);
 
-            return Output.ToArray();
 
+            return memoryStream.ToArray();
         }
 
         public void UpdateCourse()
@@ -340,7 +394,7 @@ namespace Tarmac64_Retail
 
             CourseData.Fog.FogToggle = Convert.ToInt16(FogToggleBox.Checked);
 
-            CourseData.SkyboxBool = Convert.ToInt16(SkyBoxCheckBox.Checked);  
+            CourseData.SkyboxBool = Convert.ToInt16(SkyBoxCheckBox.Checked);
 
 
 
@@ -382,10 +436,10 @@ namespace Tarmac64_Retail
             {
                 CourseData.ManualTempo = ParseInt;
             }
-            
 
 
-            
+
+
             if (int.TryParse(mapXBox.Text, out ParseInt))
             {
                 if (int.TryParse(mapYBox.Text, out ParseInt2))
@@ -485,7 +539,7 @@ namespace Tarmac64_Retail
             {
                 UpdateParent(null, null);
             }
-            
+
         }
 
 
@@ -496,7 +550,7 @@ namespace Tarmac64_Retail
             {
                 return;
             }
-            
+
             PathFX = CourseData.PathSettings.PathEffects.ToList();
             int ParseInt, ParseInt2 = 0;
             float ParseFloat, ParseFloat2 = 0;
@@ -523,7 +577,8 @@ namespace Tarmac64_Retail
             SkyBoxCheckBox.Checked = Convert.ToBoolean(CourseData.SkyboxBool);
 
 
-            mapBox.Text = CourseData.MapData.MinimapPath;
+            
+            
             mapXBox.Text = CourseData.MapData.MapCoord[0].ToString();
             mapYBox.Text = CourseData.MapData.MapCoord[1].ToString();
 
@@ -558,7 +613,7 @@ namespace Tarmac64_Retail
             songBox.SelectedIndex = CourseData.MusicID;
             oksongBox.Text = CourseData.OK64SongPath;
 
-            
+
         }
 
 
@@ -750,15 +805,7 @@ namespace Tarmac64_Retail
 
         private void button2_Click(object sender, EventArgs e)
         {
-            bool Backup = loaded;
-            loaded = false;
-
-            PathFX.Add(new TM64_Course.PathEffect());
-            int Index = PathFX.Count - 1;
-            PathFX[Index].AdjColor = new TM64_Geometry.OK64Color();
-            PathFX[Index].BodyColor = new TM64_Geometry.OK64Color();
-
-            loaded = Backup;
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -809,7 +856,7 @@ namespace Tarmac64_Retail
         {
             if (ColorPick.ShowDialog() == DialogResult.OK)
             {
-                
+
             }
             UpdateCourse();
         }

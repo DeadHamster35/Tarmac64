@@ -227,130 +227,29 @@ namespace Tarmac64_Retail
             
         }
 
-        public int LoadTextureSettings(string[] TextureSettings, TM64_Geometry.OK64Texture[] CurrentArray, int Version = 5)
+        public void LoadTextureArray(MemoryStream memoryStream)
         {
-            int ThisLine = 0;
-            int Count = Convert.ToInt32(TextureSettings[ThisLine++]);
-            textureArray = new TM64_Geometry.OK64Texture[Count];
-            if (Count != CurrentArray.Length)
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+
+            textureArray = new TM64_Geometry.OK64Texture[binaryReader.ReadInt32()];
+            for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
             {
-                MessageBox.Show("Warning! Texture Counts do not match. Attempting backup.");
+                textureArray[ThisTex] = new TM64_Geometry.OK64Texture(memoryStream);
             }
-            for (int This = 0; This < Count; This++)
-            {
-                textureArray[This] = new TM64_Geometry.OK64Texture();
-                textureArray[This].textureName = TextureSettings[ThisLine++];
-                textureArray[This].texturePath = CurrentArray[This].texturePath;
-                textureArray[This].RawTexture.textureBitmap = CurrentArray[This].RawTexture.textureBitmap;
-                textureArray[This].RawTexture.textureBitmap = CurrentArray[This].RawTexture.textureBitmap;
-                textureArray[This].alphaPath = CurrentArray[This].alphaPath;
-                textureArray[This].textureWidth = CurrentArray[This].textureWidth;
-                textureArray[This].textureHeight = CurrentArray[This].textureHeight;
-                ThisLine += 2; //skip height width 
-
-                textureArray[This].SFlag = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].TFlag = Convert.ToInt32(TextureSettings[ThisLine++]);
-
-                textureArray[This].GeometryBools = new bool[F3DEX095_Parameters.GeometryModes.Length];
-                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
-                {
-                    textureArray[This].GeometryBools[ThisCheck] = Convert.ToBoolean(TextureSettings[ThisLine++]);
-                }
-                textureArray[This].CombineValuesA = new uint[8];
-                textureArray[This].CombineValuesB = new uint[8];
-                for (int ThisValue = 0; ThisValue < 8; ThisValue++)
-                {
-                    textureArray[This].CombineValuesA[ThisValue] = Convert.ToUInt32(TextureSettings[ThisLine++]);
-                    textureArray[This].CombineValuesB[ThisValue] = Convert.ToUInt32(TextureSettings[ThisLine++]);
-                }
-
-                textureArray[This].CombineModeA = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].CombineModeB = Convert.ToInt32(TextureSettings[ThisLine++]);
-
-                textureArray[This].RenderModeA = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].RenderModeB = Convert.ToInt32(TextureSettings[ThisLine++]);
-
-                textureArray[This].BitSize = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].TextureFormat = Convert.ToInt32(TextureSettings[ThisLine++]);
-
-                if (Version > 6)
-                {
-                    textureArray[This].TextureFormat = Convert.ToInt32(TextureSettings[ThisLine++]);
-                }
-                
-
-
-                textureArray[This].textureScrollS = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].textureScrollT = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].textureScreen = Convert.ToInt32(TextureSettings[ThisLine++]);
-
-                int OverWriteCount = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].TextureOverWrite = new int[OverWriteCount];
-                for (int ThisOW = 0; ThisOW < OverWriteCount; ThisOW++)
-                {
-                    textureArray[This].TextureOverWrite[ThisOW] = Convert.ToInt32(TextureSettings[ThisLine++]);
-                }
-                
-
-            }
-            textureBox.SelectedIndex = 0;
-            UpdateTextureDisplay();
-
-            return ThisLine;
         }
 
-        public string[] SaveTextureSettings(int Version)
+        public byte[] SaveTextureArray()
         {
-            List<string> Output = new List<string>();
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
-            Output.Add(textureArray.Length.ToString());
-
-            for (int This = 0; This < textureArray.Length; This++)
+            binaryWriter.Write(textureArray.Length);
+            for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
             {
-                Output.Add(textureArray[This].textureName);
-                Output.Add(textureArray[This].textureWidth.ToString());
-                Output.Add(textureArray[This].textureHeight.ToString());
-
-                Output.Add(textureArray[This].SFlag.ToString());
-                Output.Add(textureArray[This].TFlag.ToString());
-
-                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
-                {
-                    Output.Add(textureArray[This].GeometryBools[ThisCheck].ToString());
-                }
-                textureArray[This].CombineValuesA = new uint[8];
-                textureArray[This].CombineValuesB = new uint[8];
-                for (int ThisValue = 0; ThisValue < 8; ThisValue++)
-                {
-                    Output.Add(textureArray[This].CombineValuesA[ThisValue].ToString());
-                    Output.Add(textureArray[This].CombineValuesB[ThisValue].ToString());
-                }
-                
-                Output.Add(textureArray[This].CombineModeA.ToString());
-                Output.Add(textureArray[This].CombineModeB.ToString());
-
-                Output.Add(textureArray[This].RenderModeA.ToString());
-                Output.Add(textureArray[This].RenderModeB.ToString());
-
-                Output.Add(textureArray[This].BitSize.ToString());
-                Output.Add(textureArray[This].TextureFormat.ToString());
-                if (Version > 6)
-                {
-                    Output.Add(textureArray[This].TextureFilter.ToString());
-                }
-
-
-                Output.Add(textureArray[This].textureScrollS.ToString());
-                Output.Add(textureArray[This].textureScrollT.ToString());
-                Output.Add(textureArray[This].textureScreen.ToString());
-
-                Output.Add(textureArray[This].TextureOverWrite.Length.ToString());                
-                foreach (var OverWrite in textureArray[This].TextureOverWrite)
-                {
-                    Output.Add(OverWrite.ToString());
-                }
+                binaryWriter.Write(textureArray[ThisTex].SaveData());
             }
-            return Output.ToArray();
+
+            return memoryStream.ToArray();
         }
 
         private void textureBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -387,10 +286,6 @@ namespace Tarmac64_Retail
             UpdateTextureData();
         }
 
-        private void vertAlphaBox_TextChanged(object sender, EventArgs e)
-        {
-            UpdateTextureData();
-        }
 
         private void UpdateTextureData(bool NewItem = false, int NewIndex = -1)
         {
@@ -487,15 +382,6 @@ namespace Tarmac64_Retail
             UpdateTextureData(); 
         }
 
-        private void AdvancedPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void GeoModeBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateTextureData();
-        }
 
         private void GeoModeBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
@@ -507,10 +393,6 @@ namespace Tarmac64_Retail
             UpdateTextureData(NewState, e.Index);
         }
 
-        private void GeoModeBox_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            UpdateTextureData();
-        }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -609,15 +491,6 @@ namespace Tarmac64_Retail
             }
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            
-        }
 
         private void AlphaMaskCheckbox_CheckedChanged(object sender, EventArgs e)
         {
