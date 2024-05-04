@@ -49,7 +49,6 @@ namespace Tarmac64_Retail
             CourseData.EchoColor = new TM64_Geometry.OK64Color();
             CourseData.EchoAdjustColor = new TM64_Geometry.OK64Color();
             CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[0];
-            CourseData.BombArray = new TM64_Course.VSBomb[7];
             CourseData.PathSettings.PathSurface = new int[4];
             CourseData.Fog = new TM64_Course.OKFog();
             CourseData.Fog.FogToggle = 0;
@@ -208,36 +207,6 @@ namespace Tarmac64_Retail
             CourseData.ManualTempo = binaryReader.ReadInt32();
             CourseData.GoalBannerBool = binaryReader.ReadInt16();
             CourseData.SkyboxBool = binaryReader.ReadInt16();
-            CourseData.PathSettings.PathSurface = new int[4];
-            CourseData.PathSettings.PathSurface[0] = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathSurface[1] = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathSurface[2] = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathSurface[3] = binaryReader.ReadInt32();
-
-            CourseData.PathCount = binaryReader.ReadInt16();
-            CourseData.DistributeBool = binaryReader.ReadInt16();
-
-            int Count = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[Count];
-            for (int This = 0; This < Count; This++)
-            {
-                CourseData.PathSettings.PathEffects[This] = new TM64_Course.PathEffect();
-                CourseData.PathSettings.PathEffects[This].Type = binaryReader.ReadInt32();
-                CourseData.PathSettings.PathEffects[This].StartIndex = binaryReader.ReadInt32();
-                CourseData.PathSettings.PathEffects[This].EndIndex = binaryReader.ReadInt32();
-                CourseData.PathSettings.PathEffects[This].Power = binaryReader.ReadInt32();
-
-                CourseData.PathSettings.PathEffects[This].AdjColor = new TM64_Geometry.OK64Color();
-                CourseData.PathSettings.PathEffects[This].AdjColor.R = binaryReader.ReadByte();
-                CourseData.PathSettings.PathEffects[This].AdjColor.G = binaryReader.ReadByte();
-                CourseData.PathSettings.PathEffects[This].AdjColor.B = binaryReader.ReadByte();
-
-                CourseData.PathSettings.PathEffects[This].BodyColor = new TM64_Geometry.OK64Color();
-                CourseData.PathSettings.PathEffects[This].BodyColor.R = binaryReader.ReadByte();
-                CourseData.PathSettings.PathEffects[This].BodyColor.G = binaryReader.ReadByte();
-                CourseData.PathSettings.PathEffects[This].BodyColor.B = binaryReader.ReadByte();
-            }
-
 
             CourseData.MapData.MinimapPath = binaryReader.ReadString();
             CourseData.MapData.MapCoord = new Assimp.Vector2D
@@ -281,14 +250,6 @@ namespace Tarmac64_Retail
 
             CourseData.MusicID = binaryReader.ReadInt32();
             CourseData.OK64SongPath = binaryReader.ReadString();
-
-            CourseData.BombArray = new TM64_Course.VSBomb[7];
-            for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
-            {
-                CourseData.BombArray[ThisBomb] = new TM64_Course.VSBomb();
-                CourseData.BombArray[ThisBomb].Point = binaryReader.ReadInt16();
-                CourseData.BombArray[ThisBomb].Type = binaryReader.ReadInt16();
-            }
 
 
 
@@ -355,11 +316,6 @@ namespace Tarmac64_Retail
 
             binaryWriter.Write(CourseData.MusicID);
             binaryWriter.Write(CourseData.OK64SongPath);
-            for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
-            {
-                binaryWriter.Write(CourseData.BombArray[ThisBomb].Point);
-                binaryWriter.Write(CourseData.BombArray[ThisBomb].Type);
-            }
 
             binaryWriter.Write(CourseData.Fog.FogToggle);
             binaryWriter.Write(CourseData.Fog.FogColor.R);

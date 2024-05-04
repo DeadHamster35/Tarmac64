@@ -747,7 +747,9 @@ namespace Tarmac64_Retail
             TM64_Geometry TarmacGeo = new TM64_Geometry();
             TM64_Geometry.Face[] Marker = TarmacGeo.CreateStandard(Convert.ToSingle(5.0));
 
-            
+            GL.End();
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.Begin(OpenGL.GL_TRIANGLES);
             if (CheckboxPaths.Checked)
             {
                 foreach (var ThisPath in PathMarker)

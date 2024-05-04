@@ -99,16 +99,13 @@ namespace Tarmac64_Library
                 MemoryStream Data = new MemoryStream();
                 BinaryWriter binaryWriter = new BinaryWriter(Data);
 
-                binaryWriter.Write(viewList.Length);
-
-                for (int ThisView = 0; ThisView < viewList.Length; ThisView++)
+                
+                binaryWriter.Write(objectList.Length);
+                for (int ThisObj = 0; ThisObj < objectList.Length; ThisObj++)
                 {
-                    binaryWriter.Write(viewList[ThisView].objectList.Length);
-                    for (int ThisObj = 0; ThisObj < viewList[ThisView].objectList.Length; ThisObj++)
-                    {
-                        binaryWriter.Write(viewList[ThisView].objectList[ThisObj]);
-                    }
+                    binaryWriter.Write(objectList[ThisObj]);
                 }
+                
 
                 return Data.ToArray();
             }
@@ -121,27 +118,17 @@ namespace Tarmac64_Library
             {
                 BinaryReader BRead = new BinaryReader(Input);
 
-                viewList = new OK64ViewList[BRead.ReadInt32()];
-
-                for (int ThisView = 0; ThisView < viewList.Length; ThisView++)
-                {
-                    viewList[ThisView].objectList = new int[BRead.ReadInt32()];
-                    for (int ThisObj = 0; ThisObj < viewList[ThisView].objectList.Length; ThisObj++)
-                    {   
-                        viewList[ThisView].objectList[ThisObj] = BRead.ReadInt32();
-                    }
+                objectList = new int[BRead.ReadInt32()];
+                for (int ThisObj = 0; ThisObj < objectList.Length; ThisObj++)
+                {   
+                    objectList[ThisObj] = BRead.ReadInt32();
                 }
+                
             }
 
 
-            public OK64ViewList[] viewList { get; set; }
-            public int segmentPosition { get; set; }
-        }
-
-        public class OK64ViewList
-        {
             public int[] objectList { get; set; }
-            
+            public int segmentPosition { get; set; }
         }
 
 
@@ -173,7 +160,15 @@ namespace Tarmac64_Library
                 MemoryStream Data = new MemoryStream();
                 BinaryWriter binaryWriter = new BinaryWriter(Data);
                 binaryWriter.Write(textureName);
-                binaryWriter.Write(texturePath);
+                if (texturePath != null)
+                {
+                    binaryWriter.Write(texturePath);
+                }
+                else
+                {
+                    binaryWriter.Write("NULL");
+                }
+                
                 binaryWriter.Write(alphaPath);
                 binaryWriter.Write(CombineModeA);
                 binaryWriter.Write(CombineModeB);
@@ -198,6 +193,10 @@ namespace Tarmac64_Library
                 for (int ThisOver = 0; ThisOver < TextureOverWrite.Length; ThisOver++)
                 {
                     binaryWriter.Write(TextureOverWrite[ThisOver]);
+                }
+                for (int This = 0; This < 12; This++)
+                {
+                    binaryWriter.Write(GeometryBools[This]);
                 }
 
 
@@ -241,8 +240,25 @@ namespace Tarmac64_Library
                 {
                     TextureOverWrite[ThisOver] = BRead.ReadInt32();
                 }
-
-            }
+                GeometryBools = new bool[12];
+                for (int This = 0; This < 12; This++)
+                {
+                    GeometryBools[This] = BRead.ReadBoolean();
+                }
+                RawTexture = new OK64TextureRaw();
+                
+                if (File.Exists(texturePath))
+                {
+                    using (var fs = new FileStream(texturePath, FileMode.Open, FileAccess.Read))
+                    {
+                        Image Raw = Image.FromStream(fs);
+                        RawTexture.textureBitmap = Raw;
+                        textureWidth = Raw.Width;
+                        textureHeight = Raw.Height;
+                        fs.Close();
+                    }
+                }
+                }
 
 
             public OK64TextureRaw RawTexture { get; set; }
@@ -858,65 +874,6 @@ namespace Tarmac64_Library
 
             return new Assimp.Vector3D((float)t, (float)u, (float)v);
         }
-
-
-        public Assimp.Vector3D testIntersect(Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, float[] Origin)
-        {
-
-            Assimp.Vector3D vert0, vert1, vert2;
-
-            vert0.X = vertA.position.x + Origin[0];
-            vert0.Y = vertA.position.y + Origin[1];
-            vert0.Z = vertA.position.z + Origin[2];
-
-            vert1.X = vertB.position.x + Origin[0];
-            vert1.Y = vertB.position.y + Origin[1];
-            vert1.Z = vertB.position.z + Origin[2];
-
-            vert2.X = vertC.position.x + Origin[0];
-            vert2.Y = vertC.position.y + Origin[1];
-            vert2.Z = vertC.position.z + Origin[2];
-
-            var edge1 = vert1 - vert0;
-            var edge2 = vert2 - vert0;
-
-            var pvec = Cross(rayDirection, edge2);
-
-            var det = Dot(edge1, pvec);
-
-            if (det > -Epsilon && det < Epsilon)
-            {
-                Assimp.Vector3D returnVector = new Assimp.Vector3D();
-                return returnVector;
-            }
-
-            var invDet = 1d / det;
-
-            var tvec = rayOrigin - vert0;
-
-            var u = Dot(tvec, pvec) * invDet;
-
-            if (u < 0 || u > 1)
-            {
-                Assimp.Vector3D returnVector = new Assimp.Vector3D();
-                return returnVector;
-            }
-
-            var qvec = Cross(tvec, edge1);
-
-            var v = Dot(rayDirection, qvec) * invDet;
-
-            if (v < 0 || u + v > 1)
-            {
-                Assimp.Vector3D returnVector = new Assimp.Vector3D();
-                return returnVector;
-            }
-
-            var t = Dot(edge2, qvec) * invDet;
-
-            return new Assimp.Vector3D((float)t, (float)u, (float)v);
-        }
-
         public Assimp.Vector3D testIntersectScale(Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, float[] Origin, float[] Scale)
         {
 
@@ -974,64 +931,6 @@ namespace Tarmac64_Library
             return new Assimp.Vector3D((float)t, (float)u, (float)v);
         }
 
-        public Assimp.Vector3D testIntersect(Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, int[] ZoneIndex)
-        {
-
-            Assimp.Vector3D vert0, vert1, vert2;
-
-            vert0.X = vertA.position.x + (ZoneIndex[0] * 500);
-            vert0.Y = vertA.position.y + (ZoneIndex[1] * 500);
-            vert0.Z = vertA.position.z + (ZoneIndex[2] * 250);
-
-            vert1.X = vertB.position.x + (ZoneIndex[0] * 500);
-            vert1.Y = vertB.position.y + (ZoneIndex[1] * 500);
-            vert1.Z = vertB.position.z + (ZoneIndex[2] * 250);
-
-            vert2.X = vertC.position.x + (ZoneIndex[0] * 500);
-            vert2.Y = vertC.position.y + (ZoneIndex[1] * 500);
-            vert2.Z = vertC.position.z + (ZoneIndex[2] * 250);
-
-            var edge1 = vert1 - vert0;
-            var edge2 = vert2 - vert0;
-
-            var pvec = Cross(rayDirection, edge2);
-
-            var det = Dot(edge1, pvec);
-
-            if (det > -Epsilon && det < Epsilon)
-            {
-                Assimp.Vector3D returnVector = new Assimp.Vector3D();
-                return returnVector;
-            }
-
-            var invDet = 1d / det;
-
-            var tvec = rayOrigin - vert0;
-
-            var u = Dot(tvec, pvec) * invDet;
-
-            if (u < 0 || u > 1)
-            {
-                Assimp.Vector3D returnVector = new Assimp.Vector3D();
-                return returnVector;
-            }
-
-            var qvec = Cross(tvec, edge1);
-
-            var v = Dot(rayDirection, qvec) * invDet;
-
-            if (v < 0 || u + v > 1)
-            {
-                Assimp.Vector3D returnVector = new Assimp.Vector3D();
-                return returnVector;
-            }
-
-            var t = Dot(edge2, qvec) * invDet;
-
-            return new Assimp.Vector3D((float)t, (float)u, (float)v);
-        }
-
-
         private static double Dot(Assimp.Vector3D v1, Assimp.Vector3D v2)
         {
             return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
@@ -1047,399 +946,6 @@ namespace Tarmac64_Library
 
             return dest;
         }
-
-        public static Assimp.Vector3D GetTrilinearCoordinateOfTheHit(float t, Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection)
-        {
-            return rayDirection * t + rayOrigin;
-        }
-
-
-        public string F3DEX_Model(out Vertex[] vertOutput, out int outClass, byte commandbyte, byte[] segment, byte[] seg4, int vertoffset, int segmentoffset, Vertex[] vertCache, int texClass, bool returnBad = true)
-        {
-            //  new code
-            /// segment is the segment that contained the F3DEX command. for Mario Kart 64 it will most likely be Seg6 or Seg7.
-            /// seg4 is an uncompressed 14-byte vert Array, based on Mario Kart 64's layout. This contains all the vertices for a Mario Kart 64 course.
-            /// segmentoffset is the position right after the F3DEX commandbyte. If any parameters are read it needs the right offset to start reading from.
-            /// if you don't need to draw triangles, you can pass any value for vertoffset. Otherwise we need to know the last position
-            /// a vert was loaded from, and the program will treat that position as the new 0 index. Not the same process but the same result.
-            /// The Vert Offset is a manipulation of two specific "quirks" to how Mario Kart 64 loads vertices. 
-            /// F3DEX has 32 vert registers, meaning you can only load 32 verts at the same time. Command 0x04 loads them
-            /// 0x04 loads a certain number of verts from an offset into segment 4 at a certain index in the current vert register. 
-            /// So it can for example load 5 vertices from offset 0x4FF0 into segment 4 starting at vert index 7, replacing verts 7-12. 
-            /// HOWEVER, it never does this! it always loads the verts at index 0! 
-            /// Because it always loads to index 0 and because we have access to the entire segment 4 vert cache, we can cheat! :)
-            /// When we get a vert index we multiply it by the size of the vert structure (14 bytes compressed / 16 bytes uncompressed) and add this 
-            /// to the vert offset loaded from 0x04. This becomes an offset directly to that verts data in Segment 4. This is much easier and quicker.
-            /// Now for command 0x04 we only set the vertoffset to the value in the F3DEX command. It will ALWAYS be segment 4 for Mario Kart 64....
-            /// but if it ever comes across verts outside segment 4 it will throw up an error message to warn the user.
-            /// The commands for 0xB1 and 0xBF return the 3 vert positions seperated by , with each vert seperated by ;
-            /// there is an alternative commented out that will return a direct maxscript command to render the triangle. 
-            /// command 0x06 will return the segment and offset of the display lists to run on seperate lines.
-            /// command 0xB8 represents the end of a display list and will return "ENDSECTION"
-            /// command 0x04 will return the vertoffset described above, which should be updated and maintained by the calling function to be passed again.
-            /// F3DEX_Model needs a proper vertoffset provided every time for either 0xB1 or 0xBF commands, it is not maintained automatically.
-            /// 
-
-
-            MemoryStream mainsegm = new MemoryStream(segment);
-            MemoryStream segm4 = new MemoryStream(seg4);
-            BinaryReader mainsegr = new BinaryReader(mainsegm);
-            BinaryReader seg4r = new BinaryReader(segm4);
-
-            int indexA = new int();
-            int indexB = new int();
-            int indexC = new int();
-
-            int[] xval = new int[3];
-            int[] yval = new int[3];
-            int[] zval = new int[3];
-            float[] uval = new float[3];
-            float[] vval = new float[3];
-            float[] height = new float[] { 32, 32, 64, 32, 32, 64 };
-            float[] width = new float[] { 32, 64, 32, 32, 64, 32 };
-
-            mainsegr.BaseStream.Position = segmentoffset;
-
-
-            string outputstring = "";
-
-            ///mainsegr Either Seg6 or Seg7 Uncompressed
-            ///seg4r Seg4 Uncompressed
-
-            if (commandbyte == 0xE4)
-            {
-
-            }
-            if (commandbyte == 0xB1)
-            {
-                for (int i = 0; i < 2; i++)
-                {
-
-                    ///Draw 2 Triangles
-                    ///Returns Vert Positions of 3 Verts that make 1 triangle.
-                    ///Returns Vert Positions of 3 Verts that make 1 triangle. (line2)
-
-
-
-
-
-                    indexA = mainsegr.ReadByte() / 2;
-                    indexB = mainsegr.ReadByte() / 2;
-                    indexC = mainsegr.ReadByte() / 2;
-
-                    ///outputstring = outputstring + indexA.ToString() + "-" + indexB.ToString() + "-" + indexC.ToString() + "-" + vertoffset.ToString() +"-"+ mainsegr.BaseStream.Position.ToString() + Environment.NewLine;
-                    /// outputs the 3 vert indexes as well as the vertoffset and offset into the segment that called this command.
-
-
-
-                    xval[0] = vertCache[indexA].position.x;
-                    zval[0] = vertCache[indexA].position.y;
-                    yval[0] = vertCache[indexA].position.z * -1;
-                    uval[0] = Convert.ToSingle(vertCache[indexA].position.s / 32.0 / width[texClass]);
-                    vval[0] = Convert.ToSingle(vertCache[indexA].position.t / -32.0 / height[texClass]);
-
-
-                    xval[1] = vertCache[indexB].position.x;
-                    zval[1] = vertCache[indexB].position.y;
-                    yval[1] = vertCache[indexB].position.z * -1;
-                    uval[1] = Convert.ToSingle(vertCache[indexB].position.s / 32.0 / width[texClass]);
-                    vval[1] = Convert.ToSingle(vertCache[indexB].position.t / -32.0 / height[texClass]);
-
-                    xval[2] = vertCache[indexC].position.x;
-                    zval[2] = vertCache[indexC].position.y;
-                    yval[2] = vertCache[indexC].position.z * -1;
-                    uval[2] = Convert.ToSingle(vertCache[indexC].position.s / 32.0 / width[texClass]);
-                    vval[2] = Convert.ToSingle(vertCache[indexC].position.t / -32.0 / height[texClass]);
-
-                    ///outputstring = outputstring + "vertbox = mesh vertices:#([" + xval[0].ToString() + ",(" + (yval[0]).ToString() + ")," + zval[0].ToString() + "],[" + xval[1].ToString() + ",(" + (yval[1]).ToString() + ")," + zval[1].ToString() + "],[" + xval[2].ToString() + ",(" + (yval[2]).ToString() + ")," + zval[2].ToString() + "]) faces:#([1,2,3]) MaterialIDS:#(1) " + Environment.NewLine;
-                    outputstring = outputstring + xval[0].ToString() + "," + yval[0].ToString() + "," + zval[0].ToString() + ";" + xval[1].ToString() + "," + yval[1].ToString() + "," + zval[1].ToString() + ";" + xval[2].ToString() + "," + yval[2].ToString() + "," + zval[2].ToString() + "," + Environment.NewLine;
-                    outputstring = outputstring + uval[0].ToString() + "," + vval[0].ToString() + ";" + uval[1].ToString() + "," + vval[1].ToString() + ";" + uval[2].ToString() + "," + vval[2].ToString() + Environment.NewLine;
-                    if (i == 0)
-                    {
-                        mainsegr.BaseStream.Seek(1, SeekOrigin.Current);
-                    }
-                }
-            }
-            if (commandbyte == 0xBF)
-            {
-
-
-                ///Draw 1 Triangle
-                ///Returns Vert Positions of 3 Verts that make 1 triangle.
-
-
-                mainsegr.BaseStream.Seek(4, SeekOrigin.Current);
-
-
-
-
-
-
-
-                indexA = mainsegr.ReadByte() / 2;
-                indexB = mainsegr.ReadByte() / 2;
-                indexC = mainsegr.ReadByte() / 2;
-                ///outputstring = outputstring + indexA.ToString() + "-" + indexB.ToString() + "-" + indexC.ToString() + "-" + vertoffset.ToString() + "-" + mainsegr.BaseStream.Position.ToString() + Environment.NewLine;
-                ////// outputs the 3 vert indexes as well as the vertoffset and offset into the segment that called this command.
-
-                xval[0] = vertCache[indexA].position.x;
-                zval[0] = vertCache[indexA].position.y;
-                yval[0] = vertCache[indexA].position.z * -1;
-                uval[0] = Convert.ToSingle(vertCache[indexA].position.s / 32.0 / width[texClass]);
-                vval[0] = Convert.ToSingle(vertCache[indexA].position.t / -32.0 / height[texClass]);
-
-
-                xval[1] = vertCache[indexB].position.x;
-                zval[1] = vertCache[indexB].position.y;
-                yval[1] = vertCache[indexB].position.z * -1;
-                uval[1] = Convert.ToSingle(vertCache[indexB].position.s / 32.0 / width[texClass]);
-                vval[1] = Convert.ToSingle(vertCache[indexB].position.t / -32.0 / height[texClass]);
-
-                xval[2] = vertCache[indexC].position.x;
-                zval[2] = vertCache[indexC].position.y;
-                yval[2] = vertCache[indexC].position.z * -1;
-                uval[2] = Convert.ToSingle(vertCache[indexC].position.s / 32.0 / width[texClass]);
-                vval[2] = Convert.ToSingle(vertCache[indexC].position.t / -32.0 / height[texClass]);
-
-                ///outputstring = outputstring + "vertbox = mesh vertices:#([" + xval[0].ToString() + ",(" + (yval[0]).ToString() + ")," + zval[0].ToString() + "],[" + xval[1].ToString() + ",(" + (yval[1]).ToString() + ")," + zval[1].ToString() + "],[" + xval[2].ToString() + ",(" + (yval[2]).ToString() + ")," + zval[2].ToString() + "]) faces:#([1,2,3]) MaterialIDS:#(1) " + Environment.NewLine;
-                outputstring = outputstring + xval[0].ToString() + "," + yval[0].ToString() + "," + zval[0].ToString() + ";" + xval[1].ToString() + "," + yval[1].ToString() + "," + zval[1].ToString() + ";" + xval[2].ToString() + "," + yval[2].ToString() + "," + zval[2].ToString() + "," + Environment.NewLine;
-                outputstring = outputstring + uval[0].ToString() + "," + vval[0].ToString() + ";" + uval[1].ToString() + "," + vval[1].ToString() + ";" + uval[2].ToString() + "," + vval[2].ToString() + Environment.NewLine;
-                ///
-
-
-
-            }
-            if (commandbyte == 0xFD)
-            {
-                mainsegr.BaseStream.Seek(3, SeekOrigin.Current);
-
-                byte[] rsp_add = mainsegr.ReadBytes(4);
-                Array.Reverse(rsp_add);
-
-
-                int Value = BitConverter.ToInt32(rsp_add, 0);
-                String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
-
-
-                int segid = Convert.ToByte(Binary.Substring(0, 8), 2);
-                uint location = Convert.ToUInt32(Binary.Substring(8, 24), 2);
-                outputstring = "NEWMATERIAL" + Environment.NewLine + location.ToString("X") + Environment.NewLine;
-            }
-            if (commandbyte == 0xF5)
-            {
-                /// Load texture
-                /// Returns the location of a texture
-                /// Returns the class of a texture (line 2)
-
-
-
-                byte[] byte29 = new byte[2];
-                string compar = "";
-
-                mainsegr.BaseStream.Seek(-1, SeekOrigin.Current);
-                byte29 = mainsegr.ReadBytes(2);
-                compar = BitConverter.ToString(byte29).Replace("-", "");
-                byte29 = mainsegr.ReadBytes(2);
-                compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-
-                byte[] Param = new byte[2];
-
-
-                ///don't ask me I don't know
-                ///don't ask me I don't know
-                byte[] parameters = mainsegr.ReadBytes(4);
-                Array.Reverse(parameters);
-                value32 = BitConverter.ToUInt32(parameters, 0);
-                uint opint = new uint();
-                opint = value32 >> 14;
-
-                Param[0] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
-
-                opint = value32 >> 4;
-
-                Param[1] = Convert.ToByte((opint & 0xF0) >> 4 | (opint & 0xF) << 4);
-
-                Array.Reverse(Param);
-
-
-
-
-                mainsegr.BaseStream.Seek(4, SeekOrigin.Current);
-                byte29 = mainsegr.ReadBytes(2);
-                compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                byte29 = mainsegr.ReadBytes(2);
-                compar = compar + BitConverter.ToString(byte29).Replace("-", "");
-                ///MessageBox.Show(compar);
-                if (compar == "F51011000007C07C")
-                {
-                    texClass = 6;
-                    ///MessageBox.Show("6");
-                }
-                if (compar == "F51010000007C07C")
-                {
-
-                    texClass = 0;
-                    ///MessageBox.Show("0");
-                }
-                if (compar == "F5102000000FC07C")
-                {
-
-                    texClass = 1;
-                    ///MessageBox.Show("1");
-                }
-                if (compar == "F51010000007C0FC")
-                {
-                    texClass = 2;
-                    ///MessageBox.Show("2");
-                }
-                if (compar == "F57010000007C07C")
-                {
-                    texClass = 3;
-                    ///MessageBox.Show("3");
-                }
-                if (compar == "F5702000000FC07C")
-                {
-                    texClass = 4;
-                    ///MessageBox.Show("4");
-                }
-                if (compar == "F57010000007C0FC")
-                {
-                    texClass = 5;
-                    ///MessageBox.Show("5");
-                }
-
-                outputstring = "TEXCLASS" + Environment.NewLine + texClass.ToString() + Environment.NewLine;
-                ///MessageBox.Show(outputstring);
-
-            }
-
-            if (commandbyte == 0x04)
-            {
-                /// Load vertices
-                /// Returns the vert offset into segment 4
-                int vertIndex = Convert.ToInt32(mainsegr.ReadByte() / 2);
-                
-                flip2 = mainsegr.ReadBytes(2);
-                Array.Reverse(flip2);
-                uint vertTotal = BitConverter.ToUInt16(flip2, 0) ;
-                vertTotal = vertTotal / 0x40F;
-
-
-
-                
-                uint vertCount = Convert.ToUInt32(32 - vertIndex);
-                
-
-                //MessageBox.Show(segmentoffset.ToString() + "-" + vertIndex.ToString()+"-"+vertCount.ToString());
-
-                byte[] rsp_add = mainsegr.ReadBytes(4);
-
-                Array.Reverse(rsp_add);
-                int segid = Convert.ToInt32(rsp_add[3]);
-                rsp_add[3] = 0x00;
-                int location = BitConverter.ToInt32(rsp_add, 0);
-                if (location < seg4r.BaseStream.Length)
-                {
-                    
-
-                    seg4r.BaseStream.Position = location;
-                    for (int currentVert = 0; seg4r.BaseStream.Position < seg4r.BaseStream.Length & currentVert < vertCount; currentVert++)
-                    {
-                        flip2 = seg4r.ReadBytes(2);
-                        Array.Reverse(flip2);
-                        vertCache[vertIndex + currentVert].position.x = BitConverter.ToInt16(flip2, 0);
-
-                        flip2 = seg4r.ReadBytes(2);
-                        Array.Reverse(flip2);
-                        vertCache[vertIndex + currentVert].position.y = BitConverter.ToInt16(flip2, 0);
-
-                        flip2 = seg4r.ReadBytes(2);
-                        Array.Reverse(flip2);
-                        vertCache[vertIndex + currentVert].position.z = BitConverter.ToInt16(flip2, 0);
-
-                        
-
-                        flip2 = seg4r.ReadBytes(2);
-                        Array.Reverse(flip2);
-                        vertCache[vertIndex + currentVert].position.s = BitConverter.ToInt16(flip2, 0);
-
-                        flip2 = seg4r.ReadBytes(2);
-                        Array.Reverse(flip2);
-                        vertCache[vertIndex + currentVert].position.t = BitConverter.ToInt16(flip2, 0);
-
-
-                        seg4r.BaseStream.Seek(0x2, SeekOrigin.Current);
-
-                        vertCache[vertIndex + currentVert].color.R = seg4r.ReadByte();
-                        vertCache[vertIndex + currentVert].color.G = seg4r.ReadByte();
-                        vertCache[vertIndex + currentVert].color.B = seg4r.ReadByte();
-                        vertCache[vertIndex + currentVert].color.A = seg4r.ReadByte();
-
-                    }
-
-
-
-                    if (segid == 4)
-                    {
-                        outputstring = location.ToString();
-                        ///MessageBox.Show(outputstring +"-"+ mainsegr.BaseStream.Position.ToString());
-                    }
-                    else
-                    {
-                        outputstring = location.ToString();
-                        //MessageBox.Show("WARNING D35-01 :: VERTS LOADED FROM OUTSIDE SEGMENT 4"+Environment.NewLine+mainsegr.BaseStream.Position.ToString("X"));
-                        //MessageBox.Show(outputstring + "-" + mainsegr.BaseStream.Position.ToString());
-                    }
-
-                }
-                else
-                {
-
-                }
-            }
-
-            
-            if (commandbyte == 0x06)
-            {
-                ///Call a display list
-                ///Returns the segmentID to call
-                ///Returns the Offset to call (line 2)
-
-
-                mainsegr.BaseStream.Seek(3, SeekOrigin.Current);
-
-                byte[] rsp_add = mainsegr.ReadBytes(4);
-
-                Array.Reverse(rsp_add);
-
-                int Value = BitConverter.ToInt32(rsp_add, 0);
-                String Binary = Convert.ToString(Value, 2).PadLeft(32, '0');
-
-
-                int segid = Convert.ToByte(Binary.Substring(0, 8), 2);
-                int location = Convert.ToInt32(Binary.Substring(8, 24), 2);
-
-
-
-                outputstring = segid + Environment.NewLine + location.ToString() + Environment.NewLine;
-
-            }
-
-            if (commandbyte == 0xB8)
-            {
-                /// End of section
-                /// Returns ENDSECTION
-
-                outputstring = "ENDSECTION" + Environment.NewLine;
-            }
-
-
-            outClass = texClass;
-            vertOutput = vertCache;
-            return outputstring;
-
-        }
-
 
         public OK64Texture[] loadTextures(Assimp.Scene fbx, string filePath)
         {
@@ -1591,9 +1097,6 @@ namespace Tarmac64_Library
             return textureArray;
         }
 
-
-
-
         public static IEnumerable<OK64F3DObject> NaturalSort(IEnumerable<OK64F3DObject> list)
         {
             int maxLen = list.Select(s => s.objectName.Length).Max();
@@ -1609,8 +1112,6 @@ namespace Tarmac64_Library
                     .OrderBy(x => x.SortStr)
                     .Select(x => x.OrgStr);
         }
-
-
 
         public OK64Bone LoadAnimationObject(out int Position, byte[] Data)
         {
@@ -2570,13 +2071,7 @@ namespace Tarmac64_Library
 
             for (int ThisSection= 0; ThisSection < sectionCount; ThisSection++)
             {
-
                 sectionList[ThisSection] = new OK64SectionList();
-                sectionList[ThisSection].viewList = new OK64ViewList[4];
-                for (int ThisView = 0; ThisView < 4; ThisView++)
-                {
-                    sectionList[ThisSection].viewList[ThisView] = new OK64ViewList();
-                }
             }
 
 
@@ -2592,154 +2087,13 @@ namespace Tarmac64_Library
                     }
 
 
-                    sectionList[currentSection].viewList[currentView].objectList = searchList.ToArray();
+                    sectionList[currentSection].objectList = searchList.ToArray();
                 }
 
             }
 
 
             return sectionList;
-        }
-
-
-        public List<int> RayTest (int resolution, int currentView, List<int> raycastList, List<int> searchList, Assimp.Vector3D raycastOrigin, OK64F3DObject[] masterObjects)
-        {
-            int screenWidth = 180;
-            int screenHeight = 160;
-            int rayDepth = 30000;
-            List<int> tempList = raycastList;
-
-
-            int closestMaster = 0;
-            float closestDistance = 0;
-            int masterIndex = 0;
-
-            for (int vPixel = 0; vPixel < screenHeight;)
-            {
-
-
-                for (int hPixel = 0; hPixel < screenWidth;)
-                {
-
-                    Assimp.Vector3D raycastVector = new Assimp.Vector3D();
-                    float hAngle = new float();
-                    int tempV = vPixel - 90;
-                    if (tempV < 0)
-                        tempV += 360;
-                    float vAngle = Convert.ToSingle((vPixel - 90) * (Math.PI / 180));
-                    
-                    switch (currentView)
-                    {
-                        case 0:
-                            {
-                                int tempH = hPixel - 90;
-                                if (tempH < 0)
-                                    tempH += 360;
-                                hAngle = Convert.ToSingle((tempH) * (Math.PI / 180));
-                                break;
-                            }
-                        case 1:
-                            {
-                                hAngle = Convert.ToSingle(hPixel * (Math.PI / 180));
-                                break;
-                            }
-                        case 2:
-                            {
-                                hAngle = Convert.ToSingle((hPixel + 90) * (Math.PI / 180));                                
-                                break;
-                            }
-                        case 3:
-                            {
-                                int tempH = hPixel + 180;
-                                if (tempH >= 360)
-                                    tempH -= 360;
-
-                                hAngle = Convert.ToSingle((tempH) * (Math.PI / 180));                             
-                                break;
-                            }
-                    }
-
-                    raycastVector.X = Convert.ToSingle(raycastOrigin.X + rayDepth * Math.Cos(hAngle) * Math.Sin(vAngle));
-                    raycastVector.Y = Convert.ToSingle(raycastOrigin.Y + rayDepth * Math.Sin(hAngle) * Math.Sin(vAngle));
-                    raycastVector.Z = Convert.ToSingle(raycastOrigin.Z + rayDepth * Math.Cos(vAngle));
-
-                    for (int currentSearch = 0; currentSearch < searchList.Count; currentSearch++)
-                    {
-
-                        foreach (var searchFace in masterObjects[searchList[currentSearch]].modelGeometry)
-                        {
-                            switch (currentView)
-                            {
-                                case 0:
-                                    {
-                                        if (masterObjects[currentSearch].pathfindingObject.highY > raycastOrigin.Y)
-                                        {
-                                            Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
-
-                                            if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
-                                            {
-                                                closestDistance = intersectionPoint.X;
-                                                closestMaster = currentSearch;
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case 1:
-                                    {
-                                        if (masterObjects[currentSearch].pathfindingObject.highX > raycastOrigin.X)
-                                        {
-                                            Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
-
-                                            if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
-                                            {
-                                                closestDistance = intersectionPoint.X;
-                                                closestMaster = currentSearch;
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case 2:
-                                    {
-                                        if (masterObjects[currentSearch].pathfindingObject.lowY < raycastOrigin.Y)
-                                        {
-                                            Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
-
-                                            if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
-                                            {
-                                                closestDistance = intersectionPoint.X;
-                                                closestMaster = currentSearch;
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case 3:
-                                    {
-                                        if (masterObjects[currentSearch].pathfindingObject.lowX < raycastOrigin.X)
-                                        {
-                                            Assimp.Vector3D intersectionPoint = testIntersect(raycastOrigin, raycastVector, searchFace.VertData[0], searchFace.VertData[1], searchFace.VertData[2]);
-
-                                            if (intersectionPoint.X < closestDistance & intersectionPoint.X != -1)
-                                            {
-                                                closestDistance = intersectionPoint.X;
-                                                closestMaster = currentSearch;
-                                            }
-                                        }
-                                        break;
-                                    }
-                            }
-                        }
-                    }
-
-                    masterIndex = Array.IndexOf(tempList.ToArray(), closestMaster);
-                    if (masterIndex == -1)
-                    {
-                        tempList.Add(closestMaster);
-                    }
-                    hPixel = hPixel + resolution;
-                }
-                vPixel = vPixel + resolution;
-            }
-            return tempList;            
         }
 
 
@@ -3743,29 +3097,6 @@ namespace Tarmac64_Library
             return true;
         }
 
-        public byte[] RGBADemo(OK64Texture TextureObject)
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            F3DEX095 F3D = new F3DEX095();
-
-
-            binaryWriter.Write(F3D.gsSPTexture(65535, 65535, 0, 0, 1));
-            binaryWriter.Write(F3D.gsDPPipeSync());
-            binaryWriter.Write(F3D.gsDPSetCombineMode(F3DEX095_Parameters.G_CC_MODULATERGBA, F3DEX095_Parameters.G_CC_MODULATERGBA));
-            binaryWriter.Write(F3D.gsDPSetRenderMode(F3DEX095_Parameters.G_RM_AA_ZB_OPA_SURF, F3DEX095_Parameters.G_RM_AA_ZB_OPA_SURF2));
-            
-            binaryWriter.Write(F3D.gsNinSetupTileDescription(F3DEX095_Parameters.G_IM_FMT_RGBA,
-                F3DEX095_Parameters.G_IM_SIZ_16b, Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight), 0, 0, F3DEX095_Parameters.G_TX_NOMIRROR, 5, 0, F3DEX095_Parameters.G_TX_NOMIRROR, 5, 0)
-                );
-            
-            binaryWriter.Write(F3D.gsNinLoadTextureImage(Convert.ToUInt32(TextureObject.RawTexture.segmentPosition), F3DEX095_Parameters.G_IM_FMT_RGBA,
-                F3DEX095_Parameters.G_IM_SIZ_16b, Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight), 0, 7)
-                );
-
-            return memoryStream.ToArray();
-        }
-        
         public int ZSort(OK64Texture TextureObject)
         {
             int[] Check = new int[]
@@ -3970,8 +3301,6 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
 
         }
-
-
 
         public byte[] F3DMaterial(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false)
         {
@@ -5038,7 +4367,7 @@ namespace Tarmac64_Library
                 for (int currentView = 0; currentView < 1; currentView++)
                 {
 
-                    int objectCount = sectionList[currentSection].viewList[0].objectList.Length;
+                    int objectCount = sectionList[currentSection].objectList.Length;
                     sectionList[currentSection].segmentPosition = Convert.ToInt32(seg6m.Position);
 
 
@@ -5060,7 +4389,7 @@ namespace Tarmac64_Library
                                     for (int currentObject = 0; currentObject < objectCount; currentObject++)
                                     {
 
-                                        int objectIndex = sectionList[currentSection].viewList[0].objectList[currentObject];
+                                        int objectIndex = sectionList[currentSection].objectList[currentObject];
                                         if (courseObject[objectIndex].materialID == currentTexture)
                                         {
                                             if (!textureWritten)
@@ -5169,7 +4498,7 @@ namespace Tarmac64_Library
                 for (int currentView = 0; currentView < 4; currentView++)
                 {
 
-                    int objectCount = sectionList[currentSection].viewList[0].objectList.Length;
+                    int objectCount = sectionList[currentSection].objectList.Length;
                     sectionList[currentSection].segmentPosition = Convert.ToInt32(seg6m.Position);
 
 
@@ -5183,7 +4512,7 @@ namespace Tarmac64_Library
                             for (int currentObject = 0; currentObject < objectCount; currentObject++)
                             {
 
-                                int objectIndex = sectionList[currentSection].viewList[0].objectList[currentObject];
+                                int objectIndex = sectionList[currentSection].objectList[currentObject];
                                 if (courseObject[objectIndex].materialID == TargetTexture)
                                 {
                                     if (!ChildOverwrite)
@@ -5232,7 +4561,7 @@ namespace Tarmac64_Library
                                     for (int currentObject = 0; currentObject < objectCount; currentObject++)
                                     {
 
-                                        int objectIndex = sectionList[currentSection].viewList[0].objectList[currentObject];
+                                        int objectIndex = sectionList[currentSection].objectList[currentObject];
                                         if (courseObject[objectIndex].materialID == currentTexture)
                                         {
                                             if (!textureWritten)
@@ -5980,129 +5309,6 @@ namespace Tarmac64_Library
 
 
         }
-        public OK64F3DModel[] BadCrunchCode(OK64F3DObject TargetObject)
-        {
-            List<int[]> IndexArray = new List<int[]>();
-            List<CrunchF3DVertCache> VCache = new List<CrunchF3DVertCache>();
-
-            for (int ThisFace = 0; ThisFace < TargetObject.faceCount; ThisFace++)
-            {
-                IndexArray.Add(new int[3]);
-                if (TargetObject.modelGeometry[ThisFace].VertData.Length != 3)
-                {
-                    MessageBox.Show("Index count error with object " + TargetObject.objectName + "- wrong vert count");
-                    return new OK64F3DModel[0];
-                }
-
-                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
-                {
-                    var TargetVert = TargetObject.modelGeometry[ThisFace].VertData[ThisVert];
-                    int MatchingIndex = VCache.FindIndex(
-                        x => x.VertexData.position.x == TargetVert.position.x &&
-                        x.VertexData.position.y == TargetVert.position.y &&
-                        x.VertexData.position.z == TargetVert.position.z &&
-
-                        x.VertexData.position.sBase == TargetVert.position.sBase &&
-                        x.VertexData.position.tBase == TargetVert.position.tBase &&
-
-                        x.VertexData.color.R == TargetVert.color.R &&
-                        x.VertexData.color.G == TargetVert.color.G &&
-                        x.VertexData.color.B == TargetVert.color.B &&
-                        x.VertexData.color.A == TargetVert.color.A
-
-                        );
-                    if (MatchingIndex == -1)
-                    {
-                        CrunchF3DVertCache NewVCache = new CrunchF3DVertCache();
-                        NewVCache.VertexData = TargetVert;
-                        NewVCache.UniqueUsage = 1;
-                        NewVCache.OriginalIndex = VCache.Count;
-                        IndexArray[ThisFace][ThisVert] = VCache.Count;
-                        VCache.Add(NewVCache);
-
-                        
-                    }
-                    else
-                    {
-                        VCache[MatchingIndex].UniqueUsage++;
-                        IndexArray[ThisFace][ThisVert] = MatchingIndex;
-                    }
-                }
-                
-            }
-
-            List<OK64F3DModel> OutputModel = new List<OK64F3DModel>();
-
-            while (IndexArray.Count > 0)
-            {
-                VCache.Sort();
-                VCache.Reverse();
-                
-
-                int CacheSize = Math.Min(32, VCache.Count);
-
-                OK64F3DModel NewF3DCall = new OK64F3DModel();
-
-                NewF3DCall.VertexCache = new List<Vertex>();
-                NewF3DCall.Indexes = new List<int[]>();
-
-                List<int> KeyList = new List<int>();
-                for (int ThisVert = 0; ThisVert < CacheSize; ThisVert++)
-                {
-                    NewF3DCall.VertexCache.Add(VCache[ThisVert].VertexData);
-                    KeyList.Add(VCache[ThisVert].OriginalIndex);
-                }
-
-                for (int ThisFace = 0; ThisFace < IndexArray.Count; ThisFace++)
-                {
-                    
-                    if  (
-                            KeyList.Contains(IndexArray[ThisFace][0]) &&
-                            KeyList.Contains(IndexArray[ThisFace][1]) &&
-                            KeyList.Contains(IndexArray[ThisFace][2])
-                    )
-                    {
-                        NewF3DCall.Indexes.Add(new int[3]
-                        {
-                            KeyList.IndexOf(IndexArray[ThisFace][0]),
-                            KeyList.IndexOf(IndexArray[ThisFace][1]),
-                            KeyList.IndexOf(IndexArray[ThisFace][2])
-                        });
-
-                        IndexArray.RemoveAt(ThisFace);
-                        ThisFace--;  //deal with removal of current index
-                    }
-                }
-
-                OutputModel.Add(NewF3DCall);
-                
-                if (IndexArray.Count > 0)
-                {
-
-                    for (int CacheVert = 0; CacheVert < VCache.Count; CacheVert++)
-                    {
-                        VCache[CacheVert].UniqueUsage = 0;
-                        for (int ThisFace = 0; ThisFace < IndexArray.Count; ThisFace++)
-                        {
-                            for (int ThisVert = 0; ThisVert < 3; ThisVert++)
-                            {
-
-                                if (VCache[CacheVert].OriginalIndex == IndexArray[ThisFace][ThisVert])
-                                {
-                                    VCache[CacheVert].UniqueUsage++;
-                                }
-
-                            }
-                        }
-
-                    }
-
-                }
-            }
-
-
-            return null;
-        }
 
         public OK64Animation LoadAnimation(NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
         {
@@ -6285,16 +5491,6 @@ namespace Tarmac64_Library
             GetTransforms(Skeleton, Skeleton.FrameCount, ModelScale);
             return Skeleton;
         }
-
-
-
-        public string GetRGBAString(TM64_Geometry.OK64Texture TextureObject, int Height, int Width)
-        {
-            int R, G, B, A;
-            int ThisPixel = (Height * TextureObject.textureWidth) + Width;
-            return "0x" + TextureObject.RawTexture.TextureData[ThisPixel * 2].ToString("X").PadLeft(2, '0') + TextureObject.RawTexture.TextureData[1 + (ThisPixel * 2)].ToString("X").PadLeft(2, '0') + ", ";
-        }
-
 
         public string[] WriteVertDataC(TM64_Geometry.OK64F3DObject F3DObject)
         {

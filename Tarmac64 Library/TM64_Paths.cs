@@ -58,7 +58,6 @@ namespace Tarmac64_Library
                 {
                     pathList[This] = new Pathlist(Input);
                 }
-
             }
 
 
@@ -75,7 +74,7 @@ namespace Tarmac64_Library
                 binaryWriter.Write(pathmarker.Count);
                 for (int ThisMarker = 0; ThisMarker < pathmarker.Count; ThisMarker++)
                 {
-                    pathmarker[ThisMarker].SaveData();
+                    binaryWriter.Write(pathmarker[ThisMarker].SaveData());
                 }
                 return Data.ToArray();
             }
@@ -94,6 +93,7 @@ namespace Tarmac64_Library
                 for (int ThisMark = 0; ThisMark < Count; ThisMark++)
                 {
                     Marker NewMark = new Marker(Input);
+                    pathmarker.Add(NewMark);
                 }
             }
             public void Add(short[] PositionArray)

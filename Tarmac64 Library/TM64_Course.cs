@@ -52,18 +52,22 @@ namespace Tarmac64_Library
                 ObjectiveClass = binaryReader.ReadInt16();
                 Flag = binaryReader.ReadInt16();
 
+                OriginPosition = new short[3];
                 OriginPosition[0] = binaryReader.ReadInt16();
                 OriginPosition[1] = binaryReader.ReadInt16();
                 OriginPosition[2] = binaryReader.ReadInt16();
 
+                OriginAngle = new short[3];
                 OriginAngle[0] = binaryReader.ReadInt16();
                 OriginAngle[1] = binaryReader.ReadInt16();
                 OriginAngle[2] = binaryReader.ReadInt16();
 
-                Velocity[0] = binaryReader.ReadInt16();
-                Velocity[1] = binaryReader.ReadInt16();
-                Velocity[2] = binaryReader.ReadInt16();
+                Velocity = new float[3];
+                Velocity[0] = binaryReader.ReadSingle();
+                Velocity[1] = binaryReader.ReadSingle();
+                Velocity[2] = binaryReader.ReadSingle();
 
+                AngularVelocity = new short[3];
                 AngularVelocity[0] = binaryReader.ReadInt16();
                 AngularVelocity[1] = binaryReader.ReadInt16();
                 AngularVelocity[2] = binaryReader.ReadInt16();
@@ -434,24 +438,6 @@ namespace Tarmac64_Library
 
             return NewObject;
         }
-        public OKObject[] LoadOKObject(byte[] FileData)
-        {
-            MemoryStream memoryStream = new MemoryStream(FileData);
-            BinaryReader binaryReader = new BinaryReader(memoryStream);
-            int OKObjectCount = binaryReader.ReadInt32();
-            OKObject[] TheseObjects = new OKObject[OKObjectCount];
-            for (int ThisObject = 0; ThisObject < OKObjectCount; ThisObject++)
-            {
-                TheseObjects[ThisObject] = new OKObject();
-                TheseObjects[ThisObject].ObjectIndex = binaryReader.ReadInt16();
-                binaryReader.ReadInt16();
-                TheseObjects[ThisObject].OriginPosition = new short[] { binaryReader.ReadInt16(), binaryReader.ReadInt16(), binaryReader.ReadInt16() };
-                TheseObjects[ThisObject].OriginAngle = new short[] { binaryReader.ReadInt16(), binaryReader.ReadInt16(), binaryReader.ReadInt16() };
-                TheseObjects[ThisObject].Velocity = new float[] { binaryReader.ReadInt16() / 100, binaryReader.ReadInt16() / 100, binaryReader.ReadInt16() / 100 };
-                TheseObjects[ThisObject].AngularVelocity = new short[] { binaryReader.ReadInt16(), binaryReader.ReadInt16(), binaryReader.ReadInt16() };
-            }
-            return TheseObjects;
-        }            
         public byte[] SaveOKObjectListRaw(OKObject[] ObjectList)
         {
             byte[] flip = new byte[0];
@@ -485,9 +471,6 @@ namespace Tarmac64_Library
             }
             return memoryStream.ToArray();
         }
-
-
-
         public byte[] SaveHitboxRaw(TM64_Objects.OK64Collide[] Hitbox)
         {
             MemoryStream memoryStream = new MemoryStream();
@@ -576,7 +559,6 @@ namespace Tarmac64_Library
             }
             return memoryStream.ToArray();
         }
-
         public OKObjectType LoadObjectType(string InputPath)
         {
             OKObjectType NewType = new OKObjectType();
@@ -933,7 +915,6 @@ namespace Tarmac64_Library
             
             return memoryStream.ToArray();
         }
-
         public byte[] CompileObjectAnimation(OKObjectType[] SaveData, uint Magic)
         {
             byte[] flip = new byte[0];
@@ -1218,61 +1199,6 @@ namespace Tarmac64_Library
         }
 
 
-        public Header[] loadHeader(byte[] fileData)
-        {
-
-
-            Header[] courseHeader = new Header[20];
-
-            MemoryStream memoryStream = new MemoryStream(fileData);
-            BinaryReader binaryReader = new BinaryReader(memoryStream);
-
-            binaryReader.BaseStream.Seek(0x122390, SeekOrigin.Begin);
-            for (int i = 0; i < 20; i++)
-            {
-                courseHeader[i] = new Header();
-
-                courseHeader[i].s6Start = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s6Start);
-
-                courseHeader[i].s6End = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s6End);
-
-                courseHeader[i].s47Start = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s47Start);
-
-                courseHeader[i].s47End = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s47End);
-
-                courseHeader[i].s9Start = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s9Start);
-
-                courseHeader[i].s9End = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].s9End);
-
-                courseHeader[i].S47Buffer = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].S47Buffer);
-
-                courseHeader[i].VertCount = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].VertCount);
-
-                courseHeader[i].S7Pointer = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].S7Pointer);
-
-                courseHeader[i].S7Size = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].S7Size);
-
-                courseHeader[i].TexturePointer = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].TexturePointer);
-
-                courseHeader[i].FlagPadding = binaryReader.ReadBytes(4);
-                Array.Reverse(courseHeader[i].FlagPadding);
-
-            }
-
-
-            return courseHeader;
-        }
         public string OK64Serial(Course CourseData)
         {
 

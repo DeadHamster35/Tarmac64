@@ -90,6 +90,8 @@ namespace Tarmac64_Retail
             tabControl1.SelectedIndex = 2;
             tabControl1.SelectedIndex = 3;
             tabControl1.SelectedIndex = 4;
+            tabControl1.SelectedIndex = 5;
+            tabControl1.SelectedIndex = 6;
             tabControl1.SelectedIndex = 0;
             ObjectRequestUpdate(sender,e);
             
@@ -1006,29 +1008,7 @@ namespace Tarmac64_Retail
                     }
 
 
-                    for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
-                    {
-
-                        //Update the GL Bitmap Cache
-                        if (textureArray[ThisTex].texturePath != null)
-                        {
-                            if (File.Exists(textureArray[ThisTex].texturePath))
-                            {
-                                try
-                                {
-                                    TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
-                                }
-                                catch
-                                {
-                                    TextureBitmaps[ThisTex] = new Bitmap(Tarmac64_Library.Properties.Resources.TextureNotFound);
-                                }
-                            }
-                            else
-                            {
-                                TextureBitmaps[ThisTex] = new Bitmap(Tarmac64_Library.Properties.Resources.TextureNotFound);
-                            }
-                        }
-                    }
+                    
 
 
 
@@ -1078,83 +1058,8 @@ namespace Tarmac64_Retail
 
 
 
-                    //Prepare User Interface UI
-                    masterBox.Nodes.Clear();
-                    List<int> listedObjects = new List<int>();
 
-
-                    for (int currentGroup = 0; currentGroup < masterGroups.Length; currentGroup++)
-                    {
-                        masterBox.Nodes.Add(masterGroups[currentGroup].groupName, masterGroups[currentGroup].groupName);
-                        for (int currentGrandchild = 0; currentGrandchild < masterGroups[currentGroup].subIndexes.Length; currentGrandchild++)
-                        {
-                            masterBox.Nodes[currentGroup].Nodes.Add(masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName, masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName);
-                            listedObjects.Add(masterGroups[currentGroup].subIndexes[currentGrandchild]);
-                        }
-                    }
-
-                    for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
-                    {
-                        if (listedObjects.IndexOf(currentMaster) == -1)
-                        {
-                            masterBox.Nodes.Add(masterObjects[currentMaster].objectName, masterObjects[currentMaster].objectName);
-                        }
-                    }
-
-
-                    if (levelFormat == 0)
-                    {
-                        SurfaceMeshListBox.Items.Clear();
-                        for (int currentIndex = 0; currentIndex < surfaceObjects.Length; currentIndex++)
-                        {
-                            SurfaceMeshListBox.Items.Add(surfaceObjects[currentIndex].objectName);
-                        }
-
-                        RenderMeshListBox.Items.Clear();
-                        for (int currentIndex = 0; currentIndex < masterObjects.Length; currentIndex++)
-                        {
-                            RenderMeshListBox.Items.Add(masterObjects[currentIndex].objectName);
-                        }
-
-                        surfsectionBox.Items.Clear();
-                        sectionBox.Items.Clear();
-                        CopySectionIndexBox.Items.Clear();
-                        for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-                        {
-                            CopySectionIndexBox.Items.Add("Section " + (currentSection + 1).ToString());
-                            surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
-                            sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
-
-                        }
-                        surfmaterialBox.Items.Clear();
-                        for (int surfacematerialIndex = 0; surfacematerialIndex < surfaceType.Length; surfacematerialIndex++)
-                        {
-                            surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString() + "- " + surfaceType[surfacematerialIndex]);
-                        }
-                    }
-                    TextureControl.Loaded = true;
-                    TextureControl.textureArray = textureArray;
-                    TextureControl.AddNewTextures(materialCount);
-
-                    for (int ThisTexture = 0; ThisTexture < materialCount; ThisTexture++)
-                    {
-                        RenderMaterialBox.Items.Add(textureArray[ThisTexture].textureName);
-                    }
-
-                    if (levelFormat == 0)
-                    {
-                        sectionBox.SelectedIndex = 0;
-                        TextureControl.textureBox.SelectedIndex = 0;
-                        
-                    }
-                    loaded = true;
-
-
-
-                    UpdateGLView();
-                    GLControl.UpdateDraw = true;
-                    GLControl.CacheTextures();
-                    
+                    UpdateUIControls();
 
                     MessageBox.Show("Finished");
                 }
@@ -1162,6 +1067,109 @@ namespace Tarmac64_Retail
             
         }
 
+
+        private void UpdateUIControls()
+        {
+            //Prepare User Interface UI
+            masterBox.Nodes.Clear();
+            List<int> listedObjects = new List<int>();
+
+            for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
+            {
+
+                //Update the GL Bitmap Cache
+                if (textureArray[ThisTex].texturePath != null)
+                {
+                    if (File.Exists(textureArray[ThisTex].texturePath))
+                    {
+                        try
+                        {
+                            TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
+                        }
+                        catch
+                        {
+                            TextureBitmaps[ThisTex] = new Bitmap(Tarmac64_Library.Properties.Resources.TextureNotFound);
+                        }
+                    }
+                    else
+                    {
+                        TextureBitmaps[ThisTex] = new Bitmap(Tarmac64_Library.Properties.Resources.TextureNotFound);
+                    }
+                }
+            }
+
+            for (int currentGroup = 0; currentGroup < masterGroups.Length; currentGroup++)
+            {
+                masterBox.Nodes.Add(masterGroups[currentGroup].groupName, masterGroups[currentGroup].groupName);
+                for (int currentGrandchild = 0; currentGrandchild < masterGroups[currentGroup].subIndexes.Length; currentGrandchild++)
+                {
+                    masterBox.Nodes[currentGroup].Nodes.Add(masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName, masterObjects[masterGroups[currentGroup].subIndexes[currentGrandchild]].objectName);
+                    listedObjects.Add(masterGroups[currentGroup].subIndexes[currentGrandchild]);
+                }
+            }
+
+            for (int currentMaster = 0; currentMaster < masterObjects.Length; currentMaster++)
+            {
+                if (listedObjects.IndexOf(currentMaster) == -1)
+                {
+                    masterBox.Nodes.Add(masterObjects[currentMaster].objectName, masterObjects[currentMaster].objectName);
+                }
+            }
+
+
+            if (levelFormat == 0)
+            {
+                SurfaceMeshListBox.Items.Clear();
+                for (int currentIndex = 0; currentIndex < surfaceObjects.Length; currentIndex++)
+                {
+                    SurfaceMeshListBox.Items.Add(surfaceObjects[currentIndex].objectName);
+                }
+
+                RenderMeshListBox.Items.Clear();
+                for (int currentIndex = 0; currentIndex < masterObjects.Length; currentIndex++)
+                {
+                    RenderMeshListBox.Items.Add(masterObjects[currentIndex].objectName);
+                }
+
+                surfsectionBox.Items.Clear();
+                sectionBox.Items.Clear();
+                CopySectionIndexBox.Items.Clear();
+                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                {
+                    CopySectionIndexBox.Items.Add("Section " + (currentSection + 1).ToString());
+                    surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
+                    sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
+
+                }
+                surfmaterialBox.Items.Clear();
+                for (int surfacematerialIndex = 0; surfacematerialIndex < surfaceType.Length; surfacematerialIndex++)
+                {
+                    surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString() + "- " + surfaceType[surfacematerialIndex]);
+                }
+            }
+            TextureControl.Loaded = true;
+            TextureControl.textureArray = textureArray;
+            TextureControl.AddNewTextures(materialCount);
+
+            for (int ThisTexture = 0; ThisTexture < materialCount; ThisTexture++)
+            {
+                RenderMaterialBox.Items.Add(textureArray[ThisTexture].textureName);
+            }
+
+            if (levelFormat == 0)
+            {
+                sectionBox.SelectedIndex = 0;
+                TextureControl.textureBox.SelectedIndex = 0;
+
+            }
+            loaded = true;
+
+
+
+            UpdateGLView();
+            GLControl.UpdateDraw = true;
+            GLControl.CacheTextures();
+        }
         private void LoadBtn_Click(object sender, EventArgs e)
         {
             if (loaded)
@@ -1180,8 +1188,8 @@ namespace Tarmac64_Retail
             if (loaded == true)
             {
                 GLControl.UpdateDraw = true;
-                sectionList[LastSelectedSection].viewList[LastSelectedView].objectList = GLControl.SectionList;
-                XLUSectionList[LastSelectedSection].viewList[LastSelectedView].objectList = GLControl.SectionList;
+                sectionList[LastSelectedSection].objectList = GLControl.SectionList;
+                XLUSectionList[LastSelectedSection].objectList = GLControl.SectionList;
                 LastSelectedSection = sectionBox.SelectedIndex;
                 UpdateSVDisplay();
                 UpdateGLView();
@@ -1194,8 +1202,8 @@ namespace Tarmac64_Retail
             if (loaded == true)
             {
                 GLControl.UpdateDraw = true;
-                sectionList[LastSelectedSection].viewList[LastSelectedView].objectList = GLControl.SectionList;
-                XLUSectionList[LastSelectedSection].viewList[LastSelectedView].objectList = GLControl.SectionList;
+                sectionList[LastSelectedSection].objectList = GLControl.SectionList;
+                XLUSectionList[LastSelectedSection].objectList = GLControl.SectionList;
                 LastSelectedSection = sectionBox.SelectedIndex;
                 UpdateSVDisplay();
                 UpdateGLView();
@@ -1296,8 +1304,8 @@ namespace Tarmac64_Retail
                 case GLViewer.ControlMode.Section:
                     {
                         //section lists
-                        sectionList[sectionBox.SelectedIndex].viewList[0].objectList = GLControl.SectionList;
-                        XLUSectionList[sectionBox.SelectedIndex].viewList[0].objectList = GLControl.SectionList;
+                        sectionList[sectionBox.SelectedIndex].objectList = GLControl.SectionList;
+                        XLUSectionList[sectionBox.SelectedIndex].objectList = GLControl.SectionList;
                         if (GLControl.SelectedSection != -1)
                         {
                             SelectObjectIndex(GLControl.SelectedSection);
@@ -1397,7 +1405,7 @@ namespace Tarmac64_Retail
                             masterBox.Nodes[currentTree].Checked = false;
                         }
                     }
-                    foreach (var subObject in sectionList[sectionBox.SelectedIndex].viewList[0].objectList)
+                    foreach (var subObject in sectionList[sectionBox.SelectedIndex].objectList)
                     {
 
                         TreeNode[] thisNode = masterBox.Nodes.Find(masterObjects[subObject].objectName, true);
@@ -1410,7 +1418,7 @@ namespace Tarmac64_Retail
                 }
                 updateBool = false;
             }
-            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList;
+            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].objectList;
         }
         //Seperate loading the counters to prevent infinite loop. 
         private void updateCounter(int faceCount)
@@ -1545,8 +1553,8 @@ namespace Tarmac64_Retail
                         }
                     }
                 }
-                sectionList[sectionBox.SelectedIndex].viewList[0].objectList = checkList.ToArray();
-                XLUSectionList[sectionBox.SelectedIndex].viewList[0].objectList = checkList.ToArray();
+                sectionList[sectionBox.SelectedIndex].objectList = checkList.ToArray();
+                XLUSectionList[sectionBox.SelectedIndex].objectList = checkList.ToArray();
                 updateCounter(faceCount);
             }
         }
@@ -1588,7 +1596,7 @@ namespace Tarmac64_Retail
 
         private void updateSectionList(string objectName, int Index)
         {
-            List<int> objectList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList.ToList();
+            List<int> objectList = sectionList[sectionBox.SelectedIndex].objectList.ToList();
             
             if (Index > -1)
             {
@@ -1611,8 +1619,8 @@ namespace Tarmac64_Retail
                         }
                     }
                 }
-                sectionList[sectionBox.SelectedIndex].viewList[0].objectList = objectList.ToArray();
-                XLUSectionList[sectionBox.SelectedIndex].viewList[0].objectList = objectList.ToArray();
+                sectionList[sectionBox.SelectedIndex].objectList = objectList.ToArray();
+                XLUSectionList[sectionBox.SelectedIndex].objectList = objectList.ToArray();
             }
             UpdateSVDisplay();
         }
@@ -1622,7 +1630,7 @@ namespace Tarmac64_Retail
             UpdateDraw = true;
             if (e.Action != TreeViewAction.Unknown)
             {
-                List<int> checkList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList.ToList();
+                List<int> checkList = sectionList[sectionBox.SelectedIndex].objectList.ToList();
                 bool checkState = e.Node.Checked;
                 if (loaded == true)
                 {
@@ -1708,7 +1716,7 @@ namespace Tarmac64_Retail
 
                             GLControl.CourseModel = masterObjects;
                             GLControl.SurfaceModel = SurfaceList.ToArray();
-                            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList;
+                            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].objectList;
                             GLControl.CourseObjects = new List<TM64_Course.OKObject>();
                             GLControl.ObjectTypes = new TM64_Course.OKObjectType[0];
                             GLControl.TargetingMode = GLViewer.ControlMode.Section;
@@ -1784,11 +1792,6 @@ namespace Tarmac64_Retail
             }
         }
 
-        private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void SurfaceMap_Click(object sender, EventArgs e)
         {
 
@@ -1807,8 +1810,8 @@ namespace Tarmac64_Retail
 
         private void CopyBtn_Click(object sender, EventArgs e)
         {
-            sectionList[sectionBox.SelectedIndex].viewList[0].objectList =
-                sectionList[CopySectionIndexBox.SelectedIndex].viewList[0].objectList;
+            sectionList[sectionBox.SelectedIndex].objectList =
+                sectionList[CopySectionIndexBox.SelectedIndex].objectList;
             UpdateSVDisplay();
         }
 
@@ -1822,29 +1825,46 @@ namespace Tarmac64_Retail
                 string SavePath = FileOpen.FileName;
 
                 MemoryStream memoryStream = new MemoryStream();
+                BinaryReader binaryReader = new BinaryReader(memoryStream);
+                byte[] Buffer = File.ReadAllBytes(SavePath);
+                memoryStream.Write(Buffer, 0, Buffer.Length);
+                memoryStream.Position = 0;
 
                 SettingsControl.LoadCourseSettings(memoryStream);
-                PathControl.
-                binaryWriter.Write(SettingsControl.SaveCourseSettings());
-                binaryWriter.Write(PathControl.SavePathSettings());
-                binaryWriter.Write(TextureControl.SaveTextureArray());
-                binaryWriter.Write(ObjectControl.SaveObjectSettings());
+                PathControl.LoadPathSettings(memoryStream);
+                TextureControl.LoadTextureArray(memoryStream);
+                ObjectControl.LoadObjectSettings(memoryStream);
 
+                textureArray = TextureControl.textureArray;
+                materialCount = TextureControl.textureArray.Length;
+                TextureBitmaps = new Bitmap[textureArray.Length];
+                sectionCount = binaryReader.ReadInt32();
+                sectionList = new TM64_Geometry.OK64SectionList[sectionCount];
                 for (int ThisSection = 0; ThisSection < sectionCount; ThisSection++)
                 {
-                    binaryWriter.Write(sectionList[ThisSection].SaveData());
+                    sectionList[ThisSection] = new TM64_Geometry.OK64SectionList(memoryStream);
                 }
 
+                int sCount = binaryReader.ReadInt32();
+                surfaceObjects = new TM64_Geometry.OK64F3DObject[sCount];
                 for (int ThisSurface = 0; ThisSurface < surfaceObjects.Length; ThisSurface++)
                 {
-                    binaryWriter.Write(surfaceObjects[ThisSurface].SaveData());
+                    surfaceObjects[ThisSurface] = new TM64_Geometry.OK64F3DObject(memoryStream);
                 }
 
+                int mCount = binaryReader.ReadInt32();
+                masterObjects = new TM64_Geometry.OK64F3DObject[mCount];
                 for (int ThisMaster = 0; ThisMaster < masterObjects.Length; ThisMaster++)
                 {
-                    binaryWriter.Write(masterObjects[ThisMaster].SaveData());
+                    masterObjects[ThisMaster] = new TM64_Geometry.OK64F3DObject(memoryStream);
                 }
 
+                pathGroups = new TM64_Paths.Pathgroup[5];
+
+                pathGroups[0] = new TM64_Paths.Pathgroup(memoryStream);
+                GLControl.PathMarker = pathGroups[0].pathList;
+                UpdateGLView();
+                UpdateUIControls();
             }
 
         }
@@ -1865,77 +1885,34 @@ namespace Tarmac64_Retail
                 binaryWriter.Write(PathControl.SavePathSettings());
                 binaryWriter.Write(TextureControl.SaveTextureArray());
                 binaryWriter.Write(ObjectControl.SaveObjectSettings());
+
+
+                binaryWriter.Write(sectionList.Length);
                 
                 for (int ThisSection = 0; ThisSection < sectionCount; ThisSection++)
                 {
                     binaryWriter.Write(sectionList[ThisSection].SaveData());
                 }
 
+                binaryWriter.Write(surfaceObjects.Length);
                 for (int ThisSurface = 0; ThisSurface < surfaceObjects.Length; ThisSurface++)
                 {
                     binaryWriter.Write(surfaceObjects[ThisSurface].SaveData());
                 }
 
+                binaryWriter.Write(masterObjects.Length);
                 for (int ThisMaster = 0; ThisMaster < masterObjects.Length; ThisMaster++)
                 {
                     binaryWriter.Write(masterObjects[ThisMaster].SaveData());
                 }
 
+                binaryWriter.Write(pathGroups[0].SaveData());
+
+
                 File.WriteAllBytes(SavePath, memoryStream.ToArray());
             }
 
         }
-
-        private void GoalBannerBox_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void UpdateUI(object sender, EventArgs e)
-        {
-
-        }
-
-        private void UpdateUIHandler(object sender, System.Windows.Forms.KeyEventArgs e)
-        {
-
-        }
-
-        private void UpdateUIHandler(object sender, EventArgs e)
-        {
-
-        }
-
-        private void EchoPowerBox_TextChanged_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ColorPickAdjust_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void EchoIndexBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ColorPickBase_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -1989,24 +1966,6 @@ namespace Tarmac64_Retail
             }
         }
 
-        private void testToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MemoryStream SaveStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(SaveStream);
-            for (int ThisObj = 0; ThisObj < masterObjects.Length; ThisObj++)
-            {
-                binaryWriter.Write(masterObjects[ThisObj].SaveData());
-            }
-
-            byte[] LoadData = SaveStream.ToArray();
-            MemoryStream LoadStream = new MemoryStream();
-            LoadStream.Write(LoadData, 0, LoadData.Length);
-            LoadStream.Position = 0;
-            for (int ThisObj = 0; ThisObj < masterObjects.Length; ThisObj++)
-            {
-                masterObjects[ThisObj] = new TM64_Geometry.OK64F3DObject(LoadStream);
-            }
-        }
 
         private void masterBox_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -2014,24 +1973,6 @@ namespace Tarmac64_Retail
 
 
 
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            if (masterBox.SelectedNode != null)
-            {
-                if (CheckStop)
-                {
-                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[0] = GPBoxR.Checked;
-                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[1] = TTBoxR.Checked;
-                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[2] = VSBoxR.Checked;
-                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[3] = BattleBoxR.Checked;
-                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[4] = CC50BoxR.Checked;
-                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[5] = CC100BoxR.Checked;
-                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[6] = CC150BoxR.Checked;
-                    masterObjects[masterBox.SelectedNode.Index].KillDisplayList[7] = CC50BoxR.Checked;
-                }
-            }
-            
-        }
 
     }
 }

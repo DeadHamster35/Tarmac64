@@ -52,9 +52,24 @@ namespace Tarmac64_Retail
             int FXCount = binaryReader.ReadInt32();
             CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[FXCount];
 
-            for (int ThisFX = 0; ThisFX < FXCount; ThisFX++)
+            for (int ThisPath = 0; ThisPath < CourseData.PathSettings.PathEffects.Length; ThisPath++)
             {
+                CourseData.PathSettings.PathEffects[ThisPath].Type = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[ThisPath].StartIndex = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[ThisPath].EndIndex = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[ThisPath].Power = binaryReader.ReadInt32();
+                CourseData.PathSettings.PathEffects[ThisPath].AdjColor.R = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisPath].AdjColor.G = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisPath].AdjColor.B = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisPath].BodyColor.R = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisPath].BodyColor.G = binaryReader.ReadByte();
+                CourseData.PathSettings.PathEffects[ThisPath].BodyColor.B = binaryReader.ReadByte();
+            }
 
+            for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
+            {
+                CourseData.BombArray[ThisBomb].Point = binaryReader.ReadInt16();
+                CourseData.BombArray[ThisBomb].Type = binaryReader.ReadInt16();
             }
 
         }
@@ -84,6 +99,12 @@ namespace Tarmac64_Retail
                 binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisPath].BodyColor.R);
                 binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisPath].BodyColor.G);
                 binaryWriter.Write(CourseData.PathSettings.PathEffects[ThisPath].BodyColor.B);
+            }
+
+            for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
+            {
+                binaryWriter.Write(CourseData.BombArray[ThisBomb].Point);
+                binaryWriter.Write(CourseData.BombArray[ThisBomb].Type);
             }
 
             return memoryStream.ToArray();
@@ -122,7 +143,14 @@ namespace Tarmac64_Retail
                 CourseData.BombArray[currentBomb].Point = Convert.ToInt16(bombPoints[currentBomb]);
                 CourseData.BombArray[currentBomb].Type = Convert.ToInt16(bompTypeIDs[currentBomb]);
             }
+            CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[0];
+            CourseData.PathSettings.PathSurface = new int[4];
             BombIndexBox.SelectedIndex = 0;
+            PathSurfaceSelect.Items.Add("Path 0");
+            PathSurfaceSelect.Items.Add("Path 1");
+            PathSurfaceSelect.Items.Add("Path 2");
+            PathSurfaceSelect.Items.Add("Path 3");
+            PathSurfaceSelect.SelectedIndex = 0;
         }
 
         public void UpdatePaths()

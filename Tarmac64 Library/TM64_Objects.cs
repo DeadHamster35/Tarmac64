@@ -126,8 +126,6 @@ namespace Tarmac64_Library
             return HitboxData;
         }
 
-
-
         public OK64Collide[] LoadHitboxFile(byte[] FileData)
         {
             MemoryStream memoryStream = new MemoryStream();

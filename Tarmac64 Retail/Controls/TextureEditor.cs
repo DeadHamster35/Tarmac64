@@ -230,8 +230,8 @@ namespace Tarmac64_Retail
         public void LoadTextureArray(MemoryStream memoryStream)
         {
             BinaryReader binaryReader = new BinaryReader(memoryStream);
-
-            textureArray = new TM64_Geometry.OK64Texture[binaryReader.ReadInt32()];
+            int tCount = binaryReader.ReadInt32();
+            textureArray = new TM64_Geometry.OK64Texture[tCount];
             for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
             {
                 textureArray[ThisTex] = new TM64_Geometry.OK64Texture(memoryStream);
