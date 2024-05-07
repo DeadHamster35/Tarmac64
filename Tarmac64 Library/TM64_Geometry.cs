@@ -1676,7 +1676,7 @@ namespace Tarmac64_Library
                         }
                         catch (OverflowException) 
                         {
-                            MessageBox.Show("Mesh indices are too high or too low. Check your FBX export settings and Tarmac Import Scale");
+                            MessageBox.Show(newObject.objectName + " - Mesh indices are too high or too low. Check your FBX export settings and Tarmac Import Scale");
                             Environment.Exit(0);
                         }
 
