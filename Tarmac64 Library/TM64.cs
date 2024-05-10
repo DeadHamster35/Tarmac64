@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Numerics;
+using System.Xml;
 using Tarmac64_Library;
 using Cereal64;
 
@@ -25,6 +26,7 @@ using Cereal64.Common.Rom;
 using Cereal64.Common.Utils.Encoding;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Drawing.Drawing2D;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Tarmac64_Library
 {
@@ -222,6 +224,58 @@ namespace Tarmac64_Library
             return NewData.ToArray();
         }
 
+
+
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, byte Value)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            NewElement.InnerText = Value.ToString();
+            Parent.AppendChild(NewElement);
+        }
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, short Value)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            NewElement.InnerText = Value.ToString();
+            Parent.AppendChild(NewElement);
+        }
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, int Value)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            NewElement.InnerText = Value.ToString();
+            Parent.AppendChild(NewElement);
+        }
+
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, float Value)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            NewElement.InnerText = Value.ToString();
+            Parent.AppendChild(NewElement);
+        }
+
+
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, double Value)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            NewElement.InnerText = Value.ToString();
+            Parent.AppendChild(NewElement);
+        }
+
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, string Value)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(XmlConvert.EncodeName(Name));
+            NewElement.InnerText = XmlConvert.EncodeName(Value);
+            Parent.AppendChild(NewElement);
+        }
+
+        public string LoadElement(XmlDocument XMLDoc, string Parent, string Name, string Default = "")
+        {
+            XmlNode CheckNode = XMLDoc.SelectSingleNode("/" + Parent + "/" +  Name);
+            if (CheckNode != null)
+            {
+                return XmlConvert.DecodeName(CheckNode.InnerText);
+            }
+            return Default;
+        }
 
         public byte[] DecompressMIO0(byte[] inputFile)
         {

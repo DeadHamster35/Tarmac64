@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Tarmac64_Library;
 using System.IO;
 using System.Linq;
+using System.Xml;
 
 namespace Tarmac64_Retail
 {
@@ -53,10 +54,10 @@ namespace Tarmac64_Retail
 
             if ((ObjectListBox.SelectedIndex >= 0) && (ObjectListBox.SelectedIndex <= ObjectListBox.Items.Count))
             {
-                NewObject.ObjectIndex = OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex;
+                NewObject.TypeIndex = OKObjectList[ObjectListBox.SelectedIndex].TypeIndex;
             }
             OKObjectList.Add(NewObject);
-            int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + ObjectListBox.Items.Count.ToString());
+            int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + ObjectListBox.Items.Count.ToString());
             ObjectListBox.SelectedIndex = NewIndex;
         }
 
@@ -82,14 +83,14 @@ namespace Tarmac64_Retail
 
         public void CreateObject(TM64_Course.OKObject NewObject)
         {
-            if (-1 < NewObject.ObjectIndex && NewObject.ObjectIndex <= OKObjectTypeList.Count)
+            if (-1 < NewObject.TypeIndex && NewObject.TypeIndex <= OKObjectTypeList.Count)
             {
                 if (RandomZBox.Checked)
                 {
                     Random RNG = new Random();
                     NewObject.OriginAngle[2] = Convert.ToInt16(RNG.Next(360));
                 }
-                int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + ObjectListBox.Items.Count.ToString());
+                int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + ObjectListBox.Items.Count.ToString());
                 
                 ObjectListBox.SelectedIndex = NewIndex;
             }
@@ -182,7 +183,7 @@ namespace Tarmac64_Retail
         {
             if ((ObjectListBox.Items.Count > 0) && (ObjectListBox.SelectedIndex != -1) && (!Loading))
             {
-                ObjectTypeIndexBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex;
+                ObjectTypeIndexBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].TypeIndex;
 
                 LocationXBox.Text = OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[0].ToString();
                 LocationYBox.Text = OKObjectList[ObjectListBox.SelectedIndex].OriginPosition[1].ToString();
@@ -202,7 +203,7 @@ namespace Tarmac64_Retail
 
                 FlagBox.Text = OKObjectList[ObjectListBox.SelectedIndex].Flag.ToString();
 
-                if (OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex == 5)
+                if (OKObjectList[ObjectListBox.SelectedIndex].TypeIndex == 5)
                 {
                     ModeBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].GameMode;
                     ClassBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].ObjectiveClass;
@@ -307,7 +308,7 @@ namespace Tarmac64_Retail
             for (int This = 0; This < Count; This++)
             {
                 TM64_Course.OKObject NewObject = new TM64_Course.OKObject();
-                NewObject.ObjectIndex = Convert.ToInt16(ObjectSettings[ThisLine++]);
+                NewObject.TypeIndex = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.GameMode = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.BattlePlayer = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.ObjectiveClass = Convert.ToInt16(ObjectSettings[ThisLine++]);
@@ -338,7 +339,7 @@ namespace Tarmac64_Retail
                 NewObject.AngularVelocity[2] = Convert.ToInt16(ObjectSettings[ThisLine++]);
 
                 OKObjectList.Add(NewObject);
-                int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + ObjectListBox.Items.Count.ToString());
+                int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + ObjectListBox.Items.Count.ToString());
             }
             if (ObjectListBox.Items.Count > 0)
             {
@@ -350,9 +351,58 @@ namespace Tarmac64_Retail
             return ThisLine;
         }
 
-        public void LoadObjectSettings(MemoryStream memoryStream)
+        public void AddObjectToArray(string TargetFile)
         {
             TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
+
+            if (!File.Exists(TargetFile))
+            {
+                MessageBox.Show("Please select replacement OKObject for " + Environment.NewLine + TargetFile);
+                if (FileOpen.ShowDialog() == DialogResult.OK)
+                {
+                    TargetFile = FileOpen.FileName;
+                }
+            }
+
+            TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(TargetFile);
+
+            for (int ThisTexture = 0; ThisTexture < NewType.TextureData.Length; ThisTexture++)
+            {
+                if (
+                    (NewType.TextureData[ThisTexture].texturePath == null) ||
+                    (!File.Exists(NewType.TextureData[ThisTexture].texturePath))
+                )
+                {
+                    MessageBox.Show("Error loading texture " + NewType.TextureData[ThisTexture].textureName + " for " + NewType.Name);
+                    if (FileOpen.ShowDialog() == DialogResult.OK)
+                    {
+                        if (FileOpen.FileName != null)
+                        {
+                            if (File.Exists(FileOpen.FileName))
+                            {
+                                NewType.TextureData[ThisTexture].texturePath = FileOpen.FileName;
+                            }
+                            else
+                            {
+                                NewType.TextureData[ThisTexture].texturePath = null;
+                                MessageBox.Show("File was not found - compiled map may be corrupt");
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+            OKObjectTypeList.Add(NewType);
+            ObjectTypeIndexBox.Items.Add(NewType.Name);
+        }
+
+        public void LoadObjectSettings(MemoryStream memoryStream)
+        {
+            
             BinaryReader binaryReader = new BinaryReader(memoryStream);
 
             int ObjectTypeCount = binaryReader.ReadInt32();
@@ -363,53 +413,12 @@ namespace Tarmac64_Retail
 
 
             //error handler
-            OpenFileDialog FileOpen = new OpenFileDialog();
-            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            
 
             for (int This = 0; This < ObjectTypeCount; This++)
             {
                 string TargetFile = binaryReader.ReadString();
-                if (!File.Exists(TargetFile))
-                {
-                    MessageBox.Show("Please select replacement OKObject for " + Environment.NewLine + TargetFile);
-                    if (FileOpen.ShowDialog() == DialogResult.OK)
-                    {
-                        TargetFile = FileOpen.FileName;
-                    }
-                }
-
-                TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(TargetFile);
-
-                for (int ThisTexture = 0; ThisTexture < NewType.TextureData.Length; ThisTexture++)
-                {
-                    if (
-                        (NewType.TextureData[ThisTexture].texturePath == null) ||
-                        (!File.Exists(NewType.TextureData[ThisTexture].texturePath))
-                    )
-                    {
-                        MessageBox.Show("Error loading texture " + NewType.TextureData[ThisTexture].textureName + " for " + NewType.Name);
-                        if (FileOpen.ShowDialog() == DialogResult.OK)
-                        {
-                            if (FileOpen.FileName != null)
-                            {
-                                if (File.Exists(FileOpen.FileName))
-                                {
-                                    NewType.TextureData[ThisTexture].texturePath = FileOpen.FileName;
-                                }
-                                else
-                                {
-                                    NewType.TextureData[ThisTexture].texturePath = null;
-                                    MessageBox.Show("File was not found - compiled map may be corrupt");
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-
-                OKObjectTypeList.Add(NewType);
-                ObjectTypeIndexBox.Items.Add(NewType.Name);
+                AddObjectToArray(TargetFile);
             }
 
 
@@ -423,7 +432,61 @@ namespace Tarmac64_Retail
             {
                 TM64_Course.OKObject NewObj = new TM64_Course.OKObject(memoryStream);
                 OKObjectList.Add(NewObj);
-                ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObj.ObjectIndex].Name + ObjectListBox.Items.Count.ToString());
+                ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObj.TypeIndex].Name + ObjectListBox.Items.Count.ToString());
+            }
+        }
+        public void LoadObjectXML(XmlDocument XMLDoc)
+        {
+            OKObjectTypeList.Clear();
+            ObjectTypeIndexBox.Items.Clear();
+            DefaultOKObjects();
+
+
+            string ParentPath = "/SaveFile/ObjectData";
+            TM64 Tarmac = new TM64();
+            int TypeCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "TypeCount", "0"));
+            string TypeArrayPath = "/SaveFile/ObjectData/ObjectTypeArray";
+            for (int This = 0; This < TypeCount; This++)
+            {
+                string Target = Tarmac.LoadElement(XMLDoc, TypeArrayPath, "TypePath" + (This).ToString(), "NULL");
+                AddObjectToArray(Target);
+            }
+
+
+
+            OKObjectList.Clear();
+            ObjectListBox.Items.Clear();
+
+            int ObjectCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "ObjectCount", "0"));
+            string ObjectArrayPath = "/SaveFile/ObjectData/ObjectArray";
+            for (int This = 0; This < ObjectCount; This++)
+            {
+                TM64_Course.OKObject NewObj = new TM64_Course.OKObject(XMLDoc, ObjectArrayPath, This);
+                OKObjectList.Add(NewObj);
+                ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObj.TypeIndex].Name + ObjectListBox.Items.Count.ToString());
+            }
+        }
+        public void SaveObjectXML(XmlDocument XMLDoc, XmlElement Parent)
+        {
+            XmlElement ObjectXML = XMLDoc.CreateElement("ObjectData");
+            Parent.AppendChild(ObjectXML);
+            TM64 Tarmac = new TM64();
+            Tarmac.GenerateElement(XMLDoc, ObjectXML, "TypeCount", (OKObjectTypeList.Count - 6));
+
+            XmlElement TypeArray = XMLDoc.CreateElement("ObjectTypeArray");
+            ObjectXML.AppendChild(TypeArray);
+            for (int This = 6; This < OKObjectTypeList.Count; This++)
+            {
+                Tarmac.GenerateElement(XMLDoc, TypeArray, "TypePath" + (This-6).ToString(), OKObjectTypeList[This].Path);
+            }
+
+
+            XmlElement ObjectArray = XMLDoc.CreateElement("ObjectArray");
+            Tarmac.GenerateElement(XMLDoc, ObjectXML, "ObjectCount", OKObjectList.Count);
+            ObjectXML.AppendChild(ObjectArray);
+            for (int This = 0; This < OKObjectList.Count; This++)
+            {
+                OKObjectList[This].SaveXML(XMLDoc, ObjectArray, This);
             }
         }
         public byte[] SaveObjectSettings()
@@ -520,7 +583,7 @@ namespace Tarmac64_Retail
                     OKObjectList[ObjectListBox.SelectedIndex].Flag = Parse;
                 }
 
-                if (OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex == 5)
+                if (OKObjectList[ObjectListBox.SelectedIndex].TypeIndex == 5)
                 {
                     OKObjectList[ObjectListBox.SelectedIndex].GameMode = Convert.ToInt16(ModeBox.SelectedIndex);
 
@@ -550,8 +613,8 @@ namespace Tarmac64_Retail
         {
             if ((OKObjectList.Count > 0) && (ObjectListBox.SelectedIndex != -1))
             {
-                OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex = Convert.ToInt16(ObjectTypeIndexBox.SelectedIndex);
-                ObjectListBox.Items[ObjectListBox.SelectedIndex] = ("Object " + OKObjectTypeList[OKObjectList[ObjectListBox.SelectedIndex].ObjectIndex].Name + ObjectListBox.SelectedIndex.ToString());
+                OKObjectList[ObjectListBox.SelectedIndex].TypeIndex = Convert.ToInt16(ObjectTypeIndexBox.SelectedIndex);
+                ObjectListBox.Items[ObjectListBox.SelectedIndex] = ("Object " + OKObjectTypeList[OKObjectList[ObjectListBox.SelectedIndex].TypeIndex].Name + ObjectListBox.SelectedIndex.ToString());
                 
             }
             UpdateObjectUI();
@@ -601,7 +664,7 @@ namespace Tarmac64_Retail
 
                 
                 var indexes = OKObjectList.Select((item, index) => new { Item = item, Index = index })
-                  .Where(o => o.Item.ObjectIndex == ObjectTypeIndexBox.SelectedIndex)
+                  .Where(o => o.Item.TypeIndex == ObjectTypeIndexBox.SelectedIndex)
                   .Select(o => o.Index);
                 int ListOffset = 0;
                 foreach (int i in indexes)
@@ -611,17 +674,17 @@ namespace Tarmac64_Retail
                 }
 
 
-                OKObjectList.RemoveAll(x => x.ObjectIndex == ObjectTypeIndexBox.SelectedIndex);
+                OKObjectList.RemoveAll(x => x.TypeIndex == ObjectTypeIndexBox.SelectedIndex);
 
 
 
 
                 indexes = OKObjectList.Select((item, index) => new { Item = item, Index = index })
-                  .Where(o => o.Item.ObjectIndex > ObjectTypeIndexBox.SelectedIndex)
+                  .Where(o => o.Item.TypeIndex > ObjectTypeIndexBox.SelectedIndex)
                   .Select(o => o.Index);
                 foreach (int i in indexes)
                 {
-                    OKObjectList[i].ObjectIndex--;
+                    OKObjectList[i].TypeIndex--;
                 }
 
 
@@ -641,7 +704,7 @@ namespace Tarmac64_Retail
             int j = 0;
             foreach (var obj in OKObjectList)
             {
-                ObjectListBox.Items[j] = ("Object " + OKObjectTypeList[obj.ObjectIndex].Name + j.ToString());
+                ObjectListBox.Items[j] = ("Object " + OKObjectTypeList[obj.TypeIndex].Name + j.ToString());
                 j++;
             }
         }

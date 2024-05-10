@@ -32,6 +32,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.ParameterView = new Fluent.FluentListView();
             this.label10 = new System.Windows.Forms.Label();
             this.FlagBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -80,7 +81,6 @@
             this.LoadBtn = new System.Windows.Forms.Button();
             this.ModelBox = new System.Windows.Forms.TextBox();
             this.BuildBtn = new System.Windows.Forms.Button();
-            this.ParameterView = new Fluent.FluentListView();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -147,6 +147,28 @@
             this.panel2.Size = new System.Drawing.Size(246, 600);
             this.panel2.TabIndex = 240;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
+            // 
+            // ParameterView
+            // 
+            this.ParameterView.ColumnWidth = 100;
+            this.ParameterView.EnableCellEditing = true;
+            this.ParameterView.EnableDragDropItems = false;
+            this.ParameterView.EnableDrop = false;
+            this.ParameterView.EnableDropFiles = false;
+            this.ParameterView.EnableGifs = false;
+            this.ParameterView.EnableRenaming = false;
+            this.ParameterView.EnableTileView = false;
+            this.ParameterView.ItemFont = null;
+            this.ParameterView.Location = new System.Drawing.Point(3, 525);
+            this.ParameterView.Name = "ParameterView";
+            this.ParameterView.ShowColumns = true;
+            this.ParameterView.ShowDescription = true;
+            this.ParameterView.ShowGroups = true;
+            this.ParameterView.ShowIcons = false;
+            this.ParameterView.Size = new System.Drawing.Size(218, 227);
+            this.ParameterView.TabIndex = 294;
+            this.ParameterView.Theme = Fluent.OLVTheme.VistaExplorer;
+            this.ParameterView.Load += new System.EventHandler(this.FListView_Load);
             // 
             // label10
             // 
@@ -620,48 +642,26 @@
             // 
             // BuildBtn
             // 
-            this.BuildBtn.Location = new System.Drawing.Point(12, 580);
+            this.BuildBtn.Location = new System.Drawing.Point(163, 618);
             this.BuildBtn.Name = "BuildBtn";
-            this.BuildBtn.Size = new System.Drawing.Size(85, 22);
+            this.BuildBtn.Size = new System.Drawing.Size(95, 22);
             this.BuildBtn.TabIndex = 270;
             this.BuildBtn.Text = "Build Object";
             this.BuildBtn.UseVisualStyleBackColor = true;
             this.BuildBtn.Click += new System.EventHandler(this.BuildBtn_Click);
             // 
-            // ParameterView
-            // 
-            this.ParameterView.ColumnWidth = 100;
-            this.ParameterView.EnableCellEditing = true;
-            this.ParameterView.EnableDragDropItems = false;
-            this.ParameterView.EnableDrop = false;
-            this.ParameterView.EnableDropFiles = false;
-            this.ParameterView.EnableGifs = false;
-            this.ParameterView.EnableRenaming = false;
-            this.ParameterView.EnableTileView = false;
-            this.ParameterView.ItemFont = null;
-            this.ParameterView.Location = new System.Drawing.Point(3, 525);
-            this.ParameterView.Name = "ParameterView";
-            this.ParameterView.ShowColumns = true;
-            this.ParameterView.ShowDescription = true;
-            this.ParameterView.ShowGroups = true;
-            this.ParameterView.ShowIcons = false;
-            this.ParameterView.Size = new System.Drawing.Size(218, 227);
-            this.ParameterView.TabIndex = 294;
-            this.ParameterView.Theme = Fluent.OLVTheme.VistaExplorer;
-            this.ParameterView.Load += new System.EventHandler(this.FListView_Load);
-            // 
             // ObjectTypeCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(585, 611);
+            this.ClientSize = new System.Drawing.Size(585, 811);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.BuildBtn);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(750, 650);
-            this.MinimumSize = new System.Drawing.Size(600, 650);
+            this.MaximumSize = new System.Drawing.Size(750, 850);
+            this.MinimumSize = new System.Drawing.Size(600, 850);
             this.Name = "ObjectTypeCompiler";
             this.Text = "Object Compiler";
             this.Load += new System.EventHandler(this.ObjectTypeCompiler_Load);

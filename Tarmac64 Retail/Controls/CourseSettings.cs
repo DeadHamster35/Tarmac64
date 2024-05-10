@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Xml;
 using Tarmac64_Library;
 
 namespace Tarmac64_Retail
@@ -265,6 +266,141 @@ namespace Tarmac64_Retail
             CourseData.Fog.StopDistance = binaryReader.ReadInt16();
 
             UpdateUI();
+        }
+
+        public void LoadCourseXML(XmlDocument XMLDoc)
+        {
+            string ParentPath = "/SaveData/CourseSettings";
+            TM64 Tarmac = new TM64();
+            CourseData.Settings.Credits = Tarmac.LoadElement(XMLDoc, ParentPath, "Credits");
+            CourseData.Settings.Name = Tarmac.LoadElement(XMLDoc, ParentPath, "CourseName");
+            CourseData.Settings.PreviewPath = Tarmac.LoadElement(XMLDoc, ParentPath, "PreviewPath");
+            CourseData.Settings.BannerPath = Tarmac.LoadElement(XMLDoc, ParentPath, "BannerPath");
+            CourseData.GhostPath = Tarmac.LoadElement(XMLDoc, ParentPath, "GhostPath");
+            CourseData.OK64HeaderData.WaterType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterType", "0"));
+            CourseData.OK64HeaderData.WaterLevel = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterLevel", "-80"));
+            CourseData.ManualTempo = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "ManualTempo", "0"));
+
+            CourseData.GoalBannerBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "GoalBannerBool", "1"));
+            CourseData.SkyboxBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyboxBool", "1"));
+
+            CourseData.MapData.MinimapPath = Tarmac.LoadElement(XMLDoc, ParentPath, "MinimapPath");
+
+            CourseData.MapData.MapCoord = new Assimp.Vector2D
+                (Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "MapCoordX", "260")),
+                Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "MapCoordY", "170"))
+                );
+
+            CourseData.MapData.StartCoord = new Assimp.Vector2D
+                (Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "StartCoordX", "6")),
+                Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "StartCoordY", "28"))
+                );
+
+            CourseData.MapData.LineCoord = new Assimp.Vector2D
+                (Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "LineCoordX", "0")),
+                Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "LineCoordY", "0"))
+                );
+
+            CourseData.MapData.MapScale = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "MapScale", "1.55"));
+
+            CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
+            CourseData.MapData.MapColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "MapColorR", "255"));
+            CourseData.MapData.MapColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "MapColorG", "255"));
+            CourseData.MapData.MapColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "MapColorB", "255"));
+
+            CourseData.SkyColors.TopColor = new TM64_Geometry.OK64Color();
+            CourseData.SkyColors.TopColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyTopColorR", "128"));
+            CourseData.SkyColors.TopColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyTopColorG", "184"));
+            CourseData.SkyColors.TopColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyTopColorB", "248"));
+
+            CourseData.SkyColors.MidColor = new TM64_Geometry.OK64Color();
+            CourseData.SkyColors.MidColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyMidColorR", "216"));
+            CourseData.SkyColors.MidColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyMidColorG", "232"));
+            CourseData.SkyColors.MidColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyMidColorB", "248"));
+
+            CourseData.SkyColors.BotColor = new TM64_Geometry.OK64Color();
+            CourseData.SkyColors.BotColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyBotColorR", "0"));
+            CourseData.SkyColors.BotColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyBotColorG", "0"));
+            CourseData.SkyColors.BotColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyBotColorB", "0"));
+
+            CourseData.SkyColors.SkyType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyType", "0"));
+            CourseData.SkyColors.WeatherType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "WeatherType", "0"));
+
+            CourseData.MusicID = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "MusicID", "0"));
+            CourseData.OK64SongPath = Tarmac.LoadElement(XMLDoc, ParentPath, "OK64SongPath");
+
+            CourseData.Fog = new TM64_Course.OKFog();
+            CourseData.Fog.FogToggle = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "FogToggle", "0"));
+            CourseData.Fog.FogColor = new TM64_Geometry.OK64Color();
+            CourseData.Fog.FogColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorR", "240"));
+            CourseData.Fog.FogColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorG", "240"));
+            CourseData.Fog.FogColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorB", "240"));
+            CourseData.Fog.FogColor.A = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorA", "255"));
+
+            CourseData.Fog.StartDistance = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "FogStart", "900"));
+            CourseData.Fog.StopDistance = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "FogStop", "1000"));
+
+
+            UpdateUI();
+        }
+
+        public void SaveCourseXML(XmlDocument XMLDoc, XmlElement Parent)
+        {
+            XmlElement CourseXML = XMLDoc.CreateElement("CourseSettings");
+            Parent.AppendChild(CourseXML);
+            TM64 Tarmac = new TM64();
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "Credits", CourseData.Settings.Credits);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "CourseName", CourseData.Settings.Name);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "PreviewPath", CourseData.Settings.PreviewPath);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "BannerPath", CourseData.Settings.BannerPath);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "GhostPath", CourseData.GhostPath);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "WaterType", CourseData.OK64HeaderData.WaterType);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "WaterLevel", CourseData.OK64HeaderData.WaterLevel);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "ManualTempo", CourseData.ManualTempo);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "GoalBannerBool", CourseData.GoalBannerBool);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyboxBool", CourseData.SkyboxBool);
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "MinimapPath", CourseData.MapData.MinimapPath);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "MapCoordX", CourseData.MapData.MapCoord[0]);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "MapCoordY", CourseData.MapData.MapCoord[1]);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "StartCoordX", CourseData.MapData.StartCoord[0]);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "StartCoordY", CourseData.MapData.StartCoord[1]);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "LineCoordX", CourseData.MapData.LineCoord[0]);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "LineCoordY", CourseData.MapData.LineCoord[1]);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "MapScale", CourseData.MapData.MapScale);
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "MapColorR", CourseData.MapData.MapColor.R);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "MapColorG", CourseData.MapData.MapColor.G);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "MapColorB", CourseData.MapData.MapColor.B);
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyTopColorR", CourseData.SkyColors.TopColor.R);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyTopColorG", CourseData.SkyColors.TopColor.G);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyTopColorB", CourseData.SkyColors.TopColor.B);
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyMidColorR", CourseData.SkyColors.MidColor.R);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyMidColorG", CourseData.SkyColors.MidColor.G);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyMidColorB", CourseData.SkyColors.MidColor.B);
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyBotColorR", CourseData.SkyColors.BotColor.R);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyBotColorG", CourseData.SkyColors.BotColor.G);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyBotColorB", CourseData.SkyColors.BotColor.B);
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "SkyType", CourseData.SkyColors.SkyType);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "WeatherType", CourseData.SkyColors.WeatherType);
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "MusicID", CourseData.MusicID);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "OK64SongPath", CourseData.OK64SongPath);
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "FogToggle", CourseData.Fog.FogToggle);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "FogColorR", CourseData.Fog.FogColor.R);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "FogColorG", CourseData.Fog.FogColor.G);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "FogColorB", CourseData.Fog.FogColor.B);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "FogColorA", CourseData.Fog.FogColor.A);
+
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "FogStart", CourseData.Fog.StartDistance);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "FogStop", CourseData.Fog.StopDistance);
+
         }
 
         public byte[] SaveCourseSettings()

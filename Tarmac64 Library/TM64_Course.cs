@@ -11,9 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tarmac64_Library;
 using Texture64;
-
-
-
+using System.Xml;
 namespace Tarmac64_Library
 {
     public class TM64_Course
@@ -32,7 +30,7 @@ namespace Tarmac64_Library
             public short[] OriginAngle { get; set; }
             public float[] Velocity { get; set; }  //multiply by 10 to get short value.
             public short[] AngularVelocity { get; set; }            
-            public short ObjectIndex { get; set; }
+            public short TypeIndex { get; set; }
             public short GameMode { get; set; }
             public short ObjectiveClass { get; set; }
             public short BattlePlayer { get; set; }
@@ -46,7 +44,7 @@ namespace Tarmac64_Library
             {
                 BinaryReader binaryReader = new BinaryReader(memoryStream);
 
-                ObjectIndex = binaryReader.ReadInt16();
+                TypeIndex = binaryReader.ReadInt16();
                 GameMode = binaryReader.ReadInt16();
                 BattlePlayer = binaryReader.ReadInt16();
                 ObjectiveClass = binaryReader.ReadInt16();
@@ -73,12 +71,78 @@ namespace Tarmac64_Library
                 AngularVelocity[2] = binaryReader.ReadInt16();
             }
 
+            public OKObject(XmlDocument XMLDoc, string Parent, int ChildIndex)
+            {
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+                XmlNode Target = Owner.ChildNodes[ChildIndex];
+
+                
+                string HeaderName = Parent + "/" + Target.Name;
+
+
+                TypeIndex = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "TypeIndex", "0"));
+                GameMode = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "GameMode", "0"));
+                BattlePlayer = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "BattlePlayer", "0"));
+                ObjectiveClass = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "ObjectiveClass", "0"));
+                Flag = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "Flag", "0"));
+
+                OriginPosition = new short[3];
+                OriginPosition[0] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "OriginPositionX", "0"));
+                OriginPosition[1] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "OriginPositionY", "0"));
+                OriginPosition[2] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "OriginPositionZ", "0"));
+
+                OriginAngle = new short[3];
+                OriginAngle[0] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "OriginAngleX", "0"));
+                OriginAngle[1] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "OriginAngleY", "0"));
+                OriginAngle[2] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "OriginAngleZ", "0"));
+
+                Velocity = new float[3];
+                Velocity[0] = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, HeaderName, "VelocityX", "0"));
+                Velocity[1] = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, HeaderName, "VelocityY", "0"));
+                Velocity[2] = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, HeaderName, "VelocityZ", "0"));
+
+                AngularVelocity = new short[3];
+                AngularVelocity[0] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "AngularVelocityX", "0"));
+                AngularVelocity[1] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "AngularVelocityY", "0"));
+                AngularVelocity[2] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "AngularVelocityZ", "0"));
+            }
+
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int Index)
+            {
+                XmlElement ObjectXML = XMLDoc.CreateElement("Object_"+Index.ToString());
+                Parent.AppendChild(ObjectXML);
+                TM64 Tarmac = new TM64();
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "TypeIndex", TypeIndex);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "GameMode", GameMode);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "BattlePlayer", BattlePlayer);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "ObjectiveClass", ObjectiveClass);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "Flag", Flag);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "OriginPositionX", OriginPosition[0]);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "OriginPositionY", OriginPosition[1]);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "OriginPositionZ", OriginPosition[2]);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "OriginAngleX", OriginAngle[0]);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "OriginAngleY", OriginAngle[1]);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "OriginAngleZ", OriginAngle[2]);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "VelocityX", Velocity[0]);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "VelocityY", Velocity[1]);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "VelocityZ", Velocity[2]);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "AngularVelocityX", AngularVelocity[0]);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "AngularVelocityY", AngularVelocity[1]);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "AngularVelocityZ", AngularVelocity[2]);
+
+            }
             public byte[] SaveObjectType()
             {
                 MemoryStream memoryStream = new MemoryStream();
                 BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
-                binaryWriter.Write(ObjectIndex);
+                binaryWriter.Write(TypeIndex);
                 binaryWriter.Write(GameMode);
                 binaryWriter.Write(BattlePlayer);
                 binaryWriter.Write(ObjectiveClass);
@@ -432,7 +496,7 @@ namespace Tarmac64_Library
             NewObject.OriginAngle = new short[3] { 0, 0, 0 };
             NewObject.Velocity = new float[3] { 0, 0, 0, };
             NewObject.AngularVelocity = new short[3] { 0, 0, 0 };
-            NewObject.ObjectIndex = 0;
+            NewObject.TypeIndex = 0;
             NewObject.BattlePlayer = 0;
             NewObject.ObjectiveClass = 0;
 
@@ -450,7 +514,7 @@ namespace Tarmac64_Library
 
             for (int ThisObject = 0; ThisObject < ObjectList.Length; ThisObject++)
             {
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].ObjectIndex - 6)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].TypeIndex - 6)));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].Flag)));
 
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ObjectList[ThisObject].OriginPosition[0])));
@@ -618,7 +682,6 @@ namespace Tarmac64_Library
                     binaryWriter.Write(TextureData[ThisTexture].BitSize);
 
 
-                    binaryWriter.Write(TextureData[ThisTexture].vertAlpha);
 
                     binaryWriter.Write(TextureData[ThisTexture].textureWidth);
                     binaryWriter.Write(TextureData[ThisTexture].textureHeight);
@@ -663,7 +726,6 @@ namespace Tarmac64_Library
                     NewType.TextureData[ThisTexture].TextureFormat = binaryReader.ReadInt32();
                     NewType.TextureData[ThisTexture].BitSize = binaryReader.ReadInt32();
 
-                    
                     NewType.TextureData[ThisTexture].textureWidth = binaryReader.ReadInt32();
                     NewType.TextureData[ThisTexture].textureHeight = binaryReader.ReadInt32();
                    
@@ -680,8 +742,8 @@ namespace Tarmac64_Library
                 NewType.ModelData[ThisModel].vertCount = binaryReader.ReadInt32();
                 NewType.ModelData[ThisModel].faceCount = binaryReader.ReadInt32();
 
-                NewType.ModelData[ThisModel].KillDisplayList = new bool[6];
-                for (int ThisBool = 0; ThisBool < 6; ThisBool++)
+                NewType.ModelData[ThisModel].KillDisplayList = new bool[8];
+                for (int ThisBool = 0; ThisBool < 8; ThisBool++)
                 {
                     NewType.ModelData[ThisModel].KillDisplayList[ThisBool] = binaryReader.ReadBoolean();
                 }
@@ -699,10 +761,6 @@ namespace Tarmac64_Library
                 for (int ThisGeo = 0; ThisGeo < ModelLength; ThisGeo++)
                 {
                     NewType.ModelData[ThisModel].modelGeometry[ThisGeo] = new TM64_Geometry.Face();
-                    int X, Y, Z;
-                    X = binaryReader.ReadInt32();
-                    Y = binaryReader.ReadInt32();
-                    Z = binaryReader.ReadInt32();
                     NewType.ModelData[ThisModel].modelGeometry[ThisGeo].VertData = new TM64_Geometry.Vertex[3];
                     for (int ThisVert = 0; ThisVert < 3; ThisVert++)
                     {

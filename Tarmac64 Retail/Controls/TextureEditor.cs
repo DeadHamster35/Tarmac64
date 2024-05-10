@@ -19,6 +19,7 @@ using Tarmac64_Library.Properties;
 using SharpGL;
 using SharpGL.SceneGraph.Core;
 using System.Drawing.Design;
+using System.Xml;
 using System.Windows.Input;
 using System.Drawing.Imaging;
 using Cereal64.Microcodes.F3DEX.DataElements;
@@ -235,6 +236,32 @@ namespace Tarmac64_Retail
             for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
             {
                 textureArray[ThisTex] = new TM64_Geometry.OK64Texture(memoryStream);
+            }
+        }
+
+        public void LoadTextureXML(XmlDocument XMLDoc)
+        {
+            string ParentPath = "/SaveFile/TextureArray";
+            TM64 Tarmac = new TM64();
+            int Count = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "Count"));
+            textureArray = new TM64_Geometry.OK64Texture[Count];
+            for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
+            {
+                textureArray[ThisTex] = new TM64_Geometry.OK64Texture(XMLDoc, ParentPath, (ThisTex + 1));
+            }
+                
+        }
+
+        public void SaveTextureXML(XmlDocument XMLDoc, XmlElement Parent)
+        {
+            XmlElement TextureXML = XMLDoc.CreateElement("TextureArray");
+            Parent.AppendChild(TextureXML);
+            TM64 Tarmac = new TM64();
+            Tarmac.GenerateElement(XMLDoc, TextureXML, "Count", textureArray.Length);
+
+            for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
+            {
+                textureArray[ThisTex].SaveXML(XMLDoc, TextureXML);
             }
         }
 

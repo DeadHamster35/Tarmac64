@@ -281,6 +281,7 @@
             this.AdjR.TabIndex = 11;
             this.AdjR.Text = "0";
             this.AdjR.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.AdjR.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PathFXUpdate);
             // 
             // AdjG
             // 
@@ -291,6 +292,7 @@
             this.AdjG.TabIndex = 12;
             this.AdjG.Text = "0";
             this.AdjG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.AdjG.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PathFXUpdate);
             // 
             // AdjB
             // 
@@ -301,6 +303,7 @@
             this.AdjB.TabIndex = 13;
             this.AdjB.Text = "0";
             this.AdjB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.AdjB.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PathFXUpdate);
             // 
             // ColorPickAdjust
             // 
@@ -331,6 +334,7 @@
             this.BaseR.TabIndex = 7;
             this.BaseR.Text = "0";
             this.BaseR.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BaseR.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PathFXUpdate);
             // 
             // BaseG
             // 
@@ -341,6 +345,7 @@
             this.BaseG.TabIndex = 8;
             this.BaseG.Text = "0";
             this.BaseG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BaseG.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PathFXUpdate);
             // 
             // label3
             // 
@@ -361,6 +366,7 @@
             this.BaseB.TabIndex = 9;
             this.BaseB.Text = "0";
             this.BaseB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BaseB.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PathFXUpdate);
             // 
             // EchoPowerBox
             // 
@@ -371,6 +377,7 @@
             this.EchoPowerBox.TabIndex = 6;
             this.EchoPowerBox.Text = "0";
             this.EchoPowerBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.EchoPowerBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PathFXUpdate);
             // 
             // label4
             // 
@@ -409,6 +416,7 @@
             this.PathIndexBox.Name = "PathIndexBox";
             this.PathIndexBox.Size = new System.Drawing.Size(62, 21);
             this.PathIndexBox.TabIndex = 1;
+            this.PathIndexBox.SelectedIndexChanged += new System.EventHandler(this.PathIndexBox_SelectedIndexChanged);
             // 
             // label6
             // 
@@ -469,6 +477,7 @@
             this.EchoStopBox.TabIndex = 5;
             this.EchoStopBox.Text = "0";
             this.EchoStopBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.EchoStopBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PathFXUpdate);
             // 
             // label12
             // 
@@ -489,6 +498,7 @@
             this.EchoStartBox.TabIndex = 4;
             this.EchoStartBox.Text = "0";
             this.EchoStartBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.EchoStartBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PathFXUpdate);
             // 
             // label11
             // 

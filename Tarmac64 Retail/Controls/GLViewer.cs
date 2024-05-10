@@ -625,12 +625,12 @@ namespace Tarmac64_Retail
             {
                 if ((ThisObject != TargetedObject) && (ThisObject != OKSelectedObject))
                 {
-                    if (ObjectTypes[CourseObjects[ThisObject].ObjectIndex].TextureData != null)
+                    if (ObjectTypes[CourseObjects[ThisObject].TypeIndex].TextureData != null)
                     {
                         GL.End();
                         GL.Enable(OpenGL.GL_TEXTURE_2D);
                         GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                        TarmacGL.DrawOKObjectTextured(GL, GLTexture[GLObjectIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
+                        TarmacGL.DrawOKObjectTextured(GL, GLTexture[GLObjectIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].TypeIndex]);
                     }
                     else
                     {
@@ -639,7 +639,7 @@ namespace Tarmac64_Retail
                         GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                         GL.Enable(OpenGL.GL_BLEND);
                         GLTexture[GLShadeIndex].Bind(GL);
-                        TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
+                        TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].TypeIndex]);
                     }
 
                 }
@@ -656,7 +656,7 @@ namespace Tarmac64_Retail
                     GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                     GL.Enable(OpenGL.GL_BLEND);
                     GLTexture[GLShadeIndex].Bind(GL);
-                    TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].ObjectIndex]);
+                    TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].TypeIndex]);
                 }
             }
         }
@@ -1018,7 +1018,7 @@ namespace Tarmac64_Retail
                         {
                             TM64_Course.OKObject ThisObject = TarmacCourse.NewOKObject();
                             ThisObject.OriginPosition = new short[] { Convert.ToInt16(LocalCamera.marker.X), Convert.ToInt16(LocalCamera.marker.Y), Convert.ToInt16(LocalCamera.marker.Z + 3) };
-                            ThisObject.ObjectIndex = Convert.ToInt16(OKObjectIndex);
+                            ThisObject.TypeIndex = Convert.ToInt16(OKObjectIndex);
                             CourseObjects.Add(ThisObject);
                             RequestMode = 1;
                         }
@@ -1224,12 +1224,12 @@ namespace Tarmac64_Retail
                         // Custom Objects
                         for (int ThisList = 0; ThisList < CourseObjects.Count; ThisList++)
                         {
-                            float Scale = ObjectTypes[CourseObjects[ThisList].ObjectIndex].ModelScale;
-                            for (int ThisObject = 0; ThisObject < ObjectTypes[CourseObjects[ThisList].ObjectIndex].ModelData.Length; ThisObject++)
+                            float Scale = ObjectTypes[CourseObjects[ThisList].TypeIndex].ModelScale;
+                            for (int ThisObject = 0; ThisObject < ObjectTypes[CourseObjects[ThisList].TypeIndex].ModelData.Length; ThisObject++)
                             {
                                 float[] OriginPosition = { Convert.ToSingle(CourseObjects[ThisList].OriginPosition[0]), Convert.ToSingle(CourseObjects[ThisList].OriginPosition[1]), Convert.ToSingle(CourseObjects[ThisList].OriginPosition[2]) };
                                 float[] ModelScales = { Scale, Scale, Scale };
-                                if (MouseTestOrigin(out Intersection, ObjectTypes[CourseObjects[ThisList].ObjectIndex].ModelData[ThisObject], RayOrigin, RayTarget, OriginPosition, ModelScales))
+                                if (MouseTestOrigin(out Intersection, ObjectTypes[CourseObjects[ThisList].TypeIndex].ModelData[ThisObject], RayOrigin, RayTarget, OriginPosition, ModelScales))
                                 {
                                     if ((objectDistance == -1) || (objectDistance > Intersection.X))
                                     {

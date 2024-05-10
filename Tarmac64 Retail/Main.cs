@@ -9,9 +9,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Xml;
 using System.Windows.Input;
 using Tarmac64_Library;
 using static Tarmac64_Library.TM64_Course;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Tarmac64_Retail
 {
@@ -225,7 +227,7 @@ namespace Tarmac64_Retail
                     ThisList[ThisType].pathmarker = new List<TM64_Paths.Marker>();
                     for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
                     {
-                        if (OKObjectList[ThisObject].ObjectIndex == ThisType)
+                        if (OKObjectList[ThisObject].TypeIndex == ThisType)
                         {
                             ThisList[ThisType].Add(OKObjectList[ThisObject]);
                             
@@ -245,7 +247,7 @@ namespace Tarmac64_Retail
                 ThisList[4].pathmarker = new List<TM64_Paths.Marker>();
                 for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
                 {
-                    if (OKObjectList[ThisObject].ObjectIndex == 3)
+                    if (OKObjectList[ThisObject].TypeIndex == 3)
                     {
                         ThisList[3].Add(OKObjectList[ThisObject].OriginPosition);
                         if (ThisList[3].pathmarker.Count > 8)
@@ -254,7 +256,7 @@ namespace Tarmac64_Retail
                             return;
                         }
                     }
-                    if (OKObjectList[ThisObject].ObjectIndex == 4)
+                    if (OKObjectList[ThisObject].TypeIndex == 4)
                     {
                         ThisList[4].Add(OKObjectList[ThisObject].OriginPosition);
                         if (ThisList[4].pathmarker.Count > 8)
@@ -390,7 +392,7 @@ namespace Tarmac64_Retail
                 ThisList.pathmarker = new List<TM64_Paths.Marker>();
                 for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
                 {
-                    if (OKObjectList[ThisObject].ObjectIndex == 0)
+                    if (OKObjectList[ThisObject].TypeIndex == 0)
                     {
                         ThisList.Add(OKObjectList[ThisObject].OriginPosition);
                         if (ThisList.pathmarker.Count > 63)
@@ -406,7 +408,7 @@ namespace Tarmac64_Retail
                 List<TM64_Paths.BattleMarker> ObjectiveList = new List<TM64_Paths.BattleMarker>();
                 for (int ThisObject = 0; ThisObject < OKObjectList.Count; ThisObject++)
                 {
-                    if (OKObjectList[ThisObject].ObjectIndex == 5)
+                    if (OKObjectList[ThisObject].TypeIndex == 5)
                     {
                         TM64_Paths.BattleMarker ThisSpot = new TM64_Paths.BattleMarker();
                         ThisSpot.xval = OKObjectList[ThisObject].OriginPosition[0];
@@ -526,7 +528,7 @@ namespace Tarmac64_Retail
             List<TM64_Course.OKObject> CustomObjectList = new List<TM64_Course.OKObject>();
             for (int This = 0; This < OKObjectList.Count; This++)
             {
-                if (OKObjectList[This].ObjectIndex >= 6)
+                if (OKObjectList[This].TypeIndex >= 6)
                 {
                     CustomObjectList.Add(OKObjectList[This]);
                 }
@@ -839,13 +841,13 @@ namespace Tarmac64_Retail
                             {
                                 TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
 
-                                NewObject.ObjectIndex = 0;
+                                NewObject.TypeIndex = 0;
                                 NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
                                 NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
                                 NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
 
                                 OKObjectList.Add(NewObject);
-                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
                             }
                         }
@@ -855,13 +857,13 @@ namespace Tarmac64_Retail
                             {
                                 TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
 
-                                NewObject.ObjectIndex = 1;
+                                NewObject.TypeIndex = 1;
                                 NewObject.OriginPosition[0] = Convert.ToInt16(Tree.xval);
                                 NewObject.OriginPosition[1] = Convert.ToInt16(Tree.yval);
                                 NewObject.OriginPosition[2] = Convert.ToInt16(Tree.zval);
 
                                 OKObjectList.Add(NewObject);
-                                ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
                             }
                         }
@@ -871,13 +873,13 @@ namespace Tarmac64_Retail
                             {
                                 TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
 
-                                NewObject.ObjectIndex = 2;
+                                NewObject.TypeIndex = 2;
                                 NewObject.OriginPosition[0] = Convert.ToInt16(Plant.xval);
                                 NewObject.OriginPosition[1] = Convert.ToInt16(Plant.yval);
                                 NewObject.OriginPosition[2] = Convert.ToInt16(Plant.zval);
 
                                 OKObjectList.Add(NewObject);
-                                ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
                             }
                         }
                         if (pathGroups[4].pathList.Length != 0)
@@ -886,13 +888,13 @@ namespace Tarmac64_Retail
                             {
                                 TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
 
-                                NewObject.ObjectIndex = 3;
+                                NewObject.TypeIndex = 3;
                                 NewObject.OriginPosition[0] = Convert.ToInt16(Coin.xval);
                                 NewObject.OriginPosition[1] = Convert.ToInt16(Coin.yval);
                                 NewObject.OriginPosition[2] = Convert.ToInt16(Coin.zval);
 
                                 OKObjectList.Add(NewObject);
-                                ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
                             }
                         }
@@ -908,13 +910,13 @@ namespace Tarmac64_Retail
                             {
                                 TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
 
-                                NewObject.ObjectIndex = 0;
+                                NewObject.TypeIndex = 0;
                                 NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
                                 NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
                                 NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
 
                                 OKObjectList.Add(NewObject);
-                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
 
                             }
                         }
@@ -1163,6 +1165,7 @@ namespace Tarmac64_Retail
 
             }
             loaded = true;
+            PathControl.loaded = true;
 
 
 
@@ -1815,8 +1818,46 @@ namespace Tarmac64_Retail
             UpdateSVDisplay();
         }
 
+        private void LoadXML()
+        {
+            OpenFileDialog FileOpen = new OpenFileDialog();
+            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            FileOpen.Filter = "Tarmac Course|*.ok64.Save|All Files (*.*)|*.*";
+            if (FileOpen.ShowDialog() == DialogResult.OK)
+            {
+                string SavePath = FileOpen.FileName;
+
+                XmlDocument XMLDoc = new XmlDocument();
+                XMLDoc.Load(SavePath);
+
+                SettingsControl.LoadCourseXML(XMLDoc);
+                PathControl.LoadPathXML(XMLDoc);
+                TextureControl.LoadTextureXML(XMLDoc);
+                ObjectControl.LoadObjectXML(XMLDoc);
+                
+                
+                textureArray = TextureControl.textureArray;
+                materialCount = TextureControl.textureArray.Length;
+                TextureBitmaps = new Bitmap[textureArray.Length];
+
+                string ParentPath = "/SaveFile";
+                for (int ThisSection = 0; ThisSection < sectionCount; ThisSection++)
+                {
+                    sectionList[ThisSection] = new TM64_Geometry.OK64SectionList(XMLDoc, ParentPath, ThisSection);
+                }
+
+                UpdateGLView();
+                UpdateUIControls();
+            }
+        }
+
         private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //LoadXML();
+            //return;
+            //
+            //
+            //
             OpenFileDialog FileOpen = new OpenFileDialog();
             FileOpen.InitialDirectory = okSettings.ProjectDirectory;
             FileOpen.Filter = "Tarmac Course|*.ok64.Save|All Files (*.*)|*.*";
@@ -1869,8 +1910,48 @@ namespace Tarmac64_Retail
 
         }
 
+
+        private void SaveXML()
+        {
+            SaveFileDialog FileSave = new SaveFileDialog();
+            FileSave.InitialDirectory = okSettings.ProjectDirectory;
+            FileSave.Filter = "Tarmac Course|*.ok64.Save|All Files (*.*)|*.*";
+            if (FileSave.ShowDialog() == DialogResult.OK)
+            {
+                string SavePath = FileSave.FileName;
+                XmlDocument XMLDoc = new XmlDocument();
+                
+
+                XmlElement SaveFile = XMLDoc.CreateElement("SaveFile");
+                XMLDoc.AppendChild(SaveFile);
+                SettingsControl.SaveCourseXML(XMLDoc, SaveFile);
+                PathControl.SavePathXML(XMLDoc, SaveFile);
+                TextureControl.SaveTextureXML(XMLDoc, SaveFile);
+                ObjectControl.SaveObjectXML(XMLDoc, SaveFile);
+                
+
+
+                
+                for (int ThisSection = 0; ThisSection < sectionCount; ThisSection++)
+                {
+                    sectionList[ThisSection].SaveXML(XMLDoc, SaveFile, ThisSection);
+                }
+
+                XMLDoc.Save(SavePath);
+                
+            }
+
+
+        }
+
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+            //SaveXML();
+            //return;
+            //
+            //
+
             SaveFileDialog FileSave = new SaveFileDialog();
             FileSave.InitialDirectory = okSettings.ProjectDirectory;
             FileSave.Filter = "Tarmac Course|*.ok64.Save|All Files (*.*)|*.*";

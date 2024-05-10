@@ -18,6 +18,7 @@ using Cereal64.Common.Utils.Encoding;
 using System.Text.RegularExpressions;
 using System.Security.Permissions;
 using System.Windows;
+using System.Xml;
 using Tarmac64_Library;
 using SharpDX;
 
@@ -31,6 +32,7 @@ using System.Security.Policy;
 using SharpGL.SceneGraph;
 using static Tarmac64_Library.TM64_Geometry;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Tarmac64_Library
 {
@@ -94,6 +96,39 @@ namespace Tarmac64_Library
 
         public class OK64SectionList
         {
+            public OK64SectionList(XmlDocument XMLDoc, string Parent, int SectionID)
+            {
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+                string TargetPath = Parent + "/Section_" + SectionID.ToString();
+                int Count = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, TargetPath, "ObjectCount", "0"));
+
+                objectList = new int[Count];
+                segmentPosition = 0;
+
+                for (int This = 0; This < Count; This++)
+                {
+                    string HeaderName = TargetPath + "/ObjectList";
+                    objectList[This] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, HeaderName, "Object_" + This.ToString(), "0"));
+                }
+
+
+            }
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int SectionID)
+            {
+                TM64 Tarmac = new TM64();
+                XmlElement SectionXML = XMLDoc.CreateElement("Section_"+SectionID.ToString());
+                Parent.AppendChild(SectionXML);
+
+                Tarmac.GenerateElement(XMLDoc, SectionXML, "ObjectCount", objectList.Length);
+                XmlElement ObjectListXML = XMLDoc.CreateElement("ObjectList");
+                SectionXML.AppendChild(ObjectListXML);
+                for (int ThisCount = 0; ThisCount < objectList.Length; ThisCount++)
+                {
+                    Tarmac.GenerateElement(XMLDoc, ObjectListXML, "Object_"+ThisCount.ToString(), objectList[ThisCount]);
+                }
+
+            }
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
@@ -154,7 +189,92 @@ namespace Tarmac64_Library
             {
                 RawTexture = new OK64TextureRaw();
             }
+            public OK64Texture(XmlDocument XMLDoc, string Parent, int ChildIndex)
+            {
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+                XmlNode Target = Owner.ChildNodes[ChildIndex];
+                
+                textureName = XmlConvert.DecodeName(Target.Name);
+                string HeaderName = XmlConvert.EncodeName(textureName);
+                texturePath = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "texturePath");
+                alphaPath = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "alphaPath");
 
+                CombineModeA = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "CombineModeA","0"));
+                CombineModeB = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "CombineModeB", "0"));
+
+                RenderModeA = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "RenderModeA", "0"));
+                RenderModeB = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "RenderModeB", "0"));
+
+                GeometryModes = Convert.ToUInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "GeometryModes", "0"));
+                GeometryBools = new bool[12];
+                BitSize = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "BitSize", "0"));
+
+                TextureFilter = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "TextureFilter", "0"));
+                TextureFormat = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "TextureFormat", "0"));
+                TextureOverWrite = new int[0];
+
+                SFlag = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "SFlag", "0"));
+                TFlag = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "TFlag", "0"));
+
+                textureScrollS = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "textureScrollS", "0"));
+                textureScrollT = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "textureScrollT", "0"));
+
+                textureScreen = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "textureScreen", "0"));
+
+                GLShiftS = Convert.ToDouble(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "GLShiftS", "0"));
+                GLShiftT = Convert.ToDouble(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "GLShiftT", "0"));
+
+                RawTexture = new OK64TextureRaw();
+                if (File.Exists(texturePath))
+                {
+                    using (var fs = new FileStream(texturePath, FileMode.Open, FileAccess.Read))
+                    {
+                        Image Raw = Image.FromStream(fs);
+                        RawTexture.textureBitmap = Raw;
+                        textureWidth = Raw.Width;
+                        textureHeight = Raw.Height;
+                        fs.Close();
+                    }
+                }
+            }
+            
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent)
+            {
+                TM64 Tarmac = new TM64();
+                XmlElement TextureXML = XMLDoc.CreateElement(XmlConvert.EncodeName(textureName));
+                Parent.AppendChild(TextureXML);
+
+                if (texturePath != null)
+                {
+                    Tarmac.GenerateElement(XMLDoc, TextureXML, "texturePath", texturePath);
+                }
+                else
+                {
+                    Tarmac.GenerateElement(XMLDoc, TextureXML, "texturePath", "NULL");
+                }
+
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "alphaPath", alphaPath);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "CombineModeA", CombineModeA);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "CombineModeB", CombineModeB);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "RenderModeA", RenderModeA);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "RenderModeB", RenderModeB);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "GeometryModes", GeometryModes);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "BitSize", BitSize);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "TextureFilter", TextureFilter);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "TextureFormat", TextureFormat);
+
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "SFlag", SFlag);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "TFlag", TFlag);
+
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "textureScrollS", textureScrollS);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "textureScrollT", textureScrollT);
+
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "textureScreen", textureScreen);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "GLShiftS", GLShiftS);
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "GLShiftT", GLShiftT);
+
+            }
             public byte[] SaveData()
             {
                 MemoryStream Data = new MemoryStream();
@@ -258,7 +378,7 @@ namespace Tarmac64_Library
                         fs.Close();
                     }
                 }
-                }
+            }
 
 
             public OK64TextureRaw RawTexture { get; set; }
@@ -1304,6 +1424,7 @@ namespace Tarmac64_Library
                     binaryWriter.Write(TextureData[ThisTexture].TFlag);
 
 
+                    
                     binaryWriter.Write(TextureData[ThisTexture].TextureFormat);
                     binaryWriter.Write(TextureData[ThisTexture].BitSize);
 
@@ -1333,7 +1454,7 @@ namespace Tarmac64_Library
                 binaryWriter.Write(ModelData[ThisModel].materialID);
                 binaryWriter.Write(ModelData[ThisModel].vertCount);
                 binaryWriter.Write(ModelData[ThisModel].faceCount);
-                for (int ThisBool = 0; ThisBool < 6; ThisBool++)
+                for (int ThisBool = 0; ThisBool < 8; ThisBool++)
                 {
                     binaryWriter.Write(ModelData[ThisModel].KillDisplayList[ThisBool]);
                 }

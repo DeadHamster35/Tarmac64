@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.IO;
 using Tarmac64_Library;
 using System.Globalization;
+using System.Xml;
+using SharpGL.SceneGraph;
 
 namespace Tarmac64_Retail
 {
@@ -72,6 +74,81 @@ namespace Tarmac64_Retail
                 CourseData.BombArray[ThisBomb].Type = binaryReader.ReadInt16();
             }
 
+        }
+
+        public void LoadPathXML(XmlDocument XMLDoc)
+        {
+            string ParentPath = "/SaveFile/PathSettings";
+            TM64 Tarmac = new TM64();
+
+            CourseData.PathSettings.PathSurface[0] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathSurface0", "0"));
+            CourseData.PathSettings.PathSurface[1] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathSurface1", "0"));
+            CourseData.PathSettings.PathSurface[2] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathSurface2", "0"));
+            CourseData.PathSettings.PathSurface[3] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathSurface3", "0"));
+            CourseData.PathCount = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "PathCount", "1"));
+            CourseData.DistributeBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "DistributeBool", "0"));
+
+            int FXCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "EffectCount", "0"));
+            PathFX = new List<TM64_Course.PathEffect>();
+
+            ParentPath = "/SaveFile/PathSettings/PathEffects";
+            for (int ThisFX = 0; ThisFX < FXCount; ThisFX++)
+            {
+                string SubPath = ParentPath + "/FX_" + ThisFX.ToString();
+                TM64_Course.PathEffect NewFX = new TM64_Course.PathEffect();
+                NewFX.Type = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, SubPath, "Type", "0"));
+                NewFX.StartIndex = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, SubPath, "StartIndex", "0"));
+                NewFX.EndIndex = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, SubPath, "EndIndex", "0"));
+                NewFX.Power = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, SubPath, "Power", "0"));
+
+                NewFX.AdjColor = new TM64_Geometry.OK64Color();
+                NewFX.AdjColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, SubPath, "AdjColor.R", "255"));
+                NewFX.AdjColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, SubPath, "AdjColor.G", "255"));
+                NewFX.AdjColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, SubPath, "AdjColor.B", "255"));
+
+                NewFX.BodyColor = new TM64_Geometry.OK64Color();
+                NewFX.BodyColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, SubPath, "BodyColor.R", "255"));
+                NewFX.BodyColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, SubPath, "BodyColor.G", "255"));
+                NewFX.BodyColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, SubPath, "BodyColor.B", "255"));
+
+                PathIndexBox.Items.Add(ThisFX);
+                PathFX.Add(NewFX);                
+            }
+        }
+
+        public void SavePathXML(XmlDocument XMLDoc, XmlElement Parent)
+        {
+            UpdatePaths();
+            CourseData.PathSettings.PathEffects = PathFX.ToArray();
+            XmlElement PathXML = XMLDoc.CreateElement("PathSettings");
+            Parent.AppendChild(PathXML);
+            TM64 Tarmac = new TM64();
+
+            Tarmac.GenerateElement(XMLDoc, PathXML, "PathSurface0", CourseData.PathSettings.PathSurface[0]);
+            Tarmac.GenerateElement(XMLDoc, PathXML, "PathSurface1", CourseData.PathSettings.PathSurface[1]);
+            Tarmac.GenerateElement(XMLDoc, PathXML, "PathSurface2", CourseData.PathSettings.PathSurface[2]);
+            Tarmac.GenerateElement(XMLDoc, PathXML, "PathSurface3", CourseData.PathSettings.PathSurface[3]);
+            Tarmac.GenerateElement(XMLDoc, PathXML, "PathCount", CourseData.PathCount);
+            Tarmac.GenerateElement(XMLDoc, PathXML, "DistributeBool", CourseData.DistributeBool);
+
+            Tarmac.GenerateElement(XMLDoc, PathXML, "EffectCount", CourseData.PathSettings.PathEffects.Length);
+            XmlElement FXXML = XMLDoc.CreateElement("PathEffects");
+            PathXML.AppendChild(FXXML);
+            for (int ThisPath = 0; ThisPath < CourseData.PathSettings.PathEffects.Length; ThisPath++)
+            {
+                XmlElement LocalXML = XMLDoc.CreateElement("FX_"+ThisPath.ToString());
+                FXXML.AppendChild(LocalXML);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "Type", CourseData.PathSettings.PathEffects[ThisPath].Type);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "StartIndex", CourseData.PathSettings.PathEffects[ThisPath].StartIndex);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "EndIndex", CourseData.PathSettings.PathEffects[ThisPath].EndIndex);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "Power", CourseData.PathSettings.PathEffects[ThisPath].Power);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "AdjColor.R", CourseData.PathSettings.PathEffects[ThisPath].AdjColor.R);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "AdjColor.G", CourseData.PathSettings.PathEffects[ThisPath].AdjColor.G);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "AdjColor.B", CourseData.PathSettings.PathEffects[ThisPath].AdjColor.B);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "BodyColor.R", CourseData.PathSettings.PathEffects[ThisPath].BodyColor.R);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "BodyColor.G", CourseData.PathSettings.PathEffects[ThisPath].BodyColor.G);
+                Tarmac.GenerateElement(XMLDoc, LocalXML, "BodyColor.B", CourseData.PathSettings.PathEffects[ThisPath].BodyColor.B);
+            }
         }
         public byte[] SavePathSettings()
         {
@@ -309,6 +386,16 @@ namespace Tarmac64_Retail
 
             UpdatePaths();
             loaded = Backup;
+        }
+
+        private void PathIndexBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateUI();
+        }
+
+        private void PathFXUpdate(object sender, KeyEventArgs e)
+        {
+            UpdatePaths();
         }
 
         private void ColorUpdate()
