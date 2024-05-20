@@ -4588,8 +4588,10 @@ namespace Tarmac64_Library
             UInt32 heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
             UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
 
+            byte[] SegmentByte = BitConverter.GetBytes(Segment);
+            Array.Reverse(SegmentByte);
+            int SegmentID = BitConverter.ToInt32(SegmentByte, 0);
 
-            
             binaryWriter.Write(
                     F3D.gsSPTexture(
                         65535,
@@ -4611,7 +4613,7 @@ namespace Tarmac64_Library
             if (TextureObject.BitSize < 1)
             {
                 //Macro 4-bit Texture Load
-                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
+                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
                     0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
             }
@@ -4636,7 +4638,7 @@ namespace Tarmac64_Library
                 );
                 //Load Texture Data
                 binaryWriter.Write(F3D.gsDPLoadTextureBlock(
-                    Convert.ToUInt32(TextureObject.segmentPosition | 0x05000000),
+                    Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                     F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                     Convert.ToUInt32(TextureObject.textureWidth),

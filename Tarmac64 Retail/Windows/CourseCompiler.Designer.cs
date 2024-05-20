@@ -646,7 +646,7 @@
             this.TextureData.Location = new System.Drawing.Point(4, 22);
             this.TextureData.Name = "TextureData";
             this.TextureData.Padding = new System.Windows.Forms.Padding(3);
-            this.TextureData.Size = new System.Drawing.Size(307, 602);
+            this.TextureData.Size = new System.Drawing.Size(192, 74);
             this.TextureData.TabIndex = 1;
             this.TextureData.Text = "Textures";
             this.TextureData.UseVisualStyleBackColor = true;
@@ -702,7 +702,7 @@
             this.Object.Controls.Add(this.ObjectControl);
             this.Object.Location = new System.Drawing.Point(4, 22);
             this.Object.Name = "Object";
-            this.Object.Size = new System.Drawing.Size(192, 74);
+            this.Object.Size = new System.Drawing.Size(307, 602);
             this.Object.TabIndex = 4;
             this.Object.Text = "Objects";
             this.Object.UseVisualStyleBackColor = true;
@@ -713,7 +713,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ObjectControl.Location = new System.Drawing.Point(3, 3);
             this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 0);
+            this.ObjectControl.Size = new System.Drawing.Size(289, 528);
             this.ObjectControl.TabIndex = 1;
             this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
