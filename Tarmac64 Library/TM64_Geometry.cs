@@ -1647,7 +1647,7 @@ namespace Tarmac64_Library
                         }
                         catch (OverflowException) 
                         {
-                            MessageBox.Show("Mesh indices are too high or too low. Check your FBX export settings and Tarmac Import Scale");
+                            MessageBox.Show(newObject.objectName + " - Mesh indices are too high or too low. Check your FBX export settings and Tarmac Import Scale");
                             Environment.Exit(0);
                         }
 
@@ -3568,179 +3568,78 @@ namespace Tarmac64_Library
             Array.Reverse(SegmentByte);
             int SegmentID = BitConverter.ToInt32(SegmentByte, 0);
 
-            for (int ThisLoop = 0; ThisLoop < 10; ThisLoop++)
-            { 
 
-                //set MIP levels to 0.
-                if (TextureObject.TextureFormat != 0)
+            //set MIP levels to 0.
+            if (TextureObject.TextureFormat != 0)
+            {
+
+
+                binaryWriter.Write(
+                    F3D.gsSPTexture(
+                        32768,
+                        32768,
+                        0,
+                        0,
+                        1
+                    )
+                );
+            }
+            else
+            {
+                binaryWriter.Write(
+                    F3D.gsSPTexture(
+                        65535,
+                        65535,
+                        0,
+                        0,
+                        1
+                    )
+                );
+            }
+
+            //pipe sync.
+            binaryWriter.Write(
+                F3D.gsDPPipeSync()
+            );
+
+            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
+
+            if (GeometryToggle)
+            {
+
+                if (FogToggle)
                 {
-
-
                     binaryWriter.Write(
-                        F3D.gsSPTexture(
-                            32768,
-                            32768,
-                            0,
-                            0,
-                            1
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                            F3DEX095_Parameters.G_CC_PASS2
                         )
                     );
                 }
                 else
+
                 {
-                    binaryWriter.Write(
-                        F3D.gsSPTexture(
-                            65535,
-                            65535,
-                            0,
-                            0,
-                            1
-                        )
-                    );
-                }
-
-                //pipe sync.
-                binaryWriter.Write(
-                    F3D.gsDPPipeSync()
-                );
-
-                binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
-
-                if (GeometryToggle)
-                {
-
-                    if (FogToggle)
-                    {
-                        binaryWriter.Write(
-                            F3D.gsDPSetCombineMode(
-                                F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
-                                F3DEX095_Parameters.G_CC_PASS2
-                            )
-                        );
-                    }
-                    else
-
-                    {
-                        binaryWriter.Write(
-                            F3D.gsDPSetCombineMode(
-                                F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
-                                F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
-                            )
-                        );
-                    }
-
-                }
-
-
-
-                binaryWriter.Write(
-                    F3D.gsDPSetTextureFilter(F3DEX095_Parameters.TextureFilters[TextureObject.TextureFilter])
-                    );
-
-
-                /*
-                if (!TextureObject.AdvancedSettings)
-                {
-                    //set combine mode (simple)
                     binaryWriter.Write(
                         F3D.gsDPSetCombineMode(
                             F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
                             F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
                         )
                     );
-
-                }
-                else
-                {
-                    //set combine mode (advanced)
-                    binaryWriter.Write(
-                        F3D.gsDPSetCombineMode(
-                            TextureObject.CombineValuesA,
-                            TextureObject.CombineValuesB
-                        )
-                    );
-
-                }
-                */
-
-
-
-
-
-                //set render mode
-                if (GeometryToggle)
-                {
-
-                    if (FogToggle)
-                    {
-                        binaryWriter.Write(
-                            F3D.gsDPSetRenderMode(
-                                F3DEX095_Parameters.G_RM_FOG_SHADE_A,
-                                F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
-                            )
-                        );
-                    }
-                    else
-
-                    {
-                        binaryWriter.Write(
-                            F3D.gsDPSetRenderMode(
-                                F3DEX095_Parameters.RenderModes[TextureObject.RenderModeA],
-                                F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
-                            )
-                        );
-                    }
-
                 }
 
-                //Load Texture Settings
-                binaryWriter.Write(
-                    F3D.gsNinSetupTileDescription(
-                        F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
-                        F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
-                        Convert.ToUInt32(TextureObject.textureWidth),
-                        Convert.ToUInt32(TextureObject.textureHeight),
-                        0,
-                        0,
-                        F3DEX095_Parameters.TextureModes[TextureObject.SFlag],
-                        widthex,
-                        0,
-                        F3DEX095_Parameters.TextureModes[TextureObject.TFlag],
-                        heightex,
-                        0
-                    )
+            }
+
+
+
+            binaryWriter.Write(
+                F3D.gsDPSetTextureFilter(F3DEX095_Parameters.TextureFilters[TextureObject.TextureFilter])
                 );
 
 
-
-
-                if (GeometryToggle)
-                {
-
-
-                    binaryWriter.Write(F3D.gsSPClearGeometryMode(F3DEX095_Parameters.AllGeometryModes));    //clear existing modes
-
-                    //setup the Geometry Mode parameter
-                    TextureObject.GeometryModes = 0;
-                    for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
-                    {
-                        if (TextureObject.GeometryBools[ThisCheck])
-                        {
-                            TextureObject.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
-                        }
-                    }
-
-
-                    if (FogToggle)
-                    {
-                        TextureObject.GeometryModes |= F3DEX095_Parameters.G_FOG;
-                    }
-
-                    binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.GeometryModes));               //set the mode we made above.
-                }
-
-
-                //Load Texture Data
+            /*
+            if (!TextureObject.AdvancedSettings)
+            {
+                //set combine mode (simple)
                 binaryWriter.Write(
                     F3D.gsNinLoadTextureImage(
                         Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | Convert.ToUInt32(Segment << 24)),
@@ -3750,10 +3649,115 @@ namespace Tarmac64_Library
                         Convert.ToUInt32(TextureObject.textureHeight),
                         0,
                         7
+                    F3D.gsDPSetCombineMode(
+                        F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                        F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
                     )
                 );
 
             }
+            else
+            {
+                //set combine mode (advanced)
+                binaryWriter.Write(
+                    F3D.gsDPSetCombineMode(
+                        TextureObject.CombineValuesA,
+                        TextureObject.CombineValuesB
+                    )
+                );
+
+            }
+            */
+
+
+
+
+
+            //set render mode
+            if (GeometryToggle)
+            {
+
+                if (FogToggle)
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.G_RM_FOG_SHADE_A,
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
+                        )
+                    );
+                }
+                else
+
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeA],
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
+                        )
+                    );
+                }
+
+            }
+
+            //Load Texture Settings
+            binaryWriter.Write(
+                F3D.gsNinSetupTileDescription(
+                    F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
+                    F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
+                    Convert.ToUInt32(TextureObject.textureWidth),
+                    Convert.ToUInt32(TextureObject.textureHeight),
+                    0,
+                    0,
+                    F3DEX095_Parameters.TextureModes[TextureObject.SFlag],
+                    widthex,
+                    0,
+                    F3DEX095_Parameters.TextureModes[TextureObject.TFlag],
+                    heightex,
+                    0
+                )
+            );
+
+
+
+
+            if (GeometryToggle)
+            {
+
+
+                binaryWriter.Write(F3D.gsSPClearGeometryMode(F3DEX095_Parameters.AllGeometryModes));    //clear existing modes
+
+                //setup the Geometry Mode parameter
+                TextureObject.GeometryModes = 0;
+                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
+                {
+                    if (TextureObject.GeometryBools[ThisCheck])
+                    {
+                        TextureObject.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
+                    }
+                }
+
+
+                if (FogToggle)
+                {
+                    TextureObject.GeometryModes |= F3DEX095_Parameters.G_FOG;
+                }
+
+                binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.GeometryModes));               //set the mode we made above.
+            }
+
+
+            //Load Texture Data
+            binaryWriter.Write(
+                F3D.gsNinLoadTextureImage(
+                    Convert.ToUInt32(TextureObject.segmentPosition | Convert.ToUInt32(Segment << 24)),
+                    F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
+                    F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
+                    Convert.ToUInt32(TextureObject.textureWidth),
+                    Convert.ToUInt32(TextureObject.textureHeight),
+                    0,
+                    7
+                )
+            );
 
             binaryWriter.Write(F3D.gsSPEndDisplayList());                                             //End the Display List
 
@@ -3781,192 +3785,189 @@ namespace Tarmac64_Library
 
             
 
-            for (int ThisLoop = 0; ThisLoop < 10; ThisLoop++)
-            {
-                binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DSharp.F3DEX095_Parameters.G_TT_RGBA16));
+            binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DSharp.F3DEX095_Parameters.G_TT_RGBA16));
                 
-                if (TextureObject.BitSize < 1)
-                {
-                    //Macro 4-bit Texture Load
+            if (TextureObject.BitSize < 1)
+            {
+                //Macro 4-bit Texture Load
 
-                    binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.RawTexture.palettePosition | SegmentID)));
-                    binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
-                        F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
-                        0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
-                }
-                else
-                {
+                binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | SegmentID)));
+                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                    F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
+                    0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
+            }
+            else
+            {
 
-                    binaryWriter.Write(F3D.gsDPLoadTLUT_pal256(0, Convert.ToUInt32(TextureObject.RawTexture.palettePosition | SegmentID)));
+                binaryWriter.Write(F3D.gsDPLoadTLUT_pal256(0, Convert.ToUInt32(TextureObject.palettePosition | SegmentID)));
 
-                    //Load Texture Settings
-                    binaryWriter.Write(
-                        F3D.gsNinSetupTileDescription(
-                            F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
-                            F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
-                            Convert.ToUInt32(TextureObject.textureWidth),
-                            Convert.ToUInt32(TextureObject.textureHeight),
-                            0,
-                            0,
-                            F3DEX095_Parameters.TextureModes[TextureObject.SFlag],
-                            widthex,
-                            0,
-                            F3DEX095_Parameters.TextureModes[TextureObject.TFlag],
-                            heightex,
-                            0
-                        )
-                    );
-                    //Load Texture Data
-                    binaryWriter.Write(F3D.gsDPLoadTextureBlock(
-                        Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
+                //Load Texture Settings
+                binaryWriter.Write(
+                    F3D.gsNinSetupTileDescription(
                         F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                         F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                         Convert.ToUInt32(TextureObject.textureWidth),
                         Convert.ToUInt32(TextureObject.textureHeight),
+                        0,
                         0,
                         F3DEX095_Parameters.TextureModes[TextureObject.SFlag],
                         widthex,
                         0,
                         F3DEX095_Parameters.TextureModes[TextureObject.TFlag],
                         heightex,
-                        0));
-
-
-                }
-
-
-
-                //set MIP levels to 0.
-                binaryWriter.Write(
-                    F3D.gsSPTexture(
-                        65535,
-                        65535,
-                        0,
-                        0,
-                        1
+                        0
                     )
                 );
+                //Load Texture Data
+                binaryWriter.Write(F3D.gsDPLoadTextureBlock(
+                    Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                    F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
+                    F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
+                    Convert.ToUInt32(TextureObject.textureWidth),
+                    Convert.ToUInt32(TextureObject.textureHeight),
+                    0,
+                    F3DEX095_Parameters.TextureModes[TextureObject.SFlag],
+                    widthex,
+                    0,
+                    F3DEX095_Parameters.TextureModes[TextureObject.TFlag],
+                    heightex,
+                    0));
 
-                //pipe sync.
-                binaryWriter.Write(
-                    F3D.gsDPPipeSync()
-                );
+
+            }
 
 
 
-                if (GeometryToggle)
+            //set MIP levels to 0.
+            binaryWriter.Write(
+                F3D.gsSPTexture(
+                    65535,
+                    65535,
+                    0,
+                    0,
+                    1
+                )
+            );
+
+            //pipe sync.
+            binaryWriter.Write(
+                F3D.gsDPPipeSync()
+            );
+
+
+
+            if (GeometryToggle)
+            {
+
+                if (FogToggle)
                 {
-
-                    if (FogToggle)
-                    {
-                        binaryWriter.Write(
-                            F3D.gsDPSetCombineMode(
-                                F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
-                                F3DEX095_Parameters.G_CC_PASS2
-                            )
-                        );
-                    }
-                    else
-
-                    {
-                        binaryWriter.Write(
-                            F3D.gsDPSetCombineMode(
-                                F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
-                                F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
-                            )
-                        );
-                    }
-
-                }
-
-
-                binaryWriter.Write(
-                    F3D.gsDPSetTextureFilter(F3DEX095_Parameters.TextureFilters[TextureObject.TextureFilter])
+                    binaryWriter.Write(
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                            F3DEX095_Parameters.G_CC_PASS2
+                        )
                     );
+                }
+                else
 
-
-
-                /*
-                if (!TextureObject.AdvancedSettings)
                 {
-                    //set combine mode (simple)
                     binaryWriter.Write(
                         F3D.gsDPSetCombineMode(
                             F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
                             F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
                         )
                     );
-
                 }
-                else
+
+            }
+
+
+            binaryWriter.Write(
+                F3D.gsDPSetTextureFilter(F3DEX095_Parameters.TextureFilters[TextureObject.TextureFilter])
+                );
+
+
+
+            /*
+            if (!TextureObject.AdvancedSettings)
+            {
+                //set combine mode (simple)
+                binaryWriter.Write(
+                    F3D.gsDPSetCombineMode(
+                        F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                        F3DEX095_Parameters.GCCModes[TextureObject.CombineModeB]
+                    )
+                );
+
+            }
+            else
+            {
+                //set combine mode (advanced)
+                binaryWriter.Write(
+                    F3D.gsDPSetCombineMode(
+                        TextureObject.CombineValuesA,
+                        TextureObject.CombineValuesB
+                    )
+                );
+
+            }
+            */
+
+
+
+
+
+            //set render mode
+            if (GeometryToggle)
+            {
+
+                if (FogToggle)
                 {
-                    //set combine mode (advanced)
                     binaryWriter.Write(
-                        F3D.gsDPSetCombineMode(
-                            TextureObject.CombineValuesA,
-                            TextureObject.CombineValuesB
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.G_RM_FOG_SHADE_A,
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
                         )
                     );
-
                 }
-                */
+                else
 
-
-
-
-
-                //set render mode
-                if (GeometryToggle)
                 {
-
-                    if (FogToggle)
-                    {
-                        binaryWriter.Write(
-                            F3D.gsDPSetRenderMode(
-                                F3DEX095_Parameters.G_RM_FOG_SHADE_A,
-                                F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
-                            )
-                        );
-                    }
-                    else
-
-                    {
-                        binaryWriter.Write(
-                            F3D.gsDPSetRenderMode(
-                                F3DEX095_Parameters.RenderModes[TextureObject.RenderModeA],
-                                F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
-                            )
-                        );
-                    }
-
+                    binaryWriter.Write(
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeA],
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
+                        )
+                    );
                 }
 
+            }
 
 
-                if (GeometryToggle)
+
+            if (GeometryToggle)
+            {
+
+
+                binaryWriter.Write(F3D.gsSPClearGeometryMode(F3DEX095_Parameters.AllGeometryModes));    //clear existing modes
+
+                //setup the Geometry Mode parameter
+                TextureObject.GeometryModes = 0;
+                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
                 {
-
-
-                    binaryWriter.Write(F3D.gsSPClearGeometryMode(F3DEX095_Parameters.AllGeometryModes));    //clear existing modes
-
-                    //setup the Geometry Mode parameter
-                    TextureObject.GeometryModes = 0;
-                    for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
+                    if (TextureObject.GeometryBools[ThisCheck])
                     {
-                        if (TextureObject.GeometryBools[ThisCheck])
-                        {
-                            TextureObject.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
-                        }
+                        TextureObject.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
                     }
-
-
-                    if (FogToggle)
-                    {
-                        TextureObject.GeometryModes |= F3DEX095_Parameters.G_FOG;
-                    }
-
-                    binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.GeometryModes));               //set the mode we made above.
                 }
+
+
+                if (FogToggle)
+                {
+                    TextureObject.GeometryModes |= F3DEX095_Parameters.G_FOG;
+                }
+
+                binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.GeometryModes));               //set the mode we made above.
             }
 
 
@@ -3990,8 +3991,10 @@ namespace Tarmac64_Library
             UInt32 heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
             UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
 
+            byte[] SegmentByte = BitConverter.GetBytes(Segment);
+            Array.Reverse(SegmentByte);
+            int SegmentID = BitConverter.ToInt32(SegmentByte, 0);
 
-            
             binaryWriter.Write(
                     F3D.gsSPTexture(
                         65535,
@@ -4013,7 +4016,7 @@ namespace Tarmac64_Library
             if (TextureObject.BitSize < 1)
             {
                 //Macro 4-bit Texture Load
-                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | 0x05000000),
+                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
                     0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
             }
@@ -4038,7 +4041,7 @@ namespace Tarmac64_Library
                 );
                 //Load Texture Data
                 binaryWriter.Write(F3D.gsDPLoadTextureBlock(
-                    Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | 0x05000000),
+                    Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                     F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                     Convert.ToUInt32(TextureObject.textureWidth),
