@@ -61,6 +61,20 @@ namespace Tarmac64_Library.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;BehaviorCount&gt;0&lt;/BehaviorCount&gt;
+        ///&lt;Behavior_0&gt;
+        ///    &lt;ParameterCount&gt;1&lt;/ParameterCount&gt;
+        ///    &lt;Parameter_0_Name&gt;Speed&lt;/Parameter_0_Name&gt;
+        ///    &lt;Parameter_0_Value&gt;50&lt;/Parameter_0_Value&gt;
+        ///&lt;/Behavior_0&gt;.
+        /// </summary>
+        public static string Behaviors {
+            get {
+                return ResourceManager.GetString("Behaviors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap controls {

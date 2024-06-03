@@ -13,6 +13,8 @@ using Tarmac64_Library;
 using Assimp;
 
 using F3DSharp;
+using SharpDX;
+using System.Xml;
 
 namespace Tarmac64_Library
 {
@@ -25,77 +27,69 @@ namespace Tarmac64_Library
         BinaryWriter binaryWriter = new BinaryWriter(Stream.Null);
         F3DEX095 F3D = new F3DEX095();
 
-        public class Pathgroup
-        {
-            public Pathlist[] pathList { get; set; }
-            public byte[] SaveData()
-            {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
-
-                binaryWriter.Write(pathList.Length);
-
-                for (int ThisMarker = 0; ThisMarker < pathList.Length; ThisMarker++)
-                {
-                    binaryWriter.Write(pathList[ThisMarker].SaveData());
-                }
-                return Data.ToArray();
-            }
-
-            public Pathgroup()
-            {
-
-            }
-            public Pathgroup(MemoryStream Input)
-            {
-                //LoadData
-
-                BinaryReader BRead = new BinaryReader(Input);
-
-                int Count = BRead.ReadInt32();
-                pathList = new Pathlist[Count];
-                for (int This = 0; This < Count; This++)
-                {
-                    pathList[This] = new Pathlist(Input);
-                }
-            }
-
-
-        }
         public class Pathlist
         {
-            public List<Marker> pathmarker { get; set; }
-
-            public byte[] SaveData()
-            {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
-
-                binaryWriter.Write(pathmarker.Count);
-                for (int ThisMarker = 0; ThisMarker < pathmarker.Count; ThisMarker++)
-                {
-                    binaryWriter.Write(pathmarker[ThisMarker].SaveData());
-                }
-                return Data.ToArray();
-            }
             public Pathlist()
             {
 
             }
-            public Pathlist(MemoryStream Input)
+            public Pathlist(XmlDocument XMLDoc, string Parent, int PathIndex)
             {
-                //LoadData
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+                string TargetPath = Parent + "/Path_" + PathIndex.ToString();
+                Random RNG = new Random();
 
-                BinaryReader BRead = new BinaryReader(Input);
-                pathmarker = new List<Marker>();
-                int Count = BRead.ReadInt32();
-
-                for (int ThisMark = 0; ThisMark < Count; ThisMark++)
+                float[] Color = new float[3]
                 {
-                    Marker NewMark = new Marker(Input);
-                    pathmarker.Add(NewMark);
+                    RNG.NextFloat(0,1),
+                    RNG.NextFloat(0,1),
+                    RNG.NextFloat(0,1)
+                };
+
+                int MarkerCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, TargetPath, "MarkerCount", "0"));
+                pathmarker = new List<Marker>();
+                for (int ThisMarker = 0; ThisMarker < MarkerCount; ThisMarker++)
+                {
+                    pathmarker.Add(new Marker());
+                    int[] Pos = Tarmac.LoadElements(XMLDoc, TargetPath, "MarkerPosition_" + ThisMarker.ToString(), "0");
+
+                    pathmarker[ThisMarker].X = Convert.ToInt16(Pos[0]);
+                    pathmarker[ThisMarker].Y = Convert.ToInt16(Pos[1]);
+                    pathmarker[ThisMarker].Z = Convert.ToInt16(Pos[2]);
+
+                    pathmarker[ThisMarker].Flag = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, TargetPath, "Flag_" + ThisMarker.ToString(), "0"));
+
+                    pathmarker[ThisMarker].Color = Color;
                 }
+
             }
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int PathIndex)
+            {
+                TM64 Tarmac = new TM64();
+                XmlElement PathXML = XMLDoc.CreateElement("Path_" + PathIndex.ToString());
+                Parent.AppendChild(PathXML);
+
+                Tarmac.GenerateElement(XMLDoc, PathXML, "MarkerCount", pathmarker.Count);
+                for (int ThisMark = 0; ThisMark < pathmarker.Count; ThisMark++) 
+                {
+                    int[] PositionArray = new int[3]
+                    {
+                        pathmarker[ThisMark].X,
+                        pathmarker[ThisMark].Y,
+                        pathmarker[ThisMark].Z,
+                    };
+                    Tarmac.GenerateElement(XMLDoc, PathXML, "MarkerPosition_"+ThisMark.ToString(), PositionArray);
+                    Tarmac.GenerateElement(XMLDoc, PathXML, "Flag_" + ThisMark.ToString(), pathmarker[ThisMark].Flag);
+
+                }
+                
+
+            }
+
+
+
+            public List<Marker> pathmarker { get; set; }
             public void Add(short[] PositionArray)
             {
                 pathmarker.Add(new Marker(PositionArray));
@@ -103,61 +97,26 @@ namespace Tarmac64_Library
             public void Add(TM64_Course.OKObject Object)
             {
                 Marker ThisMark = new Marker(Object.OriginPosition);
-                ThisMark.flag = Object.Flag;
+                ThisMark.Flag = Object.Flag;
                 pathmarker.Add(ThisMark);
             }
         }
         public class Marker
         {
-
-            public int xval { get; set; }
-            public int yval { get; set; }
-            public int zval { get; set; }
-            public int flag { get; set; }
+            public int X { get; set; }
+            public int Y { get; set; }
+            public int Z { get; set; }
+            public int Flag { get; set; }
             public float[] Color { get; set; }
-
-            public byte[] SaveData()
-            {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
-
-                binaryWriter.Write(xval);
-                binaryWriter.Write(yval);
-                binaryWriter.Write(zval);
-                binaryWriter.Write(flag);
-                binaryWriter.Write(Color[0]);
-                binaryWriter.Write(Color[1]);
-                binaryWriter.Write(Color[2]);
-
-                return Data.ToArray();
-            }
-
-            public Marker(MemoryStream Input)
-            {
-                //LoadData 
-
-
-                BinaryReader BRead = new BinaryReader(Input);
-
-                xval = BRead.ReadInt32();
-                yval = BRead.ReadInt32();
-                zval = BRead.ReadInt32();
-                flag = BRead.ReadInt32();
-                Color = new float[3];
-                Color[0] = BRead.ReadSingle();
-                Color[1] = BRead.ReadSingle();
-                Color[2] = BRead.ReadSingle();
-
-            }
             public Marker()
             {
 
             }
             public Marker(short[] PositionArray)
             {
-                xval = PositionArray[0];
-                yval = PositionArray[1];
-                zval = PositionArray[2];
+                X = PositionArray[0];
+                Y = PositionArray[1];
+                Z = PositionArray[2];
             }
         }
 
@@ -174,146 +133,125 @@ namespace Tarmac64_Library
 
         }
 
-        public Pathgroup[] loadPOP(string popFile, TM64_Geometry.OK64F3DObject[] surfaceObjects)
+        public Pathlist[] LoadPOP3(string popFile, TM64_Geometry.OK64F3DObject[] surfaceObjects)
         {
             //load the pathgroups from the external .OK64.POP file provided
 
             TM64_Geometry tm64Geo = new TM64_Geometry();
-
-            List<Pathgroup> pathgroup = new List<Pathgroup>();
             
-            string[] reader = File.ReadAllLines(popFile);
-            string[] positions = new string[3];
+            string[] FileData = File.ReadAllLines(popFile);
 
-            int[] markerCount = new int[5];
-
+            
 
 
+            int currentLine = 1;
+            string Count = FileData[currentLine++];
+            //int PathCount = Convert.ToInt32(FileData[currentLine++]);
+            int PathCount = Convert.ToInt32(Count);
+            Pathlist[] PathArray = new Pathlist[PathCount];
 
-            int currentLine = 0;
-
-            for (int group = 0; group < 5; group++)
+            for (int PathIndex = 0; PathIndex < PathCount; PathIndex++)
             {
-                pathgroup.Add(new Pathgroup());
-                List<Pathlist> tempList = new List<Pathlist>();
-                   
-                if (currentLine < reader.Length)
+                PathArray[PathIndex] = new Pathlist();
+
+                int MarkerCount = Int32.Parse(FileData[currentLine++]);
+
+                PathArray[PathIndex].pathmarker = new List<Marker>();
+
+                int currentSection = 0;                    
+                Random RNG = new Random();
+                float[] MColor = new float[3] { 0, 0, 0 };
+                    
+
+                for (int CurrentMarker = 0; CurrentMarker < MarkerCount; CurrentMarker++)
                 {
-                    string pathType = reader[currentLine];
-                    currentLine++;
+                    PathArray[PathIndex].pathmarker.Add(new Marker());
 
-                    int Pmax = Convert.ToInt32(reader[currentLine]);
-                    currentLine++;
+                    string ParseLine = FileData[currentLine++];
+                    ParseLine = ParseLine.Replace("[", "");
+                    ParseLine = ParseLine.Replace("]", "");
+                    
+                    // This strips the brackets from the first line
 
-                    for (int pindex = 0; pindex < Pmax; pindex++)
+                    string[] PositionArray = ParseLine.Split(',');
+                    // This creates an array containing the marker positions as strings.
+
+                    PathArray[PathIndex].pathmarker[CurrentMarker].X = Convert.ToInt32(Single.Parse(PositionArray[0]));
+                    PathArray[PathIndex].pathmarker[CurrentMarker].Y = Convert.ToInt32(Single.Parse(PositionArray[1]));
+                    PathArray[PathIndex].pathmarker[CurrentMarker].Z = Convert.ToInt32(Single.Parse(PositionArray[2]));
+
+                    //maintain Z/Y axis, we flip it only when writing to the ROM.
+                    PathArray[PathIndex].pathmarker[CurrentMarker].Flag = Convert.ToInt32(FileData[currentLine++]);
+                    //Read the next line, convert to int. This is the accompanying Flag for the marker. 
+
+
+                    float[] pointA = new float[3];
+                    pointA[0] = Convert.ToSingle(PathArray[PathIndex].pathmarker[CurrentMarker].X);
+                    pointA[1] = Convert.ToSingle(PathArray[PathIndex].pathmarker[CurrentMarker].Y);
+                    pointA[2] = Convert.ToSingle(PathArray[PathIndex].pathmarker[CurrentMarker].Z + 20);
+
+
+
+                    //custom Path Flag routine
+                    //uses surfaceObjects and raycasts to determine appropriate surface section.
+                    Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
+                    Vector3D rayTarget = new Vector3D(0, 0, -1);
+
+
+                    float objectDistance = -1;
+                    TM64_Geometry tmGeo = new TM64_Geometry();
+                    int objectID = -1;
+
+                    for (int currentObject = 0; (currentObject < surfaceObjects.Length); currentObject++)
                     {
-                        tempList.Add(new Pathlist());
-                        tempList[pindex].pathmarker = new List<Marker>();
 
-                        markerCount[group] = Int32.Parse(reader[currentLine]);
-                        currentLine++;
-
-
-
-
-                        int currentSection = 0;
-                        float[] MColor = { Convert.ToSingle(1.0), Convert.ToSingle(1.0), Convert.ToSingle(0.0) };
-                        Random Rando = new Random();
-                        for (int marker = 0; marker < markerCount[group]; marker++)
+                        foreach (var face in surfaceObjects[currentObject].modelGeometry)
                         {
-                            tempList[pindex].pathmarker.Add(new Marker());
-                            // input format
 
-                            //[xposition,yposition,zposition]
-                            //flag
-
-                            // Flag for Path should correlate with section.
-                            // Flag for objects will almost always be 0. Unsure of effect. 
-
-                            string lineRead = reader[currentLine].Substring(1, (reader[currentLine].Length - 2));
-                            // This strips the brackets from the first line
-
-                            string[] markerPosition = lineRead.Split(',');
-                            // This creates an array containing the marker positions as strings.
-
-                            currentLine++;
-                            // Advance forward in the file.
-
-                            tempList[pindex].pathmarker[marker].xval = Convert.ToInt32(Single.Parse(markerPosition[0]));
-                            tempList[pindex].pathmarker[marker].yval = Convert.ToInt32(Single.Parse(markerPosition[1]));
-                            tempList[pindex].pathmarker[marker].zval = Convert.ToInt32(Single.Parse(markerPosition[2]));
-
-                            //maintain Z/Y axis, we flip it only when writing to the ROM.
-                            tempList[pindex].pathmarker[marker].flag = Convert.ToInt32(reader[currentLine]);
-                            //Read the next line, convert to int. This is the accompanying Flag for the marker. 
-
-
-                            currentLine++;
-                            // Advance forward in the file.
-
-                            float[] pointA = new float[3];
-                            pointA[0] = Convert.ToSingle(tempList[pindex].pathmarker[marker].xval);
-                            pointA[1] = Convert.ToSingle(tempList[pindex].pathmarker[marker].yval);
-                            pointA[2] = Convert.ToSingle(tempList[pindex].pathmarker[marker].zval + 20);
-                            //custom Path Flag routine
-                            //uses surfaceObjects and raycasts to determine appropriate surface section.
-                            Vector3D rayOrigin = new Vector3D(Convert.ToSingle(pointA[0]), Convert.ToSingle(pointA[1]), Convert.ToSingle(pointA[2]));
-                            Vector3D rayTarget = new Vector3D(0, 0, -1);
-
-
-                            float objectDistance = -1;
-                            TM64_Geometry tmGeo = new TM64_Geometry();
-                            int objectID = -1;
-                            for (int currentObject = 0; (currentObject < surfaceObjects.Length); currentObject++)
+                            Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin, rayTarget, face.VertData[0], face.VertData[1], face.VertData[2]);
+                            if (intersectPoint.X > 0)
                             {
-
-                                foreach (var face in surfaceObjects[currentObject].modelGeometry)
+                                if (objectDistance > intersectPoint.X | objectDistance == -1)
                                 {
-
-                                    Vector3D intersectPoint = tmGeo.testIntersect(rayOrigin, rayTarget, face.VertData[0], face.VertData[1], face.VertData[2]);
-                                    if (intersectPoint.X > 0)
-                                    {
-                                        if (objectDistance > intersectPoint.X | objectDistance == -1)
-                                        {
-                                            objectDistance = Convert.ToSingle(intersectPoint.X);
-                                            objectID = currentObject;
-                                        }
-                                    }
+                                    objectDistance = Convert.ToSingle(intersectPoint.X);
+                                    objectID = currentObject;
                                 }
                             }
-                            if (objectID >= 0)
-                            {
-                                tempList[pindex].pathmarker[marker].flag = Convert.ToInt32(surfaceObjects[objectID].surfaceID);
-                            }
-                            else
-                            {
-                                if (marker > 0)
-                                {
-                                    tempList[pindex].pathmarker[marker].flag = tempList[pindex].pathmarker[marker - 1].flag;
-                                }
-                                else
-                                {
-                                    tempList[pindex].pathmarker[marker].flag = 1;
-                                }
-                            }
-
-                            if (tempList[pindex].pathmarker[marker].flag != currentSection)
-                            {
-                                currentSection = tempList[pindex].pathmarker[marker].flag;
-                                MColor = new float[] { Convert.ToSingle(Rando.NextDouble()), Convert.ToSingle(Rando.NextDouble()), Convert.ToSingle(Rando.NextDouble()) };
-                            }
-
-                            tempList[pindex].pathmarker[marker].Color = MColor;
                         }
                     }
-                }
+                    if (objectID >= 0)
+                    {
+                        PathArray[PathIndex].pathmarker[CurrentMarker].Flag = Convert.ToInt32(surfaceObjects[objectID].surfaceID);
+                    }
+                    else
+                    {
+                        if (CurrentMarker > 0)
+                        {
+                            PathArray[PathIndex].pathmarker[CurrentMarker].Flag = PathArray[PathIndex].pathmarker[CurrentMarker - 1].Flag;
+                        }
+                        else
+                        {
+                            PathArray[PathIndex].pathmarker[CurrentMarker].Flag = 1;
+                        }
+                    }
 
-                pathgroup[group].pathList = tempList.ToArray();
+                    if (PathArray[PathIndex].pathmarker[CurrentMarker].Flag != currentSection)
+                    {
+                        currentSection = PathArray[PathIndex].pathmarker[CurrentMarker].Flag;
+                        MColor = new float[] { RNG.NextFloat(0,1), RNG.NextFloat(0, 1), RNG.NextFloat(0, 1), };
+                    }
+
+                    PathArray[PathIndex].pathmarker[CurrentMarker].Color = MColor;
+                }
+            
             }
-            Pathgroup[] popPath = pathgroup.ToArray();
-            return popPath;
+
+            return PathArray;
+
 
         }
+
+
         public byte[] popMarker(Pathlist ThisList, int PaddingLength)
         {
 
@@ -332,19 +270,19 @@ namespace Tarmac64_Library
             for (int currentMarker = 0; currentMarker < markerCount; currentMarker++)
             {
 
-                dataBytes = BitConverter.GetBytes(Convert.ToInt16(ThisList.pathmarker[currentMarker].xval));
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(ThisList.pathmarker[currentMarker].X));
                 Array.Reverse(dataBytes);
                 binaryWriter.Write(dataBytes);  //x
 
-                dataBytes = BitConverter.GetBytes(Convert.ToInt16(ThisList.pathmarker[currentMarker].zval));
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(ThisList.pathmarker[currentMarker].Z));
                 Array.Reverse(dataBytes);
                 binaryWriter.Write(dataBytes);  //z
 
-                dataBytes = BitConverter.GetBytes(Convert.ToInt16(-1 * ThisList.pathmarker[currentMarker].yval));
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(-1 * ThisList.pathmarker[currentMarker].Y));
                 Array.Reverse(dataBytes);
                 binaryWriter.Write(dataBytes);  //y 
 
-                dataBytes = BitConverter.GetBytes(Convert.ToUInt16(ThisList.pathmarker[currentMarker].flag));
+                dataBytes = BitConverter.GetBytes(Convert.ToUInt16(ThisList.pathmarker[currentMarker].Flag));
                 Array.Reverse(dataBytes);
                 binaryWriter.Write(dataBytes);  //flag
 
@@ -464,7 +402,7 @@ namespace Tarmac64_Library
             for (int currentMarker = 0; currentMarker < markerCount; currentMarker++)
             {
 
-                dataBytes = BitConverter.GetBytes(Convert.ToInt16(ThisList.pathmarker[currentMarker].xval));
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(ThisList.pathmarker[currentMarker].X));
                 Array.Reverse(dataBytes);
                 binaryWriter.Write(dataBytes);  //x
 
@@ -472,11 +410,11 @@ namespace Tarmac64_Library
                 Array.Reverse(dataBytes);
                 binaryWriter.Write(dataBytes);  //z
 
-                dataBytes = BitConverter.GetBytes(Convert.ToInt16(-1 * ThisList.pathmarker[currentMarker].yval));
+                dataBytes = BitConverter.GetBytes(Convert.ToInt16(-1 * ThisList.pathmarker[currentMarker].Y));
                 Array.Reverse(dataBytes);
                 binaryWriter.Write(dataBytes);  //y 
 
-                dataBytes = BitConverter.GetBytes(Convert.ToUInt16(ThisList.pathmarker[currentMarker].flag));
+                dataBytes = BitConverter.GetBytes(Convert.ToUInt16(ThisList.pathmarker[currentMarker].Flag));
                 Array.Reverse(dataBytes);
                 binaryWriter.Write(dataBytes);  //flag
 

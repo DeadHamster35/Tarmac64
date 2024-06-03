@@ -228,17 +228,6 @@ namespace Tarmac64_Retail
             
         }
 
-        public void LoadTextureArray(MemoryStream memoryStream)
-        {
-            BinaryReader binaryReader = new BinaryReader(memoryStream);
-            int tCount = binaryReader.ReadInt32();
-            textureArray = new TM64_Geometry.OK64Texture[tCount];
-            for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
-            {
-                textureArray[ThisTex] = new TM64_Geometry.OK64Texture(memoryStream);
-            }
-        }
-
         public void LoadTextureXML(XmlDocument XMLDoc)
         {
             string ParentPath = "/SaveFile/TextureArray";
@@ -247,7 +236,7 @@ namespace Tarmac64_Retail
             textureArray = new TM64_Geometry.OK64Texture[Count];
             for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
             {
-                textureArray[ThisTex] = new TM64_Geometry.OK64Texture(XMLDoc, ParentPath, (ThisTex + 1));
+                textureArray[ThisTex] = new TM64_Geometry.OK64Texture(XMLDoc, ParentPath, (ThisTex));
             }
                 
         }
@@ -261,23 +250,10 @@ namespace Tarmac64_Retail
 
             for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
             {
-                textureArray[ThisTex].SaveXML(XMLDoc, TextureXML);
+                textureArray[ThisTex].SaveXML(XMLDoc, TextureXML, ThisTex);
             }
         }
 
-        public byte[] SaveTextureArray()
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
-            binaryWriter.Write(textureArray.Length);
-            for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
-            {
-                binaryWriter.Write(textureArray[ThisTex].SaveData());
-            }
-
-            return memoryStream.ToArray();
-        }
 
         private void textureBox_SelectedIndexChanged(object sender, EventArgs e)
         {

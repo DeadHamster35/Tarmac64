@@ -21,6 +21,12 @@ namespace Tarmac64_Retail
         TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
         TM64 Tarmac = new TM64();
         bool UILock = false;
+        string[] ScaleModes = new string[]
+        {
+            "Static",
+            "Blender",
+            "3DSMax"
+        };
 
         public void UpdateUI()
         {
@@ -30,7 +36,7 @@ namespace Tarmac64_Retail
                 ObjectDIRBox.Text = TarmacSettings.ObjectDirectory;
                 ScaleBox.Text = Convert.ToString(TarmacSettings.ImportScale);
                 AlphaBox.Checked = TarmacSettings.AlphaCH2;
-                BlenderCheck.Checked = TarmacSettings.BlenderImport;
+                ScaleModeBox.SelectedIndex = TarmacSettings.ImportMode;
             }
         }
 
@@ -41,7 +47,7 @@ namespace Tarmac64_Retail
             TarmacSettings.ProjectDirectory = CourseDIRBox.Text;
             TarmacSettings.ObjectDirectory = ObjectDIRBox.Text;
             TarmacSettings.ROMDirectory = ROMDIRBox.Text;
-            TarmacSettings.BlenderImport = BlenderCheck.Checked;
+            TarmacSettings.ImportMode = ScaleModeBox.SelectedIndex;
             if (float.TryParse(ScaleBox.Text, out ParseF))
             {
                 TarmacSettings.ImportScale = ParseF;
@@ -52,6 +58,11 @@ namespace Tarmac64_Retail
         }
         private void SettingsWindow_Load(object sender, EventArgs e)
         {
+            foreach (var Mode in ScaleModes)
+            {
+                ScaleModeBox.Items.Add(Mode);
+            }
+            
             TarmacSettings.LoadSettings();
             UpdateUI();
         }

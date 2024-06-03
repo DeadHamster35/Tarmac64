@@ -127,7 +127,7 @@ namespace Tarmac64_Retail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(279, 108);
+            this.ClientSize = new System.Drawing.Size(279, 111);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.ui_ghostCharacterSelect);
@@ -136,7 +136,11 @@ namespace Tarmac64_Retail
             this.Controls.Add(this.ui_ghostTimeBox);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.label14);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(295, 150);
+            this.MinimumSize = new System.Drawing.Size(295, 150);
             this.Name = "GhostExtractor";
             this.Text = "Boo - Ghost Extractor";
             this.Load += new System.EventHandler(this.GhostExtractor_Load);

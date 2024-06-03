@@ -633,9 +633,9 @@
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label18.Location = new System.Drawing.Point(218, 158);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(46, 13);
+            this.label18.Size = new System.Drawing.Size(29, 13);
             this.label18.TabIndex = 204;
-            this.label18.Text = "Weather";
+            this.label18.Text = "Type";
             // 
             // weatherBox
             // 

@@ -208,7 +208,7 @@ namespace Tarmac64_Library
             FolderOpen.IsFolderPicker = false;
             string FileName = "";
             uint HeaderOffset = Convert.ToUInt32(HeaderBox.Text, 16);
-            MessageBox.Show("Select Patched ROM");
+            MessageBox.Show("Select ROM");
 
 
             if (FolderOpen.ShowDialog() == CommonFileDialogResult.Ok)
@@ -220,6 +220,14 @@ namespace Tarmac64_Library
 
                     string outputDirectory = FolderOpen.FileName;
                     byte[] rom = File.ReadAllBytes(FileName);
+
+                    if (!Tarmac.CheckPatch(rom))
+                    {
+                        MessageBox.Show("Applying Tarmac Patch");
+                        //rom = Tarmac.ApplyPatch(rom, )
+                    }
+
+
                     int SetID = 0;
                     for (int ThisCourse = 0; ThisCourse < CourseData.Count; ThisCourse++)
                     {

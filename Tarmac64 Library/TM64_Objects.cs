@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Xml;
 
 namespace Tarmac64_Library
 {
@@ -45,7 +45,7 @@ namespace Tarmac64_Library
                 Origin = new short[3] { 0, 0, 0 };
                 Size = new short[3] { 0, 0, 0 };
                 Scale = 1.0f;
-                Status = 0;
+                Status = -1;
                 Effect = -1;
                 HitResult = 0;
                 CollideResult = 0;
@@ -55,6 +55,62 @@ namespace Tarmac64_Library
             //
         }
 
+        public class OK64Behavior
+        {
+            public string Name { get; set; }
+            public OK64Parameter[] Parameters { get; set; }
+        }
+
+        public class OK64Parameter
+        {
+            public string Name { get; set; }
+
+            public int Value { get; set; }
+        }
+
+
+        public OK64Behavior[] LoadBehaviorXML(string TargetPath)
+        {
+            
+            string SavePath = TargetPath;
+
+            XmlDocument XMLDoc = new XmlDocument();
+            if (File.Exists(TargetPath))
+            {
+                XMLDoc.Load(TargetPath);
+            }
+            else
+            {
+                return new OK64Behavior[0];
+            }
+
+            TM64 Tarmac = new TM64();
+            string Parent = "BehaviorArray";
+            
+            int BehaviorCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent, "BehaviorCount", "0"));
+
+            OK64Behavior[] BehaviorArray = new OK64Behavior[BehaviorCount];
+            for (int ThisBehavior = 0; ThisBehavior < BehaviorCount; ThisBehavior++)
+            {
+                BehaviorArray[ThisBehavior] = new OK64Behavior();
+                string Target = Parent + "/Behavior_" + ThisBehavior.ToString();
+                int ParameterCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Target, "/ParameterCount", "0"));
+                BehaviorArray[ThisBehavior].Parameters = new OK64Parameter[ParameterCount];
+                BehaviorArray[ThisBehavior].Name = Tarmac.LoadElement(XMLDoc, Target, "/Name", "NULL");
+
+                for (int ThisParameter = 0; ThisParameter < ParameterCount; ThisParameter++)
+                {
+                    string SubTarget = Parent + "/Behavior_" + ThisBehavior.ToString();
+                    BehaviorArray[ThisBehavior].Parameters[ThisParameter] = new OK64Parameter();
+                    BehaviorArray[ThisBehavior].Parameters[ThisParameter].Name = Tarmac.LoadElement(XMLDoc, SubTarget, "/Parameter_" + ThisParameter.ToString() + "_Name", "NULL");
+                    BehaviorArray[ThisBehavior].Parameters[ThisParameter].Value = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, SubTarget, "/Parameter_" + ThisParameter.ToString() + "_Value", "0"));
+                }
+            }
+
+
+            return BehaviorArray;
+                
+        }
         public OK64Collide[] LoadHBK(string inputFile)
         {
             TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();

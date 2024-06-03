@@ -66,7 +66,7 @@ namespace Tarmac64_Library
             foreach (var subVert in subFace.VertData)
             {
                 gl.Color(ThisColor[0], ThisColor[1], ThisColor[2], ThisColor[3]);
-                gl.Vertex(subVert.position.x + Point.xval, subVert.position.y+ Point.yval, subVert.position.z+ Point.zval);
+                gl.Vertex(subVert.position.x + Point.X, subVert.position.y+ Point.Y, subVert.position.z+ Point.Z);
             }
         }
         public float[] GetAlphaFlash(float[] flashColor, double FrameRate)

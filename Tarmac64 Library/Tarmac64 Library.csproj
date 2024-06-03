@@ -147,6 +147,9 @@
     <None Include="Resources\Tree1.bmp" />
     <None Include="Resources\Tree1.png" />
     <None Include="Resources\TextureNotFound.bmp" />
+    <None Include="Resources\Behaviors.XML">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Resources\TextureNotFound.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

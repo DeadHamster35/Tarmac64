@@ -64,12 +64,14 @@
             this.LocationXBox = new System.Windows.Forms.TextBox();
             this.LocationZBox = new System.Windows.Forms.TextBox();
             this.ObjectListBox = new System.Windows.Forms.ListBox();
+            this.ImpPOPButton = new System.Windows.Forms.Button();
             this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
             // KillObjBtn
             // 
-            this.KillObjBtn.Location = new System.Drawing.Point(259, 57);
+            this.KillObjBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.KillObjBtn.Location = new System.Drawing.Point(226, 282);
             this.KillObjBtn.Name = "KillObjBtn";
             this.KillObjBtn.Size = new System.Drawing.Size(25, 23);
             this.KillObjBtn.TabIndex = 2;
@@ -79,7 +81,8 @@
             // 
             // AddObjBtn
             // 
-            this.AddObjBtn.Location = new System.Drawing.Point(259, 28);
+            this.AddObjBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddObjBtn.Location = new System.Drawing.Point(257, 282);
             this.AddObjBtn.Name = "AddObjBtn";
             this.AddObjBtn.Size = new System.Drawing.Size(25, 23);
             this.AddObjBtn.TabIndex = 1;
@@ -122,7 +125,7 @@
             this.groupBox8.Controls.Add(this.LocationYBox);
             this.groupBox8.Controls.Add(this.LocationXBox);
             this.groupBox8.Controls.Add(this.LocationZBox);
-            this.groupBox8.Location = new System.Drawing.Point(5, 308);
+            this.groupBox8.Location = new System.Drawing.Point(3, 316);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.groupBox8.Size = new System.Drawing.Size(279, 249);
@@ -521,15 +524,27 @@
             this.ObjectListBox.Location = new System.Drawing.Point(5, 12);
             this.ObjectListBox.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.ObjectListBox.Name = "ObjectListBox";
-            this.ObjectListBox.Size = new System.Drawing.Size(251, 290);
+            this.ObjectListBox.Size = new System.Drawing.Size(277, 264);
             this.ObjectListBox.TabIndex = 0;
             this.ObjectListBox.SelectedIndexChanged += new System.EventHandler(this.ObjectListBox_SelectedIndexChanged);
             this.ObjectListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ObjectListBox_MouseDoubleClick);
+            // 
+            // ImpPOPButton
+            // 
+            this.ImpPOPButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ImpPOPButton.Location = new System.Drawing.Point(5, 282);
+            this.ImpPOPButton.Name = "ImpPOPButton";
+            this.ImpPOPButton.Size = new System.Drawing.Size(83, 23);
+            this.ImpPOPButton.TabIndex = 246;
+            this.ImpPOPButton.Text = "Import .POP3";
+            this.ImpPOPButton.UseVisualStyleBackColor = true;
+            this.ImpPOPButton.Click += new System.EventHandler(this.ImpPOPButton_Click);
             // 
             // ObjectEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ImpPOPButton);
             this.Controls.Add(this.groupBox8);
             this.Controls.Add(this.ObjectListBox);
             this.Controls.Add(this.KillObjBtn);
@@ -581,5 +596,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox FlagBox;
         private System.Windows.Forms.CheckBox RandomZBox;
+        private System.Windows.Forms.Button ImpPOPButton;
     }
 }

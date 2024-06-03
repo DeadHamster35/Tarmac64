@@ -12,13 +12,20 @@ using Tarmac64_Library;
 using System.IO;
 using System.Reflection;
 using Fluent;
+using System.Windows.Forms.Design.Behavior;
+using static Tarmac64_Library.TM64_Objects;
+using System.Runtime.CompilerServices;
 
 namespace Tarmac64_Retail
 {
     public partial class ObjectTypeCompiler : Form
     {
 
+        TM64_Objects.OK64Behavior[] BehaviorArray = new TM64_Objects.OK64Behavior[0];
+        TM64_Objects.OK64Collide[] HitboxArray = new TM64_Objects.OK64Collide[0];
 
+
+        string[] BoxTypes = new string[] { "Sphere", "Cylinder", "Box" };
         string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP", "DAMAGE"};
         string[] BehaviorNames = new string[] { "DEAD", "EXIST", "FLOAT", "PATH", "WANDER", "SEARCH", "BOUNCE", "FLEE", "STRAFE", "WATER-BOB"};
         string[] StatusNames = new string[] { "None", "MapObjectHit", "LightningHit", "BooTranslucent", "BecomeBombOn", "BecomeBombOff", "FlattenedOn", "FlattenedOff", "MushroomBoost", "SpinOutSaveable", "SpinOut", "GreenShellHit", "RedShellHit", "Bonk", "StarOn", "GhostOn", "StarOff", "GhostOff" };
@@ -61,6 +68,7 @@ namespace Tarmac64_Retail
         TM64_Objects TarmacObject = new TM64_Objects();
         Scene ModelData = new Scene();
         TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
+        OK64Parameter[] ParameterArray = new OK64Parameter[0];
         
         public ObjectTypeCompiler()
         {
@@ -84,6 +92,91 @@ namespace Tarmac64_Retail
             }
         }
 
+
+        private void UpdateHitbox()
+        {
+            if (AddingHB)
+            {
+                return;
+            }
+
+            int Index = IndexBox.SelectedIndex;
+            Int16 Parse;
+            Single ParseS;
+            if (Int16.TryParse(OriginXBox.Text, out Parse))
+            {
+                HitboxArray[Index].Origin[0] = Parse;
+            }
+            if (Int16.TryParse(OriginYBox.Text, out Parse))
+            {
+                HitboxArray[Index].Origin[1] = Parse;
+            }
+            if (Int16.TryParse(OriginZBox.Text, out Parse))
+            {
+                HitboxArray[Index].Origin[2] = Parse;
+            }
+            if (Int16.TryParse(SizeXBox.Text, out Parse))
+            {
+                HitboxArray[Index].Size[0] = Parse;
+            }
+            if (Int16.TryParse(SizeYBox.Text, out Parse))
+            {
+                HitboxArray[Index].Size[1] = Parse;
+            }
+            if (Int16.TryParse(SizeZBox.Text, out Parse))
+            {
+                HitboxArray[Index].Size[2] = Parse;
+            }
+            if (Int16.TryParse(AngleZBox.Text, out Parse))
+            {
+                HitboxArray[Index].BoxAngle = Parse;
+            }
+            if (Single.TryParse(ScaleBox.Text, out ParseS))
+            {
+                HitboxArray[Index].Scale = ParseS;
+            }
+
+            HitboxArray[Index].Type = Convert.ToInt16(TypeBox.SelectedIndex);
+            HitboxArray[Index].Status = Convert.ToInt16(StatusValues[StatusBox.SelectedIndex]);
+            HitboxArray[Index].Effect = Convert.ToInt16(EffectValues[EffectBox.SelectedIndex]);
+            HitboxArray[Index].SolidObject = solidBox.Checked;
+
+            switch (HitboxArray[Index].Type)
+            {
+                case 0:
+                    {
+                        //sphere
+                        SizeYBox.Enabled = false;
+                        SizeZBox.Enabled = false;
+                        SizeXBox.Text = Convert.ToString(HitboxArray[Index].Size[0]);
+                        SizeYBox.Text = "";
+                        SizeZBox.Text = "";
+                        break;
+                    }
+                case 1:
+                    {
+                        //cylinder
+                        SizeYBox.Enabled = true;
+                        SizeZBox.Enabled = false;
+                        SizeXBox.Text = Convert.ToString(HitboxArray[Index].Size[0]);
+                        SizeYBox.Text = Convert.ToString(HitboxArray[Index].Size[1]);
+                        SizeZBox.Text = "";
+                        break;
+                    }
+                case 2:
+                    {
+                        //cube
+                        SizeYBox.Enabled = true;
+                        SizeZBox.Enabled = true;
+                        SizeXBox.Text = Convert.ToString(HitboxArray[Index].Size[0]);
+                        SizeYBox.Text = Convert.ToString(HitboxArray[Index].Size[1]);
+                        SizeZBox.Text = Convert.ToString(HitboxArray[Index].Size[2]);
+                        break;
+                    }
+            }
+        }
+
+
         private void BuildBtn_Click(object sender, EventArgs e)
         {
 
@@ -96,16 +189,7 @@ namespace Tarmac64_Retail
                 NewType.Name = NameBox.Text;
                 NewType.TextureData = TextureControl.textureArray;
                 NewType.Flag = Convert.ToInt16(FlagBox.Text);
-                if (HitboxBox.Text != "")
-                {   
-                    NewType.ObjectHitbox = TarmacObject.LoadHitboxFile(File.ReadAllBytes(HitboxBox.Text));
-                }
-                else
-                {
-                    NewType.ObjectHitbox = null;
-                }
-
-
+                NewType.ObjectHitbox = HitboxArray;
 
                 float TempFloat;
                 if (Single.TryParse(ScaleBox.Text, out TempFloat))
@@ -119,17 +203,24 @@ namespace Tarmac64_Retail
                 }
 
 
+                NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex - 1);
+                NewType.Behavior = BehaviorArray[NewType.BehaviorClass];
+
+                List<TM64_Objects.OK64Parameter> ParameterList = (List<TM64_Objects.OK64Parameter>)ParameterView.Items;
+
+                for (int ThisParameter = 0; ThisParameter < NewType.Behavior.Parameters.Length; ThisParameter++)
+                {
+                    NewType.Behavior.Parameters[ThisParameter].Value = ParameterList[ThisParameter].Value;
+                }
+
+
+
+
                 if (AToggleBox.Checked)
                 {
                     NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
                     var WalkData = importer.ImportFile(WalkBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                    NewType.ObjectAnimations.WalkAnimation = TarmacGeometry.LoadSkeleton(WalkData, NewType.ModelScale);
-
-                    var TargetData = importer.ImportFile(TargetBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                    NewType.ObjectAnimations.TargetAnimation = TarmacGeometry.LoadSkeleton(TargetData, NewType.ModelScale);
-
-                    var DeathData = importer.ImportFile(DeathBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                    NewType.ObjectAnimations.DeathAnimation = TarmacGeometry.LoadSkeleton(DeathData, NewType.ModelScale);
+                    NewType.ObjectAnimations.Animation = TarmacGeometry.LoadSkeleton(WalkData, NewType.ModelScale);
                 }
                 else
                 {
@@ -140,11 +231,7 @@ namespace Tarmac64_Retail
 
 
                 
-                NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex -1);
-                NewType.Range = Convert.ToInt16(RangeBox.Text);
-                NewType.Sight = Convert.ToInt16(SightBox.Text);
-                NewType.Viewcone = Convert.ToInt16(Viewconebox.Text);
-                NewType.MaxSpeed = Convert.ToSingle(SpeedBox.Text);
+                
                 NewType.BumpRadius = Convert.ToInt16(Convert.ToInt16(LevelBump.Text) * 100);
                 NewType.SoundID = SoundIDs[SoundNameBox.SelectedIndex];
                 NewType.SoundRadius = Convert.ToInt16(SoundRangeBox.Text);
@@ -183,84 +270,85 @@ namespace Tarmac64_Retail
             
 
         }
-        public class ParameterObject
-        {
-            public string Name;
-            public string Value;
-        }
-        private void ObjectTypeCompiler_Load(object sender, EventArgs e)
-        {
 
+        private void ResetParameterNames(object sender, CellEditEventArgs e)
+        {
+            if (e.SubItemIndex == 0)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void ResetParameterView()
+        {
+            
             ParameterView.Theme = OLVTheme.VistaExplorer;
             ParameterView.ItemFont = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
-
+            
             // display the the file name as the list item label
             ParameterView.Properties.Name = "Name";
             ParameterView.Properties.ColumnNames = new List<string>
             {
                 "Value"
             };
-
-            
-
             ParameterView.Properties.Columns = new List<string>
             {
                 "Value"
             };
-
             ParameterView.Properties.Description = "Description";
 
-            ParameterView.Items = new List<ParameterObject>();
+            ParameterView.Items = new List<TM64_Objects.OK64Parameter>();
             ParameterView.EnableCellEditing = true;
 
             ParameterView.InnerList.CellEditActivation = Fluent.Lists.AdvancedListView.CellEditActivateMode.DoubleClick;
 
-            ParameterObject NewPar = new ParameterObject();
-            NewPar.Name = "Speed";
-            NewPar.Value = "5.0";
-            ParameterView.Items.Add(NewPar);
+            for (int ThisPar = 0; ThisPar < BehaviorArray[BehaviorBox.SelectedIndex].Parameters.Length; ThisPar++)
+            {
+                OK64Parameter NewPar = new OK64Parameter();
+                NewPar.Name = BehaviorArray[BehaviorBox.SelectedIndex].Parameters[ThisPar].Name;
+                NewPar.Value = BehaviorArray[BehaviorBox.SelectedIndex].Parameters[ThisPar].Value;
+                ParameterView.Items.Add(NewPar);
+            }
+
+            int NewHeight = 25 + (BehaviorArray[BehaviorBox.SelectedIndex].Parameters.Length * 25);
+            int NewWidth = ParameterView.Width;
+            ParameterView.Size = new Size(NewWidth,NewHeight);
+            
             ParameterView.Redraw();
+            ParameterView.InnerList.CellEditFinishing += new CellEditEventHandler(ResetParameterNames);
+        }
 
 
+        private void ObjectTypeCompiler_Load(object sender, EventArgs e)
+        {
+            
+            foreach (var Status in StatusNames)
+            {
+                StatusBox.Items.Add(Status);
+            }
+            foreach (var Effect in EffectNames)
+            {
+                EffectBox.Items.Add(Effect);
+            }
+            
+            foreach (var Types in BoxTypes)
+            {
+                TypeBox.Items.Add(Types);
+            }
 
+            TM64_Objects TM64Obj = new TM64_Objects();
+            string BehaviorPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Resources", "Behaviors.XML");
+            BehaviorArray = TM64Obj.LoadBehaviorXML(BehaviorPath);
+            
             TarmacSettings.LoadSettings();
-            PropertyInfo[] properties = typeof(TM64_Course.OKObjectBehaviorSearch).GetProperties();
 
-            string BehaviorPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Behaviors.txt");
-
-            if (File.Exists(BehaviorPath))
+            for (int ThisBehavior = 0; ThisBehavior < BehaviorArray.Length; ThisBehavior++)
             {
-                string[] CustomBehaviorNames = File.ReadAllLines(BehaviorPath);
-                
-                for (int ThisBehavior = 0; ThisBehavior < 100; ThisBehavior++)
-                {
-                    if (ThisBehavior < CustomBehaviorNames.Length)
-                    {
-                        BehaviorBox.Items.Add(CustomBehaviorNames[ThisBehavior]);
-                    }
-                    else
-                    {
-                        BehaviorBox.Items.Add("Undefined Behavior #" + (ThisBehavior - 1).ToString());
-                    }
-
-                }
+                BehaviorBox.Items.Add(BehaviorArray[ThisBehavior].Name);
             }
-            else
-            {
-                for (int ThisBehavior = 0; ThisBehavior < 100; ThisBehavior++)
-                {
-                    if (ThisBehavior < BehaviorNames.Length)
-                    {
-                        BehaviorBox.Items.Add(BehaviorNames[ThisBehavior]);
-                    }
-                    else
-                    {
-                        BehaviorBox.Items.Add("Undefined Behavior #" + (ThisBehavior - 1).ToString());
-                    }
 
-                }
-            }
+
             foreach (var Type in SoundTypes)
             {
                 SoundTypeBox.Items.Add(Type);
@@ -272,10 +360,9 @@ namespace Tarmac64_Retail
             BehaviorBox.SelectedIndex = 1;
             SoundTypeBox.SelectedIndex = 0;
             SoundNameBox.SelectedIndex = 0;
-            
+            ResetParameterView();
+
             WalkBox.Enabled = false;
-            TargetBox.Enabled = false;
-            DeathBox.Enabled = false;
             NameBox.Focus();
         }
 
@@ -294,17 +381,7 @@ namespace Tarmac64_Retail
 
         private void BehaviorBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (BehaviorBox.SelectedIndex == 3)
-            {
-                RangeLabel.Text = "Path";
-                RangeBox.Text = "0";
-            }
-            else
-            {
-                RangeLabel.Text = "Range";
-                RangeBox.Text = "200";
-            }
-
+            ResetParameterView();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -321,37 +398,12 @@ namespace Tarmac64_Retail
         private void AToggleBox_CheckedChanged(object sender, EventArgs e)
         {
             WalkBox.Enabled = AToggleBox.Checked;
-            TargetBox.Enabled = AToggleBox.Checked;
-            DeathBox.Enabled = AToggleBox.Checked;
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog FileOpen = new OpenFileDialog();
-            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
-            FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
-            if (FileOpen.ShowDialog() == DialogResult.OK)
-            {
-                TargetBox.Text = FileOpen.FileName;
-            }
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog FileOpen = new OpenFileDialog();
-            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
-            FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
-            if (FileOpen.ShowDialog() == DialogResult.OK)
-            {
-                DeathBox.Text = FileOpen.FileName;
-            }
-        }
 
         private void AToggleBox_CheckedChanged_1(object sender, EventArgs e)
         {
             WalkBox.Enabled = AToggleBox.Checked;
-            TargetBox.Enabled = AToggleBox.Checked;
-            DeathBox.Enabled = AToggleBox.Checked;
         }
 
         private void HitboxBtn_Click(object sender, EventArgs e)
@@ -361,7 +413,7 @@ namespace Tarmac64_Retail
             FileOpen.Filter = "Tarmac Hitbox|*.ok64.HITBOX|All Files(*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
-                HitboxBox.Text = FileOpen.FileName;
+                //HitboxBox.Text = FileOpen.FileName;
             }
         }
 
@@ -376,6 +428,98 @@ namespace Tarmac64_Retail
         }
 
         private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+
+        bool AddingHB = false;
+        private void AddBtn_Click(object sender, EventArgs e)
+        {
+            AddingHB = true;
+            List<TM64_Objects.OK64Collide> CurrentList = HitboxArray.ToList();
+            CurrentList.Insert(IndexBox.SelectedIndex + 1, new TM64_Objects.OK64Collide("CollisionSphere " + (HitboxArray.Length + 1).ToString()));
+            IndexBox.Items.Insert(IndexBox.SelectedIndex + 1, "CollisionSphere " + (HitboxArray.Length + 1).ToString());
+            HitboxArray = CurrentList.ToArray();
+            IndexBox.SelectedIndex = IndexBox.Items.Count - 1;
+            UpdateHBUI();
+            AddingHB = false;
+        }
+
+        private void UpdateHBUI()
+        {
+            int Index = IndexBox.SelectedIndex;
+            OriginXBox.Text = Convert.ToString(HitboxArray[Index].Origin[0]);
+            OriginYBox.Text = Convert.ToString(HitboxArray[Index].Origin[1]);
+            OriginZBox.Text = Convert.ToString(HitboxArray[Index].Origin[2]);
+
+            StatusBox.SelectedIndex = Array.IndexOf(StatusValues, HitboxArray[Index].Status);
+            EffectBox.SelectedIndex = Array.IndexOf(EffectValues, HitboxArray[Index].Effect);
+            TypeBox.SelectedIndex = HitboxArray[Index].Type;
+            ScaleBox.Text = Convert.ToString(HitboxArray[Index].Scale);
+            solidBox.Checked = HitboxArray[Index].SolidObject;
+            switch (HitboxArray[Index].Type)
+            {
+                case 0:
+                    {
+                        //sphere
+                        SizeYBox.Enabled = false;
+                        SizeZBox.Enabled = false;
+                        SizeXBox.Text = Convert.ToString(HitboxArray[Index].Size[0]);
+                        SizeYBox.Text = "";
+                        SizeZBox.Text = "";
+                        break;
+                    }
+                case 1:
+                    {
+                        //cylinder
+                        SizeYBox.Enabled = true;
+                        SizeZBox.Enabled = false;
+                        SizeXBox.Text = Convert.ToString(HitboxArray[Index].Size[0]);
+                        SizeYBox.Text = Convert.ToString(HitboxArray[Index].Size[1]);
+                        SizeZBox.Text = "";
+                        break;
+                    }
+                case 2:
+                    {
+                        //cube
+                        SizeYBox.Enabled = true;
+                        SizeZBox.Enabled = true;
+                        SizeXBox.Text = Convert.ToString(HitboxArray[Index].Size[0]);
+                        SizeYBox.Text = Convert.ToString(HitboxArray[Index].Size[1]);
+                        SizeZBox.Text = Convert.ToString(HitboxArray[Index].Size[2]);
+                        break;
+                    }
+            }
+        }
+        private void IndexBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (AddingHB)
+            {
+                return;
+            }
+            if (HitboxArray.Length > 0)
+            {
+                UpdateHBUI();
+            }
+        }
+
+        private void HitboxComboIndexChange(object sender, EventArgs e)
+        {
+            UpdateHitbox();
+        }
+
+        private void HitboxKeyUp(object sender, KeyEventArgs e)
+        {
+            UpdateHitbox();
+        }
+
+        private void solidBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateHitbox();
+        }
+
+        private void DeleteBtn_Click(object sender, EventArgs e)
         {
 
         }

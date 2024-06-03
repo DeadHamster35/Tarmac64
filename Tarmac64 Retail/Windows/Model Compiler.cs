@@ -74,7 +74,7 @@ namespace Tarmac64_Library
 
 
 
-                    Assimp.Node masterNode = ModelData.RootNode.FindNode("Master Objects");
+                    Assimp.Node masterNode = ModelData.RootNode.FindNode("Render Objects");
                     if (masterNode != null)
                     {
                         TextureObjects[currentFile] = TarmacGeo.loadTextures(ModelData, FBXFilePath);
@@ -126,7 +126,7 @@ namespace Tarmac64_Library
 
                 FBXBox.Items.Clear();
 
-                Assimp.Node masterNode = ModelData.RootNode.FindNode("Master Objects");
+                Assimp.Node masterNode = ModelData.RootNode.FindNode("Render Objects");
                 if (masterNode != null)
                 {
                     //TextureObjects[0] = TarmacGeo.loadTextures(ModelData, FBXFilePath);

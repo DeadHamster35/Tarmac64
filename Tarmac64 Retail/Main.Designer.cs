@@ -92,11 +92,15 @@
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replacePathsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.oBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectTypeCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rOMBuiderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -105,8 +109,7 @@
             this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.GLControl = new Tarmac64_Retail.GLViewer();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.songExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
@@ -865,6 +868,18 @@
             this.saveProjectToolStripMenuItem.Text = "Save";
             this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem.Text = "Export";
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+            // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -877,31 +892,48 @@
             // replaceModelToolStripMenuItem
             // 
             this.replaceModelToolStripMenuItem.Name = "replaceModelToolStripMenuItem";
-            this.replaceModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.replaceModelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.replaceModelToolStripMenuItem.Text = "Replace Model";
             this.replaceModelToolStripMenuItem.Click += new System.EventHandler(this.replaceModelToolStripMenuItem_Click);
             // 
             // replacePathsToolStripMenuItem
             // 
             this.replacePathsToolStripMenuItem.Name = "replacePathsToolStripMenuItem";
-            this.replacePathsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.replacePathsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.replacePathsToolStripMenuItem.Text = "Replace Paths";
             this.replacePathsToolStripMenuItem.Click += new System.EventHandler(this.replacePathsToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.objectTypeCompilerToolStripMenuItem});
+            this.oBJToolStripMenuItem,
+            this.songExtractorToolStripMenuItem,
+            this.objectTypeCompilerToolStripMenuItem,
+            this.rOMBuiderToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
+            // oBJToolStripMenuItem
+            // 
+            this.oBJToolStripMenuItem.Name = "oBJToolStripMenuItem";
+            this.oBJToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.oBJToolStripMenuItem.Text = "Ghost Extractor";
+            this.oBJToolStripMenuItem.Click += new System.EventHandler(this.oBJToolStripMenuItem_Click);
+            // 
             // objectTypeCompilerToolStripMenuItem
             // 
             this.objectTypeCompilerToolStripMenuItem.Name = "objectTypeCompilerToolStripMenuItem";
-            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.objectTypeCompilerToolStripMenuItem.Text = "ObjectType Compiler";
+            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.objectTypeCompilerToolStripMenuItem.Text = "Object Compiler";
             this.objectTypeCompilerToolStripMenuItem.Click += new System.EventHandler(this.objectTypeCompilerToolStripMenuItem_Click);
+            // 
+            // rOMBuiderToolStripMenuItem
+            // 
+            this.rOMBuiderToolStripMenuItem.Name = "rOMBuiderToolStripMenuItem";
+            this.rOMBuiderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rOMBuiderToolStripMenuItem.Text = "ROM Buider";
+            this.rOMBuiderToolStripMenuItem.Click += new System.EventHandler(this.rOMBuiderToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -971,16 +1003,12 @@
             this.GLControl.TabIndex = 3;
             this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
             // 
-            // toolStripSeparator1
+            // songExtractorToolStripMenuItem
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
-            // 
-            // exportToolStripMenuItem
-            // 
-            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.exportToolStripMenuItem.Text = "Export";
+            this.songExtractorToolStripMenuItem.Name = "songExtractorToolStripMenuItem";
+            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.songExtractorToolStripMenuItem.Text = "Song Extractor";
+            this.songExtractorToolStripMenuItem.Click += new System.EventHandler(this.songExtractorToolStripMenuItem_Click);
             // 
             // Main
             // 
@@ -1098,5 +1126,8 @@
         private System.Windows.Forms.ListBox RenderMeshListBox;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem oBJToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rOMBuiderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem songExtractorToolStripMenuItem;
     }
 }

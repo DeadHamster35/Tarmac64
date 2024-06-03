@@ -754,5 +754,59 @@ namespace Tarmac64_Retail
         {
 
         }
+
+        
+        private void ImpPOPButton_Click(object sender, EventArgs e)
+        {
+            if ((ObjectTypeIndexBox.SelectedIndex >= 0) && (ObjectTypeIndexBox.SelectedIndex <= ObjectTypeIndexBox.Items.Count))
+            {
+
+
+                TM64_Paths.Pathlist[] PathArray = new TM64_Paths.Pathlist[0];
+                TM64.OK64Settings okSettings = new TM64.OK64Settings();
+                TM64_Paths tm64Path = new TM64_Paths();
+
+                //blank
+                TM64_Geometry.OK64F3DObject[] surfaceObjects = new TM64_Geometry.OK64F3DObject[0];
+
+                okSettings.LoadSettings();
+
+                OpenFileDialog OpenFile = new OpenFileDialog();
+                MessageBox.Show("Select OK64.POP File");
+                OpenFile.Title = "POP3 File";
+                OpenFile.InitialDirectory = okSettings.ProjectDirectory;
+                OpenFile.Filter = "Tarmac POP|*.OK64.POP|All Files (*.*)|*.*";
+                OpenFile.FileName = null;
+                if (OpenFile.ShowDialog() == DialogResult.OK)
+                {
+                    if (File.Exists(OpenFile.FileName))
+                    {
+                        string popFile = OpenFile.FileName;
+                        PathArray = tm64Path.LoadPOP3(popFile, surfaceObjects);
+                    }
+                }
+
+                for (int ThisLoop = 0; ThisLoop < PathArray.Length; ThisLoop++)
+                {
+                    for (int ThisPass = 0; ThisPass < PathArray[ThisLoop].pathmarker.Count; ThisPass++)
+                    {
+
+                        TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+
+                        NewObject.OriginPosition[0] = Convert.ToInt16(PathArray[ThisLoop].pathmarker[ThisPass].X);
+                        NewObject.OriginPosition[1] = Convert.ToInt16(PathArray[ThisLoop].pathmarker[ThisPass].Y);
+                        NewObject.OriginPosition[2] = Convert.ToInt16(PathArray[ThisLoop].pathmarker[ThisPass].Z);
+
+                        NewObject.Flag = Convert.ToInt16(PathArray[ThisLoop].pathmarker[ThisPass].Flag);
+
+                        NewObject.TypeIndex = Convert.ToInt16(ObjectTypeIndexBox.SelectedIndex);
+                        OKObjectList.Add(NewObject);
+                        int NewIndex = ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + ObjectListBox.Items.Count.ToString());
+                        ObjectListBox.SelectedIndex = NewIndex;
+                    }
+                }
+            }
+
+        }
     }
 }

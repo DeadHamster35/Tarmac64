@@ -33,6 +33,10 @@ using SharpGL.SceneGraph;
 using static Tarmac64_Library.TM64_Geometry;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using static System.Collections.Specialized.BitVector32;
+using SharpGL.SceneGraph.Quadrics;
+using static System.Windows.Forms.AxHost;
+using System.Xml.Linq;
 
 namespace Tarmac64_Library
 {
@@ -55,40 +59,41 @@ namespace Tarmac64_Library
         UInt32 value32 = new UInt32();
         public class Face
         {
-            public byte[] SaveData()
+            public Face(XmlDocument XMLDoc, string Parent, int FaceNumber)
             {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+                string TargetPath = Parent + "/Face_" + FaceNumber.ToString();
 
-                binaryWriter.Write(Material);
 
-                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
-                {
-                    binaryWriter.Write(VertData[ThisVert].SaveData());
-                }
-
-                return Data.ToArray();
-            }
-
-            public Face(MemoryStream Input)
-            {
-                //LoadData
-                BinaryReader BRead = new BinaryReader(Input);
-
-                Material = BRead.ReadInt32();
-
+                string VertPath = TargetPath + "/VertArray";
                 VertData = new Vertex[3];
                 for (int ThisVert = 0; ThisVert < 3; ThisVert++)
                 {
-                    VertData[ThisVert] = new Vertex(Input);
+                    VertData[ThisVert] = new Vertex(XMLDoc, VertPath, ThisVert);
                 }
+
+            }
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int FaceNumber)
+            {
+                TM64 Tarmac = new TM64();
+                XmlElement FaceXML = XMLDoc.CreateElement("Face_" + FaceNumber.ToString());
+                Parent.AppendChild(FaceXML);
+
+
+                XmlElement VertArrayXML = XMLDoc.CreateElement("VertArray");
+                FaceXML.AppendChild(VertArrayXML);
+                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                {
+                    VertData[ThisVert].SaveXML(XMLDoc, VertArrayXML, ThisVert);
+                }
+
             }
             public Face()
             {
 
             }
 
-            public int Material { get; set; }
             public Vertex[] VertData { get; set; }
         }
 
@@ -129,36 +134,9 @@ namespace Tarmac64_Library
                 }
 
             }
-            public byte[] SaveData()
-            {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
-
-                
-                binaryWriter.Write(objectList.Length);
-                for (int ThisObj = 0; ThisObj < objectList.Length; ThisObj++)
-                {
-                    binaryWriter.Write(objectList[ThisObj]);
-                }
-                
-
-                return Data.ToArray();
-            }
-
             public OK64SectionList()
             {
 
-            }
-            public OK64SectionList(MemoryStream Input)
-            {
-                BinaryReader BRead = new BinaryReader(Input);
-
-                objectList = new int[BRead.ReadInt32()];
-                for (int ThisObj = 0; ThisObj < objectList.Length; ThisObj++)
-                {   
-                    objectList[ThisObj] = BRead.ReadInt32();
-                }
-                
             }
 
 
@@ -196,7 +174,8 @@ namespace Tarmac64_Library
                 XmlNode Target = Owner.ChildNodes[ChildIndex];
                 
                 textureName = XmlConvert.DecodeName(Target.Name);
-                string HeaderName = XmlConvert.EncodeName(textureName);
+                string HeaderName = "Texture_" + ChildIndex.ToString();
+                textureName = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "textureName");
                 texturePath = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "texturePath");
                 alphaPath = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "alphaPath");
 
@@ -239,11 +218,13 @@ namespace Tarmac64_Library
                 }
             }
             
-            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent)
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int TextureID)
             {
                 TM64 Tarmac = new TM64();
-                XmlElement TextureXML = XMLDoc.CreateElement(XmlConvert.EncodeName(textureName));
+                XmlElement TextureXML = XMLDoc.CreateElement("Texture_"+TextureID.ToString());
                 Parent.AppendChild(TextureXML);
+
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "textureName", textureName);
 
                 if (texturePath != null)
                 {
@@ -275,111 +256,6 @@ namespace Tarmac64_Library
                 Tarmac.GenerateElement(XMLDoc, TextureXML, "GLShiftT", GLShiftT);
 
             }
-            public byte[] SaveData()
-            {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
-                binaryWriter.Write(textureName);
-                if (texturePath != null)
-                {
-                    binaryWriter.Write(texturePath);
-                }
-                else
-                {
-                    binaryWriter.Write("NULL");
-                }
-                
-                binaryWriter.Write(alphaPath);
-                binaryWriter.Write(CombineModeA);
-                binaryWriter.Write(CombineModeB);
-                binaryWriter.Write(RenderModeA);
-                binaryWriter.Write(RenderModeB);
-                binaryWriter.Write(GeometryModes);
-                binaryWriter.Write(BitSize);
-                binaryWriter.Write(TextureFilter);
-                binaryWriter.Write(TextureFormat);
-
-                binaryWriter.Write(SFlag);
-                binaryWriter.Write(TFlag);
-
-                binaryWriter.Write(textureScrollS);
-                binaryWriter.Write(textureScrollT);
-
-                binaryWriter.Write(textureScreen);
-                binaryWriter.Write(GLShiftS);
-                binaryWriter.Write(GLShiftT);
-
-                binaryWriter.Write(TextureOverWrite.Length);
-                for (int ThisOver = 0; ThisOver < TextureOverWrite.Length; ThisOver++)
-                {
-                    binaryWriter.Write(TextureOverWrite[ThisOver]);
-                }
-                for (int This = 0; This < 12; This++)
-                {
-                    binaryWriter.Write(GeometryBools[This]);
-                }
-
-
-                return Data.ToArray();
-            }
-
-
-            public OK64Texture(MemoryStream Input)
-            {
-
-                BinaryReader BRead = new BinaryReader(Input);
-
-                textureName = BRead.ReadString();
-                texturePath = BRead.ReadString();
-                alphaPath = BRead.ReadString();
-                CombineModeA = BRead.ReadInt32();
-                CombineModeB = BRead.ReadInt32();
-
-                RenderModeA = BRead.ReadInt32();
-                RenderModeB = BRead.ReadInt32();
-                GeometryModes = BRead.ReadUInt32();
-                BitSize = BRead.ReadInt32();
-                TextureFilter = BRead.ReadInt32();
-                TextureFormat = BRead.ReadInt32();
-
-
-                SFlag = BRead.ReadInt32();
-                TFlag = BRead.ReadInt32();
-
-                textureScrollS = BRead.ReadInt32();
-                textureScrollT = BRead.ReadInt32();
-
-                textureScreen = BRead.ReadInt32();
-
-                GLShiftS = BRead.ReadDouble();
-                GLShiftT = BRead.ReadDouble();
-
-                TextureOverWrite = new int[BRead.ReadInt32()];
-
-                for (int ThisOver = 0; ThisOver < TextureOverWrite.Length; ThisOver++)
-                {
-                    TextureOverWrite[ThisOver] = BRead.ReadInt32();
-                }
-                GeometryBools = new bool[12];
-                for (int This = 0; This < 12; This++)
-                {
-                    GeometryBools[This] = BRead.ReadBoolean();
-                }
-                RawTexture = new OK64TextureRaw();
-                
-                if (File.Exists(texturePath))
-                {
-                    using (var fs = new FileStream(texturePath, FileMode.Open, FileAccess.Read))
-                    {
-                        Image Raw = Image.FromStream(fs);
-                        RawTexture.textureBitmap = Raw;
-                        textureWidth = Raw.Width;
-                        textureHeight = Raw.Height;
-                        fs.Close();
-                    }
-                }
-            }
-
 
             public OK64TextureRaw RawTexture { get; set; }
 
@@ -455,91 +331,81 @@ namespace Tarmac64_Library
 
         public class OK64F3DObject
         {
-            public byte[] SaveData()
+            public OK64F3DObject(XmlDocument XMLDoc, string Parent, int MasterNumber)
             {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+                string TargetPath = Parent + "/Object_" + MasterNumber.ToString();
 
-                binaryWriter.Write(objectName);
-                binaryWriter.Write(vertCount);
-                binaryWriter.Write(faceCount);
-                binaryWriter.Write(materialID);
-                binaryWriter.Write(surfaceID);
-                binaryWriter.Write(surfaceMaterial);
+                objectName = Tarmac.LoadElement(XMLDoc, TargetPath, "objectName", "");
+                vertCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, TargetPath, "vertCount", "0"));
+                faceCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, TargetPath, "faceCount", "0"));
+                materialID = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, TargetPath, "materialID", "0"));
 
-                binaryWriter.Write(meshID.Length);
-                for (int ThisMesh = 0; ThisMesh < meshID.Length; ThisMesh++)
+                surfaceID = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, TargetPath, "surfaceID", "0"));
+                surfaceMaterial = Convert.ToByte(Tarmac.LoadElement(XMLDoc, TargetPath, "surfaceMaterial", "0"));
+                surfaceProperty = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, TargetPath, "surfaceProperty", "0"));
+                BoneName = Tarmac.LoadElement(XMLDoc, TargetPath, "BoneName", "NULL");
+
+
+                Random RNG = new Random();
+                objectColor = new float[3]
                 {
-                    binaryWriter.Write(meshID[ThisMesh]);
-                }
-
-                binaryWriter.Write(modelGeometry.Length);
-                for (int ThisMesh = 0; ThisMesh < modelGeometry.Length; ThisMesh++)
-                {
-                    binaryWriter.Write(modelGeometry[ThisMesh].SaveData());
-                }
-
-                for (int ThisColor = 0; ThisColor < 3; ThisColor++)
-                {
-                    binaryWriter.Write(objectColor[ThisColor]);
-                }
-
-                binaryWriter.Write(surfaceProperty);
-
-                binaryWriter.Write(pathfindingObject.SaveData());
-
-                binaryWriter.Write(BoneName);
-                for (int ThisBool = 0; ThisBool < 8; ThisBool++)
-                {
-                    binaryWriter.Write(KillDisplayList[ThisBool]);
-                }
-
-                binaryWriter.Write(WaveObject);
-
-                return Data.ToArray();
-            }
-
-            public OK64F3DObject(MemoryStream Input)
-            {
-                BinaryReader BRead = new BinaryReader(Input);
-                objectName = BRead.ReadString();
-                vertCount = BRead.ReadInt32();
-                faceCount = BRead.ReadInt32();
-                materialID = BRead.ReadInt32();
-                surfaceID = BRead.ReadInt32();
-                surfaceMaterial = BRead.ReadByte();
-
-                meshID = new int[BRead.ReadInt32()];
-                for (int ThisMesh = 0; ThisMesh < meshID.Length; ThisMesh++)
-                {
-                    meshID[ThisMesh] = BRead.ReadInt32();
-                }
-
-                modelGeometry = new Face[BRead.ReadInt32()];
-                for (int ThisMesh = 0; ThisMesh < modelGeometry.Length; ThisMesh++)
-                {
-                    modelGeometry[ThisMesh] = new Face(Input);
-                }
-
-                objectColor = new float[3];
-                for (int ThisColor = 0; ThisColor < 3; ThisColor++)
-                {
-                    objectColor[ThisColor] = BRead.ReadSingle();
-                }
-
-                surfaceProperty = BRead.ReadInt32();
-
-                pathfindingObject = new PathfindingObject(Input);
-
-                BoneName = BRead.ReadString();
+                    RNG.NextFloat(0,1),
+                    RNG.NextFloat(0,1),
+                    RNG.NextFloat(0,1)
+                };
 
                 KillDisplayList = new bool[8];
+                int[] KDL = Tarmac.LoadElements(XMLDoc, TargetPath, "KillDisplayList", "0");
                 for (int ThisBool = 0; ThisBool < 8; ThisBool++)
                 {
-                    KillDisplayList[ThisBool] = BRead.ReadBoolean();
+                    KillDisplayList[ThisBool] = Convert.ToBoolean(KDL[ThisBool]);
                 }
-                WaveObject = BRead.ReadBoolean();
+                
+                
+
+
+                int geometryCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, TargetPath, "GeometryCount", "0"));
+                
+                string GeometryHeader = TargetPath + "/GeometryArray";
+
+                TM64_Geometry TMGeo = new TM64_Geometry();
+                modelGeometry = TMGeo.LoadFaceArrayXML(XMLDoc, GeometryHeader);
+
             }
+
+
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int MasterNumber)
+            {
+                TM64 Tarmac = new TM64();
+                XmlElement ObjectXML = XMLDoc.CreateElement(XmlConvert.EncodeName("Object_"+MasterNumber.ToString()));
+                Parent.AppendChild(ObjectXML);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "objectName", objectName);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "vertCount", vertCount);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "faceCount", faceCount);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "materialID", materialID);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "surfaceID", surfaceID);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "vertCount", surfaceMaterial);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "surfaceProperty", surfaceProperty);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "BoneName", BoneName);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "KillDisplayList", KillDisplayList);
+                
+
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "GeometryCount", modelGeometry.Length);
+                XmlElement ModelXML = XMLDoc.CreateElement("GeometryArray");
+                ObjectXML.AppendChild(ModelXML);
+                TM64_Geometry TMGeo = new TM64_Geometry();
+                TMGeo.SaveFaceArrayXML(modelGeometry, XMLDoc, ModelXML);
+                
+
+                pathfindingObject.SaveXML(XMLDoc, ObjectXML);
+
+            }
+
             public OK64F3DObject()
             {
 
@@ -553,7 +419,6 @@ namespace Tarmac64_Library
             public int materialID { get; set; }
             public int surfaceID { get; set; }
             public Byte surfaceMaterial { get; set; }
-            public int[] meshID { get; set; }
             public Face[] modelGeometry { get; set; }
             public float[] objectColor { get; set; }
             public int surfaceProperty { get; set; }
@@ -571,33 +436,20 @@ namespace Tarmac64_Library
         }
         public class PathfindingObject
         {
-            public byte[] SaveData()
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent)
             {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
+                TM64 Tarmac = new TM64();
+                XmlElement PathXML = XMLDoc.CreateElement("Pathfinder");
+                Parent.AppendChild(PathXML);
 
-                binaryWriter.Write(highX);
-                binaryWriter.Write(highY);
-                binaryWriter.Write(highZ);
-                binaryWriter.Write(lowX);
-                binaryWriter.Write(lowY);
-                binaryWriter.Write(lowZ);
+                Tarmac.GenerateElement(XMLDoc, PathXML, "highX", highX);
+                Tarmac.GenerateElement(XMLDoc, PathXML, "highY", highY);
+                Tarmac.GenerateElement(XMLDoc, PathXML, "highZ", highZ);
 
-                return Data.ToArray();
-            }
+                Tarmac.GenerateElement(XMLDoc, PathXML, "lowX", lowX);
+                Tarmac.GenerateElement(XMLDoc, PathXML, "lowY", lowY);
+                Tarmac.GenerateElement(XMLDoc, PathXML, "lowZ", lowZ);
 
-            public PathfindingObject(MemoryStream Input)
-            {
-                //LoadData
-                
-                BinaryReader BRead = new BinaryReader(Input);
-
-                highX = BRead.ReadSingle();
-                highY = BRead.ReadSingle();
-                highZ = BRead.ReadSingle();
-                lowX = BRead.ReadSingle();
-                lowY = BRead.ReadSingle();
-                lowZ = BRead.ReadSingle();
 
             }
             public PathfindingObject()
@@ -616,27 +468,29 @@ namespace Tarmac64_Library
 
         public class Vertex
         {
-            public byte[] SaveData()
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int ThisVert)
             {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
+                TM64 Tarmac = new TM64();
 
-                binaryWriter.Write(position.SaveData());
-                binaryWriter.Write(color.SaveData());
-
-                return Data.ToArray();
-
+                XmlElement VertXML = XMLDoc.CreateElement("Vertex_" + ThisVert.ToString());
+                Parent.AppendChild(VertXML);
+                position.SaveXML(XMLDoc, VertXML);
+                color.SaveXML(XMLDoc, VertXML);               
+                
             }
 
-            public Vertex(MemoryStream Input)
+            public Vertex(XmlDocument XMLDoc, string Parent, int ThisVertex)
             {
-                //LoadData
-                BinaryReader BRead = new BinaryReader(Input);
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+                
 
-                position = new Position(Input);
-                color = new OK64Color(Input);
-
+                string TargetPath = Parent + "/Vertex_" + ThisVertex.ToString();
+                position = new Position(XMLDoc, TargetPath);
+                color = new OK64Color(XMLDoc, TargetPath);
+                
             }
+
             public Vertex()
             {
 
@@ -648,40 +502,29 @@ namespace Tarmac64_Library
 
         public class OK64Color
         {
-            public byte[] SaveData()
+            public OK64Color(XmlDocument XMLDoc, string Parent)
             {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
+                TM64 Tarmac = new TM64();
+                string Target = Parent + "/Color";
+                int[] RGBA = Tarmac.LoadElements(XMLDoc, Target, "RGBA", "0");
+                R = Convert.ToByte(RGBA[0]);
+                G = Convert.ToByte(RGBA[1]);
+                B = Convert.ToByte(RGBA[2]);
+                A = Convert.ToByte(RGBA[3]);
 
-
-                binaryWriter.Write(R);
-                binaryWriter.Write(G);
-                binaryWriter.Write(B);
-                binaryWriter.Write(A);
-                binaryWriter.Write(RFloat);
-                binaryWriter.Write(GFloat);
-                binaryWriter.Write(BFloat);
-                binaryWriter.Write(AFloat);
-
-                return Data.ToArray();
+                RFloat = Convert.ToSingle(255.0f / R);
+                GFloat = Convert.ToSingle(255.0f / G);
+                BFloat = Convert.ToSingle(255.0f / B);
+                AFloat = Convert.ToSingle(255.0f / A);
             }
-
-
-            public OK64Color(MemoryStream Input)
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent)
             {
-                //LoadData
-                BinaryReader BRead = new BinaryReader(Input);
+                TM64 Tarmac = new TM64();
+                XmlElement ColorXML = XMLDoc.CreateElement("Color");
+                Parent.AppendChild(ColorXML);
+                int[] RGBA = new int[] { R,G,B,A };
 
-                R = BRead.ReadByte();
-                G = BRead.ReadByte();
-                B = BRead.ReadByte();
-                A = BRead.ReadByte();
-
-                RFloat = BRead.ReadSingle();
-                GFloat = BRead.ReadSingle();
-                BFloat = BRead.ReadSingle();
-                AFloat = BRead.ReadSingle();
-
+                Tarmac.GenerateElement(XMLDoc, ColorXML, "RGBA", RGBA);
             }
             public OK64Color()
             {
@@ -700,46 +543,50 @@ namespace Tarmac64_Library
 
         public class Position
         {
-            public byte[] SaveData()
+
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent)
             {
-                MemoryStream Data = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(Data);
+                TM64 Tarmac = new TM64();
+                XmlElement PosXML = XMLDoc.CreateElement("Position");
+                Parent.AppendChild(PosXML);
 
-                binaryWriter.Write(x);
-                binaryWriter.Write(y);
-                binaryWriter.Write(z);
-                binaryWriter.Write(s);
-                binaryWriter.Write(t);
-                binaryWriter.Write(sBase);
-                binaryWriter.Write(tBase);
-                binaryWriter.Write(sPure);
-                binaryWriter.Write(tPure);
-                binaryWriter.Write(u);
-                binaryWriter.Write(v);
 
-                return Data.ToArray();
-            }
+                int[] Pos = new int[3]{ x,y,z};
 
-            public Position(MemoryStream Input)
-            {
-                //LoadData
-                BinaryReader BRead = new BinaryReader(Input);
+                Tarmac.GenerateElement(XMLDoc, PosXML, "xyz", Pos);
 
-                x = BRead.ReadInt16();
-                y = BRead.ReadInt16();
-                z = BRead.ReadInt16();
-                s = BRead.ReadInt16();
-                t = BRead.ReadInt16();
-
-                sBase = BRead.ReadSingle();
-                tBase = BRead.ReadSingle();
-                sPure = BRead.ReadSingle();
-                tPure = BRead.ReadSingle();
-
-                u = BRead.ReadSingle();
-                v = BRead.ReadSingle();
+                float[] UV = new float[] { u, v };
+                Tarmac.GenerateElement(XMLDoc, PosXML, "uv", UV);
+                float[] ST = new float[] { sPure, tPure };
+                Tarmac.GenerateElement(XMLDoc, PosXML, "st", ST);
 
             }
+            public Position(XmlDocument XMLDoc, string Parent)
+            {
+                TM64 Tarmac = new TM64();
+                string Target = Parent + "/Position";
+                int[] Pos = Tarmac.LoadElements(XMLDoc, Target, "xyz", "0");
+
+                x = Convert.ToInt16(Pos[0]);
+                y = Convert.ToInt16(Pos[1]);
+                z = Convert.ToInt16(Pos[2]);
+
+
+                float[] UV = Tarmac.LoadElementsF(XMLDoc, Target, "uv", "0");
+
+                u = Convert.ToSingle(UV[0]);
+                v = Convert.ToSingle(UV[1]);
+
+
+                float[] ST = Tarmac.LoadElementsF(XMLDoc, Target, "st", "0");
+
+                sPure = Convert.ToSingle(ST[0]);
+                tPure = Convert.ToSingle(ST[1]);
+                sBase = u * 32;
+                tBase = (1 - v) * 32;
+
+            }
+            //
             public Position()
             {
 
@@ -994,6 +841,148 @@ namespace Tarmac64_Library
 
             return new Assimp.Vector3D((float)t, (float)u, (float)v);
         }
+
+
+        public Face[] LoadFaceArrayXML(XmlDocument XMLDoc, string Parent)
+        {
+            TM64 Tarmac = new TM64();
+            XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+            Face[] FaceArray = new Face[0];
+
+            List<int> Elements = new List<int>();
+            XmlNode CheckNode = XMLDoc.SelectSingleNode("/" + Parent + "/" + "VertPos");
+            if (CheckNode != null)
+            {
+                string Check = XmlConvert.DecodeName(CheckNode.InnerText);
+                string[] Collects = Check.Split(';');
+
+
+                FaceArray = new Face[(Collects.Length / 3)];
+                
+                for (int ThisFace = 0; ThisFace < FaceArray.Length; ThisFace++)
+                {
+                    FaceArray[ThisFace] = new Face();
+                    FaceArray[ThisFace].VertData = new Vertex[3];
+                    for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                    {
+                        FaceArray[ThisFace].VertData[ThisVert] = new Vertex();
+                        string[] Items = Collects[(ThisFace * 3) + ThisVert].Split(',');
+                        
+                        FaceArray[ThisFace].VertData[ThisVert].position = new Position();
+                        FaceArray[ThisFace].VertData[ThisVert].position.x = Convert.ToInt16(Items[0]);
+                        FaceArray[ThisFace].VertData[ThisVert].position.y = Convert.ToInt16(Items[1]);
+                        FaceArray[ThisFace].VertData[ThisVert].position.z = Convert.ToInt16(Items[2]);
+                    }
+                }
+            }
+
+            CheckNode = XMLDoc.SelectSingleNode("/" + Parent + "/" + "VertColor");
+            if (CheckNode != null)
+            {
+                string Check = XmlConvert.DecodeName(CheckNode.InnerText);
+                string[] Collects = Check.Split(';');
+
+
+                for (int ThisFace = 0; ThisFace < FaceArray.Length; ThisFace++)
+                {
+                    for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                    {
+                        string[] Items = Collects[(ThisFace * 3) + ThisVert].Split(',');
+
+                        FaceArray[ThisFace].VertData[ThisVert].color = new OK64Color();
+                        FaceArray[ThisFace].VertData[ThisVert].color.R = Convert.ToByte(Items[0]);
+                        FaceArray[ThisFace].VertData[ThisVert].color.G = Convert.ToByte(Items[1]);
+                        FaceArray[ThisFace].VertData[ThisVert].color.B = Convert.ToByte(Items[2]);
+                        FaceArray[ThisFace].VertData[ThisVert].color.A = Convert.ToByte(Items[3]);
+
+                        FaceArray[ThisFace].VertData[ThisVert].color.RFloat = Convert.ToSingle(FaceArray[ThisFace].VertData[ThisVert].color.R / 255.0f);
+                        FaceArray[ThisFace].VertData[ThisVert].color.GFloat = Convert.ToSingle(FaceArray[ThisFace].VertData[ThisVert].color.G / 255.0f);
+                        FaceArray[ThisFace].VertData[ThisVert].color.BFloat = Convert.ToSingle(FaceArray[ThisFace].VertData[ThisVert].color.B / 255.0f);
+                        FaceArray[ThisFace].VertData[ThisVert].color.AFloat = Convert.ToSingle(FaceArray[ThisFace].VertData[ThisVert].color.A / 255.0f);
+                    }
+                }
+            }
+
+            CheckNode = XMLDoc.SelectSingleNode("/" + Parent + "/" + "VertUVs");
+            if (CheckNode != null)
+            {
+                string Check = XmlConvert.DecodeName(CheckNode.InnerText);
+                string[] Collects = Check.Split(';');
+
+
+                for (int ThisFace = 0; ThisFace < FaceArray.Length; ThisFace++)
+                {
+                    for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                    {
+                        string[] Items = Collects[(ThisFace * 3) + ThisVert].Split(',');
+
+                        
+                        FaceArray[ThisFace].VertData[ThisVert].position.u = Convert.ToSingle(Items[0]);
+                        FaceArray[ThisFace].VertData[ThisVert].position.v = Convert.ToSingle(Items[1]);
+                        FaceArray[ThisFace].VertData[ThisVert].position.sPure = Convert.ToSingle(Items[2]);
+                        FaceArray[ThisFace].VertData[ThisVert].position.tPure = Convert.ToSingle(Items[3]);
+                        FaceArray[ThisFace].VertData[ThisVert].position.sBase = FaceArray[ThisFace].VertData[ThisVert].position.u * 32;
+                        FaceArray[ThisFace].VertData[ThisVert].position.tBase = FaceArray[ThisFace].VertData[ThisVert].position.v * 32;
+                    }
+                }
+            }
+
+            return FaceArray;
+        }
+        public void SaveFaceArrayXML(Face[] FaceArray, XmlDocument XMLDoc, XmlElement Parent)
+        {
+            TM64 Tarmac = new TM64();
+            string VertString = "";
+            for (int ThisFace = 0; ThisFace < FaceArray.Length; ThisFace++)
+            {
+                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                {
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].position.x.ToString();
+                    VertString += ",";
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].position.y.ToString();
+                    VertString += ",";
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].position.z.ToString();
+                    VertString += ";";
+                }
+            }
+            Tarmac.GenerateElementRaw(XMLDoc, Parent, "VertPos", VertString);
+
+            VertString = "";
+            for (int ThisFace = 0; ThisFace < FaceArray.Length; ThisFace++)
+            {
+                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                {
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].color.R.ToString();
+                    VertString += ",";
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].color.G.ToString();
+                    VertString += ",";
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].color.B.ToString();
+                    VertString += ",";
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].color.A.ToString();
+                    VertString += ";";
+                }
+            }
+            Tarmac.GenerateElementRaw(XMLDoc, Parent, "VertColor", VertString);
+
+            VertString = "";
+            for (int ThisFace = 0; ThisFace < FaceArray.Length; ThisFace++)
+            {
+                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                {
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].position.u.ToString();
+                    VertString += ",";
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].position.v.ToString();
+                    VertString += ",";
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].position.sPure.ToString();
+                    VertString += ",";
+                    VertString += FaceArray[ThisFace].VertData[ThisVert].position.sPure.ToString();
+                    VertString += ";";
+                }
+            }
+            Tarmac.GenerateElementRaw(XMLDoc, Parent, "VertUVs", VertString);
+        }
+
+
         public Assimp.Vector3D testIntersectScale(Assimp.Vector3D rayOrigin, Assimp.Vector3D rayDirection, Vertex vertA, Vertex vertB, Vertex vertC, float[] Origin, float[] Scale)
         {
 
@@ -1459,12 +1448,6 @@ namespace Tarmac64_Library
                     binaryWriter.Write(ModelData[ThisModel].KillDisplayList[ThisBool]);
                 }
 
-                binaryWriter.Write(ModelData[ThisModel].meshID.Length);
-                for (int ThisMesh = 0; ThisMesh < ModelData[ThisModel].meshID.Length; ThisMesh++)
-                {
-                    binaryWriter.Write(ModelData[ThisModel].meshID[ThisMesh]);
-                }
-
                 binaryWriter.Write(ModelData[ThisModel].modelGeometry.Length);
                 for (int ThisGeo = 0; ThisGeo < ModelData[ThisModel].modelGeometry.Length; ThisGeo++)
                 {
@@ -1503,10 +1486,9 @@ namespace Tarmac64_Library
             newObject.objectColor[1] = rValue.NextFloat(0.3f, 1);
             newObject.objectColor[2] = rValue.NextFloat(0.3f, 1);
             newObject.objectName = objectNode.Name;
-            newObject.meshID = objectNode.MeshIndices.ToArray();
             newObject.KillDisplayList = new bool[8] { true, true, true, true, true, true, true, true };
 
-            if (newObject.meshID.Length == 0)
+            if (objectNode.MeshIndices.Count == 0)
             {
                 MessageBox.Show("Empty Course Object! -" + newObject.objectName);
                 newObject.materialID = 0;
@@ -1521,7 +1503,7 @@ namespace Tarmac64_Library
                 newObject.modelGeometry = CreateStandard(0);
                 return newObject;
             } 
-            newObject.materialID = fbx.Meshes[newObject.meshID[0]].MaterialIndex;
+            newObject.materialID = fbx.Meshes[objectNode.MeshIndices[0]].MaterialIndex;
             int vertCount = 0;
             int faceCount = 0;
 
@@ -1531,14 +1513,14 @@ namespace Tarmac64_Library
             Assimp.Vector3D BScale = new Assimp.Vector3D();
             Assimp.Quaternion RotQuat = new Assimp.Quaternion();
             float[] BRotation = new float[3];
-            if (!DisregardOrigin)
+            if (TarmacSettings.ImportMode > 0)
             {
 
                 Assimp.Matrix4x4 OPrime = GetTotalTransform(objectNode, fbx);
 
                 OPrime.Decompose(out BScale, out RotQuat, out BOrigin);
 
-                if (TarmacSettings.BlenderImport)
+                if (TarmacSettings.ImportMode == 1)
                 {
                     //Blender uses 100.0f scaling
                     //3DS Max uses 1.0f scaling
@@ -1923,7 +1905,7 @@ namespace Tarmac64_Library
         public OK64F3DObject[] LoadMaster(ref OK64F3DGroup[] groupArray, Assimp.Scene fbx, OK64Texture[] textureArray, bool AlphaCH = false)
         {
             
-            var masterNode = fbx.RootNode.FindNode("Course Master Objects");
+            var masterNode = fbx.RootNode.FindNode("Render Objects");
             int childCount = masterNode.Children.Count;
             List<OK64F3DObject> masterList = new List<OK64F3DObject>();
             OK64F3DObject[] masterObjects = new OK64F3DObject[0];
@@ -1965,12 +1947,12 @@ namespace Tarmac64_Library
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0; 
-            var BaseNode = fbx.RootNode.FindNode("Master Objects");
+            var BaseNode = fbx.RootNode.FindNode("Render Objects");
             TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
             TarmacSettings.LoadSettings();
             if (BaseNode == null)
             {
-                MessageBox.Show("Error - No 'Master Objects' node");
+                MessageBox.Show("Error - No 'Render Objects' node");
             }
             for (int childObject = 0; childObject < BaseNode.Children.Count; childObject++)
             {
@@ -2018,7 +2000,7 @@ namespace Tarmac64_Library
         }
 
 
-        public OK64F3DObject[] LoadCollisions(Assimp.Scene fbx, int sectionCount, int simpleFormat, OK64Texture[] textureArray)
+        public OK64F3DObject[] LoadCollisions(Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray)
          {   
             int totalIndexCount = 0;
             int totalIndex = 0;
@@ -2027,14 +2009,8 @@ namespace Tarmac64_Library
             float[] colorValues = new float[3];
             for (int currentSection = 0; currentSection < sectionCount; currentSection++)
             {
-                if (simpleFormat == 2)
-                {
-                    surfaceNode = fbx.RootNode.FindNode("Section " + (currentSection + 1).ToString() + " Surface");
-                }
-                else
-                {
-                    surfaceNode = fbx.RootNode.FindNode("Section " + (currentSection + 1).ToString());
-                }
+                surfaceNode = fbx.RootNode.FindNode("Section " + (currentSection + 1).ToString());
+                
 
                 colorValues[0] = rValue.NextFloat(0, 1);
                 colorValues[1] = rValue.NextFloat(0, 1);
@@ -2769,7 +2745,7 @@ namespace Tarmac64_Library
             foreach (var cObj in MasterObjects)
             {
                 OK64F3DModel[] CrunchedModel = CrunchF3DModel(cObj);
-                cObj.meshPosition = new int[cObj.meshID.Length];
+                cObj.meshPosition = new int[1];
 
 
                 relativeZero = Convert.ToInt32(memoryStream.Position + vertMagic);
@@ -3012,7 +2988,7 @@ namespace Tarmac64_Library
                 OK64F3DModel[] CrunchedModel = CrunchF3DModel(cObj);
 
                 
-                cObj.meshPosition = new int[cObj.meshID.Length];
+                cObj.meshPosition = new int[1];
 
                 cObj.meshPosition[0] = Convert.ToInt32(seg7w.BaseStream.Position);
 
@@ -3749,7 +3725,7 @@ namespace Tarmac64_Library
             //Load Texture Data
             binaryWriter.Write(
                 F3D.gsNinLoadTextureImage(
-                    Convert.ToUInt32(TextureObject.segmentPosition | Convert.ToUInt32(Segment << 24)),
+                    Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | Convert.ToUInt32(Segment << 24)),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                     F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                     Convert.ToUInt32(TextureObject.textureWidth),
@@ -3791,15 +3767,15 @@ namespace Tarmac64_Library
             {
                 //Macro 4-bit Texture Load
 
-                binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | SegmentID)));
-                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.RawTexture.palettePosition | SegmentID)));
+                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
                     0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
             }
             else
             {
 
-                binaryWriter.Write(F3D.gsDPLoadTLUT_pal256(0, Convert.ToUInt32(TextureObject.palettePosition | SegmentID)));
+                binaryWriter.Write(F3D.gsDPLoadTLUT_pal256(0, Convert.ToUInt32(TextureObject.RawTexture.palettePosition | SegmentID)));
 
                 //Load Texture Settings
                 binaryWriter.Write(
@@ -3820,7 +3796,7 @@ namespace Tarmac64_Library
                 );
                 //Load Texture Data
                 binaryWriter.Write(F3D.gsDPLoadTextureBlock(
-                    Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                    Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                     F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                     Convert.ToUInt32(TextureObject.textureWidth),
@@ -4016,7 +3992,7 @@ namespace Tarmac64_Library
             if (TextureObject.BitSize < 1)
             {
                 //Macro 4-bit Texture Load
-                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                binaryWriter.Write(F3D.gsDPLoadTextureBlock_4b(Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat], Convert.ToUInt32(TextureObject.textureWidth), Convert.ToUInt32(TextureObject.textureHeight),
                     0, F3DEX095_Parameters.TextureModes[TextureObject.SFlag], widthex, 0, F3DEX095_Parameters.TextureModes[TextureObject.TFlag], heightex, 0));
             }
@@ -4041,7 +4017,7 @@ namespace Tarmac64_Library
                 );
                 //Load Texture Data
                 binaryWriter.Write(F3D.gsDPLoadTextureBlock(
-                    Convert.ToUInt32(TextureObject.segmentPosition | SegmentID),
+                    Convert.ToUInt32(TextureObject.RawTexture.segmentPosition | SegmentID),
                     F3DEX095_Parameters.TextureFormats[TextureObject.TextureFormat],
                     F3DEX095_Parameters.BitSizes[TextureObject.BitSize],
                     Convert.ToUInt32(TextureObject.textureWidth),
@@ -4964,9 +4940,7 @@ namespace Tarmac64_Library
         public int GetModelFormat(Assimp.Scene fbx)
         {
             int modelFormat = -1;
-            Assimp.Node masterNode = fbx.RootNode.FindNode("Course Master Objects");
-
-            masterNode = fbx.RootNode.FindNode("Section 1");
+            Assimp.Node masterNode = fbx.RootNode.FindNode("Section 1");
             if (masterNode != null)
             {
                 modelFormat = 0;  //normal mode

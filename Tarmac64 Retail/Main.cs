@@ -14,6 +14,7 @@ using System.Windows.Input;
 using Tarmac64_Library;
 using static Tarmac64_Library.TM64_Course;
 using static System.Net.Mime.MediaTypeNames;
+using Cereal64.Common.Utils;
 
 namespace Tarmac64_Retail
 {
@@ -126,7 +127,7 @@ namespace Tarmac64_Retail
 
         bool loaded,UpdateDraw = false;
 
-        TM64_Paths.Pathgroup[] pathGroups = new TM64_Paths.Pathgroup[0];
+        TM64_Paths.Pathlist[] PathArray = new TM64_Paths.Pathlist[0];
 
         TM64_Geometry.OK64F3DObject[] masterObjects = new TM64_Geometry.OK64F3DObject[0];
         TM64_Geometry.OK64F3DGroup[] masterGroups = new TM64_Geometry.OK64F3DGroup[0];
@@ -302,15 +303,15 @@ namespace Tarmac64_Retail
                 CourseData.PathSettings.PathOffsets = new UInt32[4] { 0x800DC778, 0x800DC778, 0x800DC778, 0x800DC778 };
                           
                 CourseData.PathSettings.PathOffsets[0] = Convert.ToUInt32(0x06000000 + ListData.Length + 8);
-                PathListData = tm64Path.popMarker(pathGroups[0].pathList[0], 0);
+                PathListData = tm64Path.popMarker(PathArray[0], 0);
                 ListStream.Write(PathListData, 0, PathListData.Length);
 
-                PathListData = tm64Path.popMarkerFlat(pathGroups[0].pathList[0], 0);
+                PathListData = tm64Path.popMarkerFlat(PathArray[0], 0);
                 ListStream.Write(PathListData, 0, PathListData.Length);
-                for (int ThisPath = 1; ThisPath < pathGroups[0].pathList.Length;ThisPath++)
+                for (int ThisPath = 1; ThisPath < PathArray.Length;ThisPath++)
                 {
                     CourseData.PathSettings.PathOffsets[ThisPath] = Convert.ToUInt32(0x06000000 + ListData.Length + 8 + ListStream.Position);
-                    PathListData = tm64Path.popMarker(pathGroups[0].pathList[ThisPath], 0);
+                    PathListData = tm64Path.popMarker(PathArray[ThisPath], 0);
                     ListStream.Write(PathListData, 0, PathListData.Length);
                 }
 
@@ -507,11 +508,11 @@ namespace Tarmac64_Retail
 
 
             CourseData.OK64HeaderData.PathLength = new short[4];
-            for (int ThisPath = 0; ThisPath < pathGroups[0].pathList.Length; ThisPath++)
+            for (int ThisPath = 0; ThisPath < PathArray.Length; ThisPath++)
             {
-                CourseData.OK64HeaderData.PathLength[ThisPath] = Convert.ToInt16(pathGroups[0].pathList[ThisPath].pathmarker.Count);
+                CourseData.OK64HeaderData.PathLength[ThisPath] = Convert.ToInt16(PathArray[ThisPath].pathmarker.Count);
             }
-            for (int ThisPath = pathGroups[0].pathList.Length; ThisPath < 4; ThisPath++)
+            for (int ThisPath = PathArray.Length; ThisPath < 4; ThisPath++)
             {
                 CourseData.OK64HeaderData.PathLength[ThisPath] = Convert.ToInt16(1);
             }
@@ -539,7 +540,10 @@ namespace Tarmac64_Retail
             uint Magic = Convert.ToUInt32(CourseData.ObjectModelData.Length);
             CourseData.ObjectAnimationData = TarmacCourse.CompileObjectAnimation(TypeList.ToArray(), Magic);
             Magic += Convert.ToUInt32(CourseData.ObjectAnimationData.Length);
+            
             CourseData.ObjectHitboxData = TarmacCourse.CompileObjectHitbox(TypeList.ToArray(), Magic);
+            CourseData.ParameterData = TarmacCourse.CompileParameters(TypeList.ToArray(), Magic);
+
             CourseData.ObjectTypeData = TarmacCourse.SaveObjectTypeRaw(TypeList.ToArray());
             CourseData.ObjectListData = TarmacCourse.SaveOKObjectListRaw(CustomObjectList.ToArray());
             
@@ -818,127 +822,39 @@ namespace Tarmac64_Retail
         }
 
 
-        private void ReplacePaths()
+
+        private void ReplaceStandard()
+        {
+
+        }
+        private void ReplacePaths(bool Overwrite = false)
         {
             OpenFileDialog OpenFile = new OpenFileDialog();
             MessageBox.Show("Select OK64.POP File");
-            OpenFile.Title = "POP File";
+            OpenFile.Title = "POP3 File";
             OpenFile.InitialDirectory = okSettings.ProjectDirectory;
-            OpenFile.Filter = "Tarmac Path and Object Positions|*.OK64.POP|All Files (*.*)|*.*";
+            OpenFile.Filter = "Tarmac POP|*.OK64.POP|All Files (*.*)|*.*";
             OpenFile.FileName = null;
             if (OpenFile.ShowDialog() == DialogResult.OK)
             {
                 if (File.Exists(OpenFile.FileName))
                 {
                     string popFile = OpenFile.FileName;
-
-                    if (levelFormat == 0)
-                    {
-                        pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);
-                        if (pathGroups[1].pathList.Length != 0)
-                        {
-                            foreach (var ItemBox in pathGroups[1].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.TypeIndex = 0;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
-
-                                OKObjectList.Add(NewObject);
-                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
-                            }
-                        }
-                        if (pathGroups[2].pathList.Length != 0)
-                        {
-                            foreach (var Tree in pathGroups[2].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.TypeIndex = 1;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(Tree.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(Tree.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(Tree.zval);
-
-                                OKObjectList.Add(NewObject);
-                                ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
-                            }
-                        }
-                        if (pathGroups[3].pathList.Length != 0)
-                        {
-                            foreach (var Plant in pathGroups[3].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.TypeIndex = 2;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(Plant.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(Plant.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(Plant.zval);
-
-                                OKObjectList.Add(NewObject);
-                                ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-                            }
-                        }
-                        if (pathGroups[4].pathList.Length != 0)
-                        {
-                            foreach (var Coin in pathGroups[4].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.TypeIndex = 3;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(Coin.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(Coin.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(Coin.zval);
-
-                                OKObjectList.Add(NewObject);
-                                ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
-                            }
-                        }
-
-
-                    }
-                    else
-                    {
-                        pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);
-                        if (pathGroups[1].pathList.Length != 0)
-                        {
-                            foreach (var ItemBox in pathGroups[1].pathList[0].pathmarker)
-                            {
-                                TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
-
-                                NewObject.TypeIndex = 0;
-                                NewObject.OriginPosition[0] = Convert.ToInt16(ItemBox.xval);
-                                NewObject.OriginPosition[1] = Convert.ToInt16(ItemBox.yval);
-                                NewObject.OriginPosition[2] = Convert.ToInt16(ItemBox.zval);
-
-                                OKObjectList.Add(NewObject);
-                                int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.TypeIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
-
-                            }
-                        }
-                    }
+                    PathArray = tm64Path.LoadPOP3(popFile, surfaceObjects);
                 }
-
             }
-
-
 
             UpdateGLView();
             GLControl.UpdateDraw = true;
-
-            float RadTurn = Convert.ToSingle(90.0f * (Math.PI / 180.0f));
-            GLControl.LocalCamera.rotation[0] = RadTurn;
-
             
         }
 
 
         private void ReplaceModel(bool Replace = false)
         {
+
+            TM64.OK64Settings TM64Settings = new TM64.OK64Settings();
+            TM64Settings.LoadSettings();
 
             MessageBox.Show("Select .FBX or .OBJ File");
 
@@ -958,37 +874,23 @@ namespace Tarmac64_Retail
 
                     AssimpContext importer = new AssimpContext();
 
-                    Scene fbx = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
+                    Scene FBX = importer.ImportFile(FBXfilePath, PostProcessPreset.TargetRealTimeMaximumQuality);
 
-                    materialCount = fbx.MaterialCount;
+                    materialCount = FBX.MaterialCount;
 
                     
-                    int modelFormat = TarmacGeometry.GetModelFormat(fbx);
-                    if (modelFormat == 0)
-                    {
-                        sectionCount = TarmacGeometry.GetSectionCount(fbx); ;
-                    }
-                    else
-                    {
-                        sectionCount = 1;
-                    }
-                    
-
-
-
-
                     //
                     // Textures
                     //
 
-                    
+
 
 
                     TM64_Geometry.OK64Texture[] OldTextures = textureArray;
                     int oldMatCount = textureArray.Length;
 
 
-                    textureArray = TarmacGeometry.loadTextures(fbx, FBXfilePath);
+                    textureArray = TarmacGeometry.loadTextures(FBX, FBXfilePath);
                     materialCount = textureArray.Length;
                     TextureBitmaps = new Bitmap[textureArray.Length];
 
@@ -1023,36 +925,54 @@ namespace Tarmac64_Retail
                     if (levelFormat == 0)
                     {
                         //Race
-                        switch (modelFormat)
+
+
+                        Node CheckNode = new Node();
+
+                        CheckNode = FBX.RootNode.FindNode("Section 1");
+
+
+
+
+                        if (CheckNode != null)
                         {
-                            case 0:
-                                {
-                                    //normal
-                                    masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray, okSettings.AlphaCH2);
-                                    surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
-                                    TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
-                                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
-                                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    //magical mystery mode
-                                    masterObjects = TarmacGeometry.CreateMasterNoHeader(fbx, textureArray);
-                                    surfaceObjects = TarmacGeometry.CreateCollisionsNoHeader(fbx, textureArray);
-                                    surfaceObjects = TarmacGeometry.UpdateSectionIndexNoHeader(surfaceObjects, ref sectionCount);
-                                    TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
-                                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
-                                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, fbx, 0);
-                                    break;
-                                }
+                            //We've found a "Section #" node and will create surface maps from these.
+                            sectionCount = TarmacGeometry.GetSectionCount(FBX);
+                            surfaceObjects = TarmacGeometry.LoadCollisions(FBX, sectionCount, textureArray);
+
+                            CheckNode = FBX.RootNode.FindNode("Render Objects");
+
+                            if (CheckNode == null)
+                            {
+                                //No render nodes - reuse Section Nodes
+                                masterObjects = TarmacGeometry.CreateMasters(FBX, sectionCount, textureArray, TM64Settings.AlphaCH2);
+                            }
+                            else
+                            {
+                                masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, FBX, textureArray, okSettings.AlphaCH2);
+                            }
                         }
+                        else
+                        {
+                            //No Section Nodes
+                            sectionCount = 1;
+                            CheckNode = FBX.RootNode.FindNode("Render Objects");
+                            surfaceObjects = TarmacGeometry.CreateCollisionsNoHeader(FBX, textureArray);
+                            surfaceObjects = TarmacGeometry.UpdateSectionIndexNoHeader(surfaceObjects, ref sectionCount);
+
+                        }
+
+
+                        TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
+                        sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, FBX, 0);
+                        XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, FBX, 0);
+
                     }
                     else
                     {
                         //Battle
-                        masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, fbx, textureArray);
-                        surfaceObjects = TarmacGeometry.LoadCollisions(fbx, sectionCount, modelFormat, textureArray);
+                        masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, FBX, textureArray);
+                        surfaceObjects = TarmacGeometry.LoadCollisions(FBX, sectionCount, textureArray);
                         sectionList = new TM64_Geometry.OK64SectionList[0];
                         XLUSectionList = new TM64_Geometry.OK64SectionList[0];
                     }
@@ -1158,13 +1078,15 @@ namespace Tarmac64_Retail
                 RenderMaterialBox.Items.Add(textureArray[ThisTexture].textureName);
             }
 
+            sectionBox.SelectedIndex = 1;
+            loaded = true;
+
             if (levelFormat == 0)
             {
+                GLControl.SectionList = sectionList[0].objectList;
                 sectionBox.SelectedIndex = 0;
                 TextureControl.textureBox.SelectedIndex = 0;
-
             }
-            loaded = true;
             PathControl.loaded = true;
 
 
@@ -1346,7 +1268,11 @@ namespace Tarmac64_Retail
                                 }
                             case 3:
                                 {
-                                    ObjectControl.ObjectListBox.SelectedIndex = GLControl.OKSelectedObject;
+                                    if (GLControl.OKSelectedObject < ObjectControl.ObjectListBox.Items.Count)
+                                    {
+                                        ObjectControl.ObjectListBox.SelectedIndex = GLControl.OKSelectedObject;
+                                    }
+                                    
                                     break;
                                 }
                         }
@@ -1751,9 +1677,9 @@ namespace Tarmac64_Retail
                 GLControl.UpdateDraw = true;
                 GLControl.TextureObjects = textureArray;
                 GLControl.BitmapData = TextureBitmaps;
-                if ( (levelFormat == 0) && (pathGroups.Length > 0) )
+                if ( (levelFormat == 0) && (PathArray.Length > 0) )
                 {                    
-                    GLControl.PathMarker = pathGroups[0].pathList;
+                    GLControl.PathMarker = PathArray;
                 }
             }
         }
@@ -1818,6 +1744,10 @@ namespace Tarmac64_Retail
             UpdateSVDisplay();
         }
 
+
+
+
+
         private void LoadXML()
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
@@ -1834,82 +1764,53 @@ namespace Tarmac64_Retail
                 PathControl.LoadPathXML(XMLDoc);
                 TextureControl.LoadTextureXML(XMLDoc);
                 ObjectControl.LoadObjectXML(XMLDoc);
-                
-                
+
+
                 textureArray = TextureControl.textureArray;
                 materialCount = TextureControl.textureArray.Length;
                 TextureBitmaps = new Bitmap[textureArray.Length];
 
                 string ParentPath = "/SaveFile";
-                for (int ThisSection = 0; ThisSection < sectionCount; ThisSection++)
-                {
-                    sectionList[ThisSection] = new TM64_Geometry.OK64SectionList(XMLDoc, ParentPath, ThisSection);
-                }
 
-                UpdateGLView();
-                UpdateUIControls();
-            }
-        }
-
-        private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //LoadXML();
-            //return;
-            //
-            //
-            //
-            OpenFileDialog FileOpen = new OpenFileDialog();
-            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
-            FileOpen.Filter = "Tarmac Course|*.ok64.Save|All Files (*.*)|*.*";
-            if (FileOpen.ShowDialog() == DialogResult.OK)
-            {
-                string SavePath = FileOpen.FileName;
-
-                MemoryStream memoryStream = new MemoryStream();
-                BinaryReader binaryReader = new BinaryReader(memoryStream);
-                byte[] Buffer = File.ReadAllBytes(SavePath);
-                memoryStream.Write(Buffer, 0, Buffer.Length);
-                memoryStream.Position = 0;
-
-                SettingsControl.LoadCourseSettings(memoryStream);
-                PathControl.LoadPathSettings(memoryStream);
-                TextureControl.LoadTextureArray(memoryStream);
-                ObjectControl.LoadObjectSettings(memoryStream);
-
-                textureArray = TextureControl.textureArray;
-                materialCount = TextureControl.textureArray.Length;
-                TextureBitmaps = new Bitmap[textureArray.Length];
-                sectionCount = binaryReader.ReadInt32();
+                string SectionPath = ParentPath + "/SectionArray";
+                sectionCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "SectionCount", "0"));
                 sectionList = new TM64_Geometry.OK64SectionList[sectionCount];
                 for (int ThisSection = 0; ThisSection < sectionCount; ThisSection++)
                 {
-                    sectionList[ThisSection] = new TM64_Geometry.OK64SectionList(memoryStream);
+                    sectionList[ThisSection] = new TM64_Geometry.OK64SectionList(XMLDoc, SectionPath, ThisSection);
                 }
 
-                int sCount = binaryReader.ReadInt32();
-                surfaceObjects = new TM64_Geometry.OK64F3DObject[sCount];
-                for (int ThisSurface = 0; ThisSurface < surfaceObjects.Length; ThisSurface++)
+                
+                int MasterCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "MasterCount", "0"));
+                string MasterPath = ParentPath + "/MasterArray";
+                masterObjects = new TM64_Geometry.OK64F3DObject[MasterCount];
+                for (int ThisMaster = 0; ThisMaster < MasterCount; ThisMaster++)
                 {
-                    surfaceObjects[ThisSurface] = new TM64_Geometry.OK64F3DObject(memoryStream);
+                    masterObjects[ThisMaster] = new TM64_Geometry.OK64F3DObject(XMLDoc, MasterPath, ThisMaster);
                 }
 
-                int mCount = binaryReader.ReadInt32();
-                masterObjects = new TM64_Geometry.OK64F3DObject[mCount];
-                for (int ThisMaster = 0; ThisMaster < masterObjects.Length; ThisMaster++)
+                
+                int SurfaceCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "SurfaceCount", "0"));
+                string SurfacePath = ParentPath + "/SurfaceArray";
+                surfaceObjects = new TM64_Geometry.OK64F3DObject[SurfaceCount];
+                for (int ThisSurface = 0; ThisSurface < SurfaceCount; ThisSurface++)
                 {
-                    masterObjects[ThisMaster] = new TM64_Geometry.OK64F3DObject(memoryStream);
+                    surfaceObjects[ThisSurface] = new TM64_Geometry.OK64F3DObject(XMLDoc, SurfacePath, ThisSurface);
+                }
+                int PathCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathCount", "0"));
+
+                PathArray = new TM64_Paths.Pathlist[PathCount];
+                string PathPath = ParentPath + "/PathData";
+                for (int ThisPath = 0; ThisPath < PathCount; ThisPath++)
+                {
+                    PathArray[ThisPath] = new TM64_Paths.Pathlist(XMLDoc, PathPath, ThisPath);
                 }
 
-                pathGroups = new TM64_Paths.Pathgroup[5];
-
-                pathGroups[0] = new TM64_Paths.Pathgroup(memoryStream);
-                GLControl.PathMarker = pathGroups[0].pathList;
-                UpdateGLView();
+                XLUSectionList = sectionList;                
                 UpdateUIControls();
+                UpdateGLView();
             }
-
         }
-
 
         private void SaveXML()
         {
@@ -1928,13 +1829,41 @@ namespace Tarmac64_Retail
                 PathControl.SavePathXML(XMLDoc, SaveFile);
                 TextureControl.SaveTextureXML(XMLDoc, SaveFile);
                 ObjectControl.SaveObjectXML(XMLDoc, SaveFile);
-                
 
 
-                
+
+                Tarmac.GenerateElement(XMLDoc, SaveFile, "SectionCount", sectionList.Length);
+                XmlElement SectionXML = XMLDoc.CreateElement("SectionArray");
+                SaveFile.AppendChild(SectionXML);
                 for (int ThisSection = 0; ThisSection < sectionCount; ThisSection++)
                 {
-                    sectionList[ThisSection].SaveXML(XMLDoc, SaveFile, ThisSection);
+                    sectionList[ThisSection].SaveXML(XMLDoc, SectionXML, ThisSection);
+                }
+
+                Tarmac.GenerateElement(XMLDoc, SaveFile, "MasterCount", masterObjects.Length);
+                XmlElement MasterXML = XMLDoc.CreateElement("MasterArray");
+                SaveFile.AppendChild(MasterXML);
+                for (int ThisMaster = 0; ThisMaster < masterObjects.Length; ThisMaster++)
+                {
+                    masterObjects[ThisMaster].SaveXML(XMLDoc, MasterXML, ThisMaster);
+
+                }
+
+                Tarmac.GenerateElement(XMLDoc, SaveFile, "SurfaceCount", surfaceObjects.Length);
+                XmlElement SurfaceXML = XMLDoc.CreateElement("SurfaceArray");
+                SaveFile.AppendChild(SurfaceXML);
+                for (int ThisSurface = 0; ThisSurface < surfaceObjects.Length; ThisSurface++)
+                {
+                    surfaceObjects[ThisSurface].SaveXML(XMLDoc, SurfaceXML, ThisSurface);
+                }
+
+
+                Tarmac.GenerateElement(XMLDoc, SaveFile, "PathCount", PathArray.Length);
+                XmlElement PathXML = XMLDoc.CreateElement("PathData");
+                SaveFile.AppendChild(PathXML);
+                for (int ThisPath = 0; ThisPath < PathArray.Length; ThisPath++)
+                {
+                    PathArray[ThisPath].SaveXML(XMLDoc, PathXML, ThisPath);
                 }
 
                 XMLDoc.Save(SavePath);
@@ -1944,56 +1873,17 @@ namespace Tarmac64_Retail
 
         }
 
+        private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadXML();
+        }
+
+
         private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            //SaveXML();
-            //return;
-            //
-            //
-
-            SaveFileDialog FileSave = new SaveFileDialog();
-            FileSave.InitialDirectory = okSettings.ProjectDirectory;
-            FileSave.Filter = "Tarmac Course|*.ok64.Save|All Files (*.*)|*.*";
-            if (FileSave.ShowDialog() == DialogResult.OK)
-            {
-                string SavePath = FileSave.FileName;
-
-                MemoryStream memoryStream = new MemoryStream();
-                BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
-                binaryWriter.Write(SettingsControl.SaveCourseSettings());
-                binaryWriter.Write(PathControl.SavePathSettings());
-                binaryWriter.Write(TextureControl.SaveTextureArray());
-                binaryWriter.Write(ObjectControl.SaveObjectSettings());
-
-
-                binaryWriter.Write(sectionList.Length);
-                
-                for (int ThisSection = 0; ThisSection < sectionCount; ThisSection++)
-                {
-                    binaryWriter.Write(sectionList[ThisSection].SaveData());
-                }
-
-                binaryWriter.Write(surfaceObjects.Length);
-                for (int ThisSurface = 0; ThisSurface < surfaceObjects.Length; ThisSurface++)
-                {
-                    binaryWriter.Write(surfaceObjects[ThisSurface].SaveData());
-                }
-
-                binaryWriter.Write(masterObjects.Length);
-                for (int ThisMaster = 0; ThisMaster < masterObjects.Length; ThisMaster++)
-                {
-                    binaryWriter.Write(masterObjects[ThisMaster].SaveData());
-                }
-
-                binaryWriter.Write(pathGroups[0].SaveData());
-
-
-                File.WriteAllBytes(SavePath, memoryStream.ToArray());
-            }
-
+            SaveXML();
         }
+
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -2036,6 +1926,30 @@ namespace Tarmac64_Retail
         private void RenderMeshListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateRMDisplay();
+        }
+
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CompileModel();
+        }
+
+        private void rOMBuiderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GameBuilder GB = new GameBuilder();
+            GB.Show();
+        }
+
+        private void oBJToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GhostExtractor GWindow = new GhostExtractor();
+            GWindow.Show();
+        }
+
+        private void songExtractorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SongExtractor SWindow = new SongExtractor();
+            SWindow.Show();
         }
 
         private void RenderMaterialBox_SelectedIndexChanged(object sender, EventArgs e)

@@ -40,7 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\Tarmac64 Developer\Tarmac64.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\Tarmac64 Library\DebugRule.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -151,12 +151,6 @@
     <Compile Include="Windows\GameBuilder.Designer.cs">
       <DependentUpon>GameBuilder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Windows\AnimationCompiler.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Windows\AnimationCompiler.Designer.cs">
-      <DependentUpon>AnimationCompiler.cs</DependentUpon>
-    </Compile>
     <Compile Include="Windows\Model Compiler.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -237,9 +231,6 @@
     <EmbeddedResource Include="Windows\GameBuilder.resx">
       <DependentUpon>GameBuilder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Windows\AnimationCompiler.resx">
-      <DependentUpon>AnimationCompiler.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Windows\Model Compiler.resx">
       <DependentUpon>Model Compiler.cs</DependentUpon>
     </EmbeddedResource>
@@ -313,6 +304,7 @@
     <None Include="Resources\overkarttext.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Behaviors.XML" />
     <Content Include="kart64_tTF_icon.ico" />
     <None Include="Resources\TextLogo.png" />
     <None Include="Resources\LogoText.bmp" />

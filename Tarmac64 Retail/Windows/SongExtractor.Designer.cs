@@ -69,7 +69,7 @@
             // 
             this.bankBox.Location = new System.Drawing.Point(120, 14);
             this.bankBox.Name = "bankBox";
-            this.bankBox.Size = new System.Drawing.Size(22, 20);
+            this.bankBox.Size = new System.Drawing.Size(27, 20);
             this.bankBox.TabIndex = 5;
             this.bankBox.Text = "1";
             this.bankBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -78,7 +78,7 @@
             // 
             this.seqBox.Location = new System.Drawing.Point(120, 41);
             this.seqBox.Name = "seqBox";
-            this.seqBox.Size = new System.Drawing.Size(22, 20);
+            this.seqBox.Size = new System.Drawing.Size(27, 20);
             this.seqBox.TabIndex = 6;
             this.seqBox.Text = "1";
             this.seqBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -87,12 +87,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(147, 71);
+            this.ClientSize = new System.Drawing.Size(159, 71);
             this.Controls.Add(this.seqBox);
             this.Controls.Add(this.bankBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SongExtractor";
             this.Text = "♫";

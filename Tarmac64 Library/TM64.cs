@@ -27,6 +27,7 @@ using Cereal64.Common.Utils.Encoding;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Drawing.Drawing2D;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace Tarmac64_Library
 {
@@ -59,9 +60,10 @@ namespace Tarmac64_Library
             public string ROMDirectory { get; set; }
             public float ImportScale { get; set; }
             public bool AlphaCH2 { get; set; }
-            public bool BlenderImport { get; set; }
+            public int ImportMode { get; set; }
             public string JRDirectory { get; set; }
             public bool Valid { get; set; }
+            public int Version { get; set; }
 
 
             public OK64Settings LoadSettings()
@@ -73,25 +75,33 @@ namespace Tarmac64_Library
                 if (File.Exists(SettingsPath))
                 {
                     InputData = File.ReadAllLines(SettingsPath);
-                    if (InputData.Length == 6)
+                    int Parse = -1;
+
+                    if (int.TryParse(InputData[0], out Parse))
                     {
-                        ProjectDirectory = InputData[0];
-                        ObjectDirectory = InputData[1];
-                        ROMDirectory = InputData[2];
-                        ImportScale = Convert.ToSingle(InputData[3]);
-                        AlphaCH2 = Convert.ToBoolean(InputData[4]);
-                        BlenderImport = Convert.ToBoolean(InputData[5]);
-                        return this;
+                        if (Parse == 800)
+                        {
+                            Version = Parse;
+                            ProjectDirectory = InputData[1];
+                            ObjectDirectory = InputData[2];
+                            ROMDirectory = InputData[3];
+                            ImportScale = Convert.ToSingle(InputData[4]);
+                            AlphaCH2 = Convert.ToBoolean(InputData[5]);
+                            ImportMode = Convert.ToInt32(InputData[6]);
+                            return this;
+                        }
                     }
-                    
                 }
+
                 MessageBox.Show("Error Loading Settings. Restoring defaults");
                 ProjectDirectory = "";
                 ObjectDirectory = "";
                 ROMDirectory = "";
                 ImportScale = 1.0f;
                 AlphaCH2 = true;
-                BlenderImport = true;
+                ImportMode = 0;
+                Version = 800;
+                SaveSettings();
                 return this;
                 
             }
@@ -102,13 +112,16 @@ namespace Tarmac64_Library
                 string[] settings = new string[0];
 
 
-                string[] SaveData = new string[6];
-                SaveData[0] = ProjectDirectory;
-                SaveData[1] = ObjectDirectory;
-                SaveData[2] = ROMDirectory;
-                SaveData[3] = Convert.ToString(ImportScale);
-                SaveData[4] = Convert.ToString(AlphaCH2);
-                SaveData[5] = Convert.ToString(BlenderImport);
+                string[] SaveData = new string[7];
+
+                SaveData[0] = Convert.ToString(Version);
+                SaveData[1] = ProjectDirectory;
+                SaveData[2] = ObjectDirectory;
+                SaveData[3] = ROMDirectory;
+                SaveData[4] = Convert.ToString(ImportScale);
+                SaveData[5] = Convert.ToString(AlphaCH2);
+                SaveData[6] = Convert.ToString(ImportMode);
+
                 File.WriteAllLines(SettingsPath, SaveData);
             }
         }
@@ -116,7 +129,24 @@ namespace Tarmac64_Library
 
         ///
 
+        public bool CheckPatch(byte[] ROMData)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+            memoryStream.Write(ROMData, 0, ROMData.Length);
+            binaryReader.BaseStream.Position = 0x20;
 
+
+            string ROMName = new string(binaryReader.ReadChars(11));
+
+            if (ROMName == "MARIOKART64")
+            {
+                return false;
+            }
+
+
+            return true;
+        }
         public byte[] ApplyPatch(byte[] InputData, byte[] PatchData)
         {
             MemoryStream PatchStream = new MemoryStream();
@@ -224,8 +254,60 @@ namespace Tarmac64_Library
             return NewData.ToArray();
         }
 
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, bool[] Values)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            for (int ThisVal = 0; ThisVal < Values.Length;)
+            {
+                NewElement.InnerText += Convert.ToInt32(Values[ThisVal]).ToString();
+
+                ThisVal++;
+
+                if (ThisVal < Values.Length)
+                {
+                    NewElement.InnerText += ",";
+                }
+
+            }
+            Parent.AppendChild(NewElement);
+        }
+
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, int[] Values)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            for (int ThisVal = 0; ThisVal < Values.Length;)
+            {
+                NewElement.InnerText += Values[ThisVal].ToString();
+
+                ThisVal++;
+
+                if (ThisVal < Values.Length)
+                {
+                    NewElement.InnerText += ",";
+                }
+                    
+            }
+            Parent.AppendChild(NewElement);
+        }
 
 
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, float[] Values)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            for (int ThisVal = 0; ThisVal < Values.Length;)
+            {
+                NewElement.InnerText += Values[ThisVal].ToString();
+
+                ThisVal++;
+
+                if (ThisVal < Values.Length)
+                {
+                    NewElement.InnerText += ",";
+                }
+
+            }
+            Parent.AppendChild(NewElement);
+        }
         public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, byte Value)
         {
             XmlElement NewElement = XMLDoc.CreateElement(Name);
@@ -267,6 +349,44 @@ namespace Tarmac64_Library
             Parent.AppendChild(NewElement);
         }
 
+        
+        public void GenerateElementRaw(XmlDocument XMLDoc, XmlElement Parent, string Name, string Value)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(XmlConvert.EncodeName(Name));
+            NewElement.InnerText = (Value);
+            Parent.AppendChild(NewElement);
+        }
+        public float[] LoadElementsF(XmlDocument XMLDoc, string Parent, string Name, string Default = "")
+        {
+            List<float> Elements = new List<float>();
+            XmlNode CheckNode = XMLDoc.SelectSingleNode("/" + Parent + "/" + Name);
+            if (CheckNode != null)
+            {
+                string Item = XmlConvert.DecodeName(CheckNode.InnerText);
+                string[] Items = Item.Split(',');
+                foreach (var Tag in Items)
+                {
+                    Elements.Add(Convert.ToSingle(Tag));
+                }
+            }
+            return Elements.ToArray();
+        }
+
+        public int[] LoadElements(XmlDocument XMLDoc, string Parent, string Name, string Default = "")
+        {
+            List<int> Elements = new List<int>();
+            XmlNode CheckNode = XMLDoc.SelectSingleNode("/" + Parent + "/" + Name);
+            if (CheckNode != null)
+            {
+                string Item = XmlConvert.DecodeName(CheckNode.InnerText);
+                string[] Items = Item.Split(',');
+                foreach (var Tag in Items)
+                {
+                    Elements.Add(Convert.ToInt32(Tag));
+                }
+            }
+            return Elements.ToArray();
+        }
         public string LoadElement(XmlDocument XMLDoc, string Parent, string Name, string Default = "")
         {
             XmlNode CheckNode = XMLDoc.SelectSingleNode("/" + Parent + "/" +  Name);
@@ -275,6 +395,11 @@ namespace Tarmac64_Library
                 return XmlConvert.DecodeName(CheckNode.InnerText);
             }
             return Default;
+        }
+
+        public string LoadElement(XmlReader XMLDoc, string Parent, string Name, string Default = "")
+        {
+            return XMLDoc.ReadElementContentAsString(Parent + "/" + Name, "");
         }
 
         public byte[] DecompressMIO0(byte[] inputFile)

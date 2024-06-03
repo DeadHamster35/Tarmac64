@@ -92,7 +92,6 @@ namespace Tarmac64_Retail
             ColorUpdate();
 
             skyBox.SelectedIndex = 0;
-            weatherBox.SelectedIndex = 0;
 
 
 
@@ -268,6 +267,81 @@ namespace Tarmac64_Retail
             UpdateUI();
         }
 
+        public void LoadCourseXMLRead(XmlReader XMLDoc)
+        {
+            string ParentPath = "/SaveData/CourseSettings";
+            TM64 Tarmac = new TM64();
+            CourseData.Settings.Credits = XMLDoc.ReadElementContentAsString();
+            CourseData.Settings.Name = Tarmac.LoadElement(XMLDoc, ParentPath, "CourseName");
+            CourseData.Settings.PreviewPath = Tarmac.LoadElement(XMLDoc, ParentPath, "PreviewPath");
+            CourseData.Settings.BannerPath = Tarmac.LoadElement(XMLDoc, ParentPath, "BannerPath");
+            CourseData.GhostPath = Tarmac.LoadElement(XMLDoc, ParentPath, "GhostPath");
+            CourseData.OK64HeaderData.WaterType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterType", "0"));
+            CourseData.OK64HeaderData.WaterLevel = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterLevel", "-80"));
+            CourseData.ManualTempo = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "ManualTempo", "0"));
+
+            CourseData.GoalBannerBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "GoalBannerBool", "1"));
+            CourseData.SkyboxBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyboxBool", "1"));
+
+            CourseData.MapData.MinimapPath = Tarmac.LoadElement(XMLDoc, ParentPath, "MinimapPath");
+
+            CourseData.MapData.MapCoord = new Assimp.Vector2D
+                (Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "MapCoordX", "260")),
+                Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "MapCoordY", "170"))
+                );
+
+            CourseData.MapData.StartCoord = new Assimp.Vector2D
+                (Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "StartCoordX", "6")),
+                Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "StartCoordY", "28"))
+                );
+
+            CourseData.MapData.LineCoord = new Assimp.Vector2D
+                (Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "LineCoordX", "0")),
+                Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "LineCoordY", "0"))
+                );
+
+            CourseData.MapData.MapScale = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "MapScale", "1.55"));
+
+            CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
+            CourseData.MapData.MapColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "MapColorR", "255"));
+            CourseData.MapData.MapColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "MapColorG", "255"));
+            CourseData.MapData.MapColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "MapColorB", "255"));
+
+            CourseData.SkyColors.TopColor = new TM64_Geometry.OK64Color();
+            CourseData.SkyColors.TopColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyTopColorR", "128"));
+            CourseData.SkyColors.TopColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyTopColorG", "184"));
+            CourseData.SkyColors.TopColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyTopColorB", "248"));
+
+            CourseData.SkyColors.MidColor = new TM64_Geometry.OK64Color();
+            CourseData.SkyColors.MidColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyMidColorR", "216"));
+            CourseData.SkyColors.MidColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyMidColorG", "232"));
+            CourseData.SkyColors.MidColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyMidColorB", "248"));
+
+            CourseData.SkyColors.BotColor = new TM64_Geometry.OK64Color();
+            CourseData.SkyColors.BotColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyBotColorR", "0"));
+            CourseData.SkyColors.BotColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyBotColorG", "0"));
+            CourseData.SkyColors.BotColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyBotColorB", "0"));
+
+            CourseData.SkyColors.SkyType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyType", "0"));
+            CourseData.SkyColors.WeatherType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "WeatherType", "0"));
+
+            CourseData.MusicID = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "MusicID", "0"));
+            CourseData.OK64SongPath = Tarmac.LoadElement(XMLDoc, ParentPath, "OK64SongPath");
+
+            CourseData.Fog = new TM64_Course.OKFog();
+            CourseData.Fog.FogToggle = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "FogToggle", "0"));
+            CourseData.Fog.FogColor = new TM64_Geometry.OK64Color();
+            CourseData.Fog.FogColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorR", "240"));
+            CourseData.Fog.FogColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorG", "240"));
+            CourseData.Fog.FogColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorB", "240"));
+            CourseData.Fog.FogColor.A = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorA", "255"));
+
+            CourseData.Fog.StartDistance = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "FogStart", "900"));
+            CourseData.Fog.StopDistance = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "FogStop", "1000"));
+
+
+            UpdateUI();
+        }
         public void LoadCourseXML(XmlDocument XMLDoc)
         {
             string ParentPath = "/SaveData/CourseSettings";
@@ -1024,10 +1098,67 @@ namespace Tarmac64_Retail
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             weatherBox.Enabled = false;
+            weatherBox.Items.Clear();
+            
+            
+
+            if (skyBox.SelectedIndex == 1)
+            {
+                weatherBox.Enabled = true;
+                weatherBox.Items.Clear();
+
+                weatherBox.Items.Add("Mario R.");
+                weatherBox.Items.Add("Koopa B.");
+                weatherBox.Items.Add("Moo Moo");
+                weatherBox.Items.Add("Luigi R.");
+                weatherBox.Items.Add("Royal R.");
+                weatherBox.Items.Add("Sherbet");
+
+                if (CourseData.SkyColors.WeatherType == -1)
+                {
+                    weatherBox.SelectedIndex = 0;
+                }
+                else
+                {
+
+                    if (CourseData.SkyColors.WeatherType < 6)
+                    {
+                        weatherBox.SelectedIndex = CourseData.SkyColors.WeatherType;
+                    }
+                    else
+                    {
+                        weatherBox.SelectedIndex = 0;
+                    }
+                }
+            }
             if (skyBox.SelectedIndex == 3)
             {
                 weatherBox.Enabled = true;
+
+                weatherBox.Items.Clear();
+
+                weatherBox.Items.Add("Snow");
+                weatherBox.Items.Add("Rain");
+
+                if (CourseData.SkyColors.WeatherType == -1)
+                {
+                    weatherBox.SelectedIndex = 0;
+                }
+                else
+                {
+
+                    if (CourseData.SkyColors.WeatherType < 2)
+                    {
+                        weatherBox.SelectedIndex = CourseData.SkyColors.WeatherType;
+                    }
+                    else
+                    {
+                        weatherBox.SelectedIndex = 0;
+                    }
+                }
+
             }
+            
             UpdateCourse();
         }
 
