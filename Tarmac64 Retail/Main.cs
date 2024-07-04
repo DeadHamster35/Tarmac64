@@ -35,7 +35,6 @@ namespace Tarmac64_Retail
         bool updateBool = false;
 
         int sectionCount = 0;
-        int levelFormat = 0;
 
         int LastSelectedSection, LastSelectedView = 0;
 
@@ -209,7 +208,7 @@ namespace Tarmac64_Retail
 
             TM64_Geometry.OK64F3DObject[] textureObjects = masterObjects;
             byte[] tempBytes = new byte[0];
-            if (levelFormat == 0)
+            if (CourseData.Gametype == 0)
             {
                 //Race Level
 
@@ -516,7 +515,7 @@ namespace Tarmac64_Retail
             {
                 CourseData.OK64HeaderData.PathLength[ThisPath] = Convert.ToInt16(1);
             }
-            CourseData.Gametype = levelFormat;
+            
             CourseData.SerialNumber = TarmacCourse.OK64Serial(CourseData);
 
 
@@ -870,7 +869,7 @@ namespace Tarmac64_Retail
                 if (File.Exists(OpenFile.FileName))
                 {
                     string FBXfilePath = OpenFile.FileName;
-                    levelFormat = 0;
+                    
 
                     AssimpContext importer = new AssimpContext();
 
@@ -921,61 +920,49 @@ namespace Tarmac64_Retail
                     // Surface Map
                     //
 
+                    
 
-                    if (levelFormat == 0)
+                    Node CheckNode = new Node();
+
+                    CheckNode = FBX.RootNode.FindNode("Section 1");
+
+
+
+
+                    if (CheckNode != null)
                     {
-                        //Race
+                        //We've found a "Section #" node and will create surface maps from these.
+                        sectionCount = TarmacGeometry.GetSectionCount(FBX);
+                        surfaceObjects = TarmacGeometry.LoadCollisions(FBX, sectionCount, textureArray);
 
+                        CheckNode = FBX.RootNode.FindNode("Render Objects");
 
-                        Node CheckNode = new Node();
-
-                        CheckNode = FBX.RootNode.FindNode("Section 1");
-
-
-
-
-                        if (CheckNode != null)
+                        if (CheckNode == null)
                         {
-                            //We've found a "Section #" node and will create surface maps from these.
-                            sectionCount = TarmacGeometry.GetSectionCount(FBX);
-                            surfaceObjects = TarmacGeometry.LoadCollisions(FBX, sectionCount, textureArray);
-
-                            CheckNode = FBX.RootNode.FindNode("Render Objects");
-
-                            if (CheckNode == null)
-                            {
-                                //No render nodes - reuse Section Nodes
-                                masterObjects = TarmacGeometry.CreateMasters(FBX, sectionCount, textureArray, TM64Settings.AlphaCH2);
-                            }
-                            else
-                            {
-                                masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, FBX, textureArray, okSettings.AlphaCH2);
-                            }
+                            //No render nodes - reuse Section Nodes
+                            masterObjects = TarmacGeometry.CreateMasters(FBX, sectionCount, textureArray, TM64Settings.AlphaCH2);
                         }
                         else
                         {
-                            //No Section Nodes
-                            sectionCount = 1;
-                            CheckNode = FBX.RootNode.FindNode("Render Objects");
-                            surfaceObjects = TarmacGeometry.CreateCollisionsNoHeader(FBX, textureArray);
-                            surfaceObjects = TarmacGeometry.UpdateSectionIndexNoHeader(surfaceObjects, ref sectionCount);
-
+                            masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, FBX, textureArray, okSettings.AlphaCH2);
                         }
-
-
-                        TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
-                        sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, FBX, 0);
-                        XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, FBX, 0);
-
                     }
                     else
                     {
-                        //Battle
-                        masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, FBX, textureArray);
-                        surfaceObjects = TarmacGeometry.LoadCollisions(FBX, sectionCount, textureArray);
-                        sectionList = new TM64_Geometry.OK64SectionList[0];
-                        XLUSectionList = new TM64_Geometry.OK64SectionList[0];
+                        //No Section Nodes
+                        sectionCount = 1;
+                        CheckNode = FBX.RootNode.FindNode("Render Objects");
+                        surfaceObjects = TarmacGeometry.CreateCollisionsNoHeader(FBX, textureArray);
+                        surfaceObjects = TarmacGeometry.UpdateSectionIndexNoHeader(surfaceObjects, ref sectionCount);
+
                     }
+
+
+                    TM64_Geometry.PathfindingObject[] surfaceBoundaries = TarmacGeometry.SurfaceBounds(surfaceObjects, sectionCount);
+                    sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, FBX, 0);
+                    XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, FBX, 0);
+
+                    
 
 
 
@@ -1039,35 +1026,32 @@ namespace Tarmac64_Retail
             }
 
 
-            if (levelFormat == 0)
+            SurfaceMeshListBox.Items.Clear();
+            for (int currentIndex = 0; currentIndex < surfaceObjects.Length; currentIndex++)
             {
-                SurfaceMeshListBox.Items.Clear();
-                for (int currentIndex = 0; currentIndex < surfaceObjects.Length; currentIndex++)
-                {
-                    SurfaceMeshListBox.Items.Add(surfaceObjects[currentIndex].objectName);
-                }
+                SurfaceMeshListBox.Items.Add(surfaceObjects[currentIndex].objectName);
+            }
 
-                RenderMeshListBox.Items.Clear();
-                for (int currentIndex = 0; currentIndex < masterObjects.Length; currentIndex++)
-                {
-                    RenderMeshListBox.Items.Add(masterObjects[currentIndex].objectName);
-                }
+            RenderMeshListBox.Items.Clear();
+            for (int currentIndex = 0; currentIndex < masterObjects.Length; currentIndex++)
+            {
+                RenderMeshListBox.Items.Add(masterObjects[currentIndex].objectName);
+            }
 
-                surfsectionBox.Items.Clear();
-                sectionBox.Items.Clear();
-                CopySectionIndexBox.Items.Clear();
-                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
-                {
-                    CopySectionIndexBox.Items.Add("Section " + (currentSection + 1).ToString());
-                    surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
-                    sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
+            surfsectionBox.Items.Clear();
+            sectionBox.Items.Clear();
+            CopySectionIndexBox.Items.Clear();
+            for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+            {
+                CopySectionIndexBox.Items.Add("Section " + (currentSection + 1).ToString());
+                surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
+                sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
 
-                }
-                surfmaterialBox.Items.Clear();
-                for (int surfacematerialIndex = 0; surfacematerialIndex < surfaceType.Length; surfacematerialIndex++)
-                {
-                    surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString() + "- " + surfaceType[surfacematerialIndex]);
-                }
+            }
+            surfmaterialBox.Items.Clear();
+            for (int surfacematerialIndex = 0; surfacematerialIndex < surfaceType.Length; surfacematerialIndex++)
+            {
+                surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString() + "- " + surfaceType[surfacematerialIndex]);
             }
             TextureControl.Loaded = true;
             TextureControl.textureArray = textureArray;
@@ -1078,15 +1062,16 @@ namespace Tarmac64_Retail
                 RenderMaterialBox.Items.Add(textureArray[ThisTexture].textureName);
             }
 
-            sectionBox.SelectedIndex = 1;
+            
             loaded = true;
 
-            if (levelFormat == 0)
-            {
-                GLControl.SectionList = sectionList[0].objectList;
-                sectionBox.SelectedIndex = 0;
-                TextureControl.textureBox.SelectedIndex = 0;
-            }
+            GLControl.SectionList = sectionList[0].objectList;
+            sectionBox.SelectedIndex = 0;
+            UpdateSVDisplay();
+            UpdateGLView();
+
+            TextureControl.textureBox.SelectedIndex = 0;
+            
             PathControl.loaded = true;
 
 
@@ -1677,7 +1662,7 @@ namespace Tarmac64_Retail
                 GLControl.UpdateDraw = true;
                 GLControl.TextureObjects = textureArray;
                 GLControl.BitmapData = TextureBitmaps;
-                if ( (levelFormat == 0) && (PathArray.Length > 0) )
+                if (PathArray.Length > 0) 
                 {                    
                     GLControl.PathMarker = PathArray;
                 }

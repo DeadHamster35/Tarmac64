@@ -76,7 +76,7 @@ namespace Tarmac64_Library
                     int Index;
                     if (NewCourse.Settings.Name.Length > 0)
                     {
-                        Index = NameBox.Items.Add(NewCourse.Settings.Name);
+                        Index = RaceNameBox.Items.Add(NewCourse.Settings.Name);
                     }
                     else
                     {
@@ -155,7 +155,7 @@ namespace Tarmac64_Library
                     int Index;
                     if (NewCourse.Settings.Name.Length > 0)
                     {
-                        Index = NameBox.Items.Add(NewCourse.Settings.Name);
+                        Index = RaceNameBox.Items.Add(NewCourse.Settings.Name);
                     }
                     else
                     {

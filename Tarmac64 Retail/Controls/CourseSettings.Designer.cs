@@ -145,6 +145,8 @@
             this.FogEndBox = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.FogToggleBox = new System.Windows.Forms.CheckBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.GameTypeBox = new System.Windows.Forms.ComboBox();
             this.groupBox9.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox10.SuspendLayout();
@@ -283,10 +285,10 @@
             // WaterTypeBox
             // 
             this.WaterTypeBox.FormattingEnabled = true;
-            this.WaterTypeBox.Location = new System.Drawing.Point(5, 162);
+            this.WaterTypeBox.Location = new System.Drawing.Point(127, 162);
             this.WaterTypeBox.Margin = new System.Windows.Forms.Padding(5);
             this.WaterTypeBox.Name = "WaterTypeBox";
-            this.WaterTypeBox.Size = new System.Drawing.Size(197, 21);
+            this.WaterTypeBox.Size = new System.Drawing.Size(75, 21);
             this.WaterTypeBox.TabIndex = 8;
             this.WaterTypeBox.SelectedIndexChanged += new System.EventHandler(this.WaterTypeBox_SelectedIndexChanged);
             // 
@@ -294,15 +296,15 @@
             // 
             this.label51.AutoSize = true;
             this.label51.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label51.Location = new System.Drawing.Point(210, 196);
+            this.label51.Location = new System.Drawing.Point(68, 165);
             this.label51.Name = "label51";
-            this.label51.Size = new System.Drawing.Size(67, 13);
+            this.label51.Size = new System.Drawing.Size(37, 13);
             this.label51.TabIndex = 291;
-            this.label51.Text = "Min Y Height";
+            this.label51.Text = "Min. Y";
             // 
             // waterBox
             // 
-            this.waterBox.Location = new System.Drawing.Point(147, 193);
+            this.waterBox.Location = new System.Drawing.Point(5, 162);
             this.waterBox.Margin = new System.Windows.Forms.Padding(5);
             this.waterBox.Name = "waterBox";
             this.waterBox.Size = new System.Drawing.Size(55, 20);
@@ -380,9 +382,9 @@
             this.label56.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label56.Location = new System.Drawing.Point(66, 196);
             this.label56.Name = "label56";
-            this.label56.Size = new System.Drawing.Size(73, 13);
+            this.label56.Size = new System.Drawing.Size(57, 13);
             this.label56.TabIndex = 305;
-            this.label56.Text = "Time T. Tempo";
+            this.label56.Text = "T.T. Tempo";
             // 
             // TempoTTBox
             // 
@@ -400,9 +402,9 @@
             this.label57.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label57.Location = new System.Drawing.Point(211, 165);
             this.label57.Name = "label57";
-            this.label57.Size = new System.Drawing.Size(59, 13);
+            this.label57.Size = new System.Drawing.Size(62, 13);
             this.label57.TabIndex = 306;
-            this.label57.Text = "Min Y Type";
+            this.label57.Text = "Min. Y Type";
             // 
             // label31
             // 
@@ -1467,12 +1469,36 @@
             this.FogToggleBox.UseVisualStyleBackColor = true;
             this.FogToggleBox.CheckedChanged += new System.EventHandler(this.UpdateUIHandler);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(211, 195);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(57, 13);
+            this.label1.TabIndex = 308;
+            this.label1.Text = "GameType";
+            // 
+            // GameTypeBox
+            // 
+            this.GameTypeBox.FormattingEnabled = true;
+            this.GameTypeBox.Items.AddRange(new object[] {
+            "Race",
+            "Battle"});
+            this.GameTypeBox.Location = new System.Drawing.Point(127, 192);
+            this.GameTypeBox.Margin = new System.Windows.Forms.Padding(5);
+            this.GameTypeBox.Name = "GameTypeBox";
+            this.GameTypeBox.Size = new System.Drawing.Size(75, 21);
+            this.GameTypeBox.TabIndex = 307;
+            // 
             // CourseSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.label57);
             this.Controls.Add(this.label56);
+            this.Controls.Add(this.GameTypeBox);
             this.Controls.Add(this.TempoTTBox);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox9);
@@ -1632,5 +1658,7 @@
         private System.Windows.Forms.TextBox FogEndBox;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox FogToggleBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox GameTypeBox;
     }
 }

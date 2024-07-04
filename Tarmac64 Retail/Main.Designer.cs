@@ -61,10 +61,14 @@
             this.masterBox = new System.Windows.Forms.TreeView();
             this.sectionBox = new System.Windows.Forms.ComboBox();
             this.TextureData = new System.Windows.Forms.TabPage();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.Settings = new System.Windows.Forms.TabPage();
+            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.PathTab = new System.Windows.Forms.TabPage();
+            this.PathControl = new Tarmac64_Retail.PathSettings();
             this.Object = new System.Windows.Forms.TabPage();
+            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.BattleBoxR = new System.Windows.Forms.CheckBox();
@@ -99,17 +103,13 @@
             this.replacePathsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.oBJToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.songExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectTypeCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rOMBuiderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
-            this.PathControl = new Tarmac64_Retail.PathSettings();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
-            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.GLControl = new Tarmac64_Retail.GLViewer();
-            this.songExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
@@ -510,6 +510,14 @@
             this.TextureData.UseVisualStyleBackColor = true;
             this.TextureData.Click += new System.EventHandler(this.TextureData_Click);
             // 
+            // TextureControl
+            // 
+            this.TextureControl.Location = new System.Drawing.Point(0, 0);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(289, 850);
+            this.TextureControl.TabIndex = 0;
+            this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
+            // 
             // Settings
             // 
             this.Settings.AutoScroll = true;
@@ -521,6 +529,14 @@
             this.Settings.Text = "Course Settings";
             this.Settings.UseVisualStyleBackColor = true;
             this.Settings.Click += new System.EventHandler(this.CourseInfo_Click);
+            // 
+            // SettingsControl
+            // 
+            this.SettingsControl.Location = new System.Drawing.Point(0, 3);
+            this.SettingsControl.Name = "SettingsControl";
+            this.SettingsControl.Size = new System.Drawing.Size(289, 850);
+            this.SettingsControl.TabIndex = 0;
+            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 
             // tabControl1
             // 
@@ -553,16 +569,33 @@
             this.PathTab.Text = "Path Settings";
             this.PathTab.UseVisualStyleBackColor = true;
             // 
+            // PathControl
+            // 
+            this.PathControl.Location = new System.Drawing.Point(0, 0);
+            this.PathControl.Name = "PathControl";
+            this.PathControl.Size = new System.Drawing.Size(289, 605);
+            this.PathControl.TabIndex = 0;
+            // 
             // Object
             // 
             this.Object.AutoScroll = true;
             this.Object.Controls.Add(this.ObjectControl);
-            this.Object.Location = new System.Drawing.Point(4, 22);
+            this.Object.Location = new System.Drawing.Point(4, 40);
             this.Object.Name = "Object";
-            this.Object.Size = new System.Drawing.Size(307, 623);
+            this.Object.Size = new System.Drawing.Size(307, 605);
             this.Object.TabIndex = 4;
             this.Object.Text = "Course Objects";
             this.Object.UseVisualStyleBackColor = true;
+            // 
+            // ObjectControl
+            // 
+            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ObjectControl.Location = new System.Drawing.Point(3, 3);
+            this.ObjectControl.Name = "ObjectControl";
+            this.ObjectControl.Size = new System.Drawing.Size(289, 599);
+            this.ObjectControl.TabIndex = 1;
+            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
             // tabPage1
             // 
@@ -917,21 +950,28 @@
             // oBJToolStripMenuItem
             // 
             this.oBJToolStripMenuItem.Name = "oBJToolStripMenuItem";
-            this.oBJToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.oBJToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.oBJToolStripMenuItem.Text = "Ghost Extractor";
             this.oBJToolStripMenuItem.Click += new System.EventHandler(this.oBJToolStripMenuItem_Click);
+            // 
+            // songExtractorToolStripMenuItem
+            // 
+            this.songExtractorToolStripMenuItem.Name = "songExtractorToolStripMenuItem";
+            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.songExtractorToolStripMenuItem.Text = "Song Extractor";
+            this.songExtractorToolStripMenuItem.Click += new System.EventHandler(this.songExtractorToolStripMenuItem_Click);
             // 
             // objectTypeCompilerToolStripMenuItem
             // 
             this.objectTypeCompilerToolStripMenuItem.Name = "objectTypeCompilerToolStripMenuItem";
-            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.objectTypeCompilerToolStripMenuItem.Text = "Object Compiler";
             this.objectTypeCompilerToolStripMenuItem.Click += new System.EventHandler(this.objectTypeCompilerToolStripMenuItem_Click);
             // 
             // rOMBuiderToolStripMenuItem
             // 
             this.rOMBuiderToolStripMenuItem.Name = "rOMBuiderToolStripMenuItem";
-            this.rOMBuiderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rOMBuiderToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.rOMBuiderToolStripMenuItem.Text = "ROM Buider";
             this.rOMBuiderToolStripMenuItem.Click += new System.EventHandler(this.rOMBuiderToolStripMenuItem_Click);
             // 
@@ -959,39 +999,6 @@
             this.aboutToolStripMenuItem2.Text = "About";
             this.aboutToolStripMenuItem2.Click += new System.EventHandler(this.aboutToolStripMenuItem2_Click);
             // 
-            // SettingsControl
-            // 
-            this.SettingsControl.Location = new System.Drawing.Point(0, 3);
-            this.SettingsControl.Name = "SettingsControl";
-            this.SettingsControl.Size = new System.Drawing.Size(289, 850);
-            this.SettingsControl.TabIndex = 0;
-            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
-            // 
-            // PathControl
-            // 
-            this.PathControl.Location = new System.Drawing.Point(0, 0);
-            this.PathControl.Name = "PathControl";
-            this.PathControl.Size = new System.Drawing.Size(289, 605);
-            this.PathControl.TabIndex = 0;
-            // 
-            // TextureControl
-            // 
-            this.TextureControl.Location = new System.Drawing.Point(0, 0);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 850);
-            this.TextureControl.TabIndex = 0;
-            this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
-            // 
-            // ObjectControl
-            // 
-            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.ObjectControl.Location = new System.Drawing.Point(3, 3);
-            this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 617);
-            this.ObjectControl.TabIndex = 1;
-            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
-            // 
             // GLControl
             // 
             this.GLControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1002,13 +1009,6 @@
             this.GLControl.Size = new System.Drawing.Size(915, 668);
             this.GLControl.TabIndex = 3;
             this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
-            // 
-            // songExtractorToolStripMenuItem
-            // 
-            this.songExtractorToolStripMenuItem.Name = "songExtractorToolStripMenuItem";
-            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.songExtractorToolStripMenuItem.Text = "Song Extractor";
-            this.songExtractorToolStripMenuItem.Click += new System.EventHandler(this.songExtractorToolStripMenuItem_Click);
             // 
             // Main
             // 

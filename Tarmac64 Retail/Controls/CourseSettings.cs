@@ -36,7 +36,7 @@ namespace Tarmac64_Retail
         private void CourseSettings_Load(object sender, EventArgs e)
         {
             CourseData.OK64HeaderData = new TM64_Course.OK64Header();
-
+            CourseData.Gametype = 0;
 
             CourseData.MapData = new TM64_Course.MiniMap();
             CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
@@ -92,7 +92,7 @@ namespace Tarmac64_Retail
             ColorUpdate();
 
             skyBox.SelectedIndex = 0;
-
+            GameTypeBox.SelectedIndex = 0;
 
 
             for (int songIndex = 0; songIndex < songNames.Length; songIndex++)
@@ -123,6 +123,7 @@ namespace Tarmac64_Retail
             ThisCourse.Settings.PreviewPath = CourseData.Settings.PreviewPath;
             ThisCourse.Settings.BannerPath = CourseData.Settings.BannerPath;
             ThisCourse.GhostPath = CourseData.GhostPath;
+            
 
             ThisCourse.OK64HeaderData.WaterType = CourseData.OK64HeaderData.WaterType;
             ThisCourse.OK64HeaderData.WaterLevel = CourseData.OK64HeaderData.WaterLevel;
@@ -193,155 +194,6 @@ namespace Tarmac64_Retail
         }
 
 
-        public void LoadCourseSettings(MemoryStream Input)
-        {
-            BinaryReader binaryReader = new BinaryReader(Input);
-
-            CourseData.Settings.Credits = binaryReader.ReadString();
-            CourseData.Settings.Name = binaryReader.ReadString();
-            CourseData.Settings.PreviewPath = binaryReader.ReadString();
-            CourseData.Settings.BannerPath = binaryReader.ReadString();
-            CourseData.GhostPath = binaryReader.ReadString();
-            CourseData.OK64HeaderData.WaterType = binaryReader.ReadInt32();
-            CourseData.OK64HeaderData.WaterLevel = binaryReader.ReadSingle();
-            CourseData.ManualTempo = binaryReader.ReadInt32();
-            CourseData.GoalBannerBool = binaryReader.ReadInt16();
-            CourseData.SkyboxBool = binaryReader.ReadInt16();
-
-            CourseData.MapData.MinimapPath = binaryReader.ReadString();
-            CourseData.MapData.MapCoord = new Assimp.Vector2D
-                (
-                    (binaryReader.ReadSingle()),
-                    (binaryReader.ReadSingle())
-                );
-            CourseData.MapData.StartCoord = new Assimp.Vector2D
-                (
-                    (binaryReader.ReadSingle()),
-                    (binaryReader.ReadSingle())
-                );
-            CourseData.MapData.LineCoord = new Assimp.Vector2D
-                (
-                    (binaryReader.ReadSingle()),
-                    (binaryReader.ReadSingle())
-                );
-            CourseData.MapData.MapScale = binaryReader.ReadSingle();
-            CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
-            CourseData.MapData.MapColor.R = binaryReader.ReadByte();
-            CourseData.MapData.MapColor.G = binaryReader.ReadByte();
-            CourseData.MapData.MapColor.B = binaryReader.ReadByte();
-
-            CourseData.SkyColors.TopColor = new TM64_Geometry.OK64Color();
-            CourseData.SkyColors.TopColor.R = binaryReader.ReadByte();
-            CourseData.SkyColors.TopColor.G = binaryReader.ReadByte();
-            CourseData.SkyColors.TopColor.B = binaryReader.ReadByte();
-
-            CourseData.SkyColors.MidColor = new TM64_Geometry.OK64Color();
-            CourseData.SkyColors.MidColor.R = binaryReader.ReadByte();
-            CourseData.SkyColors.MidColor.G = binaryReader.ReadByte();
-            CourseData.SkyColors.MidColor.B = binaryReader.ReadByte();
-
-            CourseData.SkyColors.BotColor = new TM64_Geometry.OK64Color();
-            CourseData.SkyColors.BotColor.R = binaryReader.ReadByte();
-            CourseData.SkyColors.BotColor.G = binaryReader.ReadByte();
-            CourseData.SkyColors.BotColor.B = binaryReader.ReadByte();
-
-            CourseData.SkyColors.SkyType = binaryReader.ReadInt32();
-            CourseData.SkyColors.WeatherType = binaryReader.ReadInt32();
-
-            CourseData.MusicID = binaryReader.ReadInt32();
-            CourseData.OK64SongPath = binaryReader.ReadString();
-
-
-
-            CourseData.Fog = new TM64_Course.OKFog();
-
-            CourseData.Fog.FogToggle = binaryReader.ReadInt16();
-            CourseData.Fog.FogColor = new TM64_Geometry.OK64Color();
-            CourseData.Fog.FogColor.R = binaryReader.ReadByte();
-            CourseData.Fog.FogColor.G = binaryReader.ReadByte();
-            CourseData.Fog.FogColor.B = binaryReader.ReadByte();
-            CourseData.Fog.FogColor.A = binaryReader.ReadByte();
-            CourseData.Fog.StartDistance = binaryReader.ReadInt16();
-            CourseData.Fog.StopDistance = binaryReader.ReadInt16();
-
-            UpdateUI();
-        }
-
-        public void LoadCourseXMLRead(XmlReader XMLDoc)
-        {
-            string ParentPath = "/SaveData/CourseSettings";
-            TM64 Tarmac = new TM64();
-            CourseData.Settings.Credits = XMLDoc.ReadElementContentAsString();
-            CourseData.Settings.Name = Tarmac.LoadElement(XMLDoc, ParentPath, "CourseName");
-            CourseData.Settings.PreviewPath = Tarmac.LoadElement(XMLDoc, ParentPath, "PreviewPath");
-            CourseData.Settings.BannerPath = Tarmac.LoadElement(XMLDoc, ParentPath, "BannerPath");
-            CourseData.GhostPath = Tarmac.LoadElement(XMLDoc, ParentPath, "GhostPath");
-            CourseData.OK64HeaderData.WaterType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterType", "0"));
-            CourseData.OK64HeaderData.WaterLevel = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterLevel", "-80"));
-            CourseData.ManualTempo = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "ManualTempo", "0"));
-
-            CourseData.GoalBannerBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "GoalBannerBool", "1"));
-            CourseData.SkyboxBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyboxBool", "1"));
-
-            CourseData.MapData.MinimapPath = Tarmac.LoadElement(XMLDoc, ParentPath, "MinimapPath");
-
-            CourseData.MapData.MapCoord = new Assimp.Vector2D
-                (Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "MapCoordX", "260")),
-                Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "MapCoordY", "170"))
-                );
-
-            CourseData.MapData.StartCoord = new Assimp.Vector2D
-                (Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "StartCoordX", "6")),
-                Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "StartCoordY", "28"))
-                );
-
-            CourseData.MapData.LineCoord = new Assimp.Vector2D
-                (Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "LineCoordX", "0")),
-                Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "LineCoordY", "0"))
-                );
-
-            CourseData.MapData.MapScale = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "MapScale", "1.55"));
-
-            CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
-            CourseData.MapData.MapColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "MapColorR", "255"));
-            CourseData.MapData.MapColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "MapColorG", "255"));
-            CourseData.MapData.MapColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "MapColorB", "255"));
-
-            CourseData.SkyColors.TopColor = new TM64_Geometry.OK64Color();
-            CourseData.SkyColors.TopColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyTopColorR", "128"));
-            CourseData.SkyColors.TopColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyTopColorG", "184"));
-            CourseData.SkyColors.TopColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyTopColorB", "248"));
-
-            CourseData.SkyColors.MidColor = new TM64_Geometry.OK64Color();
-            CourseData.SkyColors.MidColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyMidColorR", "216"));
-            CourseData.SkyColors.MidColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyMidColorG", "232"));
-            CourseData.SkyColors.MidColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyMidColorB", "248"));
-
-            CourseData.SkyColors.BotColor = new TM64_Geometry.OK64Color();
-            CourseData.SkyColors.BotColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyBotColorR", "0"));
-            CourseData.SkyColors.BotColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyBotColorG", "0"));
-            CourseData.SkyColors.BotColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyBotColorB", "0"));
-
-            CourseData.SkyColors.SkyType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "SkyType", "0"));
-            CourseData.SkyColors.WeatherType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "WeatherType", "0"));
-
-            CourseData.MusicID = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "MusicID", "0"));
-            CourseData.OK64SongPath = Tarmac.LoadElement(XMLDoc, ParentPath, "OK64SongPath");
-
-            CourseData.Fog = new TM64_Course.OKFog();
-            CourseData.Fog.FogToggle = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "FogToggle", "0"));
-            CourseData.Fog.FogColor = new TM64_Geometry.OK64Color();
-            CourseData.Fog.FogColor.R = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorR", "240"));
-            CourseData.Fog.FogColor.G = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorG", "240"));
-            CourseData.Fog.FogColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorB", "240"));
-            CourseData.Fog.FogColor.A = Convert.ToByte(Tarmac.LoadElement(XMLDoc, ParentPath, "FogColorA", "255"));
-
-            CourseData.Fog.StartDistance = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "FogStart", "900"));
-            CourseData.Fog.StopDistance = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "FogStop", "1000"));
-
-
-            UpdateUI();
-        }
         public void LoadCourseXML(XmlDocument XMLDoc)
         {
             string ParentPath = "/SaveData/CourseSettings";
@@ -351,6 +203,7 @@ namespace Tarmac64_Retail
             CourseData.Settings.PreviewPath = Tarmac.LoadElement(XMLDoc, ParentPath, "PreviewPath");
             CourseData.Settings.BannerPath = Tarmac.LoadElement(XMLDoc, ParentPath, "BannerPath");
             CourseData.GhostPath = Tarmac.LoadElement(XMLDoc, ParentPath, "GhostPath");
+            CourseData.Gametype = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "GameType"));
             CourseData.OK64HeaderData.WaterType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterType", "0"));
             CourseData.OK64HeaderData.WaterLevel = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterLevel", "-80"));
             CourseData.ManualTempo = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "ManualTempo", "0"));
@@ -429,6 +282,7 @@ namespace Tarmac64_Retail
             Tarmac.GenerateElement(XMLDoc, CourseXML, "PreviewPath", CourseData.Settings.PreviewPath);
             Tarmac.GenerateElement(XMLDoc, CourseXML, "BannerPath", CourseData.Settings.BannerPath);
             Tarmac.GenerateElement(XMLDoc, CourseXML, "GhostPath", CourseData.GhostPath);
+            Tarmac.GenerateElement(XMLDoc, CourseXML, "GameType", CourseData.Gametype);
             Tarmac.GenerateElement(XMLDoc, CourseXML, "WaterType", CourseData.OK64HeaderData.WaterType);
             Tarmac.GenerateElement(XMLDoc, CourseXML, "WaterLevel", CourseData.OK64HeaderData.WaterLevel);
             Tarmac.GenerateElement(XMLDoc, CourseXML, "ManualTempo", CourseData.ManualTempo);
@@ -477,68 +331,6 @@ namespace Tarmac64_Retail
 
         }
 
-        public byte[] SaveCourseSettings()
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
-            UpdateCourse();
-
-            binaryWriter.Write(CourseData.Settings.Credits);
-            binaryWriter.Write(CourseData.Settings.Name);
-            binaryWriter.Write(CourseData.Settings.PreviewPath);
-            binaryWriter.Write(CourseData.Settings.BannerPath);
-            binaryWriter.Write(CourseData.GhostPath);
-            binaryWriter.Write(CourseData.OK64HeaderData.WaterType);
-            binaryWriter.Write(CourseData.OK64HeaderData.WaterLevel);
-            binaryWriter.Write(CourseData.ManualTempo);
-            binaryWriter.Write(CourseData.GoalBannerBool);
-            binaryWriter.Write(CourseData.SkyboxBool);
-
-            binaryWriter.Write(CourseData.MapData.MinimapPath);
-            binaryWriter.Write(CourseData.MapData.MapCoord[0]);
-            binaryWriter.Write(CourseData.MapData.MapCoord[1]);
-            binaryWriter.Write(CourseData.MapData.StartCoord[0]);
-            binaryWriter.Write(CourseData.MapData.StartCoord[1]);
-            binaryWriter.Write(CourseData.MapData.LineCoord[0]);
-            binaryWriter.Write(CourseData.MapData.LineCoord[1]);
-            binaryWriter.Write(CourseData.MapData.MapScale);
-
-            binaryWriter.Write(CourseData.MapData.MapColor.R);
-            binaryWriter.Write(CourseData.MapData.MapColor.G);
-            binaryWriter.Write(CourseData.MapData.MapColor.B);
-
-            binaryWriter.Write(CourseData.SkyColors.TopColor.R);
-            binaryWriter.Write(CourseData.SkyColors.TopColor.G);
-            binaryWriter.Write(CourseData.SkyColors.TopColor.B);
-
-            binaryWriter.Write(CourseData.SkyColors.MidColor.R);
-            binaryWriter.Write(CourseData.SkyColors.MidColor.G);
-            binaryWriter.Write(CourseData.SkyColors.MidColor.B);
-
-            binaryWriter.Write(CourseData.SkyColors.BotColor.R);
-            binaryWriter.Write(CourseData.SkyColors.BotColor.G);
-            binaryWriter.Write(CourseData.SkyColors.BotColor.B);
-
-            binaryWriter.Write(CourseData.SkyColors.SkyType);
-            binaryWriter.Write(CourseData.SkyColors.WeatherType);
-
-
-            binaryWriter.Write(CourseData.MusicID);
-            binaryWriter.Write(CourseData.OK64SongPath);
-
-            binaryWriter.Write(CourseData.Fog.FogToggle);
-            binaryWriter.Write(CourseData.Fog.FogColor.R);
-            binaryWriter.Write(CourseData.Fog.FogColor.G);
-            binaryWriter.Write(CourseData.Fog.FogColor.B);
-            binaryWriter.Write(CourseData.Fog.FogColor.A);
-            binaryWriter.Write(CourseData.Fog.StartDistance);
-            binaryWriter.Write(CourseData.Fog.StopDistance);
-
-
-            return memoryStream.ToArray();
-        }
-
         public void UpdateCourse()
         {
 
@@ -556,7 +348,8 @@ namespace Tarmac64_Retail
             CourseData.Settings.Name = CourseNameBox.Text;
             CourseData.Settings.PreviewPath = previewBox.Text;
             CourseData.Settings.BannerPath = bannerBox.Text;
-            CourseData.GhostPath = ghostBox.Text;
+            CourseData.GhostPath = ghostBox.Text;            
+            CourseData.Gametype = GameTypeBox.SelectedIndex;
 
             CourseData.Fog.FogToggle = Convert.ToInt16(FogToggleBox.Checked);
 
@@ -725,7 +518,8 @@ namespace Tarmac64_Retail
             CourseNameBox.Text = CourseData.Settings.Name;
             previewBox.Text = CourseData.Settings.PreviewPath;
             bannerBox.Text = CourseData.Settings.BannerPath;
-            ghostBox.Text = ghostBox.Text;
+            ghostBox.Text = CourseData.GhostPath;
+            GameTypeBox.SelectedIndex = CourseData.Gametype;
             WaterTypeBox.SelectedIndex = CourseData.OK64HeaderData.WaterType;
             waterBox.Text = CourseData.OK64HeaderData.WaterLevel.ToString();
 

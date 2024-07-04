@@ -238,51 +238,6 @@ namespace Tarmac64_Retail
             {
                 textureArray[ThisTex] = new TM64_Geometry.OK64Texture(XMLDoc, ParentPath, (ThisTex));
             }
-            for (int This = 0; This < Count; This++)
-            {
-                textureArray[This] = new TM64_Geometry.OK64Texture();
-                textureArray[This].textureName = TextureSettings[ThisLine++];
-                textureArray[This].texturePath = CurrentArray[This].texturePath;
-                textureArray[This].textureBitmap = CurrentArray[This].textureBitmap;
-                textureArray[This].textureBitmap = CurrentArray[This].textureBitmap;
-                textureArray[This].alphaPath = CurrentArray[This].alphaPath;
-                textureArray[This].textureWidth = CurrentArray[This].textureWidth;
-                textureArray[This].textureHeight = CurrentArray[This].textureHeight;
-                ThisLine += 2; //skip height width 
-
-                textureArray[This].SFlag = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].TFlag = Convert.ToInt32(TextureSettings[ThisLine++]);
-
-                textureArray[This].GeometryBools = new bool[F3DEX095_Parameters.GeometryModes.Length];
-                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
-                {
-                    textureArray[This].GeometryBools[ThisCheck] = Convert.ToBoolean(TextureSettings[ThisLine++]);
-                }
-                textureArray[This].CombineValuesA = new uint[8];
-                textureArray[This].CombineValuesB = new uint[8];
-                for (int ThisValue = 0; ThisValue < 8; ThisValue++)
-                {
-                    textureArray[This].CombineValuesA[ThisValue] = Convert.ToUInt32(TextureSettings[ThisLine++]);
-                    textureArray[This].CombineValuesB[ThisValue] = Convert.ToUInt32(TextureSettings[ThisLine++]);
-                }
-
-                textureArray[This].CombineModeA = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].CombineModeB = Convert.ToInt32(TextureSettings[ThisLine++]);
-
-                textureArray[This].RenderModeA = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].RenderModeB = Convert.ToInt32(TextureSettings[ThisLine++]);
-
-                textureArray[This].BitSize = Convert.ToInt32(TextureSettings[ThisLine++]);
-                textureArray[This].TextureFormat = Convert.ToInt32(TextureSettings[ThisLine++]);
-
-                if (Version >= 6)
-                {
-                    textureArray[This].TextureFilter = Convert.ToInt32(TextureSettings[ThisLine++]);
-                }
-                else
-                {
-                    textureArray[This].TextureFilter = Convert.ToInt32(2);
-                }
                 
         }
 
@@ -293,52 +248,6 @@ namespace Tarmac64_Retail
             TM64 Tarmac = new TM64();
             Tarmac.GenerateElement(XMLDoc, TextureXML, "Count", textureArray.Length);
 
-            for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
-            {
-                Output.Add(textureArray[This].textureName);
-                Output.Add(textureArray[This].textureWidth.ToString());
-                Output.Add(textureArray[This].textureHeight.ToString());
-
-                Output.Add(textureArray[This].SFlag.ToString());
-                Output.Add(textureArray[This].TFlag.ToString());
-
-                for (int ThisCheck = 0; ThisCheck < F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
-                {
-                    Output.Add(textureArray[This].GeometryBools[ThisCheck].ToString());
-                }
-                textureArray[This].CombineValuesA = new uint[8];
-                textureArray[This].CombineValuesB = new uint[8];
-                for (int ThisValue = 0; ThisValue < 8; ThisValue++)
-                {
-                    Output.Add(textureArray[This].CombineValuesA[ThisValue].ToString());
-                    Output.Add(textureArray[This].CombineValuesB[ThisValue].ToString());
-                }
-                
-                Output.Add(textureArray[This].CombineModeA.ToString());
-                Output.Add(textureArray[This].CombineModeB.ToString());
-
-                Output.Add(textureArray[This].RenderModeA.ToString());
-                Output.Add(textureArray[This].RenderModeB.ToString());
-
-                Output.Add(textureArray[This].BitSize.ToString());
-                Output.Add(textureArray[This].TextureFormat.ToString());
-                if (Version >= 6)
-                {
-                    Output.Add(textureArray[This].TextureFilter.ToString());
-                }
-
-
-                Output.Add(textureArray[This].textureScrollS.ToString());
-                Output.Add(textureArray[This].textureScrollT.ToString());
-                Output.Add(textureArray[This].vertAlpha.ToString());
-                Output.Add(textureArray[This].textureScreen.ToString());
-
-                Output.Add(textureArray[This].TextureOverWrite.Length.ToString());                
-                foreach (var OverWrite in textureArray[This].TextureOverWrite)
-                {
-                    Output.Add(OverWrite.ToString());
-                }
-            }
         }
 
 
