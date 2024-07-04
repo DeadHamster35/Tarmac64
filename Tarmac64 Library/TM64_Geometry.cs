@@ -1589,7 +1589,7 @@ namespace Tarmac64_Library
 
                     if (childPoly.IndexCount != 3)
                     {
-                        MessageBox.Show("FATAL ERROR - INDEX COUNT " + childPoly.IndexCount + "-" + newObject.objectName);
+                        MessageBox.Show("FATAL ERROR - INDEX COUNT " + childPoly.IndexCount + "- OBJ:" + newObject.objectName);
                     }
 
                     for (int currentVert = 0; currentVert < 3; currentVert++)

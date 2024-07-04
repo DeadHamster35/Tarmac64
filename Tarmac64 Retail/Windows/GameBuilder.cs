@@ -27,7 +27,8 @@ namespace Tarmac64_Library
             public int Course { get; set; }                
         }
 
-        List<TM64_Course.Course> CourseData = new List<TM64_Course.Course>();
+        List<TM64_Course.Course> RaceCourses = new List<TM64_Course.Course>();
+        List<TM64_Course.Course> BattleCourses = new List<TM64_Course.Course>();
         List<CourseSet> SetCollection = new List<CourseSet>();
 
         int Set, Course, Cup = 0;
@@ -35,12 +36,12 @@ namespace Tarmac64_Library
 
         private void CourseLoader_Load(object sender, EventArgs e)
         {
-            NameBox.Items.Clear();
+            RaceNameBox.Items.Clear();
         }
 
         private void NameBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            KeyBox.Text = CourseData[NameBox.SelectedIndex].SerialNumber;
+            KeyBox.Text = RaceCourses[RaceNameBox.SelectedIndex].SerialNumber;
         }
 
         private void button1_Click_1(object sender, EventArgs e)
@@ -79,7 +80,7 @@ namespace Tarmac64_Library
                     }
                     else
                     {
-                        Index = NameBox.Items.Add(FileOpen.FileName);
+                        Index = BattleNameBox.Items.Add(FileOpen.FileName);
                     }
 
 
@@ -94,24 +95,29 @@ namespace Tarmac64_Library
                     }
                     else
                     {
-                        CourseData.Add(NewCourse);
+                        BattleCourses.Add(NewCourse);
                         CourseSet ThisSet = new CourseSet();
                         BattleCourse++;
                     }
-                    NameBox.SelectedIndex = Index;
+                    BattleNameBox.SelectedIndex = Index;
                 }
 
 
             }
         }
 
+        private void BattleNameBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            BattleKeyBox.Text = BattleCourses[BattleNameBox.SelectedIndex].SerialNumber;
+        }
+
         private void RemoveCourse()
         {
-            if (NameBox.Items.Count >= 1)
+            if (RaceNameBox.Items.Count >= 1)
             {
-                int Index = NameBox.SelectedIndex;
-                NameBox.Items.RemoveAt(Index);
-                CourseData.RemoveAt(Index);
+                int Index = RaceNameBox.SelectedIndex;
+                RaceNameBox.Items.RemoveAt(Index);
+                RaceCourses.RemoveAt(Index);
 
                 Course--;
                 if (Course < 0)
@@ -153,7 +159,7 @@ namespace Tarmac64_Library
                     }
                     else
                     {
-                        Index = NameBox.Items.Add(FileOpen.FileName);
+                        Index = RaceNameBox.Items.Add(FileOpen.FileName);
                     }
                     
                     
@@ -173,10 +179,10 @@ namespace Tarmac64_Library
                     }
                     else
                     {
-                        CourseData.Add(NewCourse);
+                        RaceCourses.Add(NewCourse);
                         Course++;
                     }
-                    NameBox.SelectedIndex = Index;
+                    RaceNameBox.SelectedIndex = Index;
                 }
                 else
                 {
@@ -229,9 +235,9 @@ namespace Tarmac64_Library
 
 
                     int SetID = 0;
-                    for (int ThisCourse = 0; ThisCourse < CourseData.Count; ThisCourse++)
+                    for (int ThisCourse = 0; ThisCourse < RaceCourses.Count; ThisCourse++)
                     {
-                        rom = TarmacCourse.CompileOverKart(CourseData[ThisCourse], rom, Convert.ToInt32(ThisCourse % 16), SetID, HeaderAddress);
+                        rom = TarmacCourse.CompileOverKart(RaceCourses[ThisCourse], rom, Convert.ToInt32(ThisCourse % 16), SetID, HeaderAddress);
                         if (ThisCourse % 16 == 15)
                         {
                             SetID++;
@@ -243,6 +249,23 @@ namespace Tarmac64_Library
                         File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment9.bin", CourseData[ThisCourse].Segment9);
                         File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment7.bin", CourseData[ThisCourse].Segment7);
                         */
+
+                    }
+                    SetID = 0;
+                    for (int ThisCourse = 0; ThisCourse < BattleCourses.Count; ThisCourse++)
+                    {
+                        rom = TarmacCourse.CompileOverKart(BattleCourses[ThisCourse], rom, Convert.ToInt32(16 + (ThisCourse % 4)), SetID, HeaderAddress);
+                        if (ThisCourse % 4 == 3)
+                        {
+                            SetID++;
+                        }
+
+
+                        
+                        File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString()+ " Segment6.bin", BattleCourses[ThisCourse].Segment6);
+                        File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment9.bin", BattleCourses[ThisCourse].Segment9);
+                        File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment7.bin", BattleCourses[ThisCourse].Segment7);
+                        
 
                     }
                     MemoryStream memoryStream = new MemoryStream();
