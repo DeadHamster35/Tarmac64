@@ -312,7 +312,7 @@ namespace Tarmac64_Retail
                 NewObject.BattlePlayer = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 NewObject.ObjectiveClass = Convert.ToInt16(ObjectSettings[ThisLine++]);
 
-                if (Version > 5)
+                if (Version >= 6)
                 {
                     NewObject.Flag = Convert.ToInt16(ObjectSettings[ThisLine++]);
                 }

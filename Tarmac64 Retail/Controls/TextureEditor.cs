@@ -270,9 +270,13 @@ namespace Tarmac64_Retail
                 textureArray[This].BitSize = Convert.ToInt32(TextureSettings[ThisLine++]);
                 textureArray[This].TextureFormat = Convert.ToInt32(TextureSettings[ThisLine++]);
 
-                if (Version > 6)
+                if (Version >= 6)
                 {
-                    textureArray[This].TextureFormat = Convert.ToInt32(TextureSettings[ThisLine++]);
+                    textureArray[This].TextureFilter = Convert.ToInt32(TextureSettings[ThisLine++]);
+                }
+                else
+                {
+                    textureArray[This].TextureFilter = Convert.ToInt32(2);
                 }
                 
 
@@ -332,7 +336,7 @@ namespace Tarmac64_Retail
 
                 Output.Add(textureArray[This].BitSize.ToString());
                 Output.Add(textureArray[This].TextureFormat.ToString());
-                if (Version > 6)
+                if (Version >= 6)
                 {
                     Output.Add(textureArray[This].TextureFilter.ToString());
                 }

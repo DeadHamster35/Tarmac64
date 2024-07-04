@@ -32,12 +32,12 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.KeyBox = new System.Windows.Forms.TextBox();
-            this.NameBox = new System.Windows.Forms.ComboBox();
+            this.RaceNameBox = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
             this.HeaderBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
-            this.BattleCourseBox = new System.Windows.Forms.ComboBox();
+            this.BattleNameBox = new System.Windows.Forms.ComboBox();
             this.BattleKeyBox = new System.Windows.Forms.TextBox();
             this.button5 = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -71,14 +71,14 @@
             this.KeyBox.Text = "HHHHHHHHHH-HHHHHHHH";
             this.KeyBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // NameBox
+            // RaceNameBox
             // 
-            this.NameBox.FormattingEnabled = true;
-            this.NameBox.Location = new System.Drawing.Point(74, 14);
-            this.NameBox.Name = "NameBox";
-            this.NameBox.Size = new System.Drawing.Size(171, 21);
-            this.NameBox.TabIndex = 58;
-            this.NameBox.SelectedIndexChanged += new System.EventHandler(this.NameBox_SelectedIndexChanged);
+            this.RaceNameBox.FormattingEnabled = true;
+            this.RaceNameBox.Location = new System.Drawing.Point(74, 14);
+            this.RaceNameBox.Name = "RaceNameBox";
+            this.RaceNameBox.Size = new System.Drawing.Size(171, 21);
+            this.RaceNameBox.TabIndex = 58;
+            this.RaceNameBox.SelectedIndexChanged += new System.EventHandler(this.NameBox_SelectedIndexChanged);
             // 
             // button3
             // 
@@ -111,7 +111,6 @@
             // 
             // button4
             // 
-            this.button4.Enabled = false;
             this.button4.Location = new System.Drawing.Point(43, 38);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(25, 23);
@@ -120,18 +119,17 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // BattleCourseBox
+            // BattleNameBox
             // 
-            this.BattleCourseBox.Enabled = false;
-            this.BattleCourseBox.FormattingEnabled = true;
-            this.BattleCourseBox.Location = new System.Drawing.Point(74, 40);
-            this.BattleCourseBox.Name = "BattleCourseBox";
-            this.BattleCourseBox.Size = new System.Drawing.Size(171, 21);
-            this.BattleCourseBox.TabIndex = 64;
+            this.BattleNameBox.FormattingEnabled = true;
+            this.BattleNameBox.Location = new System.Drawing.Point(74, 40);
+            this.BattleNameBox.Name = "BattleNameBox";
+            this.BattleNameBox.Size = new System.Drawing.Size(171, 21);
+            this.BattleNameBox.TabIndex = 64;
+            this.BattleNameBox.SelectedIndexChanged += new System.EventHandler(this.BattleNameBox_SelectedIndexChanged);
             // 
             // BattleKeyBox
             // 
-            this.BattleKeyBox.Enabled = false;
             this.BattleKeyBox.Location = new System.Drawing.Point(251, 41);
             this.BattleKeyBox.Name = "BattleKeyBox";
             this.BattleKeyBox.Size = new System.Drawing.Size(161, 20);
@@ -141,7 +139,6 @@
             // 
             // button5
             // 
-            this.button5.Enabled = false;
             this.button5.Location = new System.Drawing.Point(12, 38);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(25, 23);
@@ -155,13 +152,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(420, 127);
             this.Controls.Add(this.button4);
-            this.Controls.Add(this.BattleCourseBox);
+            this.Controls.Add(this.BattleNameBox);
             this.Controls.Add(this.BattleKeyBox);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.HeaderBox);
             this.Controls.Add(this.button3);
-            this.Controls.Add(this.NameBox);
+            this.Controls.Add(this.RaceNameBox);
             this.Controls.Add(this.KeyBox);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -179,12 +176,12 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox KeyBox;
-        private System.Windows.Forms.ComboBox NameBox;
+        private System.Windows.Forms.ComboBox RaceNameBox;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox HeaderBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.ComboBox BattleCourseBox;
+        private System.Windows.Forms.ComboBox BattleNameBox;
         private System.Windows.Forms.TextBox BattleKeyBox;
         private System.Windows.Forms.Button button5;
     }

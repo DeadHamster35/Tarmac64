@@ -1633,7 +1633,7 @@ namespace Tarmac64_Library
 
                     if (childPoly.IndexCount != 3)
                     {
-                        MessageBox.Show("FATAL ERROR - INDEX COUNT " + childPoly.IndexCount + "-" + newObject.objectName);
+                        MessageBox.Show("FATAL ERROR - INDEX COUNT " + childPoly.IndexCount + "- OBJ:" + newObject.objectName);
                     }
                     newObject.modelGeometry[currentFace].VertIndex.IndexA = Convert.ToInt16(childPoly.Indices[0]);
                     newObject.modelGeometry[currentFace].VertIndex.IndexB = Convert.ToInt16(childPoly.Indices[1]);

@@ -1024,8 +1024,8 @@ namespace Tarmac64_Library
                     ImportBtn.Enabled = true;
                     ImportBtn.Visible = true;
                     ExportBtn.Visible = true;
-                    TypeBox.Enabled = false;
-                    TypeBox.Visible = false;
+                    //TypeBox.Enabled = false;
+                    //TypeBox.Visible = false;
                     GLControl.UpdateDraw = true;
                     actionBtn.Text = "Compile";
 
