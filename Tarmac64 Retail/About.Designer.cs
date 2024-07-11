@@ -32,18 +32,17 @@
             // label1
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(-62, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(402, 40);
             this.label1.TabIndex = 1;
-            this.label1.Text = "This is the product of a contribution of knowledge gathered by multiple people.\r\n" +
-    "";
+            this.label1.Text = "`";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label2
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label2.Location = new System.Drawing.Point(12, 158);
+            this.label2.Location = new System.Drawing.Point(-62, 158);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(402, 34);
             this.label2.TabIndex = 2;
@@ -54,7 +53,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(350, 175);
+            this.label3.Location = new System.Drawing.Point(276, 175);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(64, 17);
             this.label3.TabIndex = 3;
@@ -64,7 +63,7 @@
             // label4
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label4.Location = new System.Drawing.Point(12, 49);
+            this.label4.Location = new System.Drawing.Point(-62, 49);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(198, 104);
             this.label4.TabIndex = 30;
@@ -75,7 +74,7 @@
             // label5
             // 
             this.label5.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label5.Location = new System.Drawing.Point(216, 49);
+            this.label5.Location = new System.Drawing.Point(142, 49);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(198, 104);
             this.label5.TabIndex = 32;
@@ -86,7 +85,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(426, 203);
+            this.ClientSize = new System.Drawing.Size(279, 203);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);

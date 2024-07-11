@@ -247,7 +247,10 @@ namespace Tarmac64_Retail
             Parent.AppendChild(TextureXML);
             TM64 Tarmac = new TM64();
             Tarmac.GenerateElement(XMLDoc, TextureXML, "Count", textureArray.Length);
-
+            for (int ThisTexture = 0; ThisTexture < textureArray.Length; ThisTexture++)
+            {
+                textureArray[ThisTexture].SaveXML(XMLDoc, TextureXML, ThisTexture);
+            }
         }
 
 

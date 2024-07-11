@@ -203,7 +203,7 @@ namespace Tarmac64_Retail
             CourseData.Settings.PreviewPath = Tarmac.LoadElement(XMLDoc, ParentPath, "PreviewPath");
             CourseData.Settings.BannerPath = Tarmac.LoadElement(XMLDoc, ParentPath, "BannerPath");
             CourseData.GhostPath = Tarmac.LoadElement(XMLDoc, ParentPath, "GhostPath");
-            CourseData.Gametype = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "GameType"));
+            CourseData.Gametype = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "GameType", "0"));
             CourseData.OK64HeaderData.WaterType = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterType", "0"));
             CourseData.OK64HeaderData.WaterLevel = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, ParentPath, "WaterLevel", "-80"));
             CourseData.ManualTempo = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "ManualTempo", "0"));
@@ -925,7 +925,7 @@ namespace Tarmac64_Retail
                     }
                 }
             }
-            if (skyBox.SelectedIndex == 3)
+            else if (skyBox.SelectedIndex == 3)
             {
                 weatherBox.Enabled = true;
 
@@ -951,6 +951,14 @@ namespace Tarmac64_Retail
                     }
                 }
 
+            }
+            else
+            {
+                weatherBox.Enabled = true;
+
+                weatherBox.Items.Clear();
+
+                weatherBox.Items.Add("N/A");
             }
             
             UpdateCourse();
@@ -1002,6 +1010,11 @@ namespace Tarmac64_Retail
         private void GoalBannerBox_CheckedChanged(object sender, EventArgs e)
         {
             UpdateCourse();
+        }
+
+        private void GameTypeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
 
         private void WaterTypeBox_SelectedIndexChanged(object sender, EventArgs e)

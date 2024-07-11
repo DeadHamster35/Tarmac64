@@ -1112,11 +1112,8 @@ namespace Tarmac64_Library
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
-            
 
-            flip = BitConverter.GetBytes(SaveData.Length);
-            Array.Reverse(flip);
-            binaryWriter.Write(flip);
+            binaryWriter.Write(F3D.BigEndian(SaveData.Length));
             for (int ThisType = 0; ThisType < SaveData.Length; ThisType++)
             {
                 binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].BehaviorClass));
@@ -1131,6 +1128,8 @@ namespace Tarmac64_Library
 
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].ModelCount));
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].XLUCount)); //
+
+
                 if (SaveData[ThisType].ObjectHitbox != null)
                 {
                     binaryWriter.Write(Convert.ToByte(SaveData[ThisType].ObjectHitbox.Length)); //
@@ -1140,11 +1139,12 @@ namespace Tarmac64_Library
                     binaryWriter.Write(Convert.ToByte(0xFF));
                 }                
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].Flag)); //
-
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[ThisType].ModelScale * 100.0f)));
-                binaryWriter.Write(Convert.ToInt16(0)); //Padding
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[ThisType].Behavior.Parameters.Length)));
 
                 binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].SoundID));
+
+                binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].ParameterOffset));
                 if (SaveData[ThisType].ObjectHitbox != null)
                 {
                     binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].HitboxOffset));

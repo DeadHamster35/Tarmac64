@@ -1490,6 +1490,7 @@
             this.GameTypeBox.Name = "GameTypeBox";
             this.GameTypeBox.Size = new System.Drawing.Size(75, 21);
             this.GameTypeBox.TabIndex = 307;
+            this.GameTypeBox.SelectedIndexChanged += new System.EventHandler(this.GameTypeBox_SelectedIndexChanged);
             // 
             // CourseSettings
             // 
