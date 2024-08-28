@@ -244,14 +244,24 @@ namespace Tarmac64_Library
 
                 foreach (var SubMesh in MasterObjects[currentItem])
                 {
-                    OutputFile.AddRange(TarmacGeo.WriteVertDataC(SubMesh));
+                    OutputFile.AddRange(TarmacGeo.WriteVertDataC(SubMesh, TextureObjects[currentItem][SubMesh.materialID]));
+                }
+
+
+
+                foreach (var SubText in TextureObjects[currentItem])
+                {
+                    OutputFile.AddRange(TarmacGeo.WriteTextureRSP(SubText, "GraphPtrOffset"));
+                    HFileOutput.Add("extern Gfx Draw_" + SubText.textureName + "_T();");
                 }
 
                 foreach (var SubMesh in MasterObjects[currentItem])
                 {
-                    OutputFile.AddRange(TarmacGeo.WriteRSPCommands(SubMesh, TextureObjects[currentItem][SubMesh.materialID], "GraphPtrOffset"));
 
-                    HFileOutput.Add("extern void GFX_" + SubMesh.objectName + "();");
+                    OutputFile.AddRange(TarmacGeo.WriteGeometryRSP(SubMesh, TextureObjects[currentItem][SubMesh.materialID], "GraphPtrOffset"));
+
+
+                    HFileOutput.Add("extern Gfx Draw_" + SubMesh.objectName + "_M();");
                 }
 
             }

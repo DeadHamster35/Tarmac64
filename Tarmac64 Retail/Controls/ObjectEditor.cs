@@ -11,11 +11,13 @@ using Tarmac64_Library;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using System.Data.Odbc;
 
 namespace Tarmac64_Retail
 {
     public partial class ObjectEditor : UserControl
     {
+        bool Updating;
         public ObjectEditor()
         {
             InitializeComponent();
@@ -181,6 +183,7 @@ namespace Tarmac64_Retail
         }
         public void UpdateObjectUI()
         {
+            Updating = true;
             if ((ObjectListBox.Items.Count > 0) && (ObjectListBox.SelectedIndex != -1) && (!Loading))
             {
                 ObjectTypeIndexBox.SelectedIndex = OKObjectList[ObjectListBox.SelectedIndex].TypeIndex;
@@ -238,6 +241,7 @@ namespace Tarmac64_Retail
             {
                 UpdateParent(this, EventArgs.Empty);
             }
+            Updating = false;
         }
 
         public int LoadSettings(string[] ObjectSettings, int Version = 5)
@@ -513,6 +517,10 @@ namespace Tarmac64_Retail
 
         private void UpdateLocation()
         {
+            if (Updating)
+            {
+                return;
+            }
             if (ObjectListBox.SelectedIndex != -1)
             {
                 short Parse = 0;
@@ -727,7 +735,8 @@ namespace Tarmac64_Retail
 
         private void ClassBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            UpdateLocation();
+            UpdateObjectUI();
         }
 
         private void label3_Click(object sender, EventArgs e)
@@ -747,7 +756,8 @@ namespace Tarmac64_Retail
 
         private void ModeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            UpdateLocation();
+            UpdateObjectUI();
         }
 
         private void label1_Click(object sender, EventArgs e)

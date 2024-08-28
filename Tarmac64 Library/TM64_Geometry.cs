@@ -2227,7 +2227,7 @@ namespace Tarmac64_Library
                         new N64Codec[]{ N64Codec.RGBA16, N64Codec.RGBA16, N64Codec.RGBA16, N64Codec.RGBA32 },
                         new N64Codec[]{ N64Codec.ONEBPP, N64Codec.ONEBPP , N64Codec.ONEBPP , N64Codec.ONEBPP },
                         new N64Codec[]{ N64Codec.CI4, N64Codec.CI8, N64Codec.CI8, N64Codec.CI8 },
-                        new N64Codec[]{ N64Codec.IA4, N64Codec.IA8, N64Codec.IA8, N64Codec.IA8 },
+                        new N64Codec[]{ N64Codec.IA4, N64Codec.IA8, N64Codec.IA16, N64Codec.IA16 },
                         new N64Codec[]{ N64Codec.I4, N64Codec.I8, N64Codec.I8, N64Codec.I8 }
                     };
 
@@ -2328,7 +2328,7 @@ namespace Tarmac64_Library
                         new N64Codec[]{ N64Codec.RGBA16, N64Codec.RGBA16, N64Codec.RGBA16, N64Codec.RGBA32 },
                         new N64Codec[]{ N64Codec.ONEBPP, N64Codec.ONEBPP , N64Codec.ONEBPP , N64Codec.ONEBPP },
                         new N64Codec[]{ N64Codec.CI4, N64Codec.CI8, N64Codec.CI8, N64Codec.CI8 },
-                        new N64Codec[]{ N64Codec.IA4, N64Codec.IA8, N64Codec.IA8, N64Codec.IA8 },
+                        new N64Codec[]{ N64Codec.IA4, N64Codec.IA8, N64Codec.IA16, N64Codec.IA16 },
                         new N64Codec[]{ N64Codec.I4, N64Codec.I8, N64Codec.I8, N64Codec.I8 }
                     };
                     byte[] imageData = null;
@@ -2458,7 +2458,7 @@ namespace Tarmac64_Library
                             new N64Codec[]{ N64Codec.RGBA16, N64Codec.RGBA16, N64Codec.RGBA16, N64Codec.RGBA32 },
                             new N64Codec[]{ N64Codec.ONEBPP, N64Codec.ONEBPP , N64Codec.ONEBPP , N64Codec.ONEBPP },
                             new N64Codec[]{ N64Codec.CI4, N64Codec.CI8, N64Codec.CI8, N64Codec.CI8 },
-                            new N64Codec[]{ N64Codec.IA4, N64Codec.IA8, N64Codec.IA8, N64Codec.IA8 },
+                            new N64Codec[]{ N64Codec.IA4, N64Codec.IA8, N64Codec.IA16, N64Codec.IA16 },
                             new N64Codec[]{ N64Codec.I4, N64Codec.I8, N64Codec.I8, N64Codec.I8 }
                         };
                         byte[] imageData = null;
@@ -2765,11 +2765,17 @@ namespace Tarmac64_Library
                             ThisVert.position.s = 0;
                             ThisVert.position.t = 0;
                         }
-                        else
+                        //else if ((TextureObjects[cObj.materialID].SFlag > 0) || (TextureObjects[cObj.materialID].TFlag > 0))
+                        {
+                          //  ThisVert.position.s = Convert.ToInt16(ThisVert.position.sPure * 32 * TextureObjects[cObj.materialID].textureWidth);
+                            //ThisVert.position.t = Convert.ToInt16(ThisVert.position.tPure * 32 * TextureObjects[cObj.materialID].textureHeight);
+                        }
+                        //else                        
                         {
                             ThisVert.position.s = Convert.ToInt16(ThisVert.position.sBase * TextureObjects[cObj.materialID].textureWidth);
                             ThisVert.position.t = Convert.ToInt16(ThisVert.position.tBase * TextureObjects[cObj.materialID].textureHeight);
                         }
+                        
 
                         binaryWriter.Write(WriteVertexBinary16(ThisVert));
 
@@ -3090,11 +3096,15 @@ namespace Tarmac64_Library
                             ThisVert.position.s = 0;
                             ThisVert.position.t = 0;
                         }
-                        else
+                        else if ((textureObject[cObj.materialID].SFlag > 0) || (textureObject[cObj.materialID].TFlag > 0))
+                        {
+                            ThisVert.position.s = Convert.ToInt16(ThisVert.position.sPure * textureObject[cObj.materialID].textureWidth);
+                            ThisVert.position.t = Convert.ToInt16(ThisVert.position.tPure * textureObject[cObj.materialID].textureHeight);
+                        }
+                        else                        
                         {
                             ThisVert.position.s = Convert.ToInt16(ThisVert.position.sBase * textureObject[cObj.materialID].textureWidth);
                             ThisVert.position.t = Convert.ToInt16(ThisVert.position.tBase * textureObject[cObj.materialID].textureHeight);
-                            
                         }
 
                         OK64Color TargetColor = new OK64Color();
@@ -4266,7 +4276,7 @@ namespace Tarmac64_Library
         public byte[] CompileTextureObjects(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5, bool GeometryMode = true, bool FogToggle = false)
         {
             byte[] byteArray = new byte[0];
-
+            
 
             UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
             UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
@@ -5590,20 +5600,33 @@ namespace Tarmac64_Library
             return Skeleton;
         }
 
-        public string[] WriteVertDataC(TM64_Geometry.OK64F3DObject F3DObject)
+
+
+        public string GetRGBAString(TM64_Geometry.OK64Texture TextureObject, int Height, int Width)
+        {
+            int R, G, B, A;
+            int ThisPixel = (Height * TextureObject.textureWidth) + Width;
+            return "0x" + TextureObject.rawTexture[ThisPixel * 2].ToString("X").PadLeft(2, '0') + TextureObject.rawTexture[1 + (ThisPixel * 2)].ToString("X").PadLeft(2, '0') + ", ";
+        }
+
+
+        public string[] WriteVertDataC(TM64_Geometry.OK64F3DObject F3DObject, TM64_Geometry.OK64Texture TextureObject)
         {
             List<string> Output = new List<string>();
 
             Output.Add("Vtx " + F3DObject.objectName + "_V[] = {");
-
+            OK64F3DModel[] CrunchedModel = CrunchF3DModel(F3DObject);
 
             /*{ { 15,30,0}, 0, 	{2048, 	   0},  {255, 255, 254, 255} }*/
-            foreach (var Face in F3DObject.modelGeometry)
+            foreach (var Crunch in CrunchedModel)
             {
-                foreach (var Vert in Face.VertData)
+                foreach (var Vert in Crunch.VertexCache)
                 {
+                    Vert.position.s = Convert.ToInt16(Vert.position.sBase * TextureObject.textureWidth);
+                    Vert.position.t = Convert.ToInt16(Vert.position.tBase * TextureObject.textureHeight);
+
                     Output.Add(
-                        "{ {  { " + Vert.position.x.ToString() + ", " + Vert.position.y.ToString() + ", " + Vert.position.z.ToString() +
+                        "{ {  { " + Vert.position.x.ToString() + ", " + Vert.position.z.ToString() + ", " + (-1 * Vert.position.y).ToString() +
                         " }, 0,  {" + Vert.position.s.ToString() + ", " + Vert.position.t.ToString() + "}, " +
                         "{" + Vert.color.R.ToString() + ", " + Vert.color.G.ToString() + ", " + Vert.color.B.ToString() + ", " + Vert.color.A.ToString() + "} } },"
                         );
@@ -6154,6 +6177,364 @@ namespace Tarmac64_Library
             return Output.ToArray();
         }
 
+
+        public string[] WriteTextureRSP(TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
+        {
+            List<string> Output = new List<string>();
+            F3DSharp.F3DEX2 F3D = new F3DSharp.F3DEX2();
+            string[] CombineNames = F3DSharp.F3DEX2_Parameters.GCCModeNames;
+            string[] GeometryNames = F3DSharp.F3DEX2_Parameters.GeometryModeNames;
+            string[] RenderNames = F3DSharp.F3DEX2_Parameters.RenderModeNames;
+            string[] FormatNames = F3DSharp.F3DEX2_Parameters.TextureFormatNames;
+            string[] BitSizeNames = F3DSharp.F3DEX2_Parameters.BitSizeNames;
+            string[] ModeNames = F3DSharp.F3DEX2_Parameters.TextureModeNames;
+            uint[] BitSizes = F3DSharp.F3DEX2_Parameters.BitSizes;
+            uint[] GIMSize = F3DSharp.F3DEX2_Parameters.G_IM_ArrayLineBytes;
+
+            UInt32 heightex, widthex;
+            if (TextureObject.textureHeight != 0)
+            {
+                heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
+                widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
+            }
+            else
+            {
+                heightex = 0;
+                widthex = 0;
+            }
+
+
+
+            TextureObject.GeometryModes = 0;
+            for (int ThisCheck = 0; ThisCheck < F3DSharp.F3DEX2_Parameters.GeometryModes.Length; ThisCheck++)
+            {
+                if (TextureObject.GeometryBools[ThisCheck])
+                {
+                    TextureObject.GeometryModes |= F3DSharp.F3DEX2_Parameters.GeometryModes[ThisCheck];
+                }
+            }
+
+
+            Output.Add("Gfx Draw_" + TextureObject.textureName + "_T[] = ");
+            Output.Add("{");
+
+
+            //LOAD TEXTURE DATA RGBA16
+            switch (TextureObject.TextureFormat)
+            {
+
+                case 0:
+                default:
+                    {
+                        Output.AddRange(WriteRGBA16_RSP(TextureObject, GraphPtr));
+                        break;
+                    }
+                case 2:
+                    {
+                        //ci
+                        Output.AddRange(WriteCI_RSP(TextureObject));
+                        break;
+                    }
+                case 3:
+                case 4:
+                    {
+                        //ia
+                        MessageBox.Show("ERROR - " + TextureObject.textureName + " - IA Format not supported.");
+                        break;
+                    }
+                case 1:
+                    {
+                        MessageBox.Show("ERROR - " + TextureObject.textureName + " - YUV Format not supported.");
+                        break;
+                    }
+            }
+
+
+
+            Output.Add(Environment.NewLine);
+            Output.Add("\tgsSPEndDisplayList(),");
+            Output.Add("");
+
+
+            Output.Add("};");
+            return Output.ToArray();
+        }
+
+
+        public string[] WriteRGBA16_RSP(TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
+        {
+
+            List<string> Output = new List<string>();
+            F3DSharp.F3DEX2 F3D = new F3DSharp.F3DEX2();
+            string[] CombineNames = F3DSharp.F3DEX2_Parameters.GCCModeNames;
+            string[] GeometryNames = F3DSharp.F3DEX2_Parameters.GeometryModeNames;
+            string[] RenderNames = F3DSharp.F3DEX2_Parameters.RenderModeNames;
+            string[] FormatNames = F3DSharp.F3DEX2_Parameters.TextureFormatNames;
+            string[] BitSizeNames = F3DSharp.F3DEX2_Parameters.BitSizeNames;
+            string[] ModeNames = F3DSharp.F3DEX2_Parameters.TextureModeNames;
+            uint[] BitSizes = F3DSharp.F3DEX2_Parameters.BitSizes;
+            uint[] GIMSize = F3DSharp.F3DEX2_Parameters.G_IM_ArrayLineBytes;
+
+
+            UInt32 heightex, widthex;
+            if (TextureObject.textureHeight != 0)
+            {
+                heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
+                widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
+            }
+            else
+            {
+                heightex = 0;
+                widthex = 0;
+            }
+
+
+            Output.Add("");
+            Output.Add("\t//Start Texture Load");
+            Output.Add("\t//" + TextureObject.textureName);
+            Output.Add("");
+
+            Output.Add("\tgsSPTexture( " + " 65535, 65535, 0, 0, 1),");
+            Output.Add("\tgsDPPipeSync( " + "),");
+            Output.Add("\tgsDPSetCombineMode( " + " " + CombineNames[TextureObject.CombineModeA] + ", " + CombineNames[TextureObject.CombineModeB] + "),");
+            Output.Add("\tgsDPSetRenderMode( " + " " + RenderNames[TextureObject.RenderModeA] + ", " + RenderNames[TextureObject.RenderModeB] + "),");
+            Output.Add("\tgsDPTileSync( " + "),");
+            Output.Add("\tgsDPSetTile( " + " " + FormatNames[TextureObject.TextureFormat] + ", " + BitSizeNames[TextureObject.BitSize]
+                + ", ((" + (TextureObject.textureWidth * GIMSize[TextureObject.BitSize]).ToString() + " + 7) >> 3), 0, 0, 0, " + ModeNames[TextureObject.TFlag]
+                + ", " + heightex.ToString() + ", 0, " + ModeNames[TextureObject.SFlag] + ", " + widthex.ToString() + ", 0),");
+            Output.Add("\tgsDPSetTileSize( " + " 0, 0, 0, (" + TextureObject.textureWidth.ToString() + " - 1) << 2, (" + TextureObject.textureHeight.ToString() + " - 1) << 2),");
+
+            Output.Add("\tgsSPClearGeometryMode( " + " " + F3DSharp.F3DEX2_Parameters.AllGeometryModes.ToString() + "),");
+            Output.Add("\tgsSPSetGeometryMode( " + " " + TextureObject.GeometryModes.ToString() + "),");
+
+            Output.Add("\tgsDPSetTextureImage( " + " " + FormatNames[TextureObject.TextureFormat] + ", " + BitSizeNames[TextureObject.BitSize]
+                + ", 1, &" + TextureObject.textureName + "),");
+            Output.Add("\tgsDPTileSync( " + "),");
+            Output.Add("\tgsDPSetTile( " + " " + FormatNames[TextureObject.TextureFormat] + ", " + BitSizeNames[TextureObject.BitSize]
+                + ", 0, 0, 7, 0, 0, 0, 0, 0, 0, 0),");
+            Output.Add("\tgsDPLoadSync( " + "),");
+            Output.Add("\tgsDPLoadBlock( " + " 7, 0, 0, ((" +
+                TextureObject.textureWidth.ToString() + " * " + TextureObject.textureHeight.ToString() + ") - 1), "
+                + F3D.CALCDXT(Convert.ToUInt32(TextureObject.textureWidth), BitSizes[TextureObject.BitSize]).ToString() + "),");
+            //END RGBA16 DRAW
+
+            Output.Add("");
+            Output.Add("\t//End Texture Load");
+            Output.Add("\t//Start DrawCalls");
+            Output.Add("");
+
+            return Output.ToArray();
+
+        }
+
+        public string[] WriteCI_RSP(TM64_Geometry.OK64Texture TextureObject)
+        {
+
+            List<string> Output = new List<string>();
+            F3DSharp.F3DEX2 F3D = new F3DSharp.F3DEX2();
+            string[] CombineNames = F3DSharp.F3DEX2_Parameters.GCCModeNames;
+            string[] GeometryNames = F3DSharp.F3DEX2_Parameters.GeometryModeNames;
+            string[] RenderNames = F3DSharp.F3DEX2_Parameters.RenderModeNames;
+            string[] FormatNames = F3DSharp.F3DEX2_Parameters.TextureFormatNames;
+            string[] BitSizeNames = F3DSharp.F3DEX2_Parameters.BitSizeNames;
+            string[] ModeNames = F3DSharp.F3DEX2_Parameters.TextureModeNames;
+            uint[] BitSizes = F3DSharp.F3DEX2_Parameters.BitSizes;
+            uint[] GIMSize = F3DSharp.F3DEX2_Parameters.G_IM_ArrayLineBytes;
+
+
+
+
+            UInt32 heightex, widthex;
+            if (TextureObject.textureHeight != 0)
+            {
+                heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
+                widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
+            }
+            else
+            {
+                heightex = 0;
+                widthex = 0;
+            }
+
+            Output.Add("");
+            Output.Add("\t//Start Texture Load");
+            Output.Add("\t//" + TextureObject.textureName);
+            Output.Add("");
+
+
+            /*
+             * 
+             * binaryWriter.Write(F3D.gsDPSetTextureLUT(F3DSharp.F3DEX2_Parameters.G_TT_RGBA16));
+            binaryWriter.Write(F3D.gsDPLoadTLUT_pal16(0, Convert.ToUInt32(TextureObject.palettePosition | SegmentID)));
+
+            */
+
+            Output.Add
+            (
+                "\tgsDPSetTextureLUT( " + Convert.ToString(F3DEX2_Parameters.G_TT_RGBA16) + "),"
+            );
+
+
+            Output.Add("\tgsSPTexture( 65535, 65535, 0, 0, 1),");
+
+            Output.Add("\tgsDPPipeSync( " + "),");
+            Output.Add("\tgsDPSetCombineMode( " + " " + CombineNames[TextureObject.CombineModeA] + ", " + CombineNames[TextureObject.CombineModeB] + "),");
+            Output.Add("\tgsDPSetRenderMode( " + " " + RenderNames[TextureObject.RenderModeA] + ", " + RenderNames[TextureObject.RenderModeB] + "),");
+            Output.Add("\tgsDPTileSync( " + "),");
+            Output.Add("\tgsDPSetTile( " + " " + FormatNames[TextureObject.TextureFormat] + ", " + BitSizeNames[TextureObject.BitSize]
+                + ", ((" + (TextureObject.textureWidth * GIMSize[TextureObject.BitSize]).ToString() + " + 7) >> 3), 0, 0, 0, " + ModeNames[TextureObject.TFlag]
+                + ", " + heightex.ToString() + ", 0, " + ModeNames[TextureObject.SFlag] + ", " + widthex.ToString() + ", 0),");
+            Output.Add("\tgsDPSetTileSize( " + " 0, 0, 0, (" + TextureObject.textureWidth.ToString() + " - 1) << 2, (" + TextureObject.textureHeight.ToString() + " - 1) << 2),");
+
+            Output.Add("\tgsSPClearGeometryMode( " + " " + F3DSharp.F3DEX2_Parameters.AllGeometryModes.ToString() + "),");
+            Output.Add("\tgsSPSetGeometryMode( " + " " + TextureObject.GeometryModes.ToString() + "),");
+
+
+
+            Output.Add
+            (
+                "\tgsDPLoadTLUT_pal16( 0, &" + TextureObject.textureName + "_PAL),"
+            );
+            if (TextureObject.BitSize < 2)
+            {
+                //Macro 4-bit Texture Load
+                Output.Add
+                (
+
+                    "\tgsDPLoadTextureBlock_4b( &" +
+                    TextureObject.textureName + "_T, " +
+                    F3DEX2_Parameters.TextureFormatNames[TextureObject.TextureFormat] + "," +
+                    Convert.ToString(TextureObject.textureWidth) + "," +
+                    Convert.ToString(TextureObject.textureHeight) + "," +
+                   "0," +
+                   F3DEX2_Parameters.TextureModeNames[TextureObject.SFlag] + "," +
+                   F3DEX2_Parameters.TextureModeNames[TextureObject.TFlag] + "," +
+                   Convert.ToString(widthex) + "," +
+                   Convert.ToString(heightex) + "," +
+                   "0," +
+                   "0),"
+                );
+            }
+            else
+            {
+                //Load Texture Settings
+
+                Output.Add
+                (
+                    "\tgsNinSetupTileDescription( " +
+                    F3DEX2_Parameters.TextureFormatNames[TextureObject.TextureFormat] + "," +
+                    F3DEX2_Parameters.BitSizeNames[TextureObject.BitSize] + "," +
+                    Convert.ToString(TextureObject.textureWidth) + "," +
+                    Convert.ToString(TextureObject.textureHeight) + "," +
+                   "0," +
+                   "0," +
+                   F3DEX2_Parameters.TextureModeNames[TextureObject.SFlag] + "," +
+                   Convert.ToString(widthex) + "," +
+                   "0," +
+                   F3DEX2_Parameters.TextureModeNames[TextureObject.TFlag] + "," +
+                   Convert.ToString(heightex) + "," +
+                   "0),"
+                );
+                //Load Texture Data
+                Output.Add
+                (
+                   "\tgsDPLoadTextureBlock( &" +
+                    TextureObject.textureName + "_T, " +
+                    F3DEX2_Parameters.TextureFormatNames[TextureObject.TextureFormat] + "," +
+                    F3DEX2_Parameters.BitSizeNames[TextureObject.BitSize] + "," +
+                    Convert.ToString(TextureObject.textureWidth) + "," +
+                    Convert.ToString(TextureObject.textureHeight) + "," +
+                   "0," +
+                   F3DEX2_Parameters.TextureModeNames[TextureObject.SFlag] + "," +
+                   F3DEX2_Parameters.TextureModeNames[TextureObject.TFlag] + "," +
+                   Convert.ToString(widthex) + "," +
+                   Convert.ToString(heightex) + "," +
+                   "0," +
+                   "0),"
+                );
+
+            }
+            Output.Add("");
+            Output.Add("\t//End Texture Load");
+            Output.Add("\t//Start DrawCalls");
+            Output.Add("");
+
+            return Output.ToArray();
+
+        }
+
+        public string[] WriteGeometryRSP(TM64_Geometry.OK64F3DObject TargetObject, TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
+        {
+            List<string> Output = new List<string>();
+            F3DSharp.F3DEX2 F3D = new F3DSharp.F3DEX2();
+
+            Output.Add("Gfx Draw_" + TargetObject.objectName + "_M[] = ");
+            Output.Add("{");
+
+            OK64F3DModel[] CrunchedModel = CrunchF3DModel(TargetObject);
+
+            int VOffset = 0;
+
+            for (int ThisDraw = 0; ThisDraw < CrunchedModel.Length; ThisDraw++)
+            {
+                uint VertexCount = Convert.ToUInt32(CrunchedModel[ThisDraw].VertexCache.Count);
+                int LocalFaceCount = CrunchedModel[ThisDraw].Indexes.Count;
+                Output.Add("\tgsSPVertex(&" + TargetObject.objectName + "_V[" + VOffset.ToString() + "] , " + VertexCount.ToString() + ", 0),");
+
+                VOffset += Convert.ToInt32(VertexCount);
+
+                for (int TargetIndex = 0; TargetIndex < LocalFaceCount;)
+                {
+                    if (TargetIndex + 2 <= LocalFaceCount)
+                    {
+                        //Tri2
+                        int[] Indexes = CrunchedModel[ThisDraw].Indexes[TargetIndex];
+                        uint[] VertIndexesA = F3D.GetIndexes(Indexes[0], Indexes[1], Indexes[2]);
+
+                        Indexes = CrunchedModel[ThisDraw].Indexes[TargetIndex + 1];
+                        uint[] VertIndexesB = F3D.GetIndexes(Indexes[0], Indexes[1], Indexes[2]);
+
+                        Output.Add("\t\tgsSP2Triangles(" +
+                            VertIndexesA[0].ToString() + ", " +
+                            (VertIndexesA[1]).ToString() + ", " +
+                            (VertIndexesA[2]).ToString() + ", " +
+                            "0, " +
+                            (VertIndexesB[0]).ToString() + ", " +
+                            (VertIndexesB[1]).ToString() + ", " +
+                            (VertIndexesB[2]).ToString() + ", " +
+                            "0 ),"
+                            );
+                        TargetIndex += 2;
+                    }
+                    else
+                    {
+                        //Tri1
+                        int[] Indexes = CrunchedModel[ThisDraw].Indexes[TargetIndex];
+                        uint[] VertIndexesA = F3D.GetIndexes(Indexes[0], Indexes[1], Indexes[2]);
+
+                        Output.Add("\t\tgsSP1Triangle(" +
+                            VertIndexesA[0].ToString() + ", " +
+                            (VertIndexesA[1]).ToString() + ", " +
+                            (VertIndexesA[2]).ToString() + ", " +
+                            "0 ),"
+                            );
+                        TargetIndex += 1;
+                    }
+                }
+
+            }
+
+
+            Output.Add(Environment.NewLine);
+            Output.Add("\tgsSPEndDisplayList(),");
+            Output.Add("");
+            Output.Add("\t//End DrawCalls " + TargetObject.objectName);
+            Output.Add("");
+
+
+            Output.Add("};");
+            return Output.ToArray();
+        }
 
 
     }
