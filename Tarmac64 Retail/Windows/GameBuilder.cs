@@ -253,11 +253,11 @@ namespace Tarmac64_Library
                         }
 
 
-                        
+                        /*
                         File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString()+ " Segment6.bin", BattleCourses[ThisCourse].Segment6);
                         File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment9.bin", BattleCourses[ThisCourse].Segment9);
                         File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment7.bin", BattleCourses[ThisCourse].Segment7);
-                        
+                        */
 
                     }
                     MemoryStream memoryStream = new MemoryStream();

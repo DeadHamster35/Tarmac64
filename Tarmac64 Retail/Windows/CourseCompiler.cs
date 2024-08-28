@@ -158,7 +158,7 @@ namespace Tarmac64_Library
 
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
+            int addressAlign = 0;
             TM64_Course.Course courseData = SettingsControl.CourseData;
             List<byte[]> Segments = new List<byte[]>();
 
@@ -289,7 +289,7 @@ namespace Tarmac64_Library
 
                 ListStream = new MemoryStream();
 
-
+                
                 courseData.PathOffsets = new UInt32[4] { 0x800DC778, 0x800DC778, 0x800DC778, 0x800DC778 };
                           
                 courseData.PathOffsets[0] = Convert.ToUInt32(0x06000000 + ListData.Length + 8);
@@ -425,17 +425,15 @@ namespace Tarmac64_Library
                 byte[] BattleObjectiveData = tm64Path.popMarkerBattleObjective(ObjectiveList, 64);
                 ListStream.Write(ItemBoxData, 0, ItemBoxData.Length);
                 ListStream.Write(BattleObjectiveData, 0, BattleObjectiveData.Length);
-
-
                 ListData = ListStream.ToArray();
 
 
-                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + ListData.Length, 5, Convert.ToBoolean(courseData.Fog.FogToggle));
-                if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic))
+                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, (12 + ListData.Length), 5, Convert.ToBoolean(courseData.Fog.FogToggle));
+                if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic, false))
                 {
                     return;
                 }
-                if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic))
+                if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, surfaceObjects, textureArray, vertMagic, false))
                 {
                     return;
                 }
@@ -451,12 +449,16 @@ namespace Tarmac64_Library
 
                 binaryWriter.Write(F3D.gsSPEndDisplayList());
                 binaryWriter.Write(ListData);
-
+                binaryWriter.Write(0);
                 binaryWriter.Write(textureList);
+
+
                 courseData.OK64HeaderData.SectionViewPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
                 binaryWriter.Write(renderList);
+
                 courseData.OK64HeaderData.XLUViewPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
-                binaryWriter.Write(XLUList); 
+                binaryWriter.Write(XLUList);
+
                 courseData.OK64HeaderData.SurfaceMapPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
                 binaryWriter.Write(surfaceTable);
 
@@ -477,7 +479,7 @@ namespace Tarmac64_Library
 
 
             //Read Ghost Data from the GhostPath and 
-            //Set the character. Compressed INput data in the OK64Ghost
+            //Set the character. Compressed Input data in the OK64Ghost
             //is padded and needs to be cleaned via recompression.
 
             if (courseData.GhostPath != "")
@@ -1159,6 +1161,22 @@ namespace Tarmac64_Library
 
                                     }
                                 }
+                                if (pathGroups[2].pathList.Length != 0)
+                                {
+                                    foreach (var Tree in pathGroups[2].pathList[0].pathmarker)
+                                    {
+                                        TM64_Course.OKObject NewObject = TarmacCourse.NewOKObject();
+
+                                        NewObject.ObjectIndex = 5;
+                                        NewObject.OriginPosition[0] = Convert.ToInt16(Tree.xval);
+                                        NewObject.OriginPosition[1] = Convert.ToInt16(Tree.yval);
+                                        NewObject.OriginPosition[2] = Convert.ToInt16(Tree.zval);
+
+                                        OKObjectList.Add(NewObject);
+                                        int NewIndex = ObjectControl.ObjectListBox.Items.Add("Object " + OKObjectTypeList[NewObject.ObjectIndex].Name + " " + ObjectControl.ObjectListBox.Items.Count.ToString());
+
+                                    }
+                                }
                                 LoadBarForm.LoadingBar.Value = 95;
                                 LoadBarForm.Update();
                             }
@@ -1272,6 +1290,10 @@ namespace Tarmac64_Library
                     }
                 case 2:
                     {
+                        if (sectionList.Length == 0)
+                        {
+                            break;
+                        }
                         sectionList[sectionBox.SelectedIndex].viewList[0].objectList = GLControl.SectionList;
                         XLUSectionList[sectionBox.SelectedIndex].viewList[0].objectList = GLControl.SectionList;
                         if (GLControl.SelectedObject != -1)
@@ -1635,7 +1657,10 @@ namespace Tarmac64_Library
                         }
                     case 2:
                         {
-                            
+                            if (sectionList.Length == 0)
+                            {
+                                break;
+                            }
                             List<TM64_Geometry.OK64F3DObject> SurfaceList = new List<TM64_Geometry.OK64F3DObject>();
                             for (int ThisSurface = 0; ThisSurface < surfaceObjects.Length; ThisSurface++)
                             {
@@ -1647,8 +1672,8 @@ namespace Tarmac64_Library
                             }
 
                             GLControl.CourseModel = masterObjects;
-                            GLControl.SurfaceModel = SurfaceList.ToArray();
-                            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList;
+                            GLControl.SurfaceModel = SurfaceList.ToArray();                            
+                            GLControl.SectionList = sectionList[sectionBox.SelectedIndex].viewList[0].objectList;                            
                             GLControl.CourseObjects = new List<TM64_Course.OKObject>();
                             GLControl.ObjectTypes = new TM64_Course.OKObjectType[0];
                             GLControl.TargetMode = 1;
@@ -1850,6 +1875,7 @@ namespace Tarmac64_Library
                 SubSettings = new string[SettingsFile.Length - ThisLine];
                 Array.Copy(SettingsFile, ThisLine, SubSettings, 0, SettingsFile.Length - ThisLine);
 
+
                 if (Keyboard.IsKeyDown(Key.LeftShift))
                 {
                     ObjectControl.LoadSettings(SubSettings, 5);
@@ -1947,7 +1973,38 @@ namespace Tarmac64_Library
                 TM64_Geometry TarmacGeometry = new TM64_Geometry();
                 TM64_Geometry.OK64SectionList[] tempSList = new TM64_Geometry.OK64SectionList[0];
                 TM64_Geometry.OK64SectionList[] tempXLUSList = new TM64_Geometry.OK64SectionList[0];
+                if (Keyboard.IsKeyDown(Key.LeftShift))
+                {
+                    tempSList = TarmacGeometry.ImportSVL2(filePath, masterObjects.Length, masterObjects);
+                    tempXLUSList = new TM64_Geometry.OK64SectionList[tempSList.Length];
+                    for (int ThisSection = 0; ThisSection < tempSList.Length; ThisSection++)
+                    {
+                        tempXLUSList[ThisSection] = new TM64_Geometry.OK64SectionList();
+
+                        tempXLUSList[ThisSection] = new TM64_Geometry.OK64SectionList();
+                        tempXLUSList[ThisSection].viewList = new TM64_Geometry.OK64ViewList[4];
+                        for (int ThisView = 0; ThisView < 4; ThisView++)
+                        {
+                            tempXLUSList[ThisSection].viewList[ThisView] = new TM64_Geometry.OK64ViewList();
+                            tempXLUSList[ThisSection].viewList[ThisView].objectList = new int[0];
+                        }
+                        List<int> ThisList = tempSList[ThisSection].viewList[0].objectList.ToList();
+                        for (int ThisView = 1; ThisView < 4; ThisView++)
+                        {
+                            for(int ThisObj = 0; ThisObj < tempSList[ThisSection].viewList[ThisView].objectList.Length; ThisObj++)
+                            if (!(tempSList[ThisSection].viewList[0].objectList.Contains(tempSList[ThisSection].viewList[ThisView].objectList[ThisObj])))
+                            {
+                                    ThisList.Add(tempSList[ThisSection].viewList[ThisView].objectList[ThisObj]);
+                            }
+                        }
+                        tempSList[ThisSection].viewList[0].objectList = ThisList.ToArray();
+                    }
+                }
+                else
+                {
                     TarmacGeometry.ImportSVL3(out tempSList, out tempXLUSList, filePath, masterObjects);
+                }
+                    
                 if (tempSList.Length > 0)
                 {
                     sectionList = tempSList;
