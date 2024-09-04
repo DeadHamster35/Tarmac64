@@ -939,8 +939,16 @@ namespace Tarmac64_Retail
 
                         if (CheckNode == null)
                         {
-                            //No render nodes - reuse Section Nodes
-                            masterObjects = TarmacGeometry.CreateMasters(FBX, sectionCount, textureArray, TM64Settings.AlphaCH2);
+                            CheckNode = FBX.RootNode.FindNode("Course Master Objects");
+                            if (CheckNode == null)
+                            {
+                                //No render nodes - reuse Section Nodes
+                                masterObjects = TarmacGeometry.CreateMasters(FBX, sectionCount, textureArray, TM64Settings.AlphaCH2);
+                            }
+                            else
+                            {
+                                masterObjects = TarmacGeometry.LoadMaster(ref masterGroups, FBX, textureArray, okSettings.AlphaCH2);
+                            }
                         }
                         else
                         {

@@ -1906,6 +1906,14 @@ namespace Tarmac64_Library
         {
             
             var masterNode = fbx.RootNode.FindNode("Render Objects");
+            if (masterNode == null)
+            {
+                masterNode = fbx.RootNode.FindNode("Course Master Objects");
+                if (masterNode == null )
+                {
+                    return null;
+                }
+            }
             int childCount = masterNode.Children.Count;
             List<OK64F3DObject> masterList = new List<OK64F3DObject>();
             OK64F3DObject[] masterObjects = new OK64F3DObject[0];
@@ -5606,7 +5614,7 @@ namespace Tarmac64_Library
         {
             int R, G, B, A;
             int ThisPixel = (Height * TextureObject.textureWidth) + Width;
-            return "0x" + TextureObject.rawTexture[ThisPixel * 2].ToString("X").PadLeft(2, '0') + TextureObject.rawTexture[1 + (ThisPixel * 2)].ToString("X").PadLeft(2, '0') + ", ";
+            return "0x" + TextureObject.RawTexture.TextureData[ThisPixel * 2].ToString("X").PadLeft(2, '0') + TextureObject.RawTexture.TextureData[1 + (ThisPixel * 2)].ToString("X").PadLeft(2, '0') + ", ";
         }
 
 
