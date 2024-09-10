@@ -4986,7 +4986,7 @@ namespace Tarmac64_Library
             return seg7m.ToArray();
         }
 
-        public byte[] CompileObjectList(byte[] OutputData, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int SegmentID)
+        public byte[] CompileObjectList(byte[] OutputData, OK64F3DObject courseObject, OK64Texture[] textureObject, int SegmentID)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -5012,35 +5012,45 @@ namespace Tarmac64_Library
             for (int currentTexture = 0; currentTexture < textureObject.Length; currentTexture++)
             {
                 bool textureWritten = false;
-                for (int currentObject = 0; currentObject < courseObject.Length; currentObject++)
+                
+                if (courseObject.materialID == currentTexture)
                 {
-                    if (courseObject[currentObject].materialID == currentTexture)
+                    if (!textureWritten)
                     {
-                        if (!textureWritten)
-                        {
-                            byteArray = BitConverter.GetBytes(0x06000000);
-                            Array.Reverse(byteArray);
-                            seg6w.Write(byteArray);
+                        byteArray = BitConverter.GetBytes(0x06000000);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
 
-                            byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | (SegmentID << 24));
-                            Array.Reverse(byteArray);
-                            seg6w.Write(byteArray);
+                        byteArray = BitConverter.GetBytes(textureObject[currentTexture].f3dexPosition | (SegmentID << 24));
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
 
-                            textureWritten = true;
-                        }
-
-                        for (int subObject = 0; subObject < courseObject[currentObject].meshPosition.Length; subObject++)
-                        {
-                            byteArray = BitConverter.GetBytes(0x06000000);
-                            Array.Reverse(byteArray);
-                            seg6w.Write(byteArray);
-
-                            byteArray = BitConverter.GetBytes(courseObject[currentObject].meshPosition[subObject] | (SegmentID << 24));
-                            Array.Reverse(byteArray);
-                            seg6w.Write(byteArray);
-                        }
+                        textureWritten = true;
                     }
+
+                    for (int subObject = 0; subObject < courseObject.meshPosition.Length; subObject++)
+                    {
+                        byteArray = BitConverter.GetBytes(0x06000000);
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+
+                        byteArray = BitConverter.GetBytes(courseObject.meshPosition[subObject] | (SegmentID << 24));
+                        Array.Reverse(byteArray);
+                        seg6w.Write(byteArray);
+                    }
+
+
+                    byteArray = BitConverter.GetBytes(0xB8000000);
+                    Array.Reverse(byteArray);
+                    seg6w.Write(byteArray);
+
+                    byteArray = BitConverter.GetBytes(0x00000000);
+                    Array.Reverse(byteArray);
+                    seg6w.Write(byteArray);
+
                 }
+
+                
                 if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
                 {
                     seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));

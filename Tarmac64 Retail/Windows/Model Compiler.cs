@@ -166,7 +166,7 @@ namespace Tarmac64_Library
             string filename = "";
 
             int SegmentID = Convert.ToInt32(SegmentBox.SelectedIndex);
-            int DataLength = Convert.ToInt32(MagicBox.Text, 16) + (MasterObjects.Length * 16);
+            int DataLength = Convert.ToInt32(MagicBox.Text, 16);
             int[] RootPositions = new int[MasterObjects.Length];
 
             for (int currentItem = 0; currentItem < MasterObjects.Length; currentItem++)
@@ -177,15 +177,20 @@ namespace Tarmac64_Library
                 OutputData = TarmacGeo.CompileF3DObject(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], DataLength, SegmentID);
 
 
-                int SegmentPosition = OutputData.Length + (SegmentID * 0x01000000) + DataLength;
+                
 
-                HeaderData = TarmacGeo.CompileF3DHeader(SegmentPosition, HeaderData);
+                
+                for (int ThisChild = 0; ThisChild < MasterObjects[currentItem].Length; ThisChild++)
+                {
+                    int SegmentPosition = OutputData.Length + (SegmentID * 0x01000000) + DataLength;
+                    asmText += ".definelabel " + MasterObjects[currentItem][ThisChild].objectName + ", 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
+                    hText += "extern const int " + MasterObjects[currentItem][ThisChild].objectName + "; //0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
+                    cText += "const int " + MasterObjects[currentItem][ThisChild].objectName + "= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
+                    OutputData = TarmacGeo.CompileObjectList(OutputData, MasterObjects[currentItem][ThisChild], TextureObjects[currentItem], SegmentID);
 
-                asmText += ".definelabel " + MasterObjects[currentItem][0].objectName + ", 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
-                hText += "extern const int " + MasterObjects[currentItem][0].objectName + "; //0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
-                cText += "const int " + MasterObjects[currentItem][0].objectName + "= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
-                OutputData = TarmacGeo.CompileObjectList(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], SegmentID);
 
+
+                }
 
 
             }
@@ -194,7 +199,6 @@ namespace Tarmac64_Library
             {
                 MemoryStream memoryStream = new MemoryStream();
                 BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-                binaryWriter.Write(HeaderData);
                 binaryWriter.Write(OutputData);
                 byte[] FinalData = memoryStream.ToArray();
                 byte[] CompressedData = Tarmac.CompressMIO0(FinalData);

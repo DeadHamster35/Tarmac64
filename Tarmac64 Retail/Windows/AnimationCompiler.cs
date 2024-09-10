@@ -126,7 +126,7 @@ namespace Tarmac64_Library
                     asmText += ".definelabel " + MasterObjects[currentItem][0].objectName + ", 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
                     hText += "extern const int " + MasterObjects[currentItem][0].objectName + "; //0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
                     cText += "const int " + MasterObjects[currentItem][0].objectName + "= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
-                    OutputData = TarmacGeo.CompileObjectList(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], SegmentID);
+                    //OutputData = TarmacGeo.CompileObjectList(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], SegmentID);
                 }
                 TM64_Course TarmacCourse = new TM64_Course();
                 //byte[] AnimationData = TarmacCourse.CompileObjectAnimation(TypeList.ToArray(), OutputData.Length);
