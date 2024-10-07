@@ -3702,8 +3702,8 @@ namespace Tarmac64_Library
                         }
                         else if ((textureObject[cObj.materialID].SFlag > 0) || (textureObject[cObj.materialID].TFlag > 0))
                         {
-                            ThisVert.position.s = Convert.ToInt16(ThisVert.position.sPure * textureObject[cObj.materialID].textureWidth);
-                            ThisVert.position.t = Convert.ToInt16(ThisVert.position.tPure * textureObject[cObj.materialID].textureHeight);
+                            ThisVert.position.s = Convert.ToInt16(ThisVert.position.sBase * textureObject[cObj.materialID].textureWidth);
+                            ThisVert.position.t = Convert.ToInt16(ThisVert.position.tBase * textureObject[cObj.materialID].textureHeight);
                         }
                         else                        
                         {

@@ -156,7 +156,7 @@ namespace Tarmac64_Library
             TextureControl.AddNewTextures(TextureObjects[FBXBox.SelectedIndex].Length);
         }
 
-        private void WriteData()
+        private void WriteBinaryData()
         {
             byte[] OutputData = new byte[0];
             byte[] HeaderData = new byte[0];
@@ -186,6 +186,13 @@ namespace Tarmac64_Library
                     asmText += ".definelabel " + MasterObjects[currentItem][ThisChild].objectName + ", 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
                     hText += "extern const int " + MasterObjects[currentItem][ThisChild].objectName + "; //0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + Environment.NewLine;
                     cText += "const int " + MasterObjects[currentItem][ThisChild].objectName + "= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
+
+                    SegmentPosition = (MasterObjects[currentItem][ThisChild].meshPosition[0] | (SegmentID << 24));
+                    hText += "extern const int " + MasterObjects[currentItem][ThisChild].objectName + "_geometry;" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
+                    cText += "const int " + MasterObjects[currentItem][ThisChild].objectName + "_geometry= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
+                    SegmentPosition = (TextureObjects[currentItem][MasterObjects[currentItem][ThisChild].materialID].f3dexPosition | (SegmentID << 24));
+                    hText += "extern const int " + MasterObjects[currentItem][ThisChild].objectName + "_texture;" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
+                    cText += "const int " + MasterObjects[currentItem][ThisChild].objectName + "_texture= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
                     OutputData = TarmacGeo.CompileObjectList(OutputData, MasterObjects[currentItem][ThisChild], TextureObjects[currentItem], SegmentID);
 
 
@@ -217,7 +224,7 @@ namespace Tarmac64_Library
 
         private void button3_Click_1(object sender, EventArgs e)
         {
-            WriteData();
+            WriteBinaryData();
         }
 
         public void ExportCData()

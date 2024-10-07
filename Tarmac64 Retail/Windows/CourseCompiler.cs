@@ -1143,7 +1143,7 @@ namespace Tarmac64_Library
                                     }
                                 }
                                 */
-
+                                //Battle
                                 pathGroups = tm64Path.loadPOP(popFile, surfaceObjects);
                                 if (pathGroups[1].pathList.Length != 0)
                                 {
