@@ -114,6 +114,12 @@
     <Compile Include="Windows\CourseCompiler.Designer.cs">
       <DependentUpon>CourseCompiler.cs</DependentUpon>
     </Compile>
+    <Compile Include="Windows\GameBuilderPro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\GameBuilderPro.Designer.cs">
+      <DependentUpon>GameBuilderPro.cs</DependentUpon>
+    </Compile>
     <Compile Include="Windows\LoadBarForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -208,6 +214,9 @@
     </Compile>
     <EmbeddedResource Include="Windows\CourseCompiler.resx">
       <DependentUpon>CourseCompiler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\GameBuilderPro.resx">
+      <DependentUpon>GameBuilderPro.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\LoadBarForm.resx">
       <DependentUpon>LoadBarForm.cs</DependentUpon>

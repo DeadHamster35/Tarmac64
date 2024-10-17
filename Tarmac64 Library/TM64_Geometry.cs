@@ -5475,6 +5475,19 @@ namespace Tarmac64_Library
                                 }
                             }
                         }
+                        if (textureWritten && (textureObject[currentTexture].paletteSize > 0))
+                        {
+                            seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
+                            seg6w.Write(
+                                F3D.gsSPTexture(
+                                    65535,
+                                    65535,
+                                    0,
+                                    0,
+                                    1
+                                )
+                            );
+                        }
                     }
 
                 }

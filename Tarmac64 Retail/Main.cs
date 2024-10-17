@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OverKart64_Retail.Windows;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -158,6 +159,12 @@ namespace Tarmac64_Retail
 
             FileSa.ShowDialog();
             File.WriteAllBytes(FileSa.FileName, Data3);
+        }
+
+        private void proToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GameBuilderPro f2 = new GameBuilderPro();
+            f2.Show();
         }
     }
 }
