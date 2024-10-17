@@ -20,16 +20,8 @@ namespace Tarmac64_Library
             InitializeComponent();
         }
 
-        public class CourseSet
-        {
-            public int Set { get; set; }
-            public int Cup { get; set; }
-            public int Course { get; set; }                
-        }
-
         List<TM64_Course.Course> RaceCourses = new List<TM64_Course.Course>();
         List<TM64_Course.Course> BattleCourses = new List<TM64_Course.Course>();
-        List<CourseSet> SetCollection = new List<CourseSet>();
 
         int Set, Course, Cup = 0;
         int BattleSet, BattleCourse;
@@ -96,7 +88,6 @@ namespace Tarmac64_Library
                     else
                     {
                         BattleCourses.Add(NewCourse);
-                        CourseSet ThisSet = new CourseSet();
                         BattleCourse++;
                     }
                     BattleNameBox.SelectedIndex = Index;
@@ -111,6 +102,22 @@ namespace Tarmac64_Library
             BattleKeyBox.Text = BattleCourses[BattleNameBox.SelectedIndex].SerialNumber;
         }
 
+        private void RemoveBattleCourse()
+        {
+            if (BattleNameBox.Items.Count >= 1)
+            {
+                int Index = BattleNameBox.SelectedIndex;
+                BattleNameBox.Items.RemoveAt(Index);
+                BattleCourses.RemoveAt(Index);
+
+                BattleCourse--;
+                if (BattleCourse < 0)
+                {
+                    BattleCourse = 3;
+                    BattleSet--;
+                }
+            }
+        }
         private void RemoveCourse()
         {
             if (RaceNameBox.Items.Count >= 1)

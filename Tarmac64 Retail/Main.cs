@@ -1962,6 +1962,11 @@ namespace Tarmac64_Retail
 
 
 
+        private void proToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GameBuilderPro f2 = new GameBuilderPro();
+            f2.Show();
+        }
     }
 }
 
