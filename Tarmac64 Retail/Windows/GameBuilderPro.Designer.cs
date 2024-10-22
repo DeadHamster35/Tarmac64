@@ -1,4 +1,4 @@
-﻿namespace OverKart64_Retail.Windows
+﻿namespace Tarmac64_Library
 {
     partial class GameBuilderPro
     {

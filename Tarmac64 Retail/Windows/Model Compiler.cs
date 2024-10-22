@@ -190,7 +190,7 @@ namespace Tarmac64_Library
                     SegmentPosition = (MasterObjects[currentItem][ThisChild].meshPosition[0] | (SegmentID << 24));
                     hText += "extern const int " + MasterObjects[currentItem][ThisChild].objectName + "_geometry;" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
                     cText += "const int " + MasterObjects[currentItem][ThisChild].objectName + "_geometry= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
-                    SegmentPosition = (TextureObjects[currentItem][MasterObjects[currentItem][ThisChild].materialID].f3dexPosition | (SegmentID << 24));
+                    SegmentPosition = (TextureObjects[currentItem][MasterObjects[currentItem][ThisChild].materialID].RawTexture.f3dexPosition | (SegmentID << 24));
                     hText += "extern const int " + MasterObjects[currentItem][ThisChild].objectName + "_texture;" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
                     cText += "const int " + MasterObjects[currentItem][ThisChild].objectName + "_texture= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
                     OutputData = TarmacGeo.CompileObjectList(OutputData, MasterObjects[currentItem][ThisChild], TextureObjects[currentItem], SegmentID);

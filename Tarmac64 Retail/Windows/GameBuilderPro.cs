@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tarmac64_Library;
 
-namespace OverKart64_Retail.Windows
+namespace Tarmac64_Library
 {
     public partial class GameBuilderPro : Form
     {
@@ -75,7 +75,7 @@ namespace OverKart64_Retail.Windows
                 
 
                 
-                return NewCourse.Name;
+                return NewCourse.Settings.Name;
             }
             return null;
         }
@@ -94,19 +94,19 @@ namespace OverKart64_Retail.Windows
                 CourseBox4.Text = null;
                 if (CourseArray[CourseIndex] != null)
                 {
-                    CourseBox1.Text = CourseArray[CourseIndex++].Name;
+                    CourseBox1.Text = CourseArray[CourseIndex++].Settings.Name;
                 }
                 if (CourseArray[CourseIndex] != null)
                 {
-                    CourseBox2.Text = CourseArray[CourseIndex++].Name;
+                    CourseBox2.Text = CourseArray[CourseIndex++].Settings.Name;
                 }
                 if (CourseArray[CourseIndex] != null)
                 {
-                    CourseBox3.Text = CourseArray[CourseIndex++].Name;
+                    CourseBox3.Text = CourseArray[CourseIndex++].Settings.Name;
                 }
                 if (CourseArray[CourseIndex] != null)
                 {
-                    CourseBox4.Text = CourseArray[CourseIndex++].Name;
+                    CourseBox4.Text = CourseArray[CourseIndex++].Settings.Name;
                 }
 
 
