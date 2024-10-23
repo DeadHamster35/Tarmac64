@@ -83,6 +83,7 @@
             this.LoadBtn = new System.Windows.Forms.Button();
             this.ModelBox = new System.Windows.Forms.TextBox();
             this.BuildBtn = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BElementTable)).BeginInit();
@@ -656,11 +657,22 @@
             this.BuildBtn.UseVisualStyleBackColor = true;
             this.BuildBtn.Click += new System.EventHandler(this.BuildBtn_Click);
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(103, 580);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(85, 22);
+            this.button3.TabIndex = 271;
+            this.button3.Text = "Debug";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // ObjectTypeCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(585, 611);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.BuildBtn);
@@ -738,5 +750,6 @@
         private System.Windows.Forms.DataGridView BElementTable;
         private System.Windows.Forms.DataGridViewTextBoxColumn Element;
         private System.Windows.Forms.DataGridViewTextBoxColumn DataValue;
+        private System.Windows.Forms.Button button3;
     }
 }

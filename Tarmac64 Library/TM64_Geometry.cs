@@ -1316,6 +1316,135 @@ namespace Tarmac64_Library
             Position += DataRead;
             return Skeleton;
         }
+
+        public string[] WriteData(short Data)
+        {
+            List<string> Output = new List<string>();
+            Output.Add(Data.ToString());
+            return Output.ToArray();
+        }
+        public string[] WriteData(string Data)
+        {
+            List<string> Output = new List<string>();
+            Output.Add(Data.ToString());
+            return Output.ToArray();
+        }
+
+        public string[] WriteData(float Data)
+        {
+            List<string> Output = new List<string>();
+            Output.Add(Data.ToString());
+            return Output.ToArray();
+        }
+
+        public OK64Bone WriteDebugPreBake(Scene FBX, float ModelScale)
+        {
+
+            Node Base = FBX.RootNode.FindNode("BodyBone");
+            OK64Bone Skeleton = LoadBone(Base, FBX, ModelScale);
+
+            Animation Anime = FBX.Animations[0];
+            Skeleton.FrameCount = Convert.ToInt32(Anime.DurationInTicks + 1);
+            for (int ThisNode = 0; ThisNode < Anime.NodeAnimationChannelCount; ThisNode++)
+            {
+                ParseAnimation(FBX, Anime.NodeAnimationChannels[ThisNode], Skeleton, Skeleton.FrameCount);
+            }
+            GetTransforms(Skeleton, Skeleton.FrameCount, ModelScale);
+            return Skeleton;
+        }
+        public string[] WriteDebugAnimation(OK64Bone Skeleton)
+        {
+            List<string> Output = new List<string>();
+            
+
+            Output.AddRange(WriteData(Skeleton.Name));
+            Output.AddRange(WriteData(Skeleton.FrameCount));
+
+            for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+            {
+                Output.AddRange(WriteData(Skeleton.Origin[ThisVector]));
+            }
+            Output.Add(Environment.NewLine);
+            if (Skeleton.Animation == null)
+            {
+                Output.AddRange(WriteData(0));
+                Output.AddRange(WriteData(0));
+                Output.AddRange(WriteData(0));
+            }
+            else
+            {
+                Output.AddRange(WriteData("Rotations"));
+                if (Skeleton.Animation.RotationData != null)
+                {
+                    Output.AddRange(WriteData(Skeleton.Animation.RotationData.Length));
+
+
+                    for (int ThisRot = 0; ThisRot < Skeleton.Animation.RotationData.Length; ThisRot++)
+                    {
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            Output.AddRange(WriteData(Convert.ToSingle(Skeleton.Animation.RotationData[ThisRot][ThisVector] / 182.0f)));
+                        }
+                        Output.Add(Environment.NewLine);
+
+                    }
+                }
+                else
+                {
+                    Output.AddRange(WriteData(0));
+                }
+
+                Output.AddRange(WriteData("Translations"));
+                if (Skeleton.Animation.TranslationData != null)
+                {
+
+                    Output.AddRange(WriteData(Skeleton.Animation.TranslationData.Length));
+
+                    for (int ThisRot = 0; ThisRot < Skeleton.Animation.TranslationData.Length; ThisRot++)
+                    {
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            Output.AddRange(WriteData(Skeleton.Animation.TranslationData[ThisRot][ThisVector]));
+                        }
+                        Output.Add(Environment.NewLine);
+                    }
+                }
+                else
+                {
+                    Output.AddRange(WriteData(0));
+                }
+
+                Output.AddRange(WriteData("Scales"));
+                if (Skeleton.Animation.ScalingData != null)
+                {
+                    Output.AddRange(WriteData(Skeleton.Animation.ScalingData.Length));
+
+                    for (int ThisRot = 0; ThisRot < Skeleton.Animation.ScalingData.Length; ThisRot++)
+                    {
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            Output.AddRange(WriteData(Skeleton.Animation.ScalingData[ThisRot][ThisVector]));
+                        }
+                        Output.Add(Environment.NewLine);
+                    }
+                }
+                else
+                {
+                    Output.AddRange(WriteData(0));
+                }
+
+            }
+
+            Output.AddRange(WriteData("Children"));
+            Output.AddRange(WriteData(Skeleton.Children.Length));
+            Output.Add(Environment.NewLine);
+
+            foreach (var Child in Skeleton.Children)
+            {
+                Output.AddRange(WriteDebugAnimation(Child));
+            }
+            return Output.ToArray();
+        }
         public byte[] WriteAnimationObjects(OK64Bone Skeleton)
         {
             MemoryStream memoryStream = new MemoryStream();

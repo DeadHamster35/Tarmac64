@@ -337,5 +337,103 @@ namespace Tarmac64_Retail
 
         }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+            SaveFileDialog FileSave = new SaveFileDialog();
+            FileSave.Filter = "OK64Object|*.ok64.OBJECT|All Files(*.*)|*.";
+            FileSave.DefaultExt = ".ok64.OBJECT";
+            if (FileSave.ShowDialog() == DialogResult.OK)
+            {
+                TM64_Course.OKObjectType NewType = new TM64_Course.OKObjectType();
+                NewType.Name = NameBox.Text;
+                NewType.TextureData = TextureControl.textureArray;
+                NewType.Flag = Convert.ToInt16(FlagBox.Text);
+                if (HitboxBox.Text != "")
+                {
+                    NewType.ObjectHitbox = TarmacObject.LoadHitboxFile(File.ReadAllBytes(HitboxBox.Text));
+                }
+                else
+                {
+                    NewType.ObjectHitbox = null;
+                }
+
+
+
+                float TempFloat;
+                if (Single.TryParse(ScaleBox.Text, out TempFloat))
+                {
+                    NewType.ModelScale = TempFloat;
+                }
+                else
+                {
+                    MessageBox.Show("Scale Parsing Error. Check scale value.");
+                    return;
+                }
+
+
+                if (AToggleBox.Checked)
+                {
+                    NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
+                    var WalkData = importer.ImportFile(WalkBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+                    NewType.ObjectAnimations.WalkAnimation = TarmacGeometry.LoadSkeleton(WalkData, NewType.ModelScale);
+
+                    var TargetData = importer.ImportFile(TargetBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+                    NewType.ObjectAnimations.TargetAnimation = TarmacGeometry.LoadSkeleton(TargetData, NewType.ModelScale);
+
+                    var DeathData = importer.ImportFile(DeathBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+                    NewType.ObjectAnimations.DeathAnimation = TarmacGeometry.LoadSkeleton(DeathData, NewType.ModelScale);
+                }
+                else
+                {
+                    NewType.ObjectAnimations = null;
+                }
+
+                NewType.ModelData = TarmacGeometry.CreateObjects(ModelData, NewType.TextureData, true);
+
+
+
+                NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex - 1);
+                NewType.Range = Convert.ToInt16(RangeBox.Text);
+                NewType.Sight = Convert.ToInt16(SightBox.Text);
+                NewType.Viewcone = Convert.ToInt16(Viewconebox.Text);
+                NewType.MaxSpeed = Convert.ToSingle(SpeedBox.Text);
+                NewType.BumpRadius = Convert.ToInt16(Convert.ToInt16(LevelBump.Text) * 100);
+                NewType.SoundID = SoundIDs[SoundNameBox.SelectedIndex];
+                NewType.SoundRadius = Convert.ToInt16(SoundRangeBox.Text);
+                NewType.SoundType = Convert.ToInt16(SoundTypeBox.SelectedIndex);
+                NewType.RenderRadius = Convert.ToInt16(RenderBox.Text);
+                if (GravityBox.Checked)
+                {
+                    NewType.GravityToggle = 1;
+                }
+                else
+                {
+                    NewType.GravityToggle = 0;
+                }
+                //
+                if (CameraAlignBox.Checked)
+                {
+                    NewType.CameraAlligned = 1;
+                }
+                else
+                {
+                    NewType.CameraAlligned = 0;
+                }
+                //
+                if (ZSortBox.Checked)
+                {
+                    NewType.ZSortToggle = 1;
+                }
+                else
+                {
+                    NewType.ZSortToggle = 0;
+                }
+
+                File.WriteAllLines(FileSave.FileName, TarmacGeometry.WriteDebugAnimation(NewType.ObjectAnimations.WalkAnimation));
+
+            }
+
+        }
     }
 }
