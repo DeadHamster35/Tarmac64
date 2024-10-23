@@ -37,6 +37,7 @@ using static System.Collections.Specialized.BitVector32;
 using SharpGL.SceneGraph.Quadrics;
 using static System.Windows.Forms.AxHost;
 using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace Tarmac64_Library
 {
@@ -1290,6 +1291,120 @@ namespace Tarmac64_Library
             }
             Position += DataRead;
             return Skeleton;
+        }
+
+        public string[] WriteData(short Data)
+        {
+            List<string> Output = new List<string>();
+            Output.Add(Data.ToString());
+            return Output.ToArray();
+        }
+        public string[] WriteData(string Data)
+        {
+            List<string> Output = new List<string>();
+            Output.Add(Data.ToString());
+            return Output.ToArray();
+        }
+
+        public string[] WriteData(float Data)
+        {
+            List<string> Output = new List<string>();
+            Output.Add(Data.ToString());
+            return Output.ToArray();
+        }
+
+        public string[] WriteDebugAnimation(OK64Bone Skeleton)
+        {
+            List<string> Output = new List<string>();
+            
+
+            Output.AddRange(WriteData(Skeleton.Name));
+            Output.AddRange(WriteData(Skeleton.FrameCount));
+
+            for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+            {
+                Output.AddRange(WriteData(Skeleton.Origin[ThisVector]));
+            }
+            Output.Add(Environment.NewLine);
+            if (Skeleton.Animation == null)
+            {
+                Output.AddRange(WriteData(0));
+                Output.AddRange(WriteData(0));
+                Output.AddRange(WriteData(0));
+            }
+            else
+            {
+                Output.AddRange(WriteData(Skeleton.Name + "Rotations"));
+                if (Skeleton.Animation.RotationData != null)
+                {
+                    Output.AddRange(WriteData(Skeleton.Animation.RotationData.Length));
+
+
+                    for (int ThisRot = 0; ThisRot < Skeleton.Animation.RotationData.Length; ThisRot++)
+                    {
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            Output.AddRange(WriteData(Convert.ToSingle(Skeleton.Animation.RotationData[ThisRot][ThisVector] / 182.0f)));
+                        }
+                        Output.Add(Environment.NewLine);
+
+                    }
+                }
+                else
+                {
+                    Output.AddRange(WriteData(0));
+                }
+
+                Output.AddRange(WriteData(Skeleton.Name + "Translations"));
+                if (Skeleton.Animation.TranslationData != null)
+                {
+
+                    Output.AddRange(WriteData(Skeleton.Animation.TranslationData.Length));
+
+                    for (int ThisRot = 0; ThisRot < Skeleton.Animation.TranslationData.Length; ThisRot++)
+                    {
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            Output.AddRange(WriteData(Skeleton.Animation.TranslationData[ThisRot][ThisVector]));
+                        }
+                        Output.Add(Environment.NewLine);
+                    }
+                }
+                else
+                {
+                    Output.AddRange(WriteData(0));
+                }
+
+                Output.AddRange(WriteData(Skeleton.Name + "Scales"));
+                if (Skeleton.Animation.ScalingData != null)
+                {
+                    Output.AddRange(WriteData(Skeleton.Animation.ScalingData.Length));
+
+                    for (int ThisRot = 0; ThisRot < Skeleton.Animation.ScalingData.Length; ThisRot++)
+                    {
+                        for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                        {
+                            Output.AddRange(WriteData(Skeleton.Animation.ScalingData[ThisRot][ThisVector]));
+                        }
+                        Output.Add(Environment.NewLine);
+                    }
+                }
+                else
+                {
+                    Output.AddRange(WriteData(0));
+                }
+
+            }
+
+            Output.AddRange(WriteData("Children"));
+            Output.AddRange(WriteData(Skeleton.Children.Length));
+            Output.Add(Environment.NewLine);
+
+            foreach (var Child in Skeleton.Children)
+            {
+                Output.AddRange(WriteDebugAnimation(Child));
+            }
+            return Output.ToArray();
         }
         public byte[] WriteAnimationObjects(OK64Bone Skeleton)
         {
@@ -5171,7 +5286,7 @@ namespace Tarmac64_Library
             {
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][2])));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][1])));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][1] * -1)));
             }
             if (Skeleton.FrameCount % 2 == 1)
             {
@@ -5181,8 +5296,7 @@ namespace Tarmac64_Library
 
             foreach (var ChildBone in Skeleton.Children)
             {
-
-                ChildBone.TranslationOffset = Convert.ToUInt32(Magic + binaryWriter.BaseStream.Position + Skeleton.TranslationOffset);
+                ChildBone.TranslationOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Skeleton.TranslationOffset);
                 binaryWriter.Write(WriteAnimationData(ChildBone, ChildBone.TranslationOffset));
             }
             return memoryStream.ToArray();
@@ -5199,12 +5313,6 @@ namespace Tarmac64_Library
             Skeleton.TranslationOffset = Magic;
 
             binaryWriter.Write(WriteAnimationData(Skeleton, Magic));
-
-            foreach (var ChildBone in Skeleton.Children)
-            {
-                ChildBone.TranslationOffset = Convert.ToUInt32(Magic + binaryWriter.BaseStream.Position);
-                binaryWriter.Write(WriteAnimationData(ChildBone, ChildBone.TranslationOffset));
-            }
 
             return memoryStream.ToArray();
         }
@@ -5462,7 +5570,7 @@ namespace Tarmac64_Library
                     NewAnime.TranslationData[ThisFrame] = new short[3];
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                     {
-                        NewAnime.TranslationData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Value[ThisVector] * 100);
+                        NewAnime.TranslationData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Value[ThisVector] * 10);
                     }
                 }
                 else
@@ -5523,7 +5631,7 @@ namespace Tarmac64_Library
                     NewAnime.ScalingData[ThisFrame] = new short[3];
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                     {
-                        NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 100);
+                        NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 10);
                     }
                 }
                 else
@@ -5550,30 +5658,30 @@ namespace Tarmac64_Library
             return id.Transform(Point);
         }
 
+
         public OK64Bone TransformBone(OK64Bone Bone, OK64Bone Parent, int FrameCount, float ModelScale)
         {
-            Point3D ARoot = new Point3D() { X = 0, Y = 0, Z = 75 };
-            float[] AAngle = new float[3]{
-                    Convert.ToSingle(0),
-                    Convert.ToSingle(90),
-                    Convert.ToSingle(0),
-                };
-            Point3D ABranch = RotatePoint(ARoot, AAngle);
+            
 
 
             for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
             {
-                Point3D Root = new Point3D() { X = (Bone.Origin[0]) - (Parent.Origin[0]), Y = (Bone.Origin[1]) - (Parent.Origin[1]), Z = (Bone.Origin[2]) - (Parent.Origin[2]) };
+                Point3D Root = new Point3D()
+                {
+                    X = (Bone.Animation.TranslationData[ThisFrame][0]),
+                    Y = (Bone.Animation.TranslationData[ThisFrame][1]),
+                    Z = (Bone.Animation.TranslationData[ThisFrame][2])
+                };
                 float[] Angle = new float[3]{
                     Convert.ToSingle(Parent.Animation.RotationFloat[ThisFrame][0]),
                     Convert.ToSingle(Parent.Animation.RotationFloat[ThisFrame][1]),
                     Convert.ToSingle(Parent.Animation.RotationFloat[ThisFrame][2]),
                 };
                 Point3D Branch = RotatePoint(Root, Angle);
-                
-                Bone.Animation.TranslationData[ThisFrame][0] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][0] - (((Branch.X - Root.X)) / ModelScale));
-                Bone.Animation.TranslationData[ThisFrame][1] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][1] - (((Branch.Y - Root.Y)) / ModelScale));
-                Bone.Animation.TranslationData[ThisFrame][2] += Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][2] - (((Branch.Z - Root.Z)) / ModelScale));
+
+                Bone.Animation.TranslationData[ThisFrame][0] = Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][0] + Branch.X);
+                Bone.Animation.TranslationData[ThisFrame][1] = Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][1] + Branch.Y);
+                Bone.Animation.TranslationData[ThisFrame][2] = Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][2] + Branch.Z);
 
                 Bone.Animation.RotationData[ThisFrame][0] += Parent.Animation.RotationData[ThisFrame][0];
                 Bone.Animation.RotationData[ThisFrame][1] += Parent.Animation.RotationData[ThisFrame][1];
@@ -5582,6 +5690,10 @@ namespace Tarmac64_Library
 
             }
 
+            foreach (var Child in Bone.Children)
+            {
+                TransformBone(Child, Bone, FrameCount, ModelScale);
+            }
 
             return Bone;
         }
@@ -5592,10 +5704,6 @@ namespace Tarmac64_Library
                 TransformBone(Child, Skeleton, FrameCount, ModelScale);
             }
 
-            foreach (var Child in Skeleton.Children)
-            {
-                GetTransforms(Child, FrameCount, ModelScale);
-            }
             return Skeleton;
         }
 
