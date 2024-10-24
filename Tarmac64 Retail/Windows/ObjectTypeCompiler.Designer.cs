@@ -731,16 +731,6 @@
             this.BuildBtn.UseVisualStyleBackColor = true;
             this.BuildBtn.Click += new System.EventHandler(this.BuildBtn_Click);
             // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(103, 580);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(85, 22);
-            this.button3.TabIndex = 271;
-            this.button3.Text = "Debug";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
             // ObjectTypeCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
