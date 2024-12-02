@@ -40,6 +40,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>TireWrench.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
@@ -138,7 +141,6 @@
     <None Include="Resources\controls.png" />
     <None Include="Resources\controls1.png" />
     <None Include="Resources\controls2.png" />
-    <None Include="Resources\kart64_tTF_icon.ico" />
     <None Include="Resources\ok64.png" />
     <None Include="Resources\ok641.png" />
     <None Include="Resources\overkart.png" />
@@ -150,6 +152,7 @@
     <Content Include="Resources\TextureNotFound.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="TireWrench.ico" />
     <Content Include="Tree1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

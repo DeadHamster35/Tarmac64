@@ -39,9 +39,9 @@
             this.songExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ghostExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.courseLoaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.proToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetFoldersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label5 = new System.Windows.Forms.Label();
-            this.proToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -117,7 +117,7 @@
             this.textureCompilerToolStripMenuItem1,
             this.modelCompilerToolStripMenuItem1});
             this.compilersToolStripMenuItem.Name = "compilersToolStripMenuItem";
-            this.compilersToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.compilersToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.compilersToolStripMenuItem.Text = "Compilers";
             this.compilersToolStripMenuItem.Click += new System.EventHandler(this.compilersToolStripMenuItem_Click);
             // 
@@ -171,7 +171,7 @@
             this.songExtractorToolStripMenuItem,
             this.ghostExtractorToolStripMenuItem});
             this.extractorsToolStripMenuItem.Name = "extractorsToolStripMenuItem";
-            this.extractorsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractorsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.extractorsToolStripMenuItem.Text = "Extractors";
             // 
             // songExtractorToolStripMenuItem
@@ -191,9 +191,16 @@
             // courseLoaderToolStripMenuItem
             // 
             this.courseLoaderToolStripMenuItem.Name = "courseLoaderToolStripMenuItem";
-            this.courseLoaderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.courseLoaderToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.courseLoaderToolStripMenuItem.Text = "Game Builder";
             this.courseLoaderToolStripMenuItem.Click += new System.EventHandler(this.courseLoaderToolStripMenuItem_Click);
+            // 
+            // proToolStripMenuItem
+            // 
+            this.proToolStripMenuItem.Name = "proToolStripMenuItem";
+            this.proToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.proToolStripMenuItem.Text = "Pro";
+            this.proToolStripMenuItem.Click += new System.EventHandler(this.proToolStripMenuItem_Click);
             // 
             // resetFoldersToolStripMenuItem
             // 
@@ -211,13 +218,6 @@
             this.label5.TabIndex = 32;
             this.label5.Text = "Triclon\r\nqueueRAM\r\nRenaKunisaki\r\nOx\r\nshygoo\r\nMt. Zuul\r\nDaniel McCarthy\r\ndwmkerr\r\n" +
     "";
-            // 
-            // proToolStripMenuItem
-            // 
-            this.proToolStripMenuItem.Name = "proToolStripMenuItem";
-            this.proToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.proToolStripMenuItem.Text = "Pro";
-            this.proToolStripMenuItem.Click += new System.EventHandler(this.proToolStripMenuItem_Click);
             // 
             // TarmacAbout
             // 
