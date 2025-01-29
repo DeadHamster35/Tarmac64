@@ -67,12 +67,13 @@ namespace Tarmac64_Library
 
         public class OK64Settings
         {
+            public int Version { get; set; }
             public string ProjectDirectory { get; set; }
             public string ObjectDirectory { get; set; }
             public string ROMDirectory { get; set; }
             public float ImportScale { get; set; }
             public bool AlphaCH2 { get; set; }
-            public bool BlenderImport { get; set; }
+            public int BlenderImport { get; set; }
             public string JRDirectory { get; set; }
             public bool Valid { get; set; }
 
@@ -86,25 +87,29 @@ namespace Tarmac64_Library
                 if (File.Exists(SettingsPath))
                 {
                     InputData = File.ReadAllLines(SettingsPath);
-                    if (InputData.Length == 6)
+                    if (InputData.Length == 7)
                     {
-                        ProjectDirectory = InputData[0];
-                        ObjectDirectory = InputData[1];
-                        ROMDirectory = InputData[2];
-                        ImportScale = Convert.ToSingle(InputData[3]);
-                        AlphaCH2 = Convert.ToBoolean(InputData[4]);
-                        BlenderImport = Convert.ToBoolean(InputData[5]);
-                        return this;
-                    }
-                    
+                        Version = Convert.ToInt32(InputData[0]);
+                        if (Version == 7)
+                        {
+                            ProjectDirectory = InputData[1];
+                            ObjectDirectory = InputData[2];
+                            ROMDirectory = InputData[3];
+                            ImportScale = Convert.ToSingle(InputData[4]);
+                            AlphaCH2 = Convert.ToBoolean(InputData[5]);
+                            BlenderImport = Convert.ToInt32(InputData[6]);
+                            return this;
+                        }
+                    }                    
                 }
                 MessageBox.Show("Error Loading Settings. Restoring defaults");
+                Version = 7;
                 ProjectDirectory = "";
                 ObjectDirectory = "";
                 ROMDirectory = "";
                 ImportScale = 1.0f;
                 AlphaCH2 = true;
-                BlenderImport = true;
+                BlenderImport = 0;
                 return this;
                 
             }
@@ -115,13 +120,14 @@ namespace Tarmac64_Library
                 string[] settings = new string[0];
 
 
-                string[] SaveData = new string[6];
-                SaveData[0] = ProjectDirectory;
-                SaveData[1] = ObjectDirectory;
-                SaveData[2] = ROMDirectory;
-                SaveData[3] = Convert.ToString(ImportScale);
-                SaveData[4] = Convert.ToString(AlphaCH2);
-                SaveData[5] = Convert.ToString(BlenderImport);
+                string[] SaveData = new string[7];
+                SaveData[0] = Convert.ToString(Version);
+                SaveData[1] = ProjectDirectory;
+                SaveData[2] = ObjectDirectory;
+                SaveData[3] = ROMDirectory;
+                SaveData[4] = Convert.ToString(ImportScale);
+                SaveData[5] = Convert.ToString(AlphaCH2);
+                SaveData[6] = Convert.ToString(BlenderImport);
                 File.WriteAllLines(SettingsPath, SaveData);
             }
         }

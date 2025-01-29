@@ -1670,6 +1670,10 @@ namespace Tarmac64_Library
             Assimp.Vector3D BScale = new Assimp.Vector3D();
             Assimp.Quaternion RotQuat = new Assimp.Quaternion();
             float[] BRotation = new float[3];
+            if (TarmacSettings.BlenderImport == 0)
+            {
+                DisregardOrigin = true;
+            }
             if (!DisregardOrigin)
             {
 
@@ -1677,7 +1681,7 @@ namespace Tarmac64_Library
 
                 OPrime.Decompose(out BScale, out RotQuat, out BOrigin);
 
-                if (TarmacSettings.BlenderImport)
+                if (TarmacSettings.BlenderImport == 2)
                 {
                     //Blender uses 100.0f scaling
                     //3DS Max uses 1.0f scaling
@@ -6444,7 +6448,7 @@ namespace Tarmac64_Library
                     NewAnime.ScalingData[ThisFrame] = new short[3];
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                     {
-                        NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 10);
+                        NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 100);
                     }
                 }
                 else

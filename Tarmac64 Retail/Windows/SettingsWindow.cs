@@ -30,7 +30,8 @@ namespace Tarmac64_Retail
                 ObjectDIRBox.Text = TarmacSettings.ObjectDirectory;
                 ScaleBox.Text = Convert.ToString(TarmacSettings.ImportScale);
                 AlphaBox.Checked = TarmacSettings.AlphaCH2;
-                BlenderCheck.Checked = TarmacSettings.BlenderImport;
+                ScaleDropBox.SelectedIndex = TarmacSettings.BlenderImport;
+
             }
         }
 
@@ -38,10 +39,11 @@ namespace Tarmac64_Retail
         {
             float ParseF = 0.0f;
             bool Valid = false;
+            TarmacSettings.Version = 7;
             TarmacSettings.ProjectDirectory = CourseDIRBox.Text;
             TarmacSettings.ObjectDirectory = ObjectDIRBox.Text;
             TarmacSettings.ROMDirectory = ROMDIRBox.Text;
-            TarmacSettings.BlenderImport = BlenderCheck.Checked;
+            TarmacSettings.BlenderImport = ScaleDropBox.SelectedIndex;
             if (float.TryParse(ScaleBox.Text, out ParseF))
             {
                 TarmacSettings.ImportScale = ParseF;

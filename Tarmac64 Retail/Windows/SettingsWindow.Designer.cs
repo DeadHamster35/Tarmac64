@@ -41,7 +41,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.ROMDIRBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.BlenderCheck = new System.Windows.Forms.CheckBox();
+            this.ScaleDropBox = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -168,23 +169,36 @@
             this.label4.TabIndex = 10;
             this.label4.Text = "ROM Directory";
             // 
-            // BlenderCheck
+            // ScaleDropBox
             // 
-            this.BlenderCheck.AutoSize = true;
-            this.BlenderCheck.Location = new System.Drawing.Point(14, 135);
-            this.BlenderCheck.Margin = new System.Windows.Forms.Padding(5);
-            this.BlenderCheck.Name = "BlenderCheck";
-            this.BlenderCheck.Size = new System.Drawing.Size(124, 17);
-            this.BlenderCheck.TabIndex = 13;
-            this.BlenderCheck.Text = "Blender Import Scale";
-            this.BlenderCheck.UseVisualStyleBackColor = true;
+            this.ScaleDropBox.FormattingEnabled = true;
+            this.ScaleDropBox.Items.AddRange(new object[] {
+            "Static",
+            "3DS Max",
+            "Blender"});
+            this.ScaleDropBox.Location = new System.Drawing.Point(12, 135);
+            this.ScaleDropBox.Margin = new System.Windows.Forms.Padding(5);
+            this.ScaleDropBox.Name = "ScaleDropBox";
+            this.ScaleDropBox.Size = new System.Drawing.Size(121, 21);
+            this.ScaleDropBox.TabIndex = 13;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(143, 138);
+            this.label5.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(64, 13);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "Scale Mode";
             // 
             // SettingsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(344, 177);
-            this.Controls.Add(this.BlenderCheck);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.ScaleDropBox);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.ROMDIRBox);
             this.Controls.Add(this.label4);
@@ -222,6 +236,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox ROMDIRBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox BlenderCheck;
+        private System.Windows.Forms.ComboBox ScaleDropBox;
+        private System.Windows.Forms.Label label5;
     }
 }
