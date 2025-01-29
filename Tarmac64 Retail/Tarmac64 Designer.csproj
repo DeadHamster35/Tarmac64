@@ -53,7 +53,7 @@
     <CodeAnalysisRuleSet>..\OverKart\Tarmac64.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>kart64_tTF_icon.ico</ApplicationIcon>
+    <ApplicationIcon>TireWrench.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Tarmac64_Retail.Program</StartupObject>
@@ -302,9 +302,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\overkart.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\kart64_tTF_icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ok64.png" />

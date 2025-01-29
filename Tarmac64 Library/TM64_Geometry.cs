@@ -3661,7 +3661,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] RGBA(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false)
+        public byte[] RGBA(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false, bool Transparent = false)
         {
 
             MemoryStream memoryStream = new MemoryStream();
@@ -3718,12 +3718,25 @@ namespace Tarmac64_Library
 
                 if (FogToggle)
                 {
-                    binaryWriter.Write(
+                    if (Transparent)
+                    {
+                        //lol what the actual fuck though
+                        binaryWriter.Write(
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.G_CC_DECALRGBA,
+                            F3DEX095_Parameters.G_CC_PASS2
+                            )
+                        );
+                    }
+                    else
+                    {
+                        binaryWriter.Write(
                         F3D.gsDPSetCombineMode(
                             F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
                             F3DEX095_Parameters.G_CC_PASS2
-                        )
-                    );
+                            )
+                        );
+                    }
                 }
                 else
 
@@ -3879,7 +3892,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] CI(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false)
+        public byte[] CI(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false, bool Transparent = false)
         {
 
             byte[] SegmentByte = BitConverter.GetBytes(Segment);
@@ -3965,20 +3978,60 @@ namespace Tarmac64_Library
 
 
 
+            //set render mode
             if (GeometryToggle)
             {
 
                 if (FogToggle)
                 {
                     binaryWriter.Write(
-                        F3D.gsDPSetCombineMode(
-                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
-                            F3DEX095_Parameters.G_CC_PASS2
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.G_RM_FOG_SHADE_A,
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
                         )
                     );
                 }
                 else
 
+                {
+                    binaryWriter.Write(
+                        F3D.gsDPSetRenderMode(
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeA],
+                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
+                        )
+                    );
+                }
+
+            }
+
+
+
+            if (GeometryToggle)
+            {
+
+                if (FogToggle)
+                {
+                    if (Transparent)
+                    {
+                        //lol what the actual fuck though
+                        binaryWriter.Write(
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.G_CC_DECALRGBA,
+                            F3DEX095_Parameters.G_CC_PASS2
+                            )
+                        );
+                    }
+                    else
+                    {
+                        binaryWriter.Write(
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
+                            F3DEX095_Parameters.G_CC_PASS2
+                            )
+                        );
+                    }
+                }
+                else
                 {
                     binaryWriter.Write(
                         F3D.gsDPSetCombineMode(
@@ -3989,6 +4042,10 @@ namespace Tarmac64_Library
                 }
 
             }
+
+            binaryWriter.Write(
+                F3D.gsDPTileSync()
+                );
 
 
             binaryWriter.Write(
@@ -4023,34 +4080,6 @@ namespace Tarmac64_Library
             */
 
 
-
-
-
-            //set render mode
-            if (GeometryToggle)
-            {
-
-                if (FogToggle)
-                {
-                    binaryWriter.Write(
-                        F3D.gsDPSetRenderMode(
-                            F3DEX095_Parameters.G_RM_FOG_SHADE_A,
-                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
-                        )
-                    );
-                }
-                else
-
-                {
-                    binaryWriter.Write(
-                        F3D.gsDPSetRenderMode(
-                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeA],
-                            F3DEX095_Parameters.RenderModes[TextureObject.RenderModeB]
-                        )
-                    );
-                }
-
-            }
 
 
 
@@ -4091,7 +4120,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] IA(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false)
+        public byte[] IA(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false, bool Transparent = false)
         {
 
             MemoryStream memoryStream = new MemoryStream();
@@ -4173,12 +4202,26 @@ namespace Tarmac64_Library
 
                 if (FogToggle)
                 {
-                    binaryWriter.Write(
+                    if (Transparent)
+                    {
+                        //lol what the actual fuck though
+                        binaryWriter.Write(
+                        F3D.gsDPSetCombineMode(
+                            F3DEX095_Parameters.G_CC_DECALRGBA,
+                            F3DEX095_Parameters.G_CC_PASS2
+                            )
+                        );
+                    }
+                    else
+                    {
+                        binaryWriter.Write(
                         F3D.gsDPSetCombineMode(
                             F3DEX095_Parameters.GCCModes[TextureObject.CombineModeA],
                             F3DEX095_Parameters.G_CC_PASS2
-                        )
-                    );
+                            )
+                        );
+                    }
+                    
                 }
                 else
 
@@ -4353,18 +4396,18 @@ namespace Tarmac64_Library
                             case 0:
                             default:
                                 {
-                                    seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle));
+                                    seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle, Transparent));
                                     break;
                                 }
                             case 2:
                                 {
-                                    seg7w.Write(CI(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle));
+                                    seg7w.Write(CI(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle, Transparent));
                                     break;
                                 }
                             case 3:
                             case 4:
                                 {
-                                    seg7w.Write(IA(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle));
+                                    seg7w.Write(IA(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle, Transparent));
                                     break;
                                 }
                             case 1:
@@ -4454,18 +4497,18 @@ namespace Tarmac64_Library
                         case 0:
                         default:
                             {
-                                seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle));
+                                seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle, Transparent));
                                 break;
                             }
                         case 2:
                             {
-                                seg7w.Write(CI(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle));
+                                seg7w.Write(CI(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle, Transparent));
                                 break;
                             }
                         case 3:
                         case 4:
                             {
-                                seg7w.Write(IA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle));
+                                seg7w.Write(IA(textureObject[materialID], Convert.ToUInt32(SegmentID), GeometryMode, FogToggle, Transparent));
                                 break;
                             }
                         case 1:
@@ -5286,7 +5329,7 @@ namespace Tarmac64_Library
             {
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][2])));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][1] * -1)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][1])));
             }
             if (Skeleton.FrameCount % 2 == 1)
             {
@@ -5596,7 +5639,7 @@ namespace Tarmac64_Library
 
 
                     float[] RotationTemp = ConvertEuler(AnimeChannel.RotationKeys[ThisFrame].Value);
-
+                    
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                     {
                         NewAnime.RotationFloat[ThisFrame][ThisVector] = Convert.ToSingle(RotationTemp[ThisVector] / 0.01745329252);
@@ -5604,7 +5647,7 @@ namespace Tarmac64_Library
                         {
                             NewAnime.RotationFloat[ThisFrame][ThisVector] = 0f;
                         }
-                        NewAnime.RotationData[ThisFrame][ThisVector] = Convert.ToInt16(NewAnime.RotationFloat[ThisFrame][ThisVector] * 0xB6);
+                        NewAnime.RotationData[ThisFrame][ThisVector] = Convert.ToInt16(NewAnime.RotationFloat[ThisFrame][ThisVector]);
                     }
                 }
                 else
@@ -5631,7 +5674,7 @@ namespace Tarmac64_Library
                     NewAnime.ScalingData[ThisFrame] = new short[3];
                     for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                     {
-                        NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 10);
+                        NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 100);
                     }
                 }
                 else

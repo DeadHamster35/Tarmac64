@@ -55,6 +55,7 @@ namespace Tarmac64_Library
 
         public class OK64Settings
         {
+            public int Version { get; set; }
             public string ProjectDirectory { get; set; }
             public string ObjectDirectory { get; set; }
             public string ROMDirectory { get; set; }
@@ -94,6 +95,7 @@ namespace Tarmac64_Library
                 }
 
                 MessageBox.Show("Error Loading Settings. Restoring defaults");
+                Version = 7;
                 ProjectDirectory = "";
                 ObjectDirectory = "";
                 ROMDirectory = "";
@@ -113,7 +115,6 @@ namespace Tarmac64_Library
 
 
                 string[] SaveData = new string[7];
-
                 SaveData[0] = Convert.ToString(Version);
                 SaveData[1] = ProjectDirectory;
                 SaveData[2] = ObjectDirectory;

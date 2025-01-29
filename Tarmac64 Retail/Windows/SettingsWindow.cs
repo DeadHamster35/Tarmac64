@@ -44,6 +44,7 @@ namespace Tarmac64_Retail
         {
             float ParseF = 0.0f;
             bool Valid = false;
+            TarmacSettings.Version = 7;
             TarmacSettings.ProjectDirectory = CourseDIRBox.Text;
             TarmacSettings.ObjectDirectory = ObjectDIRBox.Text;
             TarmacSettings.ROMDirectory = ROMDIRBox.Text;
