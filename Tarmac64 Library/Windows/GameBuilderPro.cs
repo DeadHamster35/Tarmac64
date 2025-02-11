@@ -27,12 +27,21 @@ namespace Tarmac64_Library
 
 
 
-        TM64_Course.Course[] CourseArray = new TM64_Course.Course[4 * 5 * 5];
+        TM64_Course.Course[][][] CourseArray = new TM64_Course.Course[5][][];
         private void GameBuilderPro_Load(object sender, EventArgs e)
         {
+            this.Height = 290;
             CupBox.SelectedIndex = 0;
             SetBox.SelectedIndex = 0;
             FormLoaded = true;
+            for (int This = 0; This < 5; This++)
+            {
+                CourseArray[This] = new TM64_Course.Course[5][];
+                for (int That = 0; That < 5; That++)
+                {
+                    CourseArray[This][That] = new TM64_Course.Course[4];
+                }
+            }
         }
 
 
@@ -68,10 +77,8 @@ namespace Tarmac64_Library
                 }
 
 
-                int CourseIndex = ((SetBox.SelectedIndex * 20) + (CupBox.SelectedIndex * 4) + InputValue);
-                
 
-                CourseArray[CourseIndex] = NewCourse;
+                CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][InputValue] = NewCourse;
                 
 
                 
@@ -84,29 +91,30 @@ namespace Tarmac64_Library
         {
             if (FormLoaded)
             {
-            
-                int CourseIndex = ((SetBox.SelectedIndex * 20) + (CupBox.SelectedIndex * 4));
 
-
+                int CourseIndex = 0;
                 CourseBox1.Text = null;
                 CourseBox2.Text = null;
                 CourseBox3.Text = null;
                 CourseBox4.Text = null;
-                if (CourseArray[CourseIndex] != null)
+                if (CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][CourseIndex] != null)
                 {
-                    CourseBox1.Text = CourseArray[CourseIndex++].Settings.Name;
+                    CourseBox1.Text = CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][CourseIndex].Settings.Name;
                 }
-                if (CourseArray[CourseIndex] != null)
+                CourseIndex++;
+                if (CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][CourseIndex] != null)
                 {
-                    CourseBox2.Text = CourseArray[CourseIndex++].Settings.Name;
+                    CourseBox2.Text = CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][CourseIndex].Settings.Name;
                 }
-                if (CourseArray[CourseIndex] != null)
+                CourseIndex++;
+                if (CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][CourseIndex] != null)
                 {
-                    CourseBox3.Text = CourseArray[CourseIndex++].Settings.Name;
+                    CourseBox3.Text = CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][CourseIndex].Settings.Name;
                 }
-                if (CourseArray[CourseIndex] != null)
+                CourseIndex++;
+                if (CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][CourseIndex] != null)
                 {
-                    CourseBox4.Text = CourseArray[CourseIndex++].Settings.Name;
+                    CourseBox4.Text = CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][CourseIndex].Settings.Name;
                 }
 
 
@@ -160,7 +168,7 @@ namespace Tarmac64_Library
             FolderOpen.IsFolderPicker = false;
             string FileName = "";
             uint HeaderOffset = Convert.ToUInt32(HeaderBox.Text, 16);
-            MessageBox.Show("Select Patched ROM");
+            MessageBox.Show("Select ROM");
 
 
             if (FolderOpen.ShowDialog() == CommonFileDialogResult.Ok)
@@ -172,32 +180,50 @@ namespace Tarmac64_Library
 
                     string outputDirectory = FolderOpen.FileName;
                     byte[] rom = File.ReadAllBytes(FileName);
-                    int SetID = 0;
-                    for (int ThisCourse = 0; ThisCourse < 100; ThisCourse++)
+
+                    if (!Tarmac.CheckPatch(rom))
                     {
-                        if (CourseArray[ThisCourse] == null)
+                        MessageBox.Show("Applying Tarmac Patch");
+                        string PatchPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Resources", "PatchData.ok64.Patch");
+                        if (!File.Exists(PatchPath))
                         {
-                            continue;
+                            MessageBox.Show("Patch File Not Found \n" + PatchPath);
+                            return;
                         }
+                        byte[] PatchData = File.ReadAllBytes(PatchPath);
 
-
-                        rom = TarmacCourse.CompileOverKart(CourseArray[ThisCourse], rom, Convert.ToInt32(ThisCourse % 20), SetID, HeaderAddress);
-                        if (ThisCourse % 20 == 19)
-                        {
-                            SetID++;
-                        }
-
-
-                        if (DebugBox.Checked)
-                        {
-                            File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment6.bin", CourseArray[ThisCourse].Segment6);
-                            File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment9.bin", CourseArray[ThisCourse].Segment9);
-                            File.WriteAllBytes(outputDirectory + "Course " + ThisCourse.ToString() + " Segment7.bin", CourseArray[ThisCourse].Segment7);
-                        }
-
-
+                        rom = Tarmac.ApplyPatch(rom, PatchData);
                     }
 
+                    int Index = 0;
+                    for (int ThisSet = 0; ThisSet < 5; ThisSet++)
+                    {
+                        for (int ThisCup = 0; ThisCup < 5; ThisCup++)
+                        {
+                            for (int ThisCourse = 0; ThisCourse < 4; ThisCourse++)
+                            {
+                                TM64_Course.Course LocalCourse = CourseArray[ThisSet][ThisCup][ThisCourse];
+                                if (LocalCourse == null)
+                                {
+                                    continue;
+                                }
+
+
+                                rom = TarmacCourse.CompileOverKart(LocalCourse, rom, ThisCourse + (4 * ThisCup), ThisSet, HeaderAddress);
+
+
+
+                                if (DebugBox.Checked)
+                                {
+                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment6.bin", LocalCourse.Segment6);
+                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment9.bin", LocalCourse.Segment9);
+                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment7.bin", LocalCourse.Segment7);
+                                }
+
+
+                            }
+                        }
+                    }
 
                     MemoryStream memoryStream = new MemoryStream();
                     BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -292,16 +318,23 @@ namespace Tarmac64_Library
             TM64 Tarmac = new TM64();
             TM64_Course TarmacCourse = new TM64_Course();
 
-            for (int ThisCourse = 0; ThisCourse < 100; ThisCourse++)
+            for (int ThisSet = 0; ThisSet < 5; ThisSet++)
             {
-                if (CourseArray[ThisCourse] != null)
+                for (int ThisCup = 0; ThisCup < 5; ThisCup++)
                 {
-                    binaryWriter.Write(TarmacCourse.SaveOK64Course(CourseArray[ThisCourse]));
+                    for (int ThisCourse = 0; ThisCourse < 4; ThisCourse++)
+                    {
+                        TM64_Course.Course LocalCourse = CourseArray[ThisSet][ThisCup][ThisCourse];
+                        if (LocalCourse != null)
+                        {
+                            binaryWriter.Write(TarmacCourse.SaveOK64Course(LocalCourse));
+                        }
+                        else
+                        {
+                            binaryWriter.Write("NULL");
+                        }
+                    }
                 }
-                else
-                {
-                    binaryWriter.Write("NULL");
-                }                
             }
 
             SaveFileDialog FileSave = new SaveFileDialog();
@@ -326,22 +359,43 @@ namespace Tarmac64_Library
                 TM64 Tarmac = new TM64();
                 TM64_Course TarmacCourse = new TM64_Course();
                 long Index = 0;
-                for (int ThisCourse = 0; ThisCourse < 100; ThisCourse++)
+                for (int ThisSet = 0; ThisSet < 5; ThisSet++)
                 {
-                    Index = binaryReader.BaseStream.Position;
-                    if (binaryReader.ReadString() == "NULL")
+                    for (int ThisCup = 0; ThisCup < 5; ThisCup++)
                     {
-                        continue;
-                    }
+                        for (int ThisCourse = 0; ThisCourse < 4; ThisCourse++)
+                        {
+                            Index = binaryReader.BaseStream.Position;
+                            if (binaryReader.ReadString() == "NULL")
+                            {
+                                continue;
+                            }
 
-                    
-                    byte[] Buffer = new byte[memoryStream.Length - memoryStream.Position];
-                    memoryStream.Read(Buffer, 0, Buffer.Length);
-                    CourseArray[ThisCourse] = TarmacCourse.LoadOK64Course(Buffer);
+
+                            byte[] Buffer = new byte[memoryStream.Length - memoryStream.Position];
+                            memoryStream.Read(Buffer, 0, Buffer.Length);
+                            CourseArray[ThisSet][ThisCup][ThisCourse] = TarmacCourse.LoadOK64Course(Buffer);
+                        }
+                    }
                 }
 
             }
             
+        }
+        bool Expand = false;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Expand = !Expand;
+            if (Expand)
+            {
+                ExpandBtn.Text = " ▲ ";
+                this.Height = 380;
+            }
+            else
+            {
+                ExpandBtn.Text = " ▼ ";
+                this.Height = 290;
+            }
         }
     }
 }

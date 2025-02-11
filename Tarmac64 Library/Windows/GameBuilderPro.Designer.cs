@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameBuilderPro));
             this.CourseBox1 = new System.Windows.Forms.TextBox();
             this.CourseBox2 = new System.Windows.Forms.TextBox();
             this.CourseBox3 = new System.Windows.Forms.TextBox();
@@ -41,7 +42,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.HeaderBox = new System.Windows.Forms.TextBox();
             this.DebugBox = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.ExpandBtn = new System.Windows.Forms.Button();
             this.SaveButton = new System.Windows.Forms.Button();
             this.LoadButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -161,7 +162,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Enabled = false;
-            this.label3.Location = new System.Drawing.Point(9, 267);
+            this.label3.Location = new System.Drawing.Point(68, 216);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(113, 26);
             this.label3.TabIndex = 13;
@@ -170,7 +171,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 319);
+            this.label4.Location = new System.Drawing.Point(9, 273);
             this.label4.Margin = new System.Windows.Forms.Padding(5);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(108, 13);
@@ -180,7 +181,7 @@
             // 
             // HeaderBox
             // 
-            this.HeaderBox.Location = new System.Drawing.Point(125, 316);
+            this.HeaderBox.Location = new System.Drawing.Point(125, 270);
             this.HeaderBox.Name = "HeaderBox";
             this.HeaderBox.Size = new System.Drawing.Size(133, 20);
             this.HeaderBox.TabIndex = 62;
@@ -190,26 +191,27 @@
             // DebugBox
             // 
             this.DebugBox.AutoSize = true;
-            this.DebugBox.Location = new System.Drawing.Point(167, 276);
+            this.DebugBox.Location = new System.Drawing.Point(12, 312);
             this.DebugBox.Name = "DebugBox";
             this.DebugBox.Size = new System.Drawing.Size(91, 17);
             this.DebugBox.TabIndex = 64;
             this.DebugBox.Text = "Export Debug";
             this.DebugBox.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // ExpandBtn
             // 
-            this.button1.Location = new System.Drawing.Point(12, 219);
-            this.button1.Margin = new System.Windows.Forms.Padding(5);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(35, 23);
-            this.button1.TabIndex = 65;
-            this.button1.Text = "<->";
-            this.button1.UseVisualStyleBackColor = true;
+            this.ExpandBtn.Location = new System.Drawing.Point(12, 219);
+            this.ExpandBtn.Margin = new System.Windows.Forms.Padding(5);
+            this.ExpandBtn.Name = "ExpandBtn";
+            this.ExpandBtn.Size = new System.Drawing.Size(35, 23);
+            this.ExpandBtn.TabIndex = 65;
+            this.ExpandBtn.Text = " ▼ ";
+            this.ExpandBtn.UseVisualStyleBackColor = true;
+            this.ExpandBtn.Click += new System.EventHandler(this.button1_Click);
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(125, 354);
+            this.SaveButton.Location = new System.Drawing.Point(125, 308);
             this.SaveButton.Margin = new System.Windows.Forms.Padding(5);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(65, 23);
@@ -220,7 +222,7 @@
             // 
             // LoadButton
             // 
-            this.LoadButton.Location = new System.Drawing.Point(193, 354);
+            this.LoadButton.Location = new System.Drawing.Point(193, 308);
             this.LoadButton.Margin = new System.Windows.Forms.Padding(5);
             this.LoadButton.Name = "LoadButton";
             this.LoadButton.Size = new System.Drawing.Size(65, 23);
@@ -233,10 +235,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(270, 388);
+            this.ClientSize = new System.Drawing.Size(270, 341);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.LoadButton);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.ExpandBtn);
             this.Controls.Add(this.DebugBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.HeaderBox);
@@ -250,8 +252,11 @@
             this.Controls.Add(this.CourseBox3);
             this.Controls.Add(this.CourseBox2);
             this.Controls.Add(this.CourseBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GameBuilderPro";
-            this.Text = "GameBuilderPro";
+            this.Tag = "Tarmac Game Builder";
+            this.Text = "Tarmac Game Builder";
             this.Load += new System.EventHandler(this.GameBuilderPro_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -272,7 +277,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox HeaderBox;
         private System.Windows.Forms.CheckBox DebugBox;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ExpandBtn;
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Button LoadButton;
     }

@@ -38,6 +38,7 @@ using SharpGL.SceneGraph.Quadrics;
 using static System.Windows.Forms.AxHost;
 using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
+using Cereal64.Microcodes.F3DEX.DataElements.Commands;
 
 namespace Tarmac64_Library
 {
@@ -305,7 +306,11 @@ namespace Tarmac64_Library
             public OK64Bone[] Children { get; set; }
             public int MeshCount { get; set; }       
             public OK64Animation Animation { get; set; }
-            public UInt32 TranslationOffset { get; set; }
+
+            public UInt32 TranslationOffset { get; set; }            
+            public UInt32 RotationOffset { get; set; }
+            public UInt32 ScalingOffset { get; set; }
+
             public UInt32 MeshListOffset { get; set; }
 
         }
@@ -314,10 +319,12 @@ namespace Tarmac64_Library
         public class OK64Animation
         {
             public string AnimationName { get; set; }
+            public short[] TranslationTime { get; set; }
+            public short[] RotationTime { get; set; }
+            public short[] ScaleTime { get; set; }
             public short[][] TranslationData { get; set; }
             public short[][] RotationData { get; set; }
             public short[][] ScalingData { get; set; }
-
             public float[][] RotationFloat { get; set; }
         }
 
@@ -1246,6 +1253,7 @@ namespace Tarmac64_Library
             //
             DataLength = binaryReader.ReadInt32();
             Skeleton.Animation.RotationData = new short[DataLength][];
+            Skeleton.Animation.RotationTime = new short[DataLength];
             for (int ThisRot = 0; ThisRot < Skeleton.Animation.RotationData.Length; ThisRot++)
             {
                 Skeleton.Animation.RotationData[ThisRot] = new short[3];
@@ -1253,10 +1261,12 @@ namespace Tarmac64_Library
                 {
                     Skeleton.Animation.RotationData[ThisRot][ThisVector] = binaryReader.ReadInt16();
                 }
+                Skeleton.Animation.RotationTime[ThisRot] = binaryReader.ReadInt16();
             }
             //
             DataLength = binaryReader.ReadInt32();
             Skeleton.Animation.TranslationData = new short[DataLength][];
+            Skeleton.Animation.TranslationTime = new short[DataLength];
             for (int ThisRot = 0; ThisRot < Skeleton.Animation.TranslationData.Length; ThisRot++)
             {
                 Skeleton.Animation.TranslationData[ThisRot] = new short[3];
@@ -1264,10 +1274,12 @@ namespace Tarmac64_Library
                 {
                     Skeleton.Animation.TranslationData[ThisRot][ThisVector] = binaryReader.ReadInt16();
                 }
+                Skeleton.Animation.TranslationTime[ThisRot] = binaryReader.ReadInt16();
             }
             //
             DataLength = binaryReader.ReadInt32();
             Skeleton.Animation.ScalingData = new short[DataLength][];
+            Skeleton.Animation.ScaleTime = new short[DataLength];
             for (int ThisRot = 0; ThisRot < Skeleton.Animation.ScalingData.Length; ThisRot++)
             {
                 Skeleton.Animation.ScalingData[ThisRot] = new short[3];
@@ -1275,6 +1287,7 @@ namespace Tarmac64_Library
                 {
                     Skeleton.Animation.ScalingData[ThisRot][ThisVector] = binaryReader.ReadInt16();
                 }
+                Skeleton.Animation.ScaleTime[ThisRot] = binaryReader.ReadInt16();
             }
 
             DataLength = binaryReader.ReadInt32();
@@ -1321,6 +1334,8 @@ namespace Tarmac64_Library
             Output.AddRange(WriteData(Skeleton.Name));
             Output.AddRange(WriteData(Skeleton.FrameCount));
 
+            
+
             for (int ThisVector = 0; ThisVector < 3; ThisVector++)
             {
                 Output.AddRange(WriteData(Skeleton.Origin[ThisVector]));
@@ -1346,6 +1361,7 @@ namespace Tarmac64_Library
                         {
                             Output.AddRange(WriteData(Convert.ToSingle(Skeleton.Animation.RotationData[ThisRot][ThisVector] / 182.0f)));
                         }
+                        
                         Output.Add(Environment.NewLine);
 
                     }
@@ -1413,6 +1429,7 @@ namespace Tarmac64_Library
 
             binaryWriter.Write(Skeleton.Name);
             binaryWriter.Write(Skeleton.FrameCount);
+            
 
             for (int ThisVector = 0; ThisVector < 3; ThisVector++)
             {
@@ -1438,6 +1455,7 @@ namespace Tarmac64_Library
                         {
                             binaryWriter.Write(Skeleton.Animation.RotationData[ThisRot][ThisVector]);
                         }
+                        binaryWriter.Write(Skeleton.Animation.RotationTime[ThisRot]);
                     }
                 }
                 else
@@ -1457,6 +1475,7 @@ namespace Tarmac64_Library
                         {
                             binaryWriter.Write(Skeleton.Animation.TranslationData[ThisRot][ThisVector]);
                         }
+                        binaryWriter.Write(Skeleton.Animation.TranslationTime[ThisRot]);
                     }
                 }
                 else
@@ -1474,7 +1493,9 @@ namespace Tarmac64_Library
                         {
                             binaryWriter.Write(Skeleton.Animation.ScalingData[ThisRot][ThisVector]);
                         }
+                        binaryWriter.Write(Skeleton.Animation.ScaleTime[ThisRot]);
                     }
+                    
                 }
                 else
                 {
@@ -4346,7 +4367,7 @@ namespace Tarmac64_Library
         {
             byte[] byteArray = new byte[0];
 
-
+            bool Transparent = false;
 
             int relativeZero = vertMagic;
 
@@ -4442,7 +4463,9 @@ namespace Tarmac64_Library
         public byte[] CompileTextureObjects(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5, bool GeometryMode = true, bool FogToggle = false)
         {
             byte[] byteArray = new byte[0];
-            
+
+            bool Transparent = false;
+
 
             UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
             UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
@@ -5187,11 +5210,12 @@ namespace Tarmac64_Library
             NewBone.Name = Base.Name;
             NewBone.Children = new OK64Bone[Base.ChildCount];
 
-            Matrix4x4 OPrime = GetTotalTransform(Base, FBX);
+            //Matrix4x4 OPrime = GetTotalTransform(Base, FBX);
+
             NewBone.Origin = new short[3];
-            NewBone.Origin[0] = Convert.ToInt16(OPrime.A4 * 100 * ModelScale);
-            NewBone.Origin[1] = Convert.ToInt16(OPrime.B4 * 100 * ModelScale);
-            NewBone.Origin[2] = Convert.ToInt16(OPrime.C4 * 100 * ModelScale);
+            NewBone.Origin[0] = Convert.ToInt16(Base.Transform.A4 * 100 * ModelScale);
+            NewBone.Origin[1] = Convert.ToInt16(Base.Transform.B4 * 100 * ModelScale);
+            NewBone.Origin[2] = Convert.ToInt16(Base.Transform.C4 * 100 * ModelScale);
 
             //Base.Transform.
             for (int ThisChild = 0; ThisChild < Base.ChildCount; ThisChild++)
@@ -5301,47 +5325,38 @@ namespace Tarmac64_Library
             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Origin[1] * -1)));
             binaryWriter.Write(Convert.ToInt16(0));
 
+            Skeleton.RotationOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
             for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.RotationData.Length; ThisFrame++)
             {
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][2])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][1])));
-            }
-            if (Skeleton.FrameCount % 2 == 1)
-            {
-                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationTime[ThisFrame])));
             }
 
-
+            Skeleton.TranslationOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
             for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.TranslationData.Length; ThisFrame++)
             {
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][2])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][1] * -1)));
-            }
-            if (Skeleton.FrameCount % 2 == 1)
-            {
-                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationTime[ThisFrame])));
             }
 
-
+            Skeleton.ScalingOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
             for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.ScalingData.Length; ThisFrame++)
             {
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][2])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScalingData[ThisFrame][1])));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScaleTime[ThisFrame])));
             }
-            if (Skeleton.FrameCount % 2 == 1)
-            {
-                binaryWriter.Write(Convert.ToInt16(0));
-            }
-
 
             foreach (var ChildBone in Skeleton.Children)
             {
-                ChildBone.TranslationOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Skeleton.TranslationOffset);
-                binaryWriter.Write(WriteAnimationData(ChildBone, ChildBone.TranslationOffset));
+                binaryWriter.Write(WriteAnimationData(ChildBone, Convert.ToUInt32(binaryWriter.BaseStream.Position)));
             }
+
             return memoryStream.ToArray();
         }
 
@@ -5353,7 +5368,6 @@ namespace Tarmac64_Library
             byte[] flip2 = new byte[2];
             List<byte> AnimationData = new List<byte>();
 
-            Skeleton.TranslationOffset = Magic;
 
             binaryWriter.Write(WriteAnimationData(Skeleton, Magic));
 
@@ -5364,26 +5378,25 @@ namespace Tarmac64_Library
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+            
+            binaryWriter.Write(F3D.BigEndian(Skeleton.TranslationOffset));
+            binaryWriter.Write(F3D.BigEndian(Skeleton.RotationOffset));
+            binaryWriter.Write(F3D.BigEndian(Skeleton.ScalingOffset));
 
-            flip2 = BitConverter.GetBytes(Skeleton.TranslationOffset);
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
 
-            flip2 = BitConverter.GetBytes(Skeleton.MeshCount);
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationTime.Length)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationTime.Length)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScaleTime.Length)));
+            //PAD
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(-1)));
 
-            flip2 = BitConverter.GetBytes(SaveObject.ModelScale);
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
 
-            flip2 = BitConverter.GetBytes(Skeleton.MeshListOffset);
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.MeshCount)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Children.Length)));
 
-            flip2 = BitConverter.GetBytes(Skeleton.Children.Length);
-            Array.Reverse(flip2);
-            binaryWriter.Write(flip2);
+            binaryWriter.Write(F3D.BigEndian(Convert.ToSingle(SaveObject.ModelScale)));
+            binaryWriter.Write(F3D.BigEndian(Skeleton.MeshListOffset));
+            
 
             foreach (var ChildBone in Skeleton.Children)
             {
@@ -5602,93 +5615,60 @@ namespace Tarmac64_Library
         {
             OK64Animation NewAnime = new OK64Animation();
 
-            
-            
+
+            NewAnime.TranslationTime = new short[AnimeChannel.PositionKeyCount];
             NewAnime.AnimationName = AnimeChannel.NodeName + "_anime";
-            NewAnime.TranslationData = new short[FrameCount][];
-            for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
+            NewAnime.TranslationData = new short[AnimeChannel.PositionKeyCount][];
+            for (int ThisFrame = 0; ThisFrame < AnimeChannel.PositionKeyCount; ThisFrame++)
             {
-                if (ThisFrame < AnimeChannel.PositionKeyCount)
+                NewAnime.TranslationData[ThisFrame] = new short[3];
+                NewAnime.TranslationTime[ThisFrame] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Time);
+                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                 {
-                    NewAnime.TranslationData[ThisFrame] = new short[3];
-                    for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                    {
-                        NewAnime.TranslationData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Value[ThisVector] * 10);
-                    }
-                }
-                else
-                {
-                    NewAnime.TranslationData[ThisFrame] = new short[3];
-                    for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                    {
-                        NewAnime.TranslationData[ThisFrame][ThisVector] = NewAnime.TranslationData[ThisFrame - 1][ThisVector];
-                    }
+                    NewAnime.TranslationData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Value[ThisVector] * 10.0f);
                 }
             }
 
 
-            NewAnime.RotationData = new short[FrameCount][];
-            NewAnime.RotationFloat = new float[FrameCount][];
-            for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
+            NewAnime.RotationTime = new short[AnimeChannel.RotationKeyCount];
+            NewAnime.RotationData = new short[AnimeChannel.RotationKeyCount][];
+            NewAnime.RotationFloat = new float[AnimeChannel.RotationKeyCount][];
+            for (int ThisFrame = 0; ThisFrame < AnimeChannel.RotationKeyCount; ThisFrame++)
             {
 
-                if (ThisFrame < AnimeChannel.RotationKeyCount)
+                NewAnime.RotationData[ThisFrame] = new short[3];
+                NewAnime.RotationFloat[ThisFrame] = new float[3];
+                NewAnime.RotationTime[ThisFrame] = Convert.ToInt16(AnimeChannel.RotationKeys[ThisFrame].Time);
+
+                float[] RotationTemp = ConvertEuler(AnimeChannel.RotationKeys[ThisFrame].Value);
+
+                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                 {
-                    NewAnime.RotationData[ThisFrame] = new short[3];
-                    NewAnime.RotationFloat[ThisFrame] = new float[3];
-
-
-                    float[] RotationTemp = ConvertEuler(AnimeChannel.RotationKeys[ThisFrame].Value);
-                    
-                    for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                    NewAnime.RotationFloat[ThisFrame][ThisVector] = Convert.ToSingle(RotationTemp[ThisVector] / 0.01745329252);
+                    if (Math.Abs(NewAnime.RotationFloat[ThisFrame][ThisVector]) < 0.01f)
                     {
-                        NewAnime.RotationFloat[ThisFrame][ThisVector] = Convert.ToSingle(RotationTemp[ThisVector] / 0.01745329252);
-                        if (Math.Abs(NewAnime.RotationFloat[ThisFrame][ThisVector]) < 0.01f)
-                        {
-                            NewAnime.RotationFloat[ThisFrame][ThisVector] = 0f;
-                        }
-                        NewAnime.RotationData[ThisFrame][ThisVector] = Convert.ToInt16(NewAnime.RotationFloat[ThisFrame][ThisVector]);
+                        NewAnime.RotationFloat[ThisFrame][ThisVector] = 0f;
                     }
-                }
-                else
-                {
-                    NewAnime.RotationData[ThisFrame] = new short[3];
-                    NewAnime.RotationFloat[ThisFrame] = new float[3];
-
-                    for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                    {
-                        NewAnime.RotationFloat[ThisFrame][ThisVector] = NewAnime.RotationFloat[ThisFrame - 1][ThisVector];
-                        NewAnime.RotationData[ThisFrame][ThisVector] = NewAnime.RotationData[ThisFrame - 1][ThisVector];
-                    }
+                    NewAnime.RotationData[ThisFrame][ThisVector] = Convert.ToInt16(NewAnime.RotationFloat[ThisFrame][ThisVector] * 0xB6);
                 }
 
-                
-            }
-
-
-            NewAnime.ScalingData = new short[FrameCount][];
-            for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
-            {
-                if (ThisFrame < AnimeChannel.ScalingKeyCount)
-                {
-                    NewAnime.ScalingData[ThisFrame] = new short[3];
-                    for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                    {
-                        NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 100);
-                    }
-                }
-                else
-                {
-                    NewAnime.ScalingData[ThisFrame] = new short[3];
-                    for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                    {
-                        NewAnime.ScalingData[ThisFrame][ThisVector] = NewAnime.ScalingData[ThisFrame -1][ThisVector];
-                    }
-                }
 
             }
 
 
+
+            NewAnime.ScaleTime = new short[AnimeChannel.ScalingKeyCount];
+            NewAnime.ScalingData = new short[AnimeChannel.ScalingKeyCount][];
+
+            for (int ThisFrame = 0; ThisFrame < AnimeChannel.ScalingKeyCount; ThisFrame++)
+            {
+                NewAnime.ScalingData[ThisFrame] = new short[3];
+                NewAnime.ScaleTime[ThisFrame] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Time);
+                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+                {
+                    NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 10);
+                }
+            }
             return NewAnime;
         }
 
@@ -5776,7 +5756,7 @@ namespace Tarmac64_Library
             {
                 ParseAnimation(FBX, Anime.NodeAnimationChannels[ThisNode], Skeleton, Skeleton.FrameCount);
             }
-            GetTransforms(Skeleton, Skeleton.FrameCount, ModelScale);
+            //GetTransforms(Skeleton, Skeleton.FrameCount, ModelScale);
             return Skeleton;
         }
 

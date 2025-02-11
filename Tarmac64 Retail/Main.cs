@@ -1088,17 +1088,6 @@ namespace Tarmac64_Retail
             GLControl.UpdateDraw = true;
             GLControl.CacheTextures();
         }
-        private void LoadBtn_Click(object sender, EventArgs e)
-        {
-            if (loaded)
-            {
-                CompileModel();
-            }
-            else
-            {
-                ReplaceModel();
-            }
-        }
 
         private void SectionBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1929,7 +1918,7 @@ namespace Tarmac64_Retail
 
         private void rOMBuiderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GameBuilder GB = new GameBuilder();
+            GameBuilderPro GB = new GameBuilderPro();
             GB.Show();
         }
 
@@ -1954,6 +1943,86 @@ namespace Tarmac64_Retail
             }
         }
 
+        private void createToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TM64 Tarmac = new TM64();
+            OpenFileDialog FileOpen = new OpenFileDialog();
+
+            MessageBox.Show("Select unmodified, original file");            
+            if (FileOpen.ShowDialog() == DialogResult.OK)
+            {
+                string BaseFile = FileOpen.FileName;
+                MessageBox.Show("Select modified file");
+                if (FileOpen.ShowDialog() == DialogResult.OK)
+                {
+                    string PatchFile = FileOpen.FileName;
+
+                    byte[] Patch = Tarmac.CreatePatch(File.ReadAllBytes(BaseFile), File.ReadAllBytes(PatchFile));
+
+                    SaveFileDialog FileSave = new SaveFileDialog();
+                    FileSave.Filter = "Tarmac Patch|*.ok64.Patch|All Files (*.*)|*.*";
+                    MessageBox.Show("Save file");
+                    if (FileSave.ShowDialog() == DialogResult.OK)
+                    {
+                        File.WriteAllBytes(FileSave.FileName, Patch);
+                    }
+                }
+            }
+        }
+
+        private void applyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TM64 Tarmac = new TM64();
+            OpenFileDialog FileOpen = new OpenFileDialog();
+
+            MessageBox.Show("Select unmodified, original file");
+            if (FileOpen.ShowDialog() == DialogResult.OK)
+            {
+                string BaseFile = FileOpen.FileName;
+                MessageBox.Show("Select Patch file");
+                if (FileOpen.ShowDialog() == DialogResult.OK)
+                {
+                    string PatchFile = FileOpen.FileName;
+
+                    byte[] Patch = Tarmac.ApplyPatch(File.ReadAllBytes(BaseFile), File.ReadAllBytes(PatchFile));
+
+                    SaveFileDialog FileSave = new SaveFileDialog();
+                    FileSave.Filter = "N64 ROM|*.z64|All Files (*.*)|*.*";
+                    MessageBox.Show("Save file");
+                    if (FileSave.ShowDialog() == DialogResult.OK)
+                    {
+                        File.WriteAllBytes(FileSave.FileName, Patch);
+                    }
+                    
+                    
+                }
+            }
+        }
+
+        private void importOK64BackupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!loaded)
+            {
+                return;
+            }
+
+            
+        }
+
+        private void importSVL3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!loaded)
+            {
+                return;
+            }
+
+            OpenFileDialog FileOpen = new OpenFileDialog();
+
+            if (FileOpen.ShowDialog() == DialogResult.OK)
+            {
+
+            }
+        }
 
         private void masterBox_AfterSelect(object sender, TreeViewEventArgs e)
         {

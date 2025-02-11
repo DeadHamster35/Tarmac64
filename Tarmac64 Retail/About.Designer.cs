@@ -36,7 +36,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(402, 40);
             this.label1.TabIndex = 1;
-            this.label1.Text = "`";
+            this.label1.Text = "Tarmac V8";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label2
@@ -46,7 +46,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(402, 34);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Yumi\r\nDeadHamster 2021-2024";
+            this.label2.Text = "Yumi\r\nDeadHamster 2021-2025";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label3

@@ -607,6 +607,10 @@ namespace Tarmac64_Library
                 {
                     binaryWriter.Write(Convert.ToInt16(ThisType.Behavior.Parameters[ThisPar].Value));
                 }
+                for (int ThisPar = (ThisType.Behavior.Parameters.Length % 2); ThisPar < 2; ThisPar++)
+                {
+                    binaryWriter.Write(Convert.ToInt16(-1));
+                }
             }
             return memoryStream.ToArray();
         }
@@ -1126,10 +1130,9 @@ namespace Tarmac64_Library
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].GravityToggle));
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].CameraAlligned));
 
+
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].ModelCount));
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].XLUCount)); //
-
-
                 if (SaveData[ThisType].ObjectHitbox != null)
                 {
                     binaryWriter.Write(Convert.ToByte(SaveData[ThisType].ObjectHitbox.Length)); //
@@ -1137,8 +1140,10 @@ namespace Tarmac64_Library
                 else
                 {
                     binaryWriter.Write(Convert.ToByte(0xFF));
-                }                
+                }                   
                 binaryWriter.Write(Convert.ToByte(SaveData[ThisType].Flag)); //
+
+
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[ThisType].ModelScale * 100.0f)));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[ThisType].Behavior.Parameters.Length)));
 

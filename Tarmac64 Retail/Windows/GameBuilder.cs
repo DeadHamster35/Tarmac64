@@ -237,7 +237,15 @@ namespace Tarmac64_Library
                     if (!Tarmac.CheckPatch(rom))
                     {
                         MessageBox.Show("Applying Tarmac Patch");
-                        //rom = Tarmac.ApplyPatch(rom, )
+                        string PatchPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Resources", "PatchData.ok64.Patch");
+                        if (!File.Exists(PatchPath))
+                        {
+                            MessageBox.Show("Patch File Not Found \n" +  PatchPath);
+                            return;
+                        }
+                        byte[] PatchData = File.ReadAllBytes(PatchPath);
+
+                        rom = Tarmac.ApplyPatch(rom, PatchData);
                     }
 
 

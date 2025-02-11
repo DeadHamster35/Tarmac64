@@ -64,7 +64,6 @@ namespace Tarmac64_Library
             public int ImportMode { get; set; }
             public string JRDirectory { get; set; }
             public bool Valid { get; set; }
-            public int Version { get; set; }
 
 
             public OK64Settings LoadSettings()

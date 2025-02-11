@@ -644,6 +644,22 @@ namespace Tarmac64_Retail
 
                 }
             }
+
+            GL.End();
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.Enable(OpenGL.GL_BLEND);
+            GLTexture[GLShadeIndex].Bind(GL);
+
+            if (OKSelectedObject != -1)
+            {
+                TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[OKSelectedObject], ObjectTypes[CourseObjects[OKSelectedObject].TypeIndex], LocalCamera.flashWhite);
+            }
+            if (TargetedObject != -1)
+            {
+                TarmacGL.DrawOKObjectShaded(GL, GLTexture[GLShadeIndex], CourseObjects[TargetedObject], ObjectTypes[CourseObjects[TargetedObject].TypeIndex], LocalCamera.flashWhite);
+            }
+
         }
         private void DrawOKObjectsGouaraud()
         {
@@ -932,6 +948,8 @@ namespace Tarmac64_Retail
 
         private void GLViewer_Load(object sender, EventArgs e)
         {
+            TargetedObject = -1;
+            OKSelectedObject = -1;
             GL = GLWindow.OpenGL;
             RefreshView();
             FrameWatch.Start();

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarmac64 Designer", "Tarmac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarmac64 Library", "Tarmac64 Library\Tarmac64 Library.csproj", "{BD044BBD-727B-40AC-B6BA-087E81864333}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarmac64 Game Builder", "Tarmac64 Game Builder\Tarmac64 Game Builder.csproj", "{DE16FBD8-A5E4-4A60-8A0E-8C17472ADE5E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,22 @@ Global
 		{BD044BBD-727B-40AC-B6BA-087E81864333}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BD044BBD-727B-40AC-B6BA-087E81864333}.Release|x64.ActiveCfg = Release|Any CPU
 		{BD044BBD-727B-40AC-B6BA-087E81864333}.Release|x64.Build.0 = Release|Any CPU
+		{DDC756CF-2964-4067-BF60-C212CD5B792C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDC756CF-2964-4067-BF60-C212CD5B792C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDC756CF-2964-4067-BF60-C212CD5B792C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DDC756CF-2964-4067-BF60-C212CD5B792C}.Debug|x64.Build.0 = Debug|Any CPU
+		{DDC756CF-2964-4067-BF60-C212CD5B792C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDC756CF-2964-4067-BF60-C212CD5B792C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDC756CF-2964-4067-BF60-C212CD5B792C}.Release|x64.ActiveCfg = Release|Any CPU
+		{DDC756CF-2964-4067-BF60-C212CD5B792C}.Release|x64.Build.0 = Release|Any CPU
+		{DE16FBD8-A5E4-4A60-8A0E-8C17472ADE5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE16FBD8-A5E4-4A60-8A0E-8C17472ADE5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE16FBD8-A5E4-4A60-8A0E-8C17472ADE5E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DE16FBD8-A5E4-4A60-8A0E-8C17472ADE5E}.Debug|x64.Build.0 = Debug|Any CPU
+		{DE16FBD8-A5E4-4A60-8A0E-8C17472ADE5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE16FBD8-A5E4-4A60-8A0E-8C17472ADE5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE16FBD8-A5E4-4A60-8A0E-8C17472ADE5E}.Release|x64.ActiveCfg = Release|Any CPU
+		{DE16FBD8-A5E4-4A60-8A0E-8C17472ADE5E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

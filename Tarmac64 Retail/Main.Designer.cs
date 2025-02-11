@@ -106,10 +106,14 @@
             this.songExtractorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectTypeCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rOMBuiderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.patchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.applyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.GLControl = new Tarmac64_Retail.GLViewer();
+            this.importSVL3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
@@ -580,9 +584,9 @@
             // 
             this.Object.AutoScroll = true;
             this.Object.Controls.Add(this.ObjectControl);
-            this.Object.Location = new System.Drawing.Point(4, 40);
+            this.Object.Location = new System.Drawing.Point(4, 22);
             this.Object.Name = "Object";
-            this.Object.Size = new System.Drawing.Size(307, 605);
+            this.Object.Size = new System.Drawing.Size(307, 623);
             this.Object.TabIndex = 4;
             this.Object.Text = "Course Objects";
             this.Object.UseVisualStyleBackColor = true;
@@ -593,7 +597,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ObjectControl.Location = new System.Drawing.Point(3, 3);
             this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 599);
+            this.ObjectControl.Size = new System.Drawing.Size(289, 617);
             this.ObjectControl.TabIndex = 1;
             this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
@@ -883,33 +887,33 @@
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openProjectToolStripMenuItem
             // 
             this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.openProjectToolStripMenuItem.Text = "Open";
             this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openProjectToolStripMenuItem_Click);
             // 
             // saveProjectToolStripMenuItem
             // 
             this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
-            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.saveProjectToolStripMenuItem.Text = "Save";
             this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(183, 6);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.exportToolStripMenuItem.Text = "Export";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
@@ -917,7 +921,8 @@
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.replaceModelToolStripMenuItem,
-            this.replacePathsToolStripMenuItem});
+            this.replacePathsToolStripMenuItem,
+            this.importSVL3ToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -942,7 +947,8 @@
             this.oBJToolStripMenuItem,
             this.songExtractorToolStripMenuItem,
             this.objectTypeCompilerToolStripMenuItem,
-            this.rOMBuiderToolStripMenuItem});
+            this.rOMBuiderToolStripMenuItem,
+            this.patchToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -972,8 +978,31 @@
             // 
             this.rOMBuiderToolStripMenuItem.Name = "rOMBuiderToolStripMenuItem";
             this.rOMBuiderToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.rOMBuiderToolStripMenuItem.Text = "ROM Buider";
+            this.rOMBuiderToolStripMenuItem.Text = "Game Buider";
             this.rOMBuiderToolStripMenuItem.Click += new System.EventHandler(this.rOMBuiderToolStripMenuItem_Click);
+            // 
+            // patchToolStripMenuItem
+            // 
+            this.patchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createToolStripMenuItem,
+            this.applyToolStripMenuItem});
+            this.patchToolStripMenuItem.Name = "patchToolStripMenuItem";
+            this.patchToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.patchToolStripMenuItem.Text = "Patch";
+            // 
+            // createToolStripMenuItem
+            // 
+            this.createToolStripMenuItem.Name = "createToolStripMenuItem";
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.createToolStripMenuItem.Text = "Create";
+            this.createToolStripMenuItem.Click += new System.EventHandler(this.createToolStripMenuItem_Click);
+            // 
+            // applyToolStripMenuItem
+            // 
+            this.applyToolStripMenuItem.Name = "applyToolStripMenuItem";
+            this.applyToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.applyToolStripMenuItem.Text = "Apply";
+            this.applyToolStripMenuItem.Click += new System.EventHandler(this.applyToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -1009,6 +1038,13 @@
             this.GLControl.Size = new System.Drawing.Size(915, 668);
             this.GLControl.TabIndex = 3;
             this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
+            // 
+            // importSVL3ToolStripMenuItem
+            // 
+            this.importSVL3ToolStripMenuItem.Name = "importSVL3ToolStripMenuItem";
+            this.importSVL3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importSVL3ToolStripMenuItem.Text = "Import SVL3";
+            this.importSVL3ToolStripMenuItem.Click += new System.EventHandler(this.importSVL3ToolStripMenuItem_Click);
             // 
             // Main
             // 
@@ -1129,5 +1165,9 @@
         private System.Windows.Forms.ToolStripMenuItem oBJToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rOMBuiderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem songExtractorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem patchToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem applyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importSVL3ToolStripMenuItem;
     }
 }
