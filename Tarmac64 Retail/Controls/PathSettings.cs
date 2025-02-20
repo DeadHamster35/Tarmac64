@@ -222,12 +222,16 @@ namespace Tarmac64_Retail
             }
             CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[0];
             CourseData.PathSettings.PathSurface = new int[4];
+            
             BombIndexBox.SelectedIndex = 0;
             PathSurfaceSelect.Items.Add("Path 0");
             PathSurfaceSelect.Items.Add("Path 1");
             PathSurfaceSelect.Items.Add("Path 2");
             PathSurfaceSelect.Items.Add("Path 3");
             PathSurfaceSelect.SelectedIndex = 0;
+
+            CircuitRadio.Checked = true;
+            GoalBannerBox.Checked = true;
         }
 
         public void UpdatePaths()
@@ -309,6 +313,7 @@ namespace Tarmac64_Retail
             {
                 CourseData.BombArray[BombIndexBox.SelectedIndex].Point = Convert.ToInt16(ParseInt);
             }
+
             CourseData.BombArray[BombIndexBox.SelectedIndex].Type = Convert.ToInt16(BombTypeBox.SelectedIndex);
         }
         public void UpdateUI()
@@ -354,12 +359,20 @@ namespace Tarmac64_Retail
 
         private void BombTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            if (!loaded)
+            {
+                return;
+            }
+            UpdatePaths();
         }
 
         private void BombPointBox_TextChanged(object sender, EventArgs e)
         {
-
+            if (!loaded)
+            {
+                return;
+            }
+            UpdatePaths();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -396,6 +409,29 @@ namespace Tarmac64_Retail
         private void PathFXUpdate(object sender, KeyEventArgs e)
         {
             UpdatePaths();
+        }
+
+        private void LapFinishLine_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SprintRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            LapCountBox.Enabled = true;
+            if (SprintRadio.Checked)
+            {
+                LapCountBox.Enabled = false;
+            }
+        }
+
+        private void CircuitRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            LapCountBox.Enabled = true;
+            if (SprintRadio.Checked)
+            {
+                LapCountBox.Enabled = false;
+            }
         }
 
         private void ColorUpdate()

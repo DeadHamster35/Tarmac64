@@ -541,6 +541,7 @@ namespace Tarmac64_Retail
             Magic += Convert.ToUInt32(CourseData.ObjectAnimationData.Length);
             
             CourseData.ObjectHitboxData = TarmacCourse.CompileObjectHitbox(TypeList.ToArray(), Magic);
+            Magic += Convert.ToUInt32(CourseData.ObjectHitboxData.Length);
             CourseData.ParameterData = TarmacCourse.CompileParameters(TypeList.ToArray(), Magic);
 
             CourseData.ObjectTypeData = TarmacCourse.SaveObjectTypeRaw(TypeList.ToArray());
@@ -1186,8 +1187,19 @@ namespace Tarmac64_Retail
             OKObjectList = ObjectControl.OKObjectList;
             OKObjectTypeList = ObjectControl.OKObjectTypeList;
             GLControl.OKObjectIndex = ObjectControl.ObjectTypeIndexBox.SelectedIndex;
-            GLControl.OKSelectedObject = ObjectControl.ObjectListBox.SelectedIndex;
             GLControl.ObjectTypes = ObjectControl.OKObjectTypeList.ToArray();
+
+            GLControl.OKSelectedObject = -1;
+            GLControl.TargetedObject = -1;
+
+            if (GLControl.ObjectTypes.Length != 0)
+            {
+                if ((ObjectControl.ObjectListBox.SelectedIndex >= 0) && (GLControl.ObjectTypes.Length > 0))
+                {
+                    GLControl.OKSelectedObject = ObjectControl.ObjectListBox.SelectedIndex;
+                }
+            }
+
             GLControl.UpdateDraw = true;
         }
         public void GLRequestUpdate(object sender, EventArgs e)
@@ -2020,8 +2032,54 @@ namespace Tarmac64_Retail
 
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
+                string filePath = FileOpen.FileName;
+
+                TM64_Course TarmacCourse = new TM64_Course();
+                TarmacCourse.ImportSVL3(out sectionList, out XLUSectionList, filePath, masterObjects);
+                UpdateSVDisplay();
+                /*if (Keyboard.IsKeyDown(Key.LeftShift))
+                {
+                    tempSList = TarmacCourse.ImportSVL2(filePath, masterObjects.Length, masterObjects);
+                    tempXLUSList = new TM64_Geometry.OK64SectionList[tempSList.Length];
+                    for (int ThisSection = 0; ThisSection < tempSList.Length; ThisSection++)
+                    {
+                        tempXLUSList[ThisSection] = new TM64_Geometry.OK64SectionList();
+
+                        tempXLUSList[ThisSection] = new TM64_Geometry.OK64SectionList();
+                        for (int ThisView = 0; ThisView < ; ThisView++)
+                        {
+                            tempXLUSList[ThisSection].viewList[ThisView] = new TM64_Geometry.OK64ViewList();
+                            tempXLUSList[ThisSection].viewList[ThisView].objectList = new int[0];
+                        }
+                        List<int> ThisList = tempSList[ThisSection].viewList[0].objectList.ToList();
+                        for (int ThisView = 1; ThisView < 4; ThisView++)
+                        {
+                            for (int ThisObj = 0; ThisObj < tempSList[ThisSection].viewList[ThisView].objectList.Length; ThisObj++)
+                                if (!(tempSList[ThisSection].viewList[0].objectList.Contains(tempSList[ThisSection].viewList[ThisView].objectList[ThisObj])))
+                                {
+                                    ThisList.Add(tempSList[ThisSection].viewList[ThisView].objectList[ThisObj]);
+                                }
+                        }
+                        tempSList[ThisSection].viewList[0].objectList = ThisList.ToArray();
+                    }
+                }
+                else
+                {
+                
+                    
+                }
+                */
+
+
+
+
 
             }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Windows.Forms.Application.Exit();
         }
 
         private void masterBox_AfterSelect(object sender, TreeViewEventArgs e)

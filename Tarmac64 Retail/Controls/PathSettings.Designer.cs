@@ -29,12 +29,7 @@
         private void InitializeComponent()
         {
             this.LapFinishLine = new System.Windows.Forms.GroupBox();
-            this.label55 = new System.Windows.Forms.Label();
-            this.DragLengthBox = new System.Windows.Forms.TextBox();
-            this.DragBox = new System.Windows.Forms.CheckBox();
             this.GoalBannerBox = new System.Windows.Forms.CheckBox();
-            this.label78 = new System.Windows.Forms.Label();
-            this.LapBox = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.PathSurfaceSelect = new System.Windows.Forms.ComboBox();
             this.PathSurfaceBox = new System.Windows.Forms.TextBox();
@@ -73,6 +68,10 @@
             this.label8 = new System.Windows.Forms.Label();
             this.BombTypeBox = new System.Windows.Forms.ComboBox();
             this.BombIndexBox = new System.Windows.Forms.ComboBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.LapCountBox = new System.Windows.Forms.TextBox();
+            this.CircuitRadio = new System.Windows.Forms.RadioButton();
+            this.SprintRadio = new System.Windows.Forms.RadioButton();
             this.LapFinishLine.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -81,85 +80,31 @@
             // 
             // LapFinishLine
             // 
-            this.LapFinishLine.Controls.Add(this.label55);
-            this.LapFinishLine.Controls.Add(this.DragLengthBox);
-            this.LapFinishLine.Controls.Add(this.DragBox);
+            this.LapFinishLine.Controls.Add(this.SprintRadio);
+            this.LapFinishLine.Controls.Add(this.CircuitRadio);
+            this.LapFinishLine.Controls.Add(this.LapCountBox);
+            this.LapFinishLine.Controls.Add(this.label9);
             this.LapFinishLine.Controls.Add(this.GoalBannerBox);
-            this.LapFinishLine.Controls.Add(this.label78);
-            this.LapFinishLine.Controls.Add(this.LapBox);
             this.LapFinishLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
             this.LapFinishLine.Location = new System.Drawing.Point(5, 5);
             this.LapFinishLine.Margin = new System.Windows.Forms.Padding(5);
             this.LapFinishLine.Name = "LapFinishLine";
-            this.LapFinishLine.Size = new System.Drawing.Size(277, 89);
+            this.LapFinishLine.Size = new System.Drawing.Size(277, 87);
             this.LapFinishLine.TabIndex = 309;
             this.LapFinishLine.TabStop = false;
             this.LapFinishLine.Text = "Laps | Finish Line";
-            // 
-            // label55
-            // 
-            this.label55.AutoSize = true;
-            this.label55.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label55.Location = new System.Drawing.Point(200, 61);
-            this.label55.Name = "label55";
-            this.label55.Size = new System.Drawing.Size(66, 13);
-            this.label55.TabIndex = 305;
-            this.label55.Text = "Drag Length";
-            // 
-            // DragLengthBox
-            // 
-            this.DragLengthBox.Enabled = false;
-            this.DragLengthBox.Location = new System.Drawing.Point(139, 58);
-            this.DragLengthBox.Margin = new System.Windows.Forms.Padding(5);
-            this.DragLengthBox.Name = "DragLengthBox";
-            this.DragLengthBox.Size = new System.Drawing.Size(55, 19);
-            this.DragLengthBox.TabIndex = 304;
-            this.DragLengthBox.Text = "1000";
-            this.DragLengthBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // DragBox
-            // 
-            this.DragBox.AutoSize = true;
-            this.DragBox.Enabled = false;
-            this.DragBox.Location = new System.Drawing.Point(144, 31);
-            this.DragBox.Margin = new System.Windows.Forms.Padding(5);
-            this.DragBox.Name = "DragBox";
-            this.DragBox.Size = new System.Drawing.Size(112, 17);
-            this.DragBox.TabIndex = 303;
-            this.DragBox.Text = "Drag Race (1 Lap)";
-            this.DragBox.UseVisualStyleBackColor = true;
+            this.LapFinishLine.Enter += new System.EventHandler(this.LapFinishLine_Enter);
             // 
             // GoalBannerBox
             // 
             this.GoalBannerBox.AutoSize = true;
-            this.GoalBannerBox.Location = new System.Drawing.Point(11, 31);
+            this.GoalBannerBox.Location = new System.Drawing.Point(148, 56);
             this.GoalBannerBox.Margin = new System.Windows.Forms.Padding(5);
             this.GoalBannerBox.Name = "GoalBannerBox";
-            this.GoalBannerBox.Size = new System.Drawing.Size(123, 17);
+            this.GoalBannerBox.Size = new System.Drawing.Size(113, 17);
             this.GoalBannerBox.TabIndex = 299;
-            this.GoalBannerBox.Text = "Disable Goal Banner";
+            this.GoalBannerBox.Text = "Draw Goal Banner";
             this.GoalBannerBox.UseVisualStyleBackColor = true;
-            // 
-            // label78
-            // 
-            this.label78.AutoSize = true;
-            this.label78.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label78.Location = new System.Drawing.Point(69, 61);
-            this.label78.Name = "label78";
-            this.label78.Size = new System.Drawing.Size(56, 13);
-            this.label78.TabIndex = 302;
-            this.label78.Text = "Lap Count";
-            // 
-            // LapBox
-            // 
-            this.LapBox.Enabled = false;
-            this.LapBox.Location = new System.Drawing.Point(8, 58);
-            this.LapBox.Margin = new System.Windows.Forms.Padding(5);
-            this.LapBox.Name = "LapBox";
-            this.LapBox.Size = new System.Drawing.Size(55, 19);
-            this.LapBox.TabIndex = 301;
-            this.LapBox.Text = "3";
-            this.LapBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // groupBox5
             // 
@@ -170,7 +115,7 @@
             this.groupBox5.Controls.Add(this.DistributeBox);
             this.groupBox5.Controls.Add(this.PathCountBox);
             this.groupBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox5.Location = new System.Drawing.Point(5, 295);
+            this.groupBox5.Location = new System.Drawing.Point(5, 293);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(5);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(277, 78);
@@ -211,7 +156,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(200, 51);
+            this.label1.Location = new System.Drawing.Point(201, 51);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(60, 13);
             this.label1.TabIndex = 297;
@@ -230,7 +175,7 @@
             // 
             // PathCountBox
             // 
-            this.PathCountBox.Location = new System.Drawing.Point(147, 48);
+            this.PathCountBox.Location = new System.Drawing.Point(148, 48);
             this.PathCountBox.Margin = new System.Windows.Forms.Padding(5);
             this.PathCountBox.Name = "PathCountBox";
             this.PathCountBox.Size = new System.Drawing.Size(45, 19);
@@ -264,7 +209,7 @@
             this.groupBox3.Controls.Add(this.EchoStartBox);
             this.groupBox3.Controls.Add(this.label11);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox3.Location = new System.Drawing.Point(5, 104);
+            this.groupBox3.Location = new System.Drawing.Point(5, 102);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(5);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(277, 181);
@@ -519,7 +464,7 @@
             this.groupBox1.Controls.Add(this.BombTypeBox);
             this.groupBox1.Controls.Add(this.BombIndexBox);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox1.Location = new System.Drawing.Point(3, 381);
+            this.groupBox1.Location = new System.Drawing.Point(3, 379);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(280, 71);
             this.groupBox1.TabIndex = 310;
@@ -586,6 +531,53 @@
             this.BombIndexBox.TabIndex = 0;
             this.BombIndexBox.SelectedIndexChanged += new System.EventHandler(this.BombIndexBox_SelectedIndexChanged);
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(201, 29);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(56, 13);
+            this.label9.TabIndex = 290;
+            this.label9.Text = "Lap Count";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // LapCountBox
+            // 
+            this.LapCountBox.Location = new System.Drawing.Point(148, 25);
+            this.LapCountBox.Margin = new System.Windows.Forms.Padding(5);
+            this.LapCountBox.Name = "LapCountBox";
+            this.LapCountBox.Size = new System.Drawing.Size(45, 19);
+            this.LapCountBox.TabIndex = 298;
+            this.LapCountBox.Text = "3";
+            this.LapCountBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // CircuitRadio
+            // 
+            this.CircuitRadio.AutoSize = true;
+            this.CircuitRadio.Location = new System.Drawing.Point(12, 26);
+            this.CircuitRadio.Margin = new System.Windows.Forms.Padding(5);
+            this.CircuitRadio.Name = "CircuitRadio";
+            this.CircuitRadio.Size = new System.Drawing.Size(112, 17);
+            this.CircuitRadio.TabIndex = 300;
+            this.CircuitRadio.TabStop = true;
+            this.CircuitRadio.Text = "Circuit Race (A->A)";
+            this.CircuitRadio.UseVisualStyleBackColor = true;
+            this.CircuitRadio.CheckedChanged += new System.EventHandler(this.CircuitRadio_CheckedChanged);
+            // 
+            // SprintRadio
+            // 
+            this.SprintRadio.AutoSize = true;
+            this.SprintRadio.Location = new System.Drawing.Point(12, 55);
+            this.SprintRadio.Margin = new System.Windows.Forms.Padding(5);
+            this.SprintRadio.Name = "SprintRadio";
+            this.SprintRadio.Size = new System.Drawing.Size(111, 17);
+            this.SprintRadio.TabIndex = 301;
+            this.SprintRadio.TabStop = true;
+            this.SprintRadio.Text = "Sprint Race (A->B)";
+            this.SprintRadio.UseVisualStyleBackColor = true;
+            this.SprintRadio.CheckedChanged += new System.EventHandler(this.SprintRadio_CheckedChanged);
+            // 
             // PathSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -595,7 +587,7 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox3);
             this.Name = "PathSettings";
-            this.Size = new System.Drawing.Size(289, 460);
+            this.Size = new System.Drawing.Size(289, 507);
             this.Load += new System.EventHandler(this.PathSettings_Load);
             this.LapFinishLine.ResumeLayout(false);
             this.LapFinishLine.PerformLayout();
@@ -612,12 +604,7 @@
         #endregion
 
         private System.Windows.Forms.GroupBox LapFinishLine;
-        private System.Windows.Forms.Label label55;
-        private System.Windows.Forms.TextBox DragLengthBox;
-        private System.Windows.Forms.CheckBox DragBox;
         private System.Windows.Forms.CheckBox GoalBannerBox;
-        private System.Windows.Forms.Label label78;
-        private System.Windows.Forms.TextBox LapBox;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.ComboBox PathSurfaceSelect;
         private System.Windows.Forms.TextBox PathSurfaceBox;
@@ -656,5 +643,9 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox BombTypeBox;
         private System.Windows.Forms.ComboBox BombIndexBox;
+        private System.Windows.Forms.RadioButton CircuitRadio;
+        private System.Windows.Forms.TextBox LapCountBox;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.RadioButton SprintRadio;
     }
 }

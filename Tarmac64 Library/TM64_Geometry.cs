@@ -174,8 +174,7 @@ namespace Tarmac64_Library
                 TM64 Tarmac = new TM64();
                 XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
                 XmlNode Target = Owner.ChildNodes[ChildIndex];
-                
-                textureName = XmlConvert.DecodeName(Target.Name);
+
                 string HeaderName = "Texture_" + ChildIndex.ToString();
                 textureName = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "textureName");
                 texturePath = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "texturePath");
@@ -205,6 +204,14 @@ namespace Tarmac64_Library
 
                 GLShiftS = Convert.ToDouble(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "GLShiftS", "0"));
                 GLShiftT = Convert.ToDouble(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "GLShiftT", "0"));
+
+
+                GeometryBools = new bool[12];
+                int[] KDL = Tarmac.LoadElements(XMLDoc, Parent + "/" + HeaderName, "GeometryBools", "0");
+                for (int ThisBool = 0; ThisBool < 12; ThisBool++)
+                {
+                    GeometryBools[ThisBool] = Convert.ToBoolean(KDL[ThisBool]);
+                }
 
                 RawTexture = new OK64TextureRaw();
                 if (File.Exists(texturePath))
@@ -256,6 +263,8 @@ namespace Tarmac64_Library
                 Tarmac.GenerateElement(XMLDoc, TextureXML, "textureScreen", textureScreen);
                 Tarmac.GenerateElement(XMLDoc, TextureXML, "GLShiftS", GLShiftS);
                 Tarmac.GenerateElement(XMLDoc, TextureXML, "GLShiftT", GLShiftT);
+
+                Tarmac.GenerateElement(XMLDoc, TextureXML, "GeometryBools", GeometryBools);
 
             }
 
@@ -381,6 +390,8 @@ namespace Tarmac64_Library
                 TM64_Geometry TMGeo = new TM64_Geometry();
                 modelGeometry = TMGeo.LoadFaceArrayXML(XMLDoc, GeometryHeader);
 
+                string PathfinderHeader = TargetPath + "/Pathfinder";
+                pathfindingObject = new PathfindingObject(XMLDoc, PathfinderHeader);
             }
 
 
@@ -462,6 +473,19 @@ namespace Tarmac64_Library
             }
             public PathfindingObject()
             {
+
+            }
+            public PathfindingObject(XmlDocument XMLDoc, string Parent)
+            {
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+
+                highX = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, Parent, "highX", "0"));
+                highY = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, Parent, "highY", "0"));
+                highZ = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, Parent, "highZ", "0"));
+                lowX = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, Parent, "lowX", "0"));
+                lowY = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, Parent, "lowY", "0"));
+                lowZ = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, Parent, "lowZ", "0"));
 
             }
             public float highX { get; set; }
@@ -2096,7 +2120,14 @@ namespace Tarmac64_Library
             TarmacSettings.LoadSettings();
             if (BaseNode == null)
             {
-                MessageBox.Show("Error - No 'Render Objects' node");
+
+
+                BaseNode = fbx.RootNode.FindNode("Master Objects");
+                if (BaseNode == null)
+                {
+                    MessageBox.Show("Error - No 'Render Objects' node");
+                    return null;
+                }
             }
             for (int childObject = 0; childObject < BaseNode.Children.Count; childObject++)
             {
@@ -3760,7 +3791,6 @@ namespace Tarmac64_Library
                     }
                 }
                 else
-
                 {
                     binaryWriter.Write(
                         F3D.gsDPSetCombineMode(

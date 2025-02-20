@@ -12,6 +12,8 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Data.Odbc;
+using System.Drawing.Drawing2D;
+using SharpGL;
 
 namespace Tarmac64_Retail
 {
@@ -450,10 +452,14 @@ namespace Tarmac64_Retail
             TM64 Tarmac = new TM64();
             int TypeCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "TypeCount", "0"));
             string TypeArrayPath = "/SaveFile/ObjectData/ObjectTypeArray";
+            
             for (int This = 0; This < TypeCount; This++)
             {
-                string Target = Tarmac.LoadElement(XMLDoc, TypeArrayPath, "TypePath" + (This).ToString(), "NULL");
-                AddObjectToArray(Target);
+                TM64_Course.OKObjectType NewType = new TM64_Course.OKObjectType(XMLDoc, TypeArrayPath, This+6);
+                OKObjectTypeList.Add(NewType);
+                ObjectTypeIndexBox.Items.Add(NewType.Name);
+                //string Target = Tarmac.LoadElement(XMLDoc, TypeArrayPath, "TypePath" + (This).ToString(), "NULL");
+
             }
 
 
@@ -481,7 +487,7 @@ namespace Tarmac64_Retail
             ObjectXML.AppendChild(TypeArray);
             for (int This = 6; This < OKObjectTypeList.Count; This++)
             {
-                Tarmac.GenerateElement(XMLDoc, TypeArray, "TypePath" + (This-6).ToString(), OKObjectTypeList[This].Path);
+                OKObjectTypeList[This].SaveXML(XMLDoc, TypeArray, This);
             }
 
 
@@ -650,12 +656,21 @@ namespace Tarmac64_Retail
             FileOpen.DefaultExt = ".ok64.OBJECT";
             FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
             if (FileOpen.ShowDialog() == DialogResult.OK)
-            {                
-                TM64_Course.OKObjectType NewType = TarmacCourse.LoadObjectType(FileOpen.FileName);
-                OKObjectTypeList.Add(NewType);
-                ObjectTypeIndexBox.Items.Add(NewType.Name);
-            }
+            {
+                string FilePath = FileOpen.FileName;
+                if (File.Exists(FilePath))
+                {
+                    XmlDocument XMLDoc = new XmlDocument();
+                    XMLDoc.Load(FilePath);
+
+                    TM64_Course.OKObjectType NewType = new TM64_Course.OKObjectType(XMLDoc, "SaveFile", 0);
+                    OKObjectTypeList.Add(NewType);
+                    ObjectTypeIndexBox.Items.Add(NewType.Name);
                     
+
+                }
+
+            }
 
             UpdateObjectUI();
         }

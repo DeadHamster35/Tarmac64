@@ -87,8 +87,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.LoadBtn = new System.Windows.Forms.Button();
             this.ModelBox = new System.Windows.Forms.TextBox();
-            this.BuildBtn = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.SaveXMLBtn = new System.Windows.Forms.Button();
+            this.LoadXMLBtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -719,26 +720,46 @@
             this.ModelBox.TabIndex = 1;
             this.ModelBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
-            // BuildBtn
+            // button3
             // 
-            this.BuildBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BuildBtn.Location = new System.Drawing.Point(483, 725);
-            this.BuildBtn.Margin = new System.Windows.Forms.Padding(10);
-            this.BuildBtn.Name = "BuildBtn";
-            this.BuildBtn.Size = new System.Drawing.Size(95, 22);
-            this.BuildBtn.TabIndex = 270;
-            this.BuildBtn.Text = "Build Object";
-            this.BuildBtn.UseVisualStyleBackColor = true;
-            this.BuildBtn.Click += new System.EventHandler(this.BuildBtn_Click);
+            this.button3.Location = new System.Drawing.Point(0, 0);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 0;
+            // 
+            // SaveXMLBtn
+            // 
+            this.SaveXMLBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SaveXMLBtn.Location = new System.Drawing.Point(12, 725);
+            this.SaveXMLBtn.Margin = new System.Windows.Forms.Padding(5);
+            this.SaveXMLBtn.Name = "SaveXMLBtn";
+            this.SaveXMLBtn.Size = new System.Drawing.Size(75, 22);
+            this.SaveXMLBtn.TabIndex = 271;
+            this.SaveXMLBtn.Text = "Save XML";
+            this.SaveXMLBtn.UseVisualStyleBackColor = true;
+            this.SaveXMLBtn.Click += new System.EventHandler(this.SaveXMLClick);
+            // 
+            // LoadXMLBtn
+            // 
+            this.LoadXMLBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.LoadXMLBtn.Location = new System.Drawing.Point(97, 725);
+            this.LoadXMLBtn.Margin = new System.Windows.Forms.Padding(5);
+            this.LoadXMLBtn.Name = "LoadXMLBtn";
+            this.LoadXMLBtn.Size = new System.Drawing.Size(75, 22);
+            this.LoadXMLBtn.TabIndex = 272;
+            this.LoadXMLBtn.Text = "Load XML";
+            this.LoadXMLBtn.UseVisualStyleBackColor = true;
+            this.LoadXMLBtn.Click += new System.EventHandler(this.LoadXMLClick);
             // 
             // ObjectTypeCompiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 761);
+            this.Controls.Add(this.LoadXMLBtn);
+            this.Controls.Add(this.SaveXMLBtn);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.BuildBtn);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(600, 2000);
@@ -791,7 +812,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button LoadBtn;
         private System.Windows.Forms.TextBox ModelBox;
-        private System.Windows.Forms.Button BuildBtn;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox FlagBox;
         private Fluent.FluentListView ParameterView;
@@ -823,5 +843,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Element;
         private System.Windows.Forms.DataGridViewTextBoxColumn DataValue;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button SaveXMLBtn;
+        private System.Windows.Forms.Button LoadXMLBtn;
     }
 }

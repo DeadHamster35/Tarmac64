@@ -196,7 +196,7 @@ namespace Tarmac64_Retail
 
         public void LoadCourseXML(XmlDocument XMLDoc)
         {
-            string ParentPath = "/SaveData/CourseSettings";
+            string ParentPath = "/SaveFile/CourseSettings";
             TM64 Tarmac = new TM64();
             CourseData.Settings.Credits = Tarmac.LoadElement(XMLDoc, ParentPath, "Credits");
             CourseData.Settings.Name = Tarmac.LoadElement(XMLDoc, ParentPath, "CourseName");

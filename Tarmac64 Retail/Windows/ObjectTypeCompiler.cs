@@ -15,6 +15,7 @@ using Fluent;
 using System.Windows.Forms.Design.Behavior;
 using static Tarmac64_Library.TM64_Objects;
 using System.Runtime.CompilerServices;
+using System.Xml;
 
 namespace Tarmac64_Retail
 {
@@ -23,7 +24,7 @@ namespace Tarmac64_Retail
 
         TM64_Objects.OK64Behavior[] BehaviorArray = new TM64_Objects.OK64Behavior[0];
         TM64_Objects.OK64Collide[] HitboxArray = new TM64_Objects.OK64Collide[0];
-
+        TM64_Geometry.OK64F3DObject[] ModelData = new TM64_Geometry.OK64F3DObject[0];
 
         string[] BoxTypes = new string[] { "Sphere", "Cylinder", "Box" };
         string[] CollisionNames = new string[] { "NONE", "DEAD", "BUMP", "DAMAGE"};
@@ -66,7 +67,7 @@ namespace Tarmac64_Retail
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
         TM64 Tarmac = new TM64();
         TM64_Objects TarmacObject = new TM64_Objects();
-        Scene ModelData = new Scene();
+        Scene SceneData = new Scene();
         TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
         OK64Parameter[] ParameterArray = new OK64Parameter[0];
         
@@ -85,14 +86,133 @@ namespace Tarmac64_Retail
             {
                 ModelBox.Text = FileOpen.FileName;
 
-                ModelData = importer.ImportFile(ModelBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                TextureControl.textureArray = TarmacGeometry.loadTextures(ModelData, ModelBox.Text);
+                SceneData = importer.ImportFile(ModelBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+                ModelData = TarmacGeometry.CreateObjects(SceneData, NewType.TextureData, true);
+                TextureControl.textureArray = TarmacGeometry.loadTextures(SceneData, ModelBox.Text);
                 TextureControl.AddNewTextures(TextureControl.textureArray.Length);
                 TextureControl.Loaded = true;
             }
         }
+        TM64_Course.OKObjectType NewType = new TM64_Course.OKObjectType();
+        public void PrepCurrentObject()
+        {
+            NewType = new TM64_Course.OKObjectType();
+            NewType.Name = NameBox.Text;
+            NewType.TextureData = TextureControl.textureArray;
+            NewType.Flag = Convert.ToInt16(FlagBox.Text);
+            NewType.ObjectHitbox = HitboxArray;
+
+            float TempFloat;
+            if (Single.TryParse(ScaleBox.Text, out TempFloat))
+            {
+                NewType.ModelScale = TempFloat;
+            }
+            else
+            {
+                MessageBox.Show("Scale Parsing Error. Check scale value.");
+                return;
+            }
 
 
+            NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex);
+            NewType.Behavior = BehaviorArray[NewType.BehaviorClass];
+
+            List<TM64_Objects.OK64Parameter> ParameterList = (List<TM64_Objects.OK64Parameter>)ParameterView.Items;
+
+            for (int ThisParameter = 0; ThisParameter < NewType.Behavior.Parameters.Length; ThisParameter++)
+            {
+                NewType.Behavior.Parameters[ThisParameter].Value = ParameterList[ThisParameter].Value;
+            }
+
+
+
+
+            if (AToggleBox.Checked)
+            {
+                NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
+                var WalkData = importer.ImportFile(WalkBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+                NewType.ObjectAnimations.Animation = TarmacGeometry.LoadSkeleton(WalkData, NewType.ModelScale);
+            }
+            else
+            {
+                NewType.ObjectAnimations = null;
+            }
+
+            NewType.ModelData = ModelData;
+
+
+
+
+            NewType.BumpRadius = Convert.ToInt16(Convert.ToInt16(LevelBump.Text));
+            NewType.SoundID = SoundIDs[SoundNameBox.SelectedIndex];
+            NewType.SoundRadius = Convert.ToInt16(SoundRangeBox.Text);
+            NewType.SoundType = Convert.ToInt16(SoundTypeBox.SelectedIndex);
+            NewType.RenderRadius = Convert.ToInt16(RenderBox.Text);
+            if (GravityBox.Checked)
+            {
+                NewType.GravityToggle = 1;
+            }
+            else
+            {
+                NewType.GravityToggle = 0;
+            }
+            //
+            if (CameraAlignBox.Checked)
+            {
+                NewType.CameraAlligned = 1;
+            }
+            else
+            {
+                NewType.CameraAlligned = 0;
+            }
+            //
+            if (ZSortBox.Checked)
+            {
+                NewType.ZSortToggle = 1;
+            }
+            else
+            {
+                NewType.ZSortToggle = 0;
+            }
+        }
+
+        public void ReloadUI()
+        {
+            
+            NameBox.Text = NewType.Name;
+            ModelBox.Text = null;
+            FlagBox.Text = NewType.Flag.ToString();
+
+            ScaleBox.Text = NewType.ModelScale.ToString();
+            BehaviorBox.SelectedIndex = NewType.BehaviorClass;
+
+
+            LevelBump.Text = NewType.BumpRadius.ToString();
+            SoundNameBox.SelectedIndex = NewType.SoundID;
+            SoundRangeBox.Text = NewType.SoundRadius.ToString();
+            SoundTypeBox.SelectedIndex = NewType.SoundType;
+            RenderBox.Text = NewType.RenderRadius.ToString();
+
+            GravityBox.Checked = Convert.ToBoolean(NewType.GravityToggle);
+            CameraAlignBox.Checked = Convert.ToBoolean(NewType.CameraAlligned);
+            ZSortBox.Checked = Convert.ToBoolean(NewType.ZSortToggle);
+
+            HitboxArray = NewType.ObjectHitbox;
+            for (int ThisHitbox = 0; ThisHitbox < HitboxArray.Length; ThisHitbox++)
+            {
+                IndexBox.Items.Add("CollisionSphere " + ThisHitbox.ToString());
+            }
+            if (HitboxArray.Length > 0)
+            {
+                AddingHB = true;
+                IndexBox.SelectedIndex = 0;
+                UpdateHBUI();
+                AddingHB = false;
+            }
+            
+            
+
+        }
         private void UpdateHitbox()
         {
             if (AddingHB)
@@ -185,84 +305,7 @@ namespace Tarmac64_Retail
             FileSave.DefaultExt = ".ok64.OBJECT";
             if (FileSave.ShowDialog() == DialogResult.OK)
             {
-                TM64_Course.OKObjectType NewType = new TM64_Course.OKObjectType();
-                NewType.Name = NameBox.Text;
-                NewType.TextureData = TextureControl.textureArray;
-                NewType.Flag = Convert.ToInt16(FlagBox.Text);
-                NewType.ObjectHitbox = HitboxArray;
-
-                float TempFloat;
-                if (Single.TryParse(ScaleBox.Text, out TempFloat))
-                {
-                    NewType.ModelScale = TempFloat;
-                }
-                else
-                {
-                    MessageBox.Show("Scale Parsing Error. Check scale value.");
-                    return;
-                }
-
-
-                NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex - 1);
-                NewType.Behavior = BehaviorArray[NewType.BehaviorClass];
-
-                List<TM64_Objects.OK64Parameter> ParameterList = (List<TM64_Objects.OK64Parameter>)ParameterView.Items;
-
-                for (int ThisParameter = 0; ThisParameter < NewType.Behavior.Parameters.Length; ThisParameter++)
-                {
-                    NewType.Behavior.Parameters[ThisParameter].Value = ParameterList[ThisParameter].Value;
-                }
-
-
-
-
-                if (AToggleBox.Checked)
-                {
-                    NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
-                    var WalkData = importer.ImportFile(WalkBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                    NewType.ObjectAnimations.Animation = TarmacGeometry.LoadSkeleton(WalkData, NewType.ModelScale);
-                }
-                else
-                {
-                    NewType.ObjectAnimations = null;
-                }
-
-                NewType.ModelData = TarmacGeometry.CreateObjects(ModelData, NewType.TextureData, true);
-
-
-                
-                
-                NewType.BumpRadius = Convert.ToInt16(Convert.ToInt16(LevelBump.Text) * 100);
-                NewType.SoundID = SoundIDs[SoundNameBox.SelectedIndex];
-                NewType.SoundRadius = Convert.ToInt16(SoundRangeBox.Text);
-                NewType.SoundType = Convert.ToInt16(SoundTypeBox.SelectedIndex);
-                NewType.RenderRadius = Convert.ToInt16(RenderBox.Text);
-                if (GravityBox.Checked)
-                {
-                    NewType.GravityToggle = 1;
-                }
-                else 
-                {
-                    NewType.GravityToggle = 0;
-                }
-                //
-                if (CameraAlignBox.Checked)
-                {
-                    NewType.CameraAlligned = 1;
-                }
-                else
-                {
-                    NewType.CameraAlligned = 0;
-                }
-                //
-                if (ZSortBox.Checked)
-                {
-                    NewType.ZSortToggle = 1;
-                }
-                else
-                {
-                    NewType.ZSortToggle = 0;
-                }
+                PrepCurrentObject();
 
                 File.WriteAllBytes(FileSave.FileName, Tarmac.CompressMIO0(TarmacCourse.SaveObjectType(NewType)));
 
@@ -465,6 +508,7 @@ namespace Tarmac64_Retail
                         //sphere
                         SizeYBox.Enabled = false;
                         SizeZBox.Enabled = false;
+                        AngleZBox.Enabled = false;
                         SizeXBox.Text = Convert.ToString(HitboxArray[Index].Size[0]);
                         SizeYBox.Text = "";
                         SizeZBox.Text = "";
@@ -475,6 +519,7 @@ namespace Tarmac64_Retail
                         //cylinder
                         SizeYBox.Enabled = true;
                         SizeZBox.Enabled = false;
+                        AngleZBox.Enabled = false;
                         SizeXBox.Text = Convert.ToString(HitboxArray[Index].Size[0]);
                         SizeYBox.Text = Convert.ToString(HitboxArray[Index].Size[1]);
                         SizeZBox.Text = "";
@@ -485,9 +530,11 @@ namespace Tarmac64_Retail
                         //cube
                         SizeYBox.Enabled = true;
                         SizeZBox.Enabled = true;
+                        AngleZBox.Enabled = true;
                         SizeXBox.Text = Convert.ToString(HitboxArray[Index].Size[0]);
                         SizeYBox.Text = Convert.ToString(HitboxArray[Index].Size[1]);
                         SizeZBox.Text = Convert.ToString(HitboxArray[Index].Size[2]);
+                        AngleZBox.Text = Convert.ToString(HitboxArray[Index].BoxAngle);
                         break;
                     }
             }
@@ -522,6 +569,55 @@ namespace Tarmac64_Retail
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void SaveXMLClick(object sender, EventArgs e)
+        {
+            SaveFileDialog FileSave = new SaveFileDialog();
+
+            FileSave.Filter = "Tarmac Object (*.ok64.OBJECT)|*.ok64.OBJECT|All Files (*.*)|*.*";
+            FileSave.DefaultExt = ".ok64.OBJECT";
+            FileSave.InitialDirectory = TarmacSettings.ObjectDirectory;
+            if (FileSave.ShowDialog() == DialogResult.OK)
+            {
+                string FilePath = FileSave.FileName;
+                XmlDocument XMLDoc = new XmlDocument();
+                TM64 Tarmac = new TM64();
+                PrepCurrentObject();
+                XmlElement XMLData = XMLDoc.CreateElement("SaveFile");
+                
+                NewType.SaveXML(XMLDoc, XMLData, 0);
+
+                XMLDoc.AppendChild(XMLData);
+                XMLDoc.Save(FilePath);
+            }
+        }
+
+        private void LoadXMLClick(object sender, EventArgs e)
+        {
+            OpenFileDialog FileOpen = new OpenFileDialog();
+
+            FileOpen.Filter = "Tarmac Object (*.ok64.OBJECT)|*.ok64.OBJECT|All Files (*.*)|*.*";
+            FileOpen.DefaultExt = ".ok64.OBJECT";
+            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
+            if (FileOpen.ShowDialog() == DialogResult.OK)
+            {
+                string FilePath = FileOpen.FileName;
+                if (File.Exists(FilePath))
+                {
+                    XmlDocument XMLDoc = new XmlDocument();
+                    XMLDoc.Load(FilePath);
+
+                    NewType = new TM64_Course.OKObjectType(XMLDoc, "SaveFile", 0);
+
+                    TextureControl.textureArray = NewType.TextureData;
+                    TextureControl.AddNewTextures(TextureControl.textureArray.Length);
+                    TextureControl.Loaded = true;
+                }
+
+            }
+
+            ReloadUI();
         }
     }
 }

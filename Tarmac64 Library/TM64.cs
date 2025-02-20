@@ -37,7 +37,6 @@ namespace Tarmac64_Library
         /// These are various functions for decompressing and handling the segment data for Mario Kart 64.
 
 
-        public static int newint = 4;
 
 
         byte[] flip2 = new byte[2];

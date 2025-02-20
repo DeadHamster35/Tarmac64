@@ -12,6 +12,9 @@ using System.Windows.Forms;
 using Tarmac64_Library;
 using Texture64;
 using System.Xml;
+using static Tarmac64_Library.TM64_Geometry;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+
 namespace Tarmac64_Library
 {
     public class TM64_Course
@@ -174,56 +177,6 @@ namespace Tarmac64_Library
             public int AnimationPosition { get; set; }
         }
 
-
-
-        public class OKObjectBehaviorDead
-        {
-            //nothing unique
-        }
-
-        public class OKObjectBehaviorExist
-        {
-            //nothing unique
-        }
-
-
-        public class OKObjectBehaviorFloat
-        {
-            //nothing unique
-        }
-        public class OKObjectBehaviorPath
-        {
-
-            public short PathIndex { get; set; }
-            public short Direction { get; set; }
-            public float MaxSpeed { get; set; }
-        }
-
-
-        public class OKObjectBehaviorWander
-        {
-
-            public short Range { get; set; }
-            public short Sight { get; set; }
-            public short Viewcone { get; set; }
-            public float MaxSpeed { get; set; }
-        }
-        
-
-        public class OKObjectBehaviorSearch
-        {
-
-            public short Range { get; set; }
-            public short Sight { get; set; }
-            public short Viewcone { get; set; }
-            public float MaxSpeed { get; set; }
-        }
-
-        public class OKObjectBehaviorBounce
-        {
-            //nothing unique
-        }
-
         public class OKObjectType
         {
             public string Path { get; set; }   
@@ -251,7 +204,118 @@ namespace Tarmac64_Library
             public byte CameraAlligned { get; set; }
             public byte ZSortToggle { get; set; }
             public string Name { get; set; }
-            
+            public OKObjectType()
+            {
+
+            }
+            public OKObjectType(XmlDocument XMLDoc, string Parent, int ChildIndex)
+            {
+                TM64 Tarmac = new TM64();
+                string HeaderName = Parent + "/ObjectType_" + ChildIndex;
+
+
+                Name = Convert.ToString(Tarmac.LoadElement(XMLDoc, HeaderName, "Name", ""));
+
+                BehaviorClass = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "BehaviorClass", "0"));
+                RenderRadius = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "RenderRadius", "700"));
+                BumpRadius = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "BumpRadius", "0"));
+                ModelScale = Convert.ToSingle(Tarmac.LoadElement(XMLDoc, HeaderName, "ModelScale", "1.0"));
+                SoundRadius = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "SoundRadius", "0"));
+                SoundType = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "SoundType", "0"));
+                SoundID = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, HeaderName, "SoundID", "0"));
+                Flag = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "Flag", "0"));
+                GravityToggle = Convert.ToByte(Tarmac.LoadElement(XMLDoc, HeaderName, "GravityToggle", "1"));
+                CameraAlligned = Convert.ToByte(Tarmac.LoadElement(XMLDoc, HeaderName, "CameraAlligned", "0"));
+                ZSortToggle = Convert.ToByte(Tarmac.LoadElement(XMLDoc, HeaderName, "ZSortToggle", "0"));
+
+                int HitCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, HeaderName, "HitboxCount", "0"));
+                ObjectHitbox = new TM64_Objects.OK64Collide[HitCount];
+                for (int ThisHit = 0; ThisHit < HitCount; ThisHit++)
+                {
+                    ObjectHitbox[ThisHit] = new TM64_Objects.OK64Collide(XMLDoc, HeaderName +"/HitBoxData", ThisHit);
+                }
+
+                int TextureCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, HeaderName, "TextureCount","0"));
+                TextureData = new TM64_Geometry.OK64Texture[TextureCount];
+                for (int ThisTexture = 0; ThisTexture < TextureCount; ThisTexture++)
+                {
+                    TextureData[ThisTexture] = new TM64_Geometry.OK64Texture(XMLDoc, HeaderName + "/TextureData", ThisTexture);
+                }
+
+                ModelCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, HeaderName, "ModelCount", "0"));
+                ModelData = new TM64_Geometry.OK64F3DObject[ModelCount];
+                for (int ThisMaster = 0; ThisMaster < ModelCount; ThisMaster++)
+                {
+                    ModelData[ThisMaster] = new TM64_Geometry.OK64F3DObject(XMLDoc, HeaderName + "/ModelData", ThisMaster);
+                }
+
+                int ParameterCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, HeaderName, "ParameterCount", "0"));
+                Behavior = new TM64_Objects.OK64Behavior();
+                Behavior.Parameters = new TM64_Objects.OK64Parameter[ParameterCount];
+                for (int ThisParameter = 0; ThisParameter < ParameterCount; ThisParameter++)
+                {
+                    Behavior.Parameters[ThisParameter] = new TM64_Objects.OK64Parameter();
+                    Behavior.Parameters[ThisParameter].Name = "Parameter" + ThisParameter.ToString();
+                    Behavior.Parameters[ThisParameter].Value = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, HeaderName + "/ParameterData", "Parameter_"+ThisParameter.ToString(), "0"));
+                }
+            }
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int ObjectID)
+            {
+
+                XmlElement ObjectXML = XMLDoc.CreateElement("ObjectType_"+ObjectID.ToString());
+                TM64 Tarmac = new TM64();
+                Parent.AppendChild(ObjectXML);
+
+                
+
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "Name", Name);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "BehaviorClass", BehaviorClass);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "RenderRadius", RenderRadius);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "BumpRadius", BumpRadius);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "ModelScale", ModelScale);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "SoundRadius", SoundRadius);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "SoundType", SoundType);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "SoundID", SoundID);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "Flag", Flag);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "GravityToggle", GravityToggle);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "CameraAlligned", CameraAlligned);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "ZSortToggle", ZSortToggle);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "HitboxCount", ObjectHitbox.Length);
+                XmlElement HitBoxXML = XMLDoc.CreateElement("HitBoxData");
+                for (int ThisHit = 0; ThisHit < ObjectHitbox.Length; ThisHit++)
+                {
+                    ObjectHitbox[ThisHit].SaveXML(XMLDoc, HitBoxXML, ThisHit);
+
+                }
+                ObjectXML.AppendChild(HitBoxXML);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "TextureCount", TextureData.Length);
+                XmlElement TextureXML = XMLDoc.CreateElement("TextureData");
+                for (int ThisTexture = 0; ThisTexture < TextureData.Length; ThisTexture++)
+                {
+                    TextureData[ThisTexture].SaveXML(XMLDoc, TextureXML, ThisTexture);
+                    
+                }
+                ObjectXML.AppendChild(TextureXML);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "ModelCount", ModelData.Length);
+                XmlElement ModelXML = XMLDoc.CreateElement("ModelData");
+                for (int ThisModel = 0; ThisModel < ModelData.Length; ThisModel++)
+                {
+                    ModelData[ThisModel].SaveXML(XMLDoc, ModelXML, ThisModel);
+                    
+                }
+                ObjectXML.AppendChild(ModelXML);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "ParameterCount", Behavior.Parameters.Length);
+                XmlElement ParameterXML = XMLDoc.CreateElement("ParameterData");
+                for (int ThisParameter = 0; ThisParameter < Behavior.Parameters.Length; ThisParameter++)
+                {
+                    Tarmac.GenerateElement(XMLDoc, ParameterXML, "Parameter_"+ThisParameter.ToString(), Behavior.Parameters[ThisParameter].Value.ToString()); 
+                }
+                ObjectXML.AppendChild(ParameterXML);
+            }
         }
 
         public class PathEffect
@@ -605,7 +669,7 @@ namespace Tarmac64_Library
                 ThisType.ParameterOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
                 for (int ThisPar = 0; ThisPar < ThisType.Behavior.Parameters.Length; ThisPar++)
                 {
-                    binaryWriter.Write(Convert.ToInt16(ThisType.Behavior.Parameters[ThisPar].Value));
+                    binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ThisType.Behavior.Parameters[ThisPar].Value)));
                 }
                 for (int ThisPar = (ThisType.Behavior.Parameters.Length % 2); ThisPar < 2; ThisPar++)
                 {
@@ -1121,7 +1185,7 @@ namespace Tarmac64_Library
             for (int ThisType = 0; ThisType < SaveData.Length; ThisType++)
             {
                 binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].BehaviorClass));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[ThisType].BumpRadius)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[ThisType].BumpRadius * 100.0f)));
                 binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].SoundRadius));
                 binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].RenderRadius));//
 
@@ -1149,7 +1213,7 @@ namespace Tarmac64_Library
 
                 binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].SoundID));
 
-                binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].ParameterOffset));
+                binaryWriter.Write(F3D.BigEndian(0x0A000000 | SaveData[ThisType].ParameterOffset));
                 if (SaveData[ThisType].ObjectHitbox != null)
                 {
                     binaryWriter.Write(F3D.BigEndian(SaveData[ThisType].HitboxOffset));
@@ -2180,34 +2244,28 @@ namespace Tarmac64_Library
             for(int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
             {
 
-                flip = BitConverter.GetBytes(courseData.BombArray[ThisBomb].Point);
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
+                
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.BombArray[ThisBomb].Point)));
 
-                flip = BitConverter.GetBytes(courseData.BombArray[ThisBomb].Type);
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
-
-                flip = BitConverter.GetBytes(8.33333333f);
-                Array.Reverse(flip);
-                binaryWriter.Write(flip);
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.BombArray[ThisBomb].Type)));
 
 
+                binaryWriter.Write(F3D.BigEndian(Convert.ToSingle(0.83333333f)));
 
                 binaryWriter.Write(0);
                 binaryWriter.Write(0);
                 binaryWriter.Write(0);
                 binaryWriter.Write(0);
-
-                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
-                if (addressAlign == 16)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
+                
             }
 
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
 
             //music
             if (courseData.SongData.SequenceData.Length > 0)
@@ -2630,6 +2688,173 @@ namespace Tarmac64_Library
             byte[] newROM = memoryStream.ToArray();
             return newROM;
 
+        }
+
+        public OK64SectionList[] ImportSVL2(string filePath, int masterCount, OK64F3DObject[] masterObjects)
+        {
+            string[] fileText = File.ReadAllLines(filePath);
+            OK64SectionList[] sectionList = new OK64SectionList[0];
+            if (fileText[0] == "SVL2")
+            {
+                int sectionCount = Convert.ToInt32(fileText[2]);
+                sectionList = new OK64SectionList[sectionCount];
+                int currentLine = 3;
+                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                {
+                    sectionList[currentSection] = new OK64SectionList();
+                    for (int currentView = 0; currentView < 1; currentView++)
+                    {
+                        int objectCount = Convert.ToInt32(fileText[currentLine]);
+                        currentLine++;
+                        sectionList[currentSection].objectList = new int[objectCount];
+
+                        string[] masterNames = new string[masterObjects.Length];
+
+                        for (int currentName = 0; currentName < masterObjects.Length; currentName++)
+                        {
+                            masterNames[currentName] = masterObjects[currentName].objectName;
+                        }
+
+                        for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                        {
+                            sectionList[currentSection].objectList[currentObject] = Array.IndexOf(masterNames, fileText[currentLine]);
+                            currentLine++;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (fileText[0] != masterCount.ToString())
+                {
+
+                }
+                else
+                {
+
+                    int sectionCount = Convert.ToInt32(fileText[1]);
+                    sectionList = new OK64SectionList[sectionCount];
+                    int currentLine = 2;
+                    for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                    {
+                        sectionList[currentSection] = new OK64SectionList();
+                        for (int currentView = 0; currentView < 4; currentView++)
+                        {
+                            int objectCount = Convert.ToInt32(fileText[currentLine]);
+                            currentLine++;
+                            sectionList[currentSection].objectList = new int[objectCount];
+
+                            for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                            {
+                                sectionList[currentSection].objectList[currentObject] = Convert.ToInt32(fileText[currentLine]);
+                                currentLine++;
+                            }
+                        }
+                    }
+
+
+                }
+            }
+            return sectionList;
+        }
+
+
+
+
+
+
+
+
+
+
+        public void ImportSVL3(out OK64SectionList[] sectionList, out OK64SectionList[] XLUList, string filePath, OK64F3DObject[] masterObjects)
+        {
+            string[] fileText = File.ReadAllLines(filePath);
+            sectionList = new OK64SectionList[0];
+            XLUList = new OK64SectionList[0];
+            if (fileText[0] == "SVL3")
+            {
+                int sectionCount = Convert.ToInt32(fileText[1]);
+                sectionList = new OK64SectionList[sectionCount];
+                int currentLine = 2;
+                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                {
+                    sectionList[currentSection] = new OK64SectionList();
+
+                    for (int currentView = 0; currentView < 1; currentView++)
+                    {
+
+                        int objectCount = Convert.ToInt32(fileText[currentLine++]);
+
+                        sectionList[currentSection].objectList = new int[objectCount];
+
+                        string[] masterNames = new string[masterObjects.Length];
+
+                        for (int currentName = 0; currentName < masterObjects.Length; currentName++)
+                        {
+                            masterNames[currentName] = masterObjects[currentName].objectName;
+                        }
+
+                        for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                        {
+                            sectionList[currentSection].objectList[currentObject] = Array.IndexOf(masterNames, fileText[currentLine++]);
+                        }
+                    }
+                }
+
+
+                XLUList = new OK64SectionList[sectionCount];
+                for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+                {
+                    XLUList[currentSection] = new OK64SectionList();
+                    for (int currentView = 0; currentView < 1; currentView++)
+                    {
+                        int objectCount = Convert.ToInt32(fileText[currentLine++]);
+                        XLUList[currentSection].objectList = new int[objectCount];
+
+                        string[] masterNames = new string[masterObjects.Length];
+
+                        for (int currentName = 0; currentName < masterObjects.Length; currentName++)
+                        {
+                            masterNames[currentName] = masterObjects[currentName].objectName;
+                        }
+
+                        for (int currentObject = 0; currentObject < objectCount; currentObject++)
+                        {
+                            XLUList[currentSection].objectList[currentObject] = Array.IndexOf(masterNames, fileText[currentLine++]);
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+
+        public void ExportSVL3(string filePath, OK64SectionList[] sectionList, OK64SectionList[] XLUList, OK64F3DObject[] masterObjects)
+        {
+
+            File.WriteAllText(filePath, "SVL3" + Environment.NewLine);
+            File.AppendAllText(filePath, sectionList.Length.ToString() + Environment.NewLine);
+            foreach (var section in sectionList)
+            {
+                File.AppendAllText(filePath, section.objectList.Length.ToString() + Environment.NewLine);
+                foreach (var obj in section.objectList)
+                {
+                    File.AppendAllText(filePath, masterObjects[obj].objectName + Environment.NewLine);
+                }
+
+            }
+            foreach (var section in XLUList)
+            {
+                File.AppendAllText(filePath, section.objectList.Length.ToString() + Environment.NewLine);
+                foreach (var obj in section.objectList)
+                {
+                    File.AppendAllText(filePath, masterObjects[obj].objectName + Environment.NewLine);
+                }
+
+            }
         }
 
 

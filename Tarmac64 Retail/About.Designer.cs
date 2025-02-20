@@ -67,9 +67,10 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(198, 104);
             this.label4.TabIndex = 30;
-            this.label4.Text = "Litronom\r\nMicro500\r\nmib-f8sm9c\r\nHootHoot\r\nRain\r\nGoldenGemGames\r\nzouzzz\r\nPeter Lem" +
-    "on\r\n";
+            this.label4.Text = "Litronom\r\nMicro500\r\nmib-f8sm9c\r\nHootHoot\r\nRain\r\nGoldenGemGames\r\nKingcom\r\ntj90241\r" +
+    "\n";
             this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // label5
             // 

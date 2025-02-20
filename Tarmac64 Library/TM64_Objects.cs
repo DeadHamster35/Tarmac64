@@ -1,6 +1,7 @@
 ﻿using Assimp;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -51,6 +52,59 @@ namespace Tarmac64_Library
                 CollideResult = 0;
                 BoxAngle = 0;
                 SolidObject = true;
+            }
+
+            public OK64Collide(XmlDocument XMLDoc, string Parent, int ChildIndex)
+            {
+                //LoadXML
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+
+                string HeaderName = Parent + "/" + "Hitbox_" + ChildIndex.ToString();
+
+                Type = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "Type"));
+                Effect = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "Effect"));
+                Status = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "Status"));
+                CollideResult = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "CollideResult"));
+                HitResult = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "HitResult"));
+                SolidObject = Convert.ToBoolean(Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "SolidObject")));
+                Scale = Convert.ToSingle(Tarmac.LoadElement(XMLDoc,HeaderName, "Scale"));
+                BoxAngle = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "BoxAngle"));
+
+                Origin = new short[3];
+                Origin[0] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "Origin0"));
+                Origin[1] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "Origin1"));
+                Origin[2] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "Origin2"));
+                Size = new short[3];
+                Size[0] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "Size0"));
+                Size[1] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "Size1"));
+                Size[2] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc,HeaderName, "Size2"));
+            }
+
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent,int ThisHit)
+            {
+                XmlElement HitXML = XMLDoc.CreateElement("Hitbox_" + ThisHit.ToString());
+
+                TM64 Tarmac = new TM64();
+
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Type", Type);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Effect", Effect);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Status", Status);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "CollideResult", CollideResult);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "HitResult", HitResult);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "SolidObject", Convert.ToInt32(SolidObject));
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Scale", Scale);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "BoxAngle", BoxAngle);
+
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Origin0", Origin[0]);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Origin1", Origin[1]);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Origin2", Origin[2]);
+
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Size0", Size[0]);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Size1", Size[1]);
+                Tarmac.GenerateElement(XMLDoc, HitXML, "Size2", Size[2]);
+
+                Parent.AppendChild(HitXML);
             }
             //
         }
