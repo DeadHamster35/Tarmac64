@@ -543,6 +543,7 @@
             this.TempoTTBox.TabIndex = 304;
             this.TempoTTBox.Text = "2";
             this.TempoTTBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.TempoTTBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
             // 
             // label57
             // 
@@ -2267,7 +2268,6 @@
             // 
             // LapBox
             // 
-            this.LapBox.Enabled = false;
             this.LapBox.Location = new System.Drawing.Point(8, 58);
             this.LapBox.Margin = new System.Windows.Forms.Padding(5);
             this.LapBox.Name = "LapBox";
@@ -2275,6 +2275,7 @@
             this.LapBox.TabIndex = 301;
             this.LapBox.Text = "3";
             this.LapBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.LapBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
             // 
             // label78
             // 
