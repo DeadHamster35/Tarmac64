@@ -65,14 +65,32 @@ namespace Tarmac64_Retail
                     byte[] paletteData = null;
                     Bitmap bitmapData = new Bitmap(textureAddress);
                     N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[codecBox.SelectedIndex], bitmapData);
-                    byte[] compressedTexture = Tarmac.CompressMIO0(imageData);
+
+
+                    int addressAlign = 64 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 64);
+                    if (addressAlign == 64)
+                        addressAlign = 0;
+
+                    for (int align = 0; align < addressAlign; align++)
+                    {
+                        binaryWriter.Write(Convert.ToByte(0x00));
+                    }
 
                     int SegmentPosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
                     binaryWriter.Write(imageData);
                     int PalettePosition = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+                    addressAlign = 64 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 64);
+                    if (addressAlign == 64)
+                        addressAlign = 0;
+
+                    for (int align = 0; align < addressAlign; align++)
+                    {
+                        binaryWriter.Write(Convert.ToByte(0x00));
+                    }
+
                     if (paletteData != null)
                     {
-
                         binaryWriter.Write(paletteData);
                     }
 
@@ -81,7 +99,7 @@ namespace Tarmac64_Retail
                     hText += "#define " + fileName + "_Size 0x" + imageData.Length.ToString("X") + Environment.NewLine;
                     if (paletteData != null)
                     {
-                        hText += "#define " + fileName + "_Offset 0x" + PalettePosition.ToString("X") + Environment.NewLine;
+                        hText += "#define " + fileName + "_PaletteOffset 0x" + PalettePosition.ToString("X") + Environment.NewLine;
                         hText += "#define " + fileName + "_PaletteSize 0x" + paletteData.Length.ToString("X") + Environment.NewLine;
                     }
 

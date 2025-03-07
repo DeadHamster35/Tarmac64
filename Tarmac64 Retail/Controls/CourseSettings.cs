@@ -351,6 +351,8 @@ namespace Tarmac64_Retail
             CourseData.GhostPath = ghostBox.Text;            
             CourseData.Gametype = GameTypeBox.SelectedIndex;
 
+
+
             CourseData.Fog.FogToggle = Convert.ToInt16(FogToggleBox.Checked);
 
             CourseData.SkyboxBool = Convert.ToInt16(SkyBoxCheckBox.Checked);
@@ -395,6 +397,11 @@ namespace Tarmac64_Retail
             {
                 CourseData.ManualTempo = ParseInt;
             }
+            if (int.TryParse(LapBox.Text, out ParseInt))
+            {
+                CourseData.LapCount = ParseInt;
+            }
+
 
 
 

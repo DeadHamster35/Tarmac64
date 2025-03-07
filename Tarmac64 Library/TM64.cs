@@ -1036,12 +1036,12 @@ namespace Tarmac64_Library
             Bitmap bitmapData = new Bitmap(textureAddress);
             N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[CodecType], bitmapData);
             byte[] compressedTexture = Tarmac.CompressMIO0(imageData);
-            byte[] TKMK = Tarmac.CompressTKMK(imageData, bitmapData.Width, bitmapData.Height);
+            //byte[] TKMK = Tarmac.CompressTKMK(imageData, bitmapData.Width, bitmapData.Height);
 
 
             File.WriteAllBytes(childDirectory + ".RAW", imageData);
             File.WriteAllBytes(childDirectory + ".RAW.MIO0", compressedTexture);
-            File.WriteAllBytes(childDirectory + ".RAW.TKMK00", TKMK);
+            //File.WriteAllBytes(childDirectory + ".RAW.TKMK00", TKMK);
             if (paletteData != null)
             {
                 byte[] compressedPalette = Tarmac.CompressMIO0(paletteData);

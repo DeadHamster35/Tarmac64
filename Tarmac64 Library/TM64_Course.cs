@@ -390,6 +390,7 @@ namespace Tarmac64_Library
             public byte[] GhostData { get; set; }
             public int GhostCharacter { get; set; }
             public short PathCount { get; set; }
+            public int LapCount { get; set; }
             public short DistributeBool { get; set; }
             public short GoalBannerBool { get; set; }
             public short SkyboxBool { get; set; }
@@ -1368,6 +1369,7 @@ namespace Tarmac64_Library
             CourseData.Fog.FogColor.G = binaryReader.ReadByte();
             CourseData.Fog.FogColor.B = binaryReader.ReadByte();
             CourseData.Fog.FogColor.A = binaryReader.ReadByte();
+            CourseData.LapCount = binaryReader.ReadInt32();
 
             CourseData.Gametype = binaryReader.ReadInt32();
             CourseData.Settings.Credits = binaryReader.ReadString();            
@@ -1578,6 +1580,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.Fog.FogColor.G);
             binaryWriter.Write(CourseData.Fog.FogColor.B);
             binaryWriter.Write(CourseData.Fog.FogColor.A);
+            binaryWriter.Write(CourseData.LapCount);
 
 
             binaryWriter.Write(CourseData.Gametype);
@@ -2241,14 +2244,13 @@ namespace Tarmac64_Library
 
             //bombdata
             courseData.OK64HeaderData.BombOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
-            for(int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
+            for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
             {
 
-                
+
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.BombArray[ThisBomb].Point)));
-
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.BombArray[ThisBomb].Type)));
-
+                binaryWriter.Write(F3D.BigEndian(Convert.ToSingle(8.33333333f)));
 
                 binaryWriter.Write(F3D.BigEndian(Convert.ToSingle(0.83333333f)));
 
@@ -2256,8 +2258,8 @@ namespace Tarmac64_Library
                 binaryWriter.Write(0);
                 binaryWriter.Write(0);
                 binaryWriter.Write(0);
-                
             }
+            //allignment
 
             addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
             if (addressAlign == 16)
@@ -2595,8 +2597,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(courseData.OK64HeaderData.GoalBannerToggle);
             binaryWriter.Write(courseData.OK64HeaderData.SkyboxToggle); ;            
             binaryWriter.Write(Convert.ToChar(courseData.ManualTempo));
-            //Padding
-            binaryWriter.Write(Convert.ToByte(0xFF));
+            binaryWriter.Write(Convert.ToChar(courseData.LapCount));
 
             binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[0]));
             binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[1]));
