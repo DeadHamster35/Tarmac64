@@ -1479,7 +1479,7 @@
             this.label1.Size = new System.Drawing.Size(57, 13);
             this.label1.TabIndex = 308;
             this.label1.Text = "GameType";
-
+            /*
             //LapBox
             this.LapBox.Location = new System.Drawing.Point(8, 58);
             this.LapBox.Margin = new System.Windows.Forms.Padding(5);
@@ -1489,6 +1489,7 @@
             this.LapBox.Text = "3";
             this.LapBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.LapBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            */
             // 
             // GameTypeBox
             // 

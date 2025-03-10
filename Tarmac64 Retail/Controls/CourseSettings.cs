@@ -397,10 +397,6 @@ namespace Tarmac64_Retail
             {
                 CourseData.ManualTempo = ParseInt;
             }
-            if (int.TryParse(LapBox.Text, out ParseInt))
-            {
-                CourseData.LapCount = ParseInt;
-            }
 
 
 

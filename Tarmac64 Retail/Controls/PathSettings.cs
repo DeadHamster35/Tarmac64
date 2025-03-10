@@ -87,6 +87,7 @@ namespace Tarmac64_Retail
             CourseData.PathSettings.PathSurface[3] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathSurface3", "0"));
             CourseData.PathCount = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "PathCount", "1"));
             CourseData.DistributeBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "DistributeBool", "0"));
+            CourseData.LapCount = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "LapCount", "3"));
 
             int FXCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "EffectCount", "0"));
             PathFX = new List<TM64_Course.PathEffect>();
@@ -130,6 +131,7 @@ namespace Tarmac64_Retail
             Tarmac.GenerateElement(XMLDoc, PathXML, "PathSurface3", CourseData.PathSettings.PathSurface[3]);
             Tarmac.GenerateElement(XMLDoc, PathXML, "PathCount", CourseData.PathCount);
             Tarmac.GenerateElement(XMLDoc, PathXML, "DistributeBool", CourseData.DistributeBool);
+            Tarmac.GenerateElement(XMLDoc, PathXML, "LapCount", CourseData.LapCount);
 
             Tarmac.GenerateElement(XMLDoc, PathXML, "EffectCount", CourseData.PathSettings.PathEffects.Length);
             XmlElement FXXML = XMLDoc.CreateElement("PathEffects");
@@ -339,6 +341,12 @@ namespace Tarmac64_Retail
                 AdjG.Text = PathFX[PFXID].AdjColor.G.ToString();
                 AdjB.Text = PathFX[PFXID].AdjColor.B.ToString();
 
+                int ParseInt;
+                if (int.TryParse(LapCountBox.Text, out ParseInt))
+                {
+                    CourseData.LapCount = ParseInt;
+                }
+
 
                 PathSurfaceBox.Text = CourseData.PathSettings.PathSurface[PathSurfaceSelect.SelectedIndex].ToString();
                 PathCountBox.Text = CourseData.PathCount.ToString();
@@ -432,6 +440,11 @@ namespace Tarmac64_Retail
             {
                 LapCountBox.Enabled = false;
             }
+        }
+
+        private void UpdateUIHandler(object sender, KeyEventArgs e)
+        {
+            UpdateUI();
         }
 
         private void ColorUpdate()

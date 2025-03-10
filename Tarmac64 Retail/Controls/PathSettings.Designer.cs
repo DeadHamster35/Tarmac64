@@ -29,6 +29,10 @@
         private void InitializeComponent()
         {
             this.LapFinishLine = new System.Windows.Forms.GroupBox();
+            this.SprintRadio = new System.Windows.Forms.RadioButton();
+            this.CircuitRadio = new System.Windows.Forms.RadioButton();
+            this.LapCountBox = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.GoalBannerBox = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.PathSurfaceSelect = new System.Windows.Forms.ComboBox();
@@ -68,10 +72,6 @@
             this.label8 = new System.Windows.Forms.Label();
             this.BombTypeBox = new System.Windows.Forms.ComboBox();
             this.BombIndexBox = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.LapCountBox = new System.Windows.Forms.TextBox();
-            this.CircuitRadio = new System.Windows.Forms.RadioButton();
-            this.SprintRadio = new System.Windows.Forms.RadioButton();
             this.LapFinishLine.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -94,6 +94,54 @@
             this.LapFinishLine.TabStop = false;
             this.LapFinishLine.Text = "Laps | Finish Line";
             this.LapFinishLine.Enter += new System.EventHandler(this.LapFinishLine_Enter);
+            // 
+            // SprintRadio
+            // 
+            this.SprintRadio.AutoSize = true;
+            this.SprintRadio.Location = new System.Drawing.Point(12, 55);
+            this.SprintRadio.Margin = new System.Windows.Forms.Padding(5);
+            this.SprintRadio.Name = "SprintRadio";
+            this.SprintRadio.Size = new System.Drawing.Size(111, 17);
+            this.SprintRadio.TabIndex = 301;
+            this.SprintRadio.TabStop = true;
+            this.SprintRadio.Text = "Sprint Race (A->B)";
+            this.SprintRadio.UseVisualStyleBackColor = true;
+            this.SprintRadio.CheckedChanged += new System.EventHandler(this.SprintRadio_CheckedChanged);
+            // 
+            // CircuitRadio
+            // 
+            this.CircuitRadio.AutoSize = true;
+            this.CircuitRadio.Location = new System.Drawing.Point(12, 26);
+            this.CircuitRadio.Margin = new System.Windows.Forms.Padding(5);
+            this.CircuitRadio.Name = "CircuitRadio";
+            this.CircuitRadio.Size = new System.Drawing.Size(112, 17);
+            this.CircuitRadio.TabIndex = 300;
+            this.CircuitRadio.TabStop = true;
+            this.CircuitRadio.Text = "Circuit Race (A->A)";
+            this.CircuitRadio.UseVisualStyleBackColor = true;
+            this.CircuitRadio.CheckedChanged += new System.EventHandler(this.CircuitRadio_CheckedChanged);
+            // 
+            // LapCountBox
+            // 
+            this.LapCountBox.Location = new System.Drawing.Point(148, 25);
+            this.LapCountBox.Margin = new System.Windows.Forms.Padding(5);
+            this.LapCountBox.Name = "LapCountBox";
+            this.LapCountBox.Size = new System.Drawing.Size(45, 19);
+            this.LapCountBox.TabIndex = 298;
+            this.LapCountBox.Text = "3";
+            this.LapCountBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.LapCountBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(201, 29);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(56, 13);
+            this.label9.TabIndex = 290;
+            this.label9.Text = "Lap Count";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // GoalBannerBox
             // 
@@ -182,6 +230,7 @@
             this.PathCountBox.TabIndex = 296;
             this.PathCountBox.Text = "1";
             this.PathCountBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.PathCountBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
             // 
             // groupBox3
             // 
@@ -530,53 +579,6 @@
             this.BombIndexBox.Size = new System.Drawing.Size(85, 21);
             this.BombIndexBox.TabIndex = 0;
             this.BombIndexBox.SelectedIndexChanged += new System.EventHandler(this.BombIndexBox_SelectedIndexChanged);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(201, 29);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(56, 13);
-            this.label9.TabIndex = 290;
-            this.label9.Text = "Lap Count";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // LapCountBox
-            // 
-            this.LapCountBox.Location = new System.Drawing.Point(148, 25);
-            this.LapCountBox.Margin = new System.Windows.Forms.Padding(5);
-            this.LapCountBox.Name = "LapCountBox";
-            this.LapCountBox.Size = new System.Drawing.Size(45, 19);
-            this.LapCountBox.TabIndex = 298;
-            this.LapCountBox.Text = "3";
-            this.LapCountBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // CircuitRadio
-            // 
-            this.CircuitRadio.AutoSize = true;
-            this.CircuitRadio.Location = new System.Drawing.Point(12, 26);
-            this.CircuitRadio.Margin = new System.Windows.Forms.Padding(5);
-            this.CircuitRadio.Name = "CircuitRadio";
-            this.CircuitRadio.Size = new System.Drawing.Size(112, 17);
-            this.CircuitRadio.TabIndex = 300;
-            this.CircuitRadio.TabStop = true;
-            this.CircuitRadio.Text = "Circuit Race (A->A)";
-            this.CircuitRadio.UseVisualStyleBackColor = true;
-            this.CircuitRadio.CheckedChanged += new System.EventHandler(this.CircuitRadio_CheckedChanged);
-            // 
-            // SprintRadio
-            // 
-            this.SprintRadio.AutoSize = true;
-            this.SprintRadio.Location = new System.Drawing.Point(12, 55);
-            this.SprintRadio.Margin = new System.Windows.Forms.Padding(5);
-            this.SprintRadio.Name = "SprintRadio";
-            this.SprintRadio.Size = new System.Drawing.Size(111, 17);
-            this.SprintRadio.TabIndex = 301;
-            this.SprintRadio.TabStop = true;
-            this.SprintRadio.Text = "Sprint Race (A->B)";
-            this.SprintRadio.UseVisualStyleBackColor = true;
-            this.SprintRadio.CheckedChanged += new System.EventHandler(this.SprintRadio_CheckedChanged);
             // 
             // PathSettings
             // 
