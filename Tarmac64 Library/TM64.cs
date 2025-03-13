@@ -110,6 +110,7 @@ namespace Tarmac64_Library
                 ImportScale = 1.0f;
                 AlphaCH2 = true;
                 BlenderImport = 0;
+                SaveSettings();
                 return this;
                 
             }
