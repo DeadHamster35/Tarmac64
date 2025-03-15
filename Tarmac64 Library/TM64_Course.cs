@@ -339,7 +339,6 @@ namespace Tarmac64_Library
 
         public class PathSettings
         {
-            public int[] PathSurface { get; set; }
             public uint[] PathOffsets { get; set; }
             public PathEffect[] PathEffects { get; set; }
         }
@@ -1537,11 +1536,6 @@ namespace Tarmac64_Library
             CourseData.OK64HeaderData.PathLength[1] = binaryReader.ReadInt16();
             CourseData.OK64HeaderData.PathLength[2] = binaryReader.ReadInt16();
             CourseData.OK64HeaderData.PathLength[3] = binaryReader.ReadInt16();
-            CourseData.PathSettings.PathSurface = new int[4];
-            CourseData.PathSettings.PathSurface[0] = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathSurface[1] = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathSurface[2] = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathSurface[3] = binaryReader.ReadInt32();
             CourseData.OK64HeaderData.WaterLevel = binaryReader.ReadSingle();
             CourseData.OK64HeaderData.WaterType = binaryReader.ReadInt32();
             CourseData.OK64HeaderData.SectionViewPosition = binaryReader.ReadInt32();
@@ -1837,10 +1831,6 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.OK64HeaderData.PathLength[1]);
             binaryWriter.Write(CourseData.OK64HeaderData.PathLength[2]);
             binaryWriter.Write(CourseData.OK64HeaderData.PathLength[3]);
-            binaryWriter.Write(CourseData.PathSettings.PathSurface[0]);
-            binaryWriter.Write(CourseData.PathSettings.PathSurface[1]);
-            binaryWriter.Write(CourseData.PathSettings.PathSurface[2]);
-            binaryWriter.Write(CourseData.PathSettings.PathSurface[3]);
             binaryWriter.Write(CourseData.OK64HeaderData.WaterLevel);
             binaryWriter.Write(CourseData.OK64HeaderData.WaterType);
             binaryWriter.Write(CourseData.OK64HeaderData.SectionViewPosition);
@@ -2599,10 +2589,6 @@ namespace Tarmac64_Library
             binaryWriter.Write(Convert.ToChar(courseData.ManualTempo));
             binaryWriter.Write(Convert.ToChar(courseData.LapCount));
 
-            binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[0]));
-            binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[1]));
-            binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[2]));
-            binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathSurface[3]));
 
             binaryWriter.Write(F3D.BigEndian(courseData.MusicID));
 

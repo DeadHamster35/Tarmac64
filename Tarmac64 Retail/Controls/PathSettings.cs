@@ -44,10 +44,6 @@ namespace Tarmac64_Retail
         {
             BinaryReader binaryReader = new BinaryReader(memoryStream);
 
-            CourseData.PathSettings.PathSurface[0] = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathSurface[1] = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathSurface[2] = binaryReader.ReadInt32();
-            CourseData.PathSettings.PathSurface[3] = binaryReader.ReadInt32();
             CourseData.PathCount = binaryReader.ReadInt16();
             CourseData.DistributeBool = binaryReader.ReadInt16();
 
@@ -81,10 +77,6 @@ namespace Tarmac64_Retail
             string ParentPath = "/SaveFile/PathSettings";
             TM64 Tarmac = new TM64();
 
-            CourseData.PathSettings.PathSurface[0] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathSurface0", "0"));
-            CourseData.PathSettings.PathSurface[1] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathSurface1", "0"));
-            CourseData.PathSettings.PathSurface[2] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathSurface2", "0"));
-            CourseData.PathSettings.PathSurface[3] = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "PathSurface3", "0"));
             CourseData.PathCount = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "PathCount", "1"));
             CourseData.DistributeBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "DistributeBool", "0"));
             CourseData.LapCount = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "LapCount", "3"));
@@ -125,10 +117,6 @@ namespace Tarmac64_Retail
             Parent.AppendChild(PathXML);
             TM64 Tarmac = new TM64();
 
-            Tarmac.GenerateElement(XMLDoc, PathXML, "PathSurface0", CourseData.PathSettings.PathSurface[0]);
-            Tarmac.GenerateElement(XMLDoc, PathXML, "PathSurface1", CourseData.PathSettings.PathSurface[1]);
-            Tarmac.GenerateElement(XMLDoc, PathXML, "PathSurface2", CourseData.PathSettings.PathSurface[2]);
-            Tarmac.GenerateElement(XMLDoc, PathXML, "PathSurface3", CourseData.PathSettings.PathSurface[3]);
             Tarmac.GenerateElement(XMLDoc, PathXML, "PathCount", CourseData.PathCount);
             Tarmac.GenerateElement(XMLDoc, PathXML, "DistributeBool", CourseData.DistributeBool);
             Tarmac.GenerateElement(XMLDoc, PathXML, "LapCount", CourseData.LapCount);
@@ -158,10 +146,6 @@ namespace Tarmac64_Retail
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
-            binaryWriter.Write(CourseData.PathSettings.PathSurface[0]);
-            binaryWriter.Write(CourseData.PathSettings.PathSurface[1]);
-            binaryWriter.Write(CourseData.PathSettings.PathSurface[2]);
-            binaryWriter.Write(CourseData.PathSettings.PathSurface[3]);
             binaryWriter.Write(CourseData.PathCount);
             binaryWriter.Write(CourseData.DistributeBool);
 
@@ -192,9 +176,10 @@ namespace Tarmac64_Retail
 
         public TM64_Course.Course UpdateCourse(TM64_Course.Course ThisCourse)
         {
+            UpdatePaths();
             ThisCourse.GoalBannerBool = CourseData.GoalBannerBool;
             ThisCourse.PathSettings.PathEffects = CourseData.PathSettings.PathEffects;
-            ThisCourse.PathSettings.PathSurface = CourseData.PathSettings.PathSurface;
+            ThisCourse.LapCount = CourseData.LapCount;
             ThisCourse.PathCount = CourseData.PathCount;
             ThisCourse.DistributeBool = CourseData.DistributeBool;
             ThisCourse.BombArray = CourseData.BombArray;
@@ -223,14 +208,8 @@ namespace Tarmac64_Retail
                 CourseData.BombArray[currentBomb].Type = Convert.ToInt16(bompTypeIDs[currentBomb]);
             }
             CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[0];
-            CourseData.PathSettings.PathSurface = new int[4];
             
             BombIndexBox.SelectedIndex = 0;
-            PathSurfaceSelect.Items.Add("Path 0");
-            PathSurfaceSelect.Items.Add("Path 1");
-            PathSurfaceSelect.Items.Add("Path 2");
-            PathSurfaceSelect.Items.Add("Path 3");
-            PathSurfaceSelect.SelectedIndex = 0;
 
             CircuitRadio.Checked = true;
             GoalBannerBox.Checked = true;
@@ -289,19 +268,12 @@ namespace Tarmac64_Retail
                 }
             }
 
-            
 
 
 
-            if (int.TryParse(PathSurfaceBox.Text, out ParseInt))
+            if (int.TryParse(LapCountBox.Text, out ParseInt))
             {
-                CourseData.PathSettings.PathSurface[PathSurfaceSelect.SelectedIndex] = ParseInt;
-            }
-
-
-            if (int.TryParse(PathSurfaceBox.Text, out ParseInt))
-            {
-                CourseData.PathSettings.PathSurface[PathSurfaceSelect.SelectedIndex] = ParseInt;
+                CourseData.LapCount = Convert.ToInt16(ParseInt);
             }
 
             if (int.TryParse(PathCountBox.Text, out ParseInt))
@@ -348,7 +320,6 @@ namespace Tarmac64_Retail
                 }
 
 
-                PathSurfaceBox.Text = CourseData.PathSettings.PathSurface[PathSurfaceSelect.SelectedIndex].ToString();
                 PathCountBox.Text = CourseData.PathCount.ToString();
                 BombPointBox.Text = CourseData.BombArray[BombIndexBox.SelectedIndex].Point.ToString();
                 BombTypeBox.SelectedIndex = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;

@@ -504,6 +504,7 @@
             // AToggleBox
             // 
             this.AToggleBox.AutoSize = true;
+            this.AToggleBox.Enabled = false;
             this.AToggleBox.Location = new System.Drawing.Point(10, 24);
             this.AToggleBox.Name = "AToggleBox";
             this.AToggleBox.Size = new System.Drawing.Size(136, 17);
@@ -524,6 +525,7 @@
             // 
             // WalkBox
             // 
+            this.WalkBox.Enabled = false;
             this.WalkBox.Location = new System.Drawing.Point(8, 49);
             this.WalkBox.Margin = new System.Windows.Forms.Padding(5);
             this.WalkBox.Name = "WalkBox";
@@ -533,6 +535,7 @@
             // 
             // button1
             // 
+            this.button1.Enabled = false;
             this.button1.Location = new System.Drawing.Point(139, 47);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(25, 23);

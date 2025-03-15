@@ -50,7 +50,6 @@ namespace Tarmac64_Retail
             CourseData.EchoColor = new TM64_Geometry.OK64Color();
             CourseData.EchoAdjustColor = new TM64_Geometry.OK64Color();
             CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[0];
-            CourseData.PathSettings.PathSurface = new int[4];
             CourseData.Fog = new TM64_Course.OKFog();
             CourseData.Fog.FogToggle = 0;
             CourseData.Fog.StartDistance = 900;

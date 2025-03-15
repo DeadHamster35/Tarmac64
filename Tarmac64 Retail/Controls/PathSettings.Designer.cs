@@ -35,9 +35,6 @@
             this.label9 = new System.Windows.Forms.Label();
             this.GoalBannerBox = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.PathSurfaceSelect = new System.Windows.Forms.ComboBox();
-            this.PathSurfaceBox = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.DistributeBox = new System.Windows.Forms.CheckBox();
             this.PathCountBox = new System.Windows.Forms.TextBox();
@@ -98,6 +95,7 @@
             // SprintRadio
             // 
             this.SprintRadio.AutoSize = true;
+            this.SprintRadio.Enabled = false;
             this.SprintRadio.Location = new System.Drawing.Point(12, 55);
             this.SprintRadio.Margin = new System.Windows.Forms.Padding(5);
             this.SprintRadio.Name = "SprintRadio";
@@ -111,6 +109,7 @@
             // CircuitRadio
             // 
             this.CircuitRadio.AutoSize = true;
+            this.CircuitRadio.Enabled = false;
             this.CircuitRadio.Location = new System.Drawing.Point(12, 26);
             this.CircuitRadio.Margin = new System.Windows.Forms.Padding(5);
             this.CircuitRadio.Name = "CircuitRadio";
@@ -156,9 +155,6 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.PathSurfaceSelect);
-            this.groupBox5.Controls.Add(this.PathSurfaceBox);
-            this.groupBox5.Controls.Add(this.label19);
             this.groupBox5.Controls.Add(this.label1);
             this.groupBox5.Controls.Add(this.DistributeBox);
             this.groupBox5.Controls.Add(this.PathCountBox);
@@ -166,45 +162,16 @@
             this.groupBox5.Location = new System.Drawing.Point(5, 293);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(5);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(277, 78);
+            this.groupBox5.Size = new System.Drawing.Size(277, 56);
             this.groupBox5.TabIndex = 308;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Course Paths";
-            // 
-            // PathSurfaceSelect
-            // 
-            this.PathSurfaceSelect.FormattingEnabled = true;
-            this.PathSurfaceSelect.Location = new System.Drawing.Point(7, 21);
-            this.PathSurfaceSelect.Margin = new System.Windows.Forms.Padding(5);
-            this.PathSurfaceSelect.Name = "PathSurfaceSelect";
-            this.PathSurfaceSelect.Size = new System.Drawing.Size(131, 21);
-            this.PathSurfaceSelect.TabIndex = 292;
-            // 
-            // PathSurfaceBox
-            // 
-            this.PathSurfaceBox.Location = new System.Drawing.Point(148, 21);
-            this.PathSurfaceBox.Margin = new System.Windows.Forms.Padding(5);
-            this.PathSurfaceBox.Name = "PathSurfaceBox";
-            this.PathSurfaceBox.Size = new System.Drawing.Size(45, 19);
-            this.PathSurfaceBox.TabIndex = 293;
-            this.PathSurfaceBox.Text = "1";
-            this.PathSurfaceBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(201, 24);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(68, 13);
-            this.label19.TabIndex = 294;
-            this.label19.Text = "Path Surface";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(201, 51);
+            this.label1.Location = new System.Drawing.Point(204, 30);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(60, 13);
             this.label1.TabIndex = 297;
@@ -214,7 +181,8 @@
             // 
             this.DistributeBox.AutoSize = true;
             this.DistributeBox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.DistributeBox.Location = new System.Drawing.Point(7, 50);
+            this.DistributeBox.Location = new System.Drawing.Point(10, 29);
+            this.DistributeBox.Margin = new System.Windows.Forms.Padding(5);
             this.DistributeBox.Name = "DistributeBox";
             this.DistributeBox.Size = new System.Drawing.Size(132, 17);
             this.DistributeBox.TabIndex = 295;
@@ -223,7 +191,7 @@
             // 
             // PathCountBox
             // 
-            this.PathCountBox.Location = new System.Drawing.Point(148, 48);
+            this.PathCountBox.Location = new System.Drawing.Point(151, 27);
             this.PathCountBox.Margin = new System.Windows.Forms.Padding(5);
             this.PathCountBox.Name = "PathCountBox";
             this.PathCountBox.Size = new System.Drawing.Size(45, 19);
@@ -513,9 +481,9 @@
             this.groupBox1.Controls.Add(this.BombTypeBox);
             this.groupBox1.Controls.Add(this.BombIndexBox);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox1.Location = new System.Drawing.Point(3, 379);
+            this.groupBox1.Location = new System.Drawing.Point(5, 357);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(280, 71);
+            this.groupBox1.Size = new System.Drawing.Size(277, 71);
             this.groupBox1.TabIndex = 310;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "VS Bombs";
@@ -589,7 +557,7 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox3);
             this.Name = "PathSettings";
-            this.Size = new System.Drawing.Size(289, 507);
+            this.Size = new System.Drawing.Size(289, 435);
             this.Load += new System.EventHandler(this.PathSettings_Load);
             this.LapFinishLine.ResumeLayout(false);
             this.LapFinishLine.PerformLayout();
@@ -608,9 +576,6 @@
         private System.Windows.Forms.GroupBox LapFinishLine;
         private System.Windows.Forms.CheckBox GoalBannerBox;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.ComboBox PathSurfaceSelect;
-        private System.Windows.Forms.TextBox PathSurfaceBox;
-        private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox DistributeBox;
         private System.Windows.Forms.TextBox PathCountBox;
