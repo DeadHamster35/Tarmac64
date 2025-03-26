@@ -118,6 +118,12 @@ namespace Tarmac64_Library
                 }
             }
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            RemoveBattleCourse();
+        }
+
         private void RemoveCourse()
         {
             if (RaceNameBox.Items.Count >= 1)
