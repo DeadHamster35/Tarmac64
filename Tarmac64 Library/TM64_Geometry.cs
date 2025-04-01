@@ -3216,7 +3216,6 @@ namespace Tarmac64_Library
                                         System.Drawing.Color CheckColor = MaskedTexture.GetPixel(ThisX, ThisY);
                                     }
                                 }
-                                MaskedTexture.Save(TextureArray[currentTexture].textureName);
                                 N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[TextureArray[currentTexture].TextureFormat][TextureArray[currentTexture].BitSize], MaskedTexture);
                             }
                             else
