@@ -61,10 +61,14 @@
             this.masterBox = new System.Windows.Forms.TreeView();
             this.sectionBox = new System.Windows.Forms.ComboBox();
             this.TextureData = new System.Windows.Forms.TabPage();
+            this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.Settings = new System.Windows.Forms.TabPage();
+            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.PathTab = new System.Windows.Forms.TabPage();
+            this.PathControl = new Tarmac64_Retail.PathSettings();
             this.Object = new System.Windows.Forms.TabPage();
+            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.BattleBoxR = new System.Windows.Forms.CheckBox();
@@ -109,10 +113,6 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.SettingsControl = new Tarmac64_Retail.CourseSettings();
-            this.PathControl = new Tarmac64_Retail.PathSettings();
-            this.TextureControl = new Tarmac64_Retail.TextureEditor();
-            this.ObjectControl = new Tarmac64_Retail.ObjectEditor();
             this.GLControl = new Tarmac64_Retail.GLViewer();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -136,7 +136,7 @@
             this.SurfaceMap.Cursor = System.Windows.Forms.Cursors.Default;
             this.SurfaceMap.Location = new System.Drawing.Point(4, 40);
             this.SurfaceMap.Name = "SurfaceMap";
-            this.SurfaceMap.Size = new System.Drawing.Size(307, 605);
+            this.SurfaceMap.Size = new System.Drawing.Size(307, 594);
             this.SurfaceMap.TabIndex = 3;
             this.SurfaceMap.Text = "Surface Mesh";
             this.SurfaceMap.UseVisualStyleBackColor = true;
@@ -397,7 +397,7 @@
             this.SectionViews.Location = new System.Drawing.Point(4, 40);
             this.SectionViews.Name = "SectionViews";
             this.SectionViews.Padding = new System.Windows.Forms.Padding(3);
-            this.SectionViews.Size = new System.Drawing.Size(307, 605);
+            this.SectionViews.Size = new System.Drawing.Size(307, 594);
             this.SectionViews.TabIndex = 0;
             this.SectionViews.Text = "Section Lists";
             this.SectionViews.UseVisualStyleBackColor = true;
@@ -486,7 +486,7 @@
             this.masterBox.HideSelection = false;
             this.masterBox.Location = new System.Drawing.Point(3, 123);
             this.masterBox.Name = "masterBox";
-            this.masterBox.Size = new System.Drawing.Size(279, 476);
+            this.masterBox.Size = new System.Drawing.Size(279, 460);
             this.masterBox.TabIndex = 2;
             this.masterBox.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterCheck);
             this.masterBox.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.masterBox_AfterSelect);
@@ -508,11 +508,19 @@
             this.TextureData.Location = new System.Drawing.Point(4, 22);
             this.TextureData.Name = "TextureData";
             this.TextureData.Padding = new System.Windows.Forms.Padding(3);
-            this.TextureData.Size = new System.Drawing.Size(307, 623);
+            this.TextureData.Size = new System.Drawing.Size(307, 612);
             this.TextureData.TabIndex = 1;
             this.TextureData.Text = "Textures";
             this.TextureData.UseVisualStyleBackColor = true;
             this.TextureData.Click += new System.EventHandler(this.TextureData_Click);
+            // 
+            // TextureControl
+            // 
+            this.TextureControl.Location = new System.Drawing.Point(0, 0);
+            this.TextureControl.Name = "TextureControl";
+            this.TextureControl.Size = new System.Drawing.Size(289, 850);
+            this.TextureControl.TabIndex = 0;
+            this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
             // 
             // Settings
             // 
@@ -520,11 +528,19 @@
             this.Settings.Controls.Add(this.SettingsControl);
             this.Settings.Location = new System.Drawing.Point(4, 40);
             this.Settings.Name = "Settings";
-            this.Settings.Size = new System.Drawing.Size(307, 605);
+            this.Settings.Size = new System.Drawing.Size(307, 594);
             this.Settings.TabIndex = 2;
             this.Settings.Text = "Course Settings";
             this.Settings.UseVisualStyleBackColor = true;
             this.Settings.Click += new System.EventHandler(this.CourseInfo_Click);
+            // 
+            // SettingsControl
+            // 
+            this.SettingsControl.Location = new System.Drawing.Point(0, 3);
+            this.SettingsControl.Name = "SettingsControl";
+            this.SettingsControl.Size = new System.Drawing.Size(289, 850);
+            this.SettingsControl.TabIndex = 0;
+            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
             // 
             // tabControl1
             // 
@@ -542,7 +558,7 @@
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(315, 649);
+            this.tabControl1.Size = new System.Drawing.Size(315, 638);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 2;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
@@ -552,10 +568,17 @@
             this.PathTab.Controls.Add(this.PathControl);
             this.PathTab.Location = new System.Drawing.Point(4, 22);
             this.PathTab.Name = "PathTab";
-            this.PathTab.Size = new System.Drawing.Size(307, 623);
+            this.PathTab.Size = new System.Drawing.Size(307, 612);
             this.PathTab.TabIndex = 5;
             this.PathTab.Text = "Path Settings";
             this.PathTab.UseVisualStyleBackColor = true;
+            // 
+            // PathControl
+            // 
+            this.PathControl.Location = new System.Drawing.Point(0, 0);
+            this.PathControl.Name = "PathControl";
+            this.PathControl.Size = new System.Drawing.Size(289, 435);
+            this.PathControl.TabIndex = 0;
             // 
             // Object
             // 
@@ -563,10 +586,20 @@
             this.Object.Controls.Add(this.ObjectControl);
             this.Object.Location = new System.Drawing.Point(4, 22);
             this.Object.Name = "Object";
-            this.Object.Size = new System.Drawing.Size(307, 623);
+            this.Object.Size = new System.Drawing.Size(307, 612);
             this.Object.TabIndex = 4;
             this.Object.Text = "Course Objects";
             this.Object.UseVisualStyleBackColor = true;
+            // 
+            // ObjectControl
+            // 
+            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ObjectControl.Location = new System.Drawing.Point(3, 3);
+            this.ObjectControl.Name = "ObjectControl";
+            this.ObjectControl.Size = new System.Drawing.Size(289, 653);
+            this.ObjectControl.TabIndex = 1;
+            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
             // tabPage1
             // 
@@ -574,7 +607,7 @@
             this.tabPage1.Controls.Add(this.RenderMeshListBox);
             this.tabPage1.Location = new System.Drawing.Point(4, 40);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(307, 605);
+            this.tabPage1.Size = new System.Drawing.Size(307, 594);
             this.tabPage1.TabIndex = 6;
             this.tabPage1.Text = "Render Mesh";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -828,6 +861,7 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
@@ -854,33 +888,33 @@
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openProjectToolStripMenuItem
             // 
             this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.openProjectToolStripMenuItem.Text = "Open";
             this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openProjectToolStripMenuItem_Click);
             // 
             // saveProjectToolStripMenuItem
             // 
             this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
-            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.saveProjectToolStripMenuItem.Text = "Save";
             this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(116, 6);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.exportToolStripMenuItem.Text = "Compile";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
@@ -1002,39 +1036,6 @@
             this.aboutToolStripMenuItem2.Text = "About";
             this.aboutToolStripMenuItem2.Click += new System.EventHandler(this.aboutToolStripMenuItem2_Click);
             // 
-            // SettingsControl
-            // 
-            this.SettingsControl.Location = new System.Drawing.Point(0, 3);
-            this.SettingsControl.Name = "SettingsControl";
-            this.SettingsControl.Size = new System.Drawing.Size(289, 850);
-            this.SettingsControl.TabIndex = 0;
-            this.SettingsControl.Load += new System.EventHandler(this.SettingsControl_Load);
-            // 
-            // PathControl
-            // 
-            this.PathControl.Location = new System.Drawing.Point(0, 0);
-            this.PathControl.Name = "PathControl";
-            this.PathControl.Size = new System.Drawing.Size(289, 435);
-            this.PathControl.TabIndex = 0;
-            // 
-            // TextureControl
-            // 
-            this.TextureControl.Location = new System.Drawing.Point(0, 0);
-            this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 850);
-            this.TextureControl.TabIndex = 0;
-            this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
-            // 
-            // ObjectControl
-            // 
-            this.ObjectControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.ObjectControl.Location = new System.Drawing.Point(3, 3);
-            this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 617);
-            this.ObjectControl.TabIndex = 1;
-            this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
-            // 
             // GLControl
             // 
             this.GLControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1042,21 +1043,20 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.GLControl.Location = new System.Drawing.Point(337, 12);
             this.GLControl.Name = "GLControl";
-            this.GLControl.Size = new System.Drawing.Size(915, 668);
+            this.GLControl.Size = new System.Drawing.Size(915, 657);
             this.GLControl.TabIndex = 3;
             this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
             // 
             // Main
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-            this.ClientSize = new System.Drawing.Size(1264, 692);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.ClientSize = new System.Drawing.Size(1264, 681);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.GLControl);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.MaximumSize = new System.Drawing.Size(1920, 1080);
             this.MinimumSize = new System.Drawing.Size(640, 480);
             this.Name = "Main";
             this.Text = "Tarmac 64";

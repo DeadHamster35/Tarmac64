@@ -215,6 +215,8 @@ namespace Tarmac64_Library
 
                                 if (DebugBox.Checked)
                                 {
+                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment4.bin", LocalCourse.Segment4);
+                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Seg4Compressed.MIO0", Tarmac.CompressMIO0(LocalCourse.Segment4));
                                     File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment6.bin", LocalCourse.Segment6);
                                     File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment9.bin", LocalCourse.Segment9);
                                     File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment7.bin", LocalCourse.Segment7);
