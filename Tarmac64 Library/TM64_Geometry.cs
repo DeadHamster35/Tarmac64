@@ -2408,10 +2408,49 @@ namespace Tarmac64_Library
 
                     byte[] imageData = null;
                     byte[] paletteData = null;
-                    Bitmap bitmapData = new Bitmap(textureObject[currentTexture].texturePath);
-                    
-                    N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].TextureFormat][textureObject[currentTexture].BitSize], bitmapData);
-                    
+                    Bitmap bitmapData;
+                    try
+                    {
+                        bitmapData = new Bitmap(textureObject[currentTexture].texturePath);
+                    }
+                    catch
+                    {
+                        bitmapData = new Bitmap(Tarmac64_Library.Properties.Resources.TextureNotFound);
+                    }
+
+
+
+                    if (textureObject[currentTexture].alphaPath != "")
+                    {
+                        if (File.Exists(textureObject[currentTexture].alphaPath))
+                        {
+                            Bitmap MaskedTexture = new Bitmap(bitmapData.Width, bitmapData.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                            Bitmap alphaData = new Bitmap(textureObject[currentTexture].alphaPath);
+
+                            for (int ThisY = 0; ThisY < bitmapData.Height; ThisY++)
+                            {
+                                for (int ThisX = 0; ThisX < bitmapData.Width; ThisX++)
+                                {
+
+                                    System.Drawing.Color AlphaData = alphaData.GetPixel(ThisX, ThisY);
+                                    System.Drawing.Color ColorData = bitmapData.GetPixel(ThisX, ThisY);
+                                    System.Drawing.Color NewColor = System.Drawing.Color.FromArgb(AlphaData.R, ColorData.R, ColorData.G, ColorData.B);
+                                    MaskedTexture.SetPixel(ThisX, ThisY, NewColor);
+                                    System.Drawing.Color CheckColor = MaskedTexture.GetPixel(ThisX, ThisY);
+                                }
+                            }
+                            N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].TextureFormat][textureObject[currentTexture].BitSize], MaskedTexture);
+                        }
+                        else
+                        {
+                            N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].TextureFormat][textureObject[currentTexture].BitSize], bitmapData);
+                        }
+                    }
+                    else
+                    {
+                        N64Graphics.Convert(ref imageData, ref paletteData, n64Codec[textureObject[currentTexture].TextureFormat][textureObject[currentTexture].BitSize], bitmapData);
+                    }
+
 
 
                     // finish setting texture parameters based on new texture and compressed data.

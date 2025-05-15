@@ -217,6 +217,10 @@ namespace Tarmac64_Retail
 
         public void UpdatePaths()
         {
+            if ((!loaded) || (blocked))
+            {
+                return;
+            }
 
             int ParseInt;
             byte ParseByte;
@@ -292,7 +296,7 @@ namespace Tarmac64_Retail
         }
         public void UpdateUI()
         {
-            if (loaded)
+            if ((loaded) && (!blocked))
             {
                 GoalBannerBox.Checked = Convert.ToBoolean(CourseData.GoalBannerBool);
 

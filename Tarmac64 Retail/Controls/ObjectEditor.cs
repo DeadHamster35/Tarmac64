@@ -444,6 +444,8 @@ namespace Tarmac64_Retail
         public void LoadObjectXML(XmlDocument XMLDoc)
         {
             OKObjectTypeList.Clear();
+            OKObjectList.Clear();
+            ObjectListBox.Items.Clear();
             ObjectTypeIndexBox.Items.Clear();
             DefaultOKObjects();
 

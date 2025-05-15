@@ -1004,10 +1004,7 @@ namespace Tarmac64_Retail
             UpdateCourse();
         }
 
-        private void UpdateUI(object sender, EventArgs e)
-        {
-            UpdateUI();
-        }
+
 
         private void GoalBannerBox_CheckedChanged(object sender, EventArgs e)
         {

@@ -676,7 +676,7 @@ namespace Tarmac64_Retail
             {
                 foreach (var textureObject in ObjectType.TextureData)
                 {
-                    if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                    if (textureObject.textureScreen > 0)
                     {
                         screenCount++;
                     }
@@ -706,7 +706,6 @@ namespace Tarmac64_Retail
                         {
                             if (textureObject.textureScreen == (CurrentScreen + 1))
                             {
-
                                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.RawTexture.segmentPosition | 0x0A000000)));
                             }
                         }
@@ -1754,8 +1753,14 @@ namespace Tarmac64_Retail
                 XmlDocument XMLDoc = new XmlDocument();
                 XMLDoc.Load(SavePath);
 
+                SettingsControl.blocked = true;
                 SettingsControl.LoadCourseXML(XMLDoc);
+                SettingsControl.blocked = false;
+
+                PathControl.blocked = true;
                 PathControl.LoadPathXML(XMLDoc);
+                PathControl.blocked = true;
+
                 TextureControl.LoadTextureXML(XMLDoc);
                 ObjectControl.LoadObjectXML(XMLDoc);
 

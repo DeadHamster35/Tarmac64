@@ -143,6 +143,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Resources\NONE_475.FBX" />
+    <None Include="Resources\PatchData.ok64.Patch">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\popResources.bin" />
     <None Include="Resources\ZONE.FBX" />
   </ItemGroup>
