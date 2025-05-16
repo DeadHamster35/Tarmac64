@@ -1095,9 +1095,14 @@ namespace Tarmac64_Retail
             if (loaded == true)
             {
                 GLControl.UpdateDraw = true;
-                sectionList[LastSelectedSection].objectList = GLControl.SectionList;
-                XLUSectionList[LastSelectedSection].objectList = GLControl.SectionList;
+
+                sectionList[LastSelectedSection].objectList = new int[GLControl.SectionList.Length];
+                Array.Copy(GLControl.SectionList, sectionList[LastSelectedSection].objectList, GLControl.SectionList.Length);
+                
+                XLUSectionList[LastSelectedSection].objectList = new int[GLControl.SectionList.Length];
+                Array.Copy(GLControl.SectionList, XLUSectionList[LastSelectedSection].objectList, GLControl.SectionList.Length);
                 LastSelectedSection = sectionBox.SelectedIndex;
+
                 UpdateSVDisplay();
                 UpdateGLView();
             }
@@ -1109,8 +1114,12 @@ namespace Tarmac64_Retail
             if (loaded == true)
             {
                 GLControl.UpdateDraw = true;
-                sectionList[LastSelectedSection].objectList = GLControl.SectionList;
-                XLUSectionList[LastSelectedSection].objectList = GLControl.SectionList;
+
+                sectionList[LastSelectedSection].objectList = new int[GLControl.SectionList.Length];
+                Array.Copy(GLControl.SectionList, sectionList[LastSelectedSection].objectList, GLControl.SectionList.Length);
+
+                XLUSectionList[LastSelectedSection].objectList = new int[GLControl.SectionList.Length];
+                Array.Copy(GLControl.SectionList, XLUSectionList[LastSelectedSection].objectList, GLControl.SectionList.Length);
                 LastSelectedSection = sectionBox.SelectedIndex;
                 UpdateSVDisplay();
                 UpdateGLView();
@@ -1222,8 +1231,12 @@ namespace Tarmac64_Retail
                 case GLViewer.ControlMode.Section:
                     {
                         //section lists
-                        sectionList[sectionBox.SelectedIndex].objectList = GLControl.SectionList;
-                        XLUSectionList[sectionBox.SelectedIndex].objectList = GLControl.SectionList;
+
+                        sectionList[sectionBox.SelectedIndex].objectList = new int[GLControl.SectionList.Length];
+                        Array.Copy(GLControl.SectionList, sectionList[sectionBox.SelectedIndex].objectList, GLControl.SectionList.Length);
+
+                        XLUSectionList[sectionBox.SelectedIndex].objectList = new int[GLControl.SectionList.Length];
+                        Array.Copy(GLControl.SectionList, XLUSectionList[sectionBox.SelectedIndex].objectList, GLControl.SectionList.Length);
                         if (GLControl.SelectedSection != -1)
                         {
                             SelectObjectIndex(GLControl.SelectedSection);
@@ -1429,58 +1442,6 @@ namespace Tarmac64_Retail
             }
         }
 
-        private bool UpdateTXDisplay()        
-        {
-            return (TextureControl.UpdateTextureDisplay());
-        }
-
-
-        private void ObjectBox_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-
-            this.BeginInvoke(new MethodInvoker(CheckList), null);
-        }
-
-        private void CheckList()
-        {
-            if (loaded == true)
-            {
-                int vertCount = 0;
-                int faceCount = 0;
-                int currentIndex = 0;
-                List<int> checkList = new List<int>();
-                for (int currentTree = 0; currentTree < masterBox.Nodes.Count; currentTree++)
-                {
-                    currentIndex++;
-                    if (masterBox.Nodes[currentTree].Nodes.Count > 0)
-                    {
-                        for (int currentNode = 0; currentNode < masterBox.Nodes[currentTree].Nodes.Count; currentNode++)
-                        {
-                            currentIndex++;
-                            if (masterBox.Nodes[currentTree].Nodes[currentNode].Checked == true)
-                            {
-                                checkList.Add(currentIndex);
-                                vertCount = vertCount + masterObjects[currentIndex].vertCount;
-                                faceCount = faceCount + masterObjects[currentIndex].faceCount;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (masterBox.Nodes[currentTree].Checked == true)
-                        {
-                            checkList.Add(currentIndex);
-                            vertCount = vertCount + masterObjects[currentIndex].vertCount;
-                            faceCount = faceCount + masterObjects[currentIndex].faceCount;
-                        }
-                    }
-                }
-                sectionList[sectionBox.SelectedIndex].objectList = checkList.ToArray();
-                XLUSectionList[sectionBox.SelectedIndex].objectList = checkList.ToArray();
-                updateCounter(faceCount);
-            }
-        }
-
 
         private void SurfaceobjectBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1541,8 +1502,10 @@ namespace Tarmac64_Retail
                         }
                     }
                 }
-                sectionList[sectionBox.SelectedIndex].objectList = objectList.ToArray();
-                XLUSectionList[sectionBox.SelectedIndex].objectList = objectList.ToArray();
+                sectionList[sectionBox.SelectedIndex].objectList = new int[objectList.Count];
+                Array.Copy(objectList.ToArray(), sectionList[sectionBox.SelectedIndex].objectList, objectList.Count);
+                XLUSectionList[sectionBox.SelectedIndex].objectList = new int[objectList.Count];
+                Array.Copy(objectList.ToArray(), XLUSectionList[sectionBox.SelectedIndex].objectList, objectList.Count);
             }
             UpdateSVDisplay();
         }
@@ -1743,6 +1706,7 @@ namespace Tarmac64_Retail
 
         private void LoadXML()
         {
+            loaded = false;
             OpenFileDialog FileOpen = new OpenFileDialog();
             FileOpen.InitialDirectory = okSettings.ProjectDirectory;
             FileOpen.Filter = "Tarmac Course|*.ok64.Save|All Files (*.*)|*.*";
@@ -1759,7 +1723,7 @@ namespace Tarmac64_Retail
 
                 PathControl.blocked = true;
                 PathControl.LoadPathXML(XMLDoc);
-                PathControl.blocked = true;
+                PathControl.blocked = false;
 
                 TextureControl.LoadTextureXML(XMLDoc);
                 ObjectControl.LoadObjectXML(XMLDoc);
@@ -1805,7 +1769,14 @@ namespace Tarmac64_Retail
                     PathArray[ThisPath] = new TM64_Paths.Pathlist(XMLDoc, PathPath, ThisPath);
                 }
 
-                XLUSectionList = sectionList;                
+                XLUSectionList = new TM64_Geometry.OK64SectionList[sectionList.Length];
+                for (int ThisSect = 0; ThisSect < sectionList.Length; ThisSect++)
+                {
+                    XLUSectionList[ThisSect] = new TM64_Geometry.OK64SectionList();
+                    XLUSectionList[ThisSect].segmentPosition = 0;
+                    XLUSectionList[ThisSect].objectList = new int[sectionList[ThisSect].objectList.Length];
+                    Array.Copy(sectionList[ThisSect].objectList, XLUSectionList[ThisSect].objectList, sectionList[ThisSect].objectList.Length);
+                }
                 UpdateUIControls();
                 UpdateGLView();
             }

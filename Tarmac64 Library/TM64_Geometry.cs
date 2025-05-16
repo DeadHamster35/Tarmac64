@@ -111,7 +111,6 @@ namespace Tarmac64_Library
                 int Count = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, TargetPath, "ObjectCount", "0"));
 
                 objectList = new int[Count];
-                segmentPosition = 0;
 
                 for (int This = 0; This < Count; This++)
                 {
@@ -407,7 +406,7 @@ namespace Tarmac64_Library
                 Tarmac.GenerateElement(XMLDoc, ObjectXML, "materialID", materialID);
 
                 Tarmac.GenerateElement(XMLDoc, ObjectXML, "surfaceID", surfaceID);
-                Tarmac.GenerateElement(XMLDoc, ObjectXML, "vertCount", surfaceMaterial);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "surfaceMaterial", surfaceMaterial);
                 Tarmac.GenerateElement(XMLDoc, ObjectXML, "surfaceProperty", surfaceProperty);
                 Tarmac.GenerateElement(XMLDoc, ObjectXML, "BoneName", BoneName);
                 Tarmac.GenerateElement(XMLDoc, ObjectXML, "KillDisplayList", KillDisplayList);

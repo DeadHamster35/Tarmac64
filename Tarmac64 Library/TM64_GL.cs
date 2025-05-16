@@ -177,7 +177,7 @@ namespace Tarmac64_Library
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             gl.Enable(OpenGL.GL_BLEND);
             gl.Begin(OpenGL.GL_TRIANGLES);
-            DrawShaded(gl, glTexture, targetObject, LocalCamera.flashRed);
+            DrawShaded(gl, targetObject, LocalCamera.flashRed);
             
             
         }
@@ -307,7 +307,7 @@ namespace Tarmac64_Library
         }
 
 
-        public void DrawShaded(OpenGL gl, Texture glTexture, TM64_Geometry.OK64F3DObject TargetObject, float[] colorArray)
+        public void DrawShaded(OpenGL gl, TM64_Geometry.OK64F3DObject TargetObject, float[] colorArray)
         {
             
             gl.Begin(OpenGL.GL_TRIANGLES);
@@ -682,7 +682,7 @@ namespace Tarmac64_Library
             gl.Enable(OpenGL.GL_BLEND);
             gl.Begin(OpenGL.GL_TRIANGLES);
 
-            DrawShaded(gl, glTexture, targetObject, LocalCamera.flashWhite);
+            DrawShaded(gl, targetObject, LocalCamera.flashWhite);
 
             
         }

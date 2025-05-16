@@ -431,9 +431,32 @@ namespace Tarmac64_Retail
                     }
                 }
             }
-            GL.End();
-            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            GL.Begin(OpenGL.GL_TRIANGLES);
+            for (int ThisSurf = 0; ThisSurf < SurfaceModel.Length; ThisSurf++)
+            {
+
+
+                GL.End();
+                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                GL.Begin(OpenGL.GL_TRIANGLES);
+                //Draw Gouraud Objects
+
+                GL.Disable(OpenGL.GL_CULL_FACE);
+                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+                GL.Enable(OpenGL.GL_BLEND);
+                //GLTexture[GLShadeIndex].Destroy(GL);
+                GLTexture[GLShadeIndex].Bind(GL);
+                TarmacGL.DrawShaded(GL, SurfaceModel[ThisSurf], LocalCamera.flashRed);
+                //re-enable textured polygons
+                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                GL.Enable(OpenGL.GL_TEXTURE_2D);
+                GL.Enable(OpenGL.GL_BLEND);
+                GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+                GL.ShadeModel(OpenGL.GL_SMOOTH);
+                GL.Enable(OpenGL.GL_COLOR_MATERIAL);
+                GL.Enable(OpenGL.GL_TEXTURE_2D);
+                GL.FrontFace(OpenGL.GL_CCW);
+            }
 
         }
 
