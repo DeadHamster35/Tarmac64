@@ -83,6 +83,7 @@ namespace Tarmac64_Retail
 
             int FXCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "EffectCount", "0"));
             PathFX = new List<TM64_Course.PathEffect>();
+            PathIndexBox.Items.Clear();
 
             ParentPath = "/SaveFile/PathSettings/PathEffects";
             for (int ThisFX = 0; ThisFX < FXCount; ThisFX++)
@@ -226,6 +227,7 @@ namespace Tarmac64_Retail
             byte ParseByte;
 
             CourseData.GoalBannerBool = Convert.ToInt16(GoalBannerBox.Checked);
+            CourseData.DistributeBool = Convert.ToInt16(DistributeBox.Checked);
 
             //PathFX
             int PFXID = PathIndexBox.SelectedIndex;
@@ -285,7 +287,6 @@ namespace Tarmac64_Retail
                 CourseData.PathCount = Convert.ToInt16(ParseInt);
             }
 
-            DistributeBox.Checked = Convert.ToBoolean(CourseData.DistributeBool);
 
             if (int.TryParse(BombPointBox.Text, out ParseInt))
             {
@@ -299,23 +300,28 @@ namespace Tarmac64_Retail
             if ((loaded) && (!blocked))
             {
                 GoalBannerBox.Checked = Convert.ToBoolean(CourseData.GoalBannerBool);
-
+                DistributeBox.Checked = Convert.ToBoolean(CourseData.DistributeBool);
 
                 //PathFX
                 int PFXID = PathIndexBox.SelectedIndex;
-                PathTypeBox.SelectedIndex = PathFX[PFXID].Type;
+                if (PFXID != -1)
+                {
+                    EchoStartBox.Text = PathFX[PFXID].StartIndex.ToString();
+                    EchoStopBox.Text = PathFX[PFXID].EndIndex.ToString();
+                    EchoPowerBox.Text = PathFX[PFXID].Power.ToString();
 
-                EchoStartBox.Text = PathFX[PFXID].StartIndex.ToString();
-                EchoStopBox.Text = PathFX[PFXID].EndIndex.ToString();
-                EchoPowerBox.Text = PathFX[PFXID].Power.ToString();
+                    BaseR.Text = PathFX[PFXID].BodyColor.R.ToString();
+                    BaseG.Text = PathFX[PFXID].BodyColor.G.ToString();
+                    BaseB.Text = PathFX[PFXID].BodyColor.B.ToString();
 
-                BaseR.Text = PathFX[PFXID].BodyColor.R.ToString();
-                BaseG.Text = PathFX[PFXID].BodyColor.G.ToString();
-                BaseB.Text = PathFX[PFXID].BodyColor.B.ToString();
+                    AdjR.Text = PathFX[PFXID].AdjColor.R.ToString();
+                    AdjG.Text = PathFX[PFXID].AdjColor.G.ToString();
+                    AdjB.Text = PathFX[PFXID].AdjColor.B.ToString();
+                    PathTypeBox.SelectedIndex = PathFX[PFXID].Type;
+                }
+                
 
-                AdjR.Text = PathFX[PFXID].AdjColor.R.ToString();
-                AdjG.Text = PathFX[PFXID].AdjColor.G.ToString();
-                AdjB.Text = PathFX[PFXID].AdjColor.B.ToString();
+                
 
                 int ParseInt;
                 if (int.TryParse(LapCountBox.Text, out ParseInt))
@@ -323,7 +329,7 @@ namespace Tarmac64_Retail
                     CourseData.LapCount = ParseInt;
                 }
 
-
+                
                 PathCountBox.Text = CourseData.PathCount.ToString();
                 BombPointBox.Text = CourseData.BombArray[BombIndexBox.SelectedIndex].Point.ToString();
                 BombTypeBox.SelectedIndex = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;
@@ -392,6 +398,7 @@ namespace Tarmac64_Retail
         private void PathFXUpdate(object sender, KeyEventArgs e)
         {
             UpdatePaths();
+            UpdateUI();
         }
 
         private void LapFinishLine_Enter(object sender, EventArgs e)
@@ -419,6 +426,13 @@ namespace Tarmac64_Retail
 
         private void UpdateUIHandler(object sender, KeyEventArgs e)
         {
+            UpdatePaths();
+            UpdateUI();
+        }
+
+        private void CheckBoxHandler(object sender, EventArgs e)
+        {
+            UpdatePaths();
             UpdateUI();
         }
 

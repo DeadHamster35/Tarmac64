@@ -81,8 +81,15 @@ namespace Tarmac64_Library
                 CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][InputValue] = NewCourse;
                 
 
+                if (NewCourse.Settings.Name.Length > 0)
+                {
+                    return NewCourse.Settings.Name;
+                }
+                else
+                {
+                    return Path.GetFileNameWithoutExtension(FileOpen.FileName);
+                }
                 
-                return NewCourse.Settings.Name;
             }
             return null;
         }

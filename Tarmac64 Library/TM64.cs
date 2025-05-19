@@ -78,7 +78,7 @@ namespace Tarmac64_Library
 
                     if (int.TryParse(InputData[0], out Parse))
                     {
-                        if (Parse == 800)
+                        if (Parse == 7)
                         {
                             Version = Parse;
                             ProjectDirectory = InputData[1];

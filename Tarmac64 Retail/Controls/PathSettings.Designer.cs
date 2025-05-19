@@ -152,6 +152,7 @@
             this.GoalBannerBox.TabIndex = 299;
             this.GoalBannerBox.Text = "Draw Goal Banner";
             this.GoalBannerBox.UseVisualStyleBackColor = true;
+            this.GoalBannerBox.CheckedChanged += new System.EventHandler(this.CheckBoxHandler);
             // 
             // groupBox5
             // 
@@ -188,6 +189,7 @@
             this.DistributeBox.TabIndex = 295;
             this.DistributeBox.Text = "Force Path Distribution";
             this.DistributeBox.UseVisualStyleBackColor = true;
+            this.DistributeBox.CheckedChanged += new System.EventHandler(this.CheckBoxHandler);
             // 
             // PathCountBox
             // 
