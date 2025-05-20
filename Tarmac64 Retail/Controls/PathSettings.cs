@@ -76,7 +76,7 @@ namespace Tarmac64_Retail
         {
             string ParentPath = "/SaveFile/PathSettings";
             TM64 Tarmac = new TM64();
-
+            blocked = true;
             CourseData.PathCount = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "PathCount", "1"));
             CourseData.DistributeBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "DistributeBool", "0"));
             CourseData.LapCount = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "LapCount", "3"));
@@ -106,8 +106,11 @@ namespace Tarmac64_Retail
                 NewFX.BodyColor.B = Convert.ToByte(Tarmac.LoadElement(XMLDoc, SubPath, "BodyColor.B", "255"));
 
                 PathIndexBox.Items.Add(ThisFX);
+                
                 PathFX.Add(NewFX);                
             }
+            PathTypeBox.SelectedIndex = -1;
+            blocked = false;
         }
 
         public void SavePathXML(XmlDocument XMLDoc, XmlElement Parent)
@@ -297,8 +300,10 @@ namespace Tarmac64_Retail
         }
         public void UpdateUI()
         {
+            
             if ((loaded) && (!blocked))
             {
+                blocked = true;
                 GoalBannerBox.Checked = Convert.ToBoolean(CourseData.GoalBannerBool);
                 DistributeBox.Checked = Convert.ToBoolean(CourseData.DistributeBool);
 
@@ -333,6 +338,7 @@ namespace Tarmac64_Retail
                 PathCountBox.Text = CourseData.PathCount.ToString();
                 BombPointBox.Text = CourseData.BombArray[BombIndexBox.SelectedIndex].Point.ToString();
                 BombTypeBox.SelectedIndex = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;
+                blocked = false;
             }
             
         }
