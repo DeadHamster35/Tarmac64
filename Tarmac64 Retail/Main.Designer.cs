@@ -114,6 +114,7 @@
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.GLControl = new Tarmac64_Retail.GLViewer();
+            this.exportSVL3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
@@ -923,7 +924,8 @@
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.replaceModelToolStripMenuItem,
             this.replacePathsToolStripMenuItem,
-            this.importSVL3ToolStripMenuItem});
+            this.importSVL3ToolStripMenuItem,
+            this.exportSVL3ToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -931,21 +933,21 @@
             // replaceModelToolStripMenuItem
             // 
             this.replaceModelToolStripMenuItem.Name = "replaceModelToolStripMenuItem";
-            this.replaceModelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.replaceModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.replaceModelToolStripMenuItem.Text = "Replace Model";
             this.replaceModelToolStripMenuItem.Click += new System.EventHandler(this.replaceModelToolStripMenuItem_Click);
             // 
             // replacePathsToolStripMenuItem
             // 
             this.replacePathsToolStripMenuItem.Name = "replacePathsToolStripMenuItem";
-            this.replacePathsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.replacePathsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.replacePathsToolStripMenuItem.Text = "Replace Paths";
             this.replacePathsToolStripMenuItem.Click += new System.EventHandler(this.replacePathsToolStripMenuItem_Click);
             // 
             // importSVL3ToolStripMenuItem
             // 
             this.importSVL3ToolStripMenuItem.Name = "importSVL3ToolStripMenuItem";
-            this.importSVL3ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.importSVL3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.importSVL3ToolStripMenuItem.Text = "Import SVL3";
             this.importSVL3ToolStripMenuItem.Click += new System.EventHandler(this.importSVL3ToolStripMenuItem_Click);
             // 
@@ -1046,6 +1048,13 @@
             this.GLControl.Size = new System.Drawing.Size(915, 657);
             this.GLControl.TabIndex = 3;
             this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
+            // 
+            // exportSVL3ToolStripMenuItem
+            // 
+            this.exportSVL3ToolStripMenuItem.Name = "exportSVL3ToolStripMenuItem";
+            this.exportSVL3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportSVL3ToolStripMenuItem.Text = "Export SVL3";
+            this.exportSVL3ToolStripMenuItem.Click += new System.EventHandler(this.exportSVL3ToolStripMenuItem_Click);
             // 
             // Main
             // 
@@ -1169,5 +1178,6 @@
         private System.Windows.Forms.ToolStripMenuItem createToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem applyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importSVL3ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportSVL3ToolStripMenuItem;
     }
 }

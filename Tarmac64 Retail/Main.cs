@@ -15,6 +15,7 @@ using Tarmac64_Library;
 using static Tarmac64_Library.TM64_Course;
 using static System.Net.Mime.MediaTypeNames;
 using Cereal64.Common.Utils;
+using static Tarmac64_Library.TM64_Geometry;
 
 namespace Tarmac64_Retail
 {
@@ -2056,6 +2057,26 @@ namespace Tarmac64_Retail
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Windows.Forms.Application.Exit();
+        }
+
+        private void exportSVL3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!loaded)
+            {
+                return;
+            }
+
+            SaveFileDialog FileSave = new SaveFileDialog();
+
+            if (FileSave.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = FileSave.FileName;
+
+                TM64_Course TarmacCourse = new TM64_Course();
+
+                TarmacCourse.ExportSVL3(filePath, sectionList, XLUSectionList, masterObjects);
+
+            }
         }
 
         private void masterBox_AfterSelect(object sender, TreeViewEventArgs e)
