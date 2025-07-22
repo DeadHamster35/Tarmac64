@@ -16,6 +16,7 @@ using static Tarmac64_Library.TM64_Course;
 using static System.Net.Mime.MediaTypeNames;
 using Cereal64.Common.Utils;
 using static Tarmac64_Library.TM64_Geometry;
+using OverKart64_Retail.Windows;
 
 namespace Tarmac64_Retail
 {
@@ -2077,6 +2078,12 @@ namespace Tarmac64_Retail
                 TarmacCourse.ExportSVL3(filePath, sectionList, XLUSectionList, masterObjects);
 
             }
+        }
+
+        private void courseUpgraderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CourseUpgrader f2 = new CourseUpgrader();
+            f2.Show();
         }
 
         private void masterBox_AfterSelect(object sender, TreeViewEventArgs e)

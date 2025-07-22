@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.FilterBox = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.alphaMaskBox = new System.Windows.Forms.TextBox();
@@ -71,7 +72,6 @@
             this.bitm = new System.Windows.Forms.PictureBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bitm)).BeginInit();
@@ -127,6 +127,16 @@
             this.groupBox5.TabIndex = 0;
             this.groupBox5.TabStop = false;
             this.groupBox5.Enter += new System.EventHandler(this.groupBox5_Enter);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(48, 20);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(35, 23);
+            this.button5.TabIndex = 57;
+            this.button5.Text = "...";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // FilterBox
             // 
@@ -619,19 +629,8 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(48, 20);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(35, 23);
-            this.button5.TabIndex = 57;
-            this.button5.Text = "...";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
             // label9
             // 
-            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.Location = new System.Drawing.Point(29, 261);

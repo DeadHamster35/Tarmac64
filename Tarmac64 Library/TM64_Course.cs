@@ -1964,7 +1964,7 @@ namespace Tarmac64_Library
             //begin writing header info
 
 
-            courseData.OK64HeaderData.Version = 6;
+            courseData.OK64HeaderData.Version = 8;
 
             //add sky colors
 
@@ -2221,7 +2221,7 @@ namespace Tarmac64_Library
             }
             addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
             if (addressAlign == 16)
-                addressAlign = 0;
+                addressAlign = 0;   
             for (int align = 0; align < addressAlign; align++)
             {
                 binaryWriter.Write(Convert.ToByte(0x00));
@@ -2676,6 +2676,834 @@ namespace Tarmac64_Library
             return newROM;
 
         }
+
+
+
+
+
+        public byte[] UpgradeOverKart(Course courseData, byte[] fileData, int cID, int setID, uint HeaderAddress = 0xBE9178)
+        {
+            //HOTSWAP
+
+            /// jesus fucking christ.
+
+
+
+            byte[] flip = new byte[0];
+
+            TM64_Geometry mk = new TM64_Geometry();
+
+            fileData = mk.WriteTextures(fileData, courseData);
+            courseData.Segment9 = mk.CompileTextureTable(courseData);
+            int addressAlign = 0;
+
+
+
+
+            byte[] seg6 = Tarmac.CompressMIO0(courseData.Segment6);
+            byte[] seg4 = Tarmac.CompressMIO0(courseData.Segment4);
+            byte[] seg7 = Tarmac.compress_seg7(courseData.Segment7);
+
+
+            MemoryStream memoryStream = new MemoryStream();
+            memoryStream.Write(fileData, 0, fileData.Length);
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+
+
+
+
+
+
+
+            binaryWriter.BaseStream.Position = binaryWriter.BaseStream.Length;
+
+
+
+            //allignment
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            //
+
+
+            courseData.MenuHeaderData = new MenuHeader();
+
+
+            //Write Course Banner Texture
+            if (courseData.BannerData.Length > 0)
+            {
+
+                byte[] compressedData = courseData.BannerData;
+                courseData.MenuHeaderData.Banner = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(compressedData);
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+            }
+            else
+            {
+                courseData.MenuHeaderData.Banner = Convert.ToInt32(0);
+            }
+            //
+
+
+            //Course Preview Texture
+            if (courseData.PreviewData.Length > 0)
+            {
+                byte[] compressedData = courseData.PreviewData;
+                courseData.MenuHeaderData.Preview = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(compressedData);
+
+
+
+
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+            }
+            else
+            {
+
+                courseData.MenuHeaderData.Preview = Convert.ToInt32(0);
+
+            }
+
+
+
+
+
+
+            //begin writing header info
+
+
+            courseData.OK64HeaderData.Version = 8;
+
+            //add sky colors
+
+
+            //first table
+            courseData.OK64HeaderData.Sky = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.TopColor.R);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.TopColor.G);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.TopColor.B);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidColor.R);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidColor.G);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidColor.B);
+
+            //0x00FF 0x00FF
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0xFF)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0xFF)); //padding to match existing ROM.
+
+
+            //second table
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidColor.R);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidColor.G);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.MidColor.B);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.BotColor.R);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.BotColor.G);
+            binaryWriter.Write(Convert.ToByte(0x00));
+            binaryWriter.Write(courseData.SkyColors.BotColor.B);
+
+
+            //0x0000 0x0000
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+            binaryWriter.Write(Convert.ToByte(0x00)); //padding to match existing ROM.
+
+
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            //Credits
+            if (courseData.Settings.Credits.Length > 0)
+            {
+                courseData.OK64HeaderData.Credits = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+                flip = BitConverter.GetBytes(Convert.ToInt32(courseData.Settings.Credits.Length));
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+                binaryWriter.Write(Encoding.UTF8.GetBytes(courseData.Settings.Credits));
+                binaryWriter.Write(0x00);
+
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+            }
+            else
+            {
+                courseData.OK64HeaderData.Credits = Convert.ToInt32(0);
+            }
+            //
+
+            //Name
+            if (courseData.Settings.Name.Length > 0)
+            {
+                courseData.OK64HeaderData.CourseName = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+                flip = BitConverter.GetBytes(Convert.ToInt32(courseData.Settings.Name.Length));
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+                binaryWriter.Write(Encoding.UTF8.GetBytes(courseData.Settings.Name));
+                binaryWriter.Write(0x00);
+
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+            }
+            else
+            {
+                courseData.OK64HeaderData.CourseName = Convert.ToInt32(0);
+            }
+            //
+
+
+            //Serial
+            courseData.OK64HeaderData.SerialKey = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+            flip = BitConverter.GetBytes(Convert.ToInt32(courseData.SerialNumber.Length));
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            binaryWriter.Write(Encoding.UTF8.GetBytes(courseData.SerialNumber));
+            binaryWriter.Write(0x00);
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            //
+
+
+            //Staff Ghost
+            if (courseData.GhostData.Length > 0)
+            {
+                courseData.OK64HeaderData.Ghost = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+                binaryWriter.Write(courseData.GhostData);
+
+
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+            }
+            else
+            {
+                courseData.OK64HeaderData.Ghost = Convert.ToInt32(0);
+            }
+            //
+
+
+
+
+
+            //Write Course Map Texture
+            if (courseData.RadarData.Length > 0)
+            {
+                courseData.OK64HeaderData.Maps = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+                byte[] compressedData = courseData.RadarData;
+
+
+
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+
+
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord.X)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord.Y)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord.X)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord.Y)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord.X)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord.Y)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Height)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Width)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.R)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.G)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.B)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
+                binaryWriter.Write(F3D.BigEndian((courseData.MapData.MapScale)));
+
+
+
+                binaryWriter.Write(compressedData);
+            }
+
+
+
+            //OBJECTS
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            courseData.OK64HeaderData.ObjectDataStart = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+
+
+            binaryWriter.Write(courseData.ObjectTypeData);
+            binaryWriter.Write(courseData.ObjectListData);
+
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+
+            courseData.OK64HeaderData.ObjectModelStart = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            binaryWriter.Write(courseData.ObjectModelData);
+            courseData.OK64HeaderData.ObjectAnimationStart = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            binaryWriter.Write(courseData.ObjectAnimationData);
+            binaryWriter.Write(courseData.ObjectHitboxData);
+            binaryWriter.Write(courseData.ParameterData);
+            courseData.OK64HeaderData.ObjectDataEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+
+
+
+            //
+
+            //echo
+            courseData.EchoOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            flip = BitConverter.GetBytes(Convert.ToInt32(courseData.PathSettings.PathEffects.Length));
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            for (int ThisEcho = 0; ThisEcho < courseData.PathSettings.PathEffects.Length; ThisEcho++)
+            {
+                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.PathSettings.PathEffects[ThisEcho].StartIndex));
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+                flip = BitConverter.GetBytes(Convert.ToInt16(courseData.PathSettings.PathEffects[ThisEcho].EndIndex));
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].Type));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].Power));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].BodyColor.R));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].BodyColor.G));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].BodyColor.B));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].AdjColor.R));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].AdjColor.G));
+                binaryWriter.Write(Convert.ToByte(courseData.PathSettings.PathEffects[ThisEcho].AdjColor.B));
+            }
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            courseData.EchoEndOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+
+            courseData.OK64HeaderData.GoalBannerToggle = Convert.ToByte(courseData.GoalBannerBool);
+            courseData.OK64HeaderData.SkyboxToggle = Convert.ToByte(courseData.SkyboxBool);
+
+            //bombdata
+            courseData.OK64HeaderData.BombOffset = Convert.ToInt32(binaryWriter.BaseStream.Position);
+            for (int ThisBomb = 0; ThisBomb < 7; ThisBomb++)
+            {
+
+
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.BombArray[ThisBomb].Point)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.BombArray[ThisBomb].Type)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToSingle(8.33333333f)));
+
+                binaryWriter.Write(F3D.BigEndian(Convert.ToSingle(0.83333333f)));
+
+                binaryWriter.Write(0);
+                binaryWriter.Write(0);
+                binaryWriter.Write(0);
+                binaryWriter.Write(0);
+            }
+            //allignment
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            //music
+            if (courseData.SongData.SequenceData.Length > 0)
+            {
+
+                int[] tempMusicOffset = new int[2]; //use inside this IF statement to handle the positions of data.
+                int[] tempMusicSizes = new int[2]; //use inside this IF statement to handle the positions of data.
+
+                tempMusicOffset[0] = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(courseData.SongData.SequenceData);
+
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+
+
+
+                tempMusicSizes[0] = Convert.ToInt32(binaryWriter.BaseStream.Position - tempMusicOffset[0]);
+
+                tempMusicOffset[1] = Convert.ToInt32(binaryWriter.BaseStream.Position);
+                binaryWriter.Write(courseData.SongData.InstrumentData);
+
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+
+                tempMusicSizes[1] = Convert.ToInt32(binaryWriter.BaseStream.Position - tempMusicOffset[1]);
+
+
+
+                courseData.MusicID = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+                flip = BitConverter.GetBytes(Convert.ToInt32(tempMusicOffset[0]));
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+                flip = BitConverter.GetBytes(Convert.ToInt32(tempMusicSizes[0]));
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+                flip = BitConverter.GetBytes(Convert.ToInt32(tempMusicOffset[1]));
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+                flip = BitConverter.GetBytes(Convert.ToInt32(tempMusicSizes[1]));
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+                binaryWriter.Write(Convert.ToInt32(0));
+
+                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+                if (addressAlign == 16)
+                    addressAlign = 0;
+                for (int align = 0; align < addressAlign; align++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+
+            }
+            else
+            {
+                courseData.MusicID = courseData.MusicID;
+            }
+
+            //PathOffsets
+            courseData.OK64HeaderData.PathOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathSettings.PathOffsets[0]))));
+            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathSettings.PathOffsets[1]))));
+            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathSettings.PathOffsets[2]))));
+            binaryWriter.Write(F3D.BigEndian(BitConverter.GetBytes(Convert.ToUInt32(courseData.PathSettings.PathOffsets[3]))));
+
+
+            //WaterVertex (translucency) and Map Scrolling
+
+
+            courseData.OK64HeaderData.ScrollStart = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+
+            //scroll data
+            binaryWriter.Write(courseData.ScrollData);
+            binaryWriter.Write(courseData.WaterData);
+            binaryWriter.Write(courseData.ScreenData);
+            binaryWriter.Write(courseData.KillDisplayData);
+
+            courseData.OK64HeaderData.ScrollEnd = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            courseData.OK64HeaderData.MapHeader = new CourseHeader();
+
+
+
+
+            // Segment 6
+
+            courseData.OK64HeaderData.MapHeader.s6Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            binaryWriter.Write(seg6, 0, seg6.Length);
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            courseData.OK64HeaderData.MapHeader.s6End = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            //
+
+
+            // Segment 9
+            courseData.OK64HeaderData.MapHeader.s9Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+
+            binaryWriter.Write(courseData.Segment9, 0, courseData.Segment9.Length);
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            courseData.OK64HeaderData.MapHeader.s9End = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            //
+
+
+
+
+            // Segment 4/7
+            courseData.OK64HeaderData.MapHeader.s47Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+
+            binaryWriter.Write(seg4, 0, seg4.Length);
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            courseData.OK64HeaderData.MapHeader.s7Start = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            binaryWriter.Write(seg7, 0, seg7.Length);
+
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+            courseData.OK64HeaderData.MapHeader.s47End = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+            UInt32 seg7RSP = Convert.ToUInt32(0x0F000000 | (courseData.OK64HeaderData.MapHeader.s7Start - courseData.OK64HeaderData.MapHeader.s47Start));
+
+            //
+
+
+
+
+
+
+            // Flip Endian on Course Header offsets.
+
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.MapHeader.s6Start);
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.MapHeader.s6Start = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.MapHeader.s6End);
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.MapHeader.s6End = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.MapHeader.s47Start);
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.MapHeader.s47Start = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.MapHeader.s47End);
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.MapHeader.s47End = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.MapHeader.s9Start);
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.MapHeader.s9Start = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.MapHeader.s9End);
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.MapHeader.s9End = BitConverter.ToUInt32(flip, 0);
+
+            flip = BitConverter.GetBytes(seg7RSP);
+            Array.Reverse(flip);
+            seg7RSP = BitConverter.ToUInt32(flip, 0);
+            //
+
+
+            //calculate # verts
+
+            courseData.OK64HeaderData.MapHeader.VertCount = Convert.ToUInt32(courseData.Segment4.Length / 14);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.MapHeader.VertCount);
+            Array.Reverse(flip);
+            courseData.OK64HeaderData.MapHeader.VertCount = BitConverter.ToUInt32(flip, 0);
+            //
+
+
+
+            //seg7 size
+
+            UInt32 seg7size = Convert.ToUInt32(courseData.Segment7.Length);
+            flip = BitConverter.GetBytes(seg7size);
+            Array.Reverse(flip);
+            seg7size = BitConverter.ToUInt32(flip, 0);
+            //
+
+
+            /// After Calculating the offsets and values above we now write them past the end of the ROM.
+
+
+
+
+
+
+
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            uint headerOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position);
+
+
+            // Version 5
+
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.Version);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+            //
+
+
+
+            //courseheader
+
+
+            binaryWriter.Write(courseData.OK64HeaderData.MapHeader.s6Start);
+            binaryWriter.Write(courseData.OK64HeaderData.MapHeader.s6End);
+            binaryWriter.Write(courseData.OK64HeaderData.MapHeader.s47Start);
+            binaryWriter.Write(courseData.OK64HeaderData.MapHeader.s47End);
+            binaryWriter.Write(courseData.OK64HeaderData.MapHeader.s9Start);
+            binaryWriter.Write(courseData.OK64HeaderData.MapHeader.s9End);
+
+            flip = BitConverter.GetBytes(0x0F000000);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            binaryWriter.Write(courseData.OK64HeaderData.MapHeader.VertCount);
+
+            binaryWriter.Write(seg7RSP);
+
+
+            binaryWriter.Write(seg7size);
+
+            flip = BitConverter.GetBytes(0x09000000);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            flip = BitConverter.GetBytes(0x00000000);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            //
+
+
+            //ok64header 13 pointers in
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.SectionViewPosition);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.XLUViewPosition);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.OK64HeaderData.SurfaceMapPosition);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+
+
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.Sky));
+
+
+
+
+            if (courseData.SkyColors.WeatherType < 0)
+            {
+                courseData.SkyColors.WeatherType = 0;
+            }
+
+            binaryWriter.Write(Convert.ToByte(courseData.SkyColors.SkyType));
+            binaryWriter.Write(Convert.ToByte(courseData.SkyColors.WeatherType));
+            binaryWriter.Write(Convert.ToByte(courseData.DistributeBool));
+            binaryWriter.Write(Convert.ToByte(courseData.PathCount));
+
+
+
+
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.Credits));
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.CourseName));
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.SerialKey));
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.Ghost));
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.Maps));
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.ObjectDataStart));
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.ObjectModelStart));
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.ObjectAnimationStart));
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.ObjectDataEnd));
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.BombOffset));
+            binaryWriter.Write(F3D.BigEndian(courseData.EchoOffset));
+            binaryWriter.Write(F3D.BigEndian(courseData.EchoEndOffset));
+
+            binaryWriter.Write(courseData.OK64HeaderData.GoalBannerToggle);
+            binaryWriter.Write(courseData.OK64HeaderData.SkyboxToggle); ;
+            binaryWriter.Write(Convert.ToChar(courseData.ManualTempo));
+            binaryWriter.Write(Convert.ToChar(courseData.LapCount));
+
+
+            binaryWriter.Write(F3D.BigEndian(courseData.MusicID));
+
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.OK64HeaderData.PathLength[0])));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.OK64HeaderData.PathLength[1])));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.OK64HeaderData.PathLength[2])));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.OK64HeaderData.PathLength[3])));
+
+
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.OK64HeaderData.WaterType)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.OK64HeaderData.WaterLevel)));
+
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.ScrollStart));
+
+            int ScrollDataSize = courseData.ScrollData.Length;
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ScrollDataSize)));  //WaterVertex Offset
+            ScrollDataSize += courseData.WaterData.Length;
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ScrollDataSize)));  //ScreenData Offset
+            ScrollDataSize += courseData.ScreenData.Length;
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ScrollDataSize)));  //KillDisplay Data
+            ScrollDataSize += courseData.KillDisplayData.Length;
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(ScrollDataSize)));  //Total Data
+
+            binaryWriter.Write(F3D.BigEndian(courseData.OK64HeaderData.PathOffset));
+
+
+            if (courseData.Fog.FogToggle > 0)
+            {
+                binaryWriter.Write(F3D.BigEndian(courseData.Fog.StartDistance));
+                binaryWriter.Write(F3D.BigEndian(courseData.Fog.StopDistance));
+            }
+            else
+            {
+                binaryWriter.Write(F3D.BigEndian(-1));
+                binaryWriter.Write(F3D.BigEndian(-1));
+            }
+            binaryWriter.Write(courseData.Fog.FogColor.R);
+            binaryWriter.Write(courseData.Fog.FogColor.G);
+            binaryWriter.Write(courseData.Fog.FogColor.B);
+            binaryWriter.Write(courseData.Fog.FogColor.A);
+
+
+            for (int currentPad = 0; currentPad < 16; currentPad++)
+            {
+                flip = BitConverter.GetBytes(0xFFFFFFFF);
+                Array.Reverse(flip);
+                binaryWriter.Write(flip);
+            }
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+                addressAlign = 0;
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            //
+
+
+
+
+            binaryWriter.BaseStream.Position = (HeaderAddress + (setID * 0x50) + (cID * 4));
+            flip = BitConverter.GetBytes(headerOffset);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+            binaryWriter.BaseStream.Position = (HeaderAddress + 0x1400 + (setID * 0xA0) + (cID * 8));
+
+            flip = BitConverter.GetBytes(courseData.MenuHeaderData.Banner);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+            flip = BitConverter.GetBytes(courseData.MenuHeaderData.Preview);
+            Array.Reverse(flip);
+            binaryWriter.Write(flip);
+
+
+
+
+
+
+
+
+            byte[] newROM = memoryStream.ToArray();
+            return newROM;
+
+        }
+
 
         public OK64SectionList[] ImportSVL2(string filePath, int masterCount, OK64F3DObject[] masterObjects)
         {

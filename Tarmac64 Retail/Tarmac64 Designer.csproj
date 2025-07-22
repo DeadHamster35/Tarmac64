@@ -60,6 +60,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="Aspose.3D, Version=25.5.0.0, Culture=neutral, PublicKeyToken=f071c641d0b4582b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Aspose.3D.25.5.0\lib\net46\Aspose.3D.dll</HintPath>
+    </Reference>
     <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
     </Reference>
@@ -126,6 +129,18 @@
     </Compile>
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\CourseUpgrader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\CourseUpgrader.Designer.cs">
+      <DependentUpon>CourseUpgrader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DebugTools.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\DebugTools.Designer.cs">
+      <DependentUpon>DebugTools.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\LoadBarForm.cs">
       <SubType>Form</SubType>
@@ -218,6 +233,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\CourseUpgrader.resx">
+      <DependentUpon>CourseUpgrader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\DebugTools.resx">
+      <DependentUpon>DebugTools.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\LoadBarForm.resx">
       <DependentUpon>LoadBarForm.cs</DependentUpon>

@@ -252,7 +252,7 @@ namespace Tarmac64_Library
 
             return NewData.ToArray();
         }
-
+        
         public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, bool[] Values)
         {
             XmlElement NewElement = XMLDoc.CreateElement(Name);
@@ -417,6 +417,452 @@ namespace Tarmac64_Library
             TKMK00Encoder TKMK = new TKMK00Encoder();
             byte[] outputFile = TKMK.Encode(inputFile, Width, Height, 0);
             return outputFile;
+        }
+        public byte[] Decompress_seg7(byte[] UncompressSeg7)
+        {
+
+            /// This will decompress Segment 7's compressed display lists to regular F3DEX commands.
+            /// This is used exclusively by Mario Kart 64's Segment 7.
+            /// 
+            /// haha fuck me guess we're bringing this shit back. 
+
+            int indexA = 0;
+            int indexB = 0;
+            int indexC = 0;
+
+
+
+
+
+
+
+
+
+
+
+            MemoryStream UncompressMem = new MemoryStream(UncompressSeg7);
+            BinaryReader UncompressRead = new BinaryReader(UncompressMem);
+            MemoryStream CompressMem = new MemoryStream();
+            BinaryWriter CompressWrite = new BinaryWriter(CompressMem);
+
+            CompressWrite.BaseStream.Seek(0, SeekOrigin.Begin);
+
+            byte CommandByte = new byte();
+            byte[] byte29 = new byte[2];
+
+
+
+            UncompressRead.BaseStream.Seek(0, SeekOrigin.Begin);
+
+
+            byte[] voffset = new byte[2];
+
+            bool DispEnd = true;
+
+            for (int i = 0; DispEnd; i++)
+            {
+
+                if (UncompressRead.BaseStream.Position == UncompressRead.BaseStream.Length)
+                {
+                    DispEnd = false;
+                }
+                else
+                {
+                    CommandByte = UncompressRead.ReadByte();
+
+
+
+
+                    if (i > 2415)
+                    {
+                        ///MessageBox.Show(i.ToString()+"-Execute Order 0x" + commandbyte.ToString("X"));
+                    }
+
+                    if (CommandByte == 0xFF)
+                    {
+
+
+                        DispEnd = false;
+                    }
+
+                    if (CommandByte >= 0x00 && CommandByte <= 0x14)
+                    {
+
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBC000002));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x80000040));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03860010));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | (CommandByte * 0x18) + 8));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x03880010));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x09000000 | CommandByte * 0x18));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x15)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFC121824));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFF33FFFF));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+
+                    }
+                    if (CommandByte == 0x16)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFC127E24));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFFFFF3F9));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x17)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFCFFFFFF));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFFFE793C));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x18)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB900031D));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00552078));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x19)
+                    {
+                        ///
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB900031D));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00553078));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if ((CommandByte >= 0x1A && CommandByte <= 0x1F) | CommandByte == 0x2C)
+                    {
+
+                        UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
+                        UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
+                        UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
+                        UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
+                        byte[] Param = new byte[2];
+
+                        Param[0] = UncompressRead.ReadByte();
+                        Param[1] = UncompressRead.ReadByte();
+
+
+                        if (CommandByte == 0x2C)
+                        {
+                            ImgType = ImgTypes[6];
+                            ImgFlag1 = STheight[6];
+                            ImgFlag2 = STwidth[6];
+                            ImgFlag3 = 0x100;
+                        }
+                        else
+                        {
+                            ImgType = ImgTypes[CommandByte - 0x1A];
+                            ImgFlag1 = STheight[CommandByte - 0x1A];
+                            ImgFlag2 = STwidth[CommandByte - 0x1A];
+                            ImgFlag3 = 0;
+                        }
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xE8000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((ImgType << 0x15) | 0xF5100000) | ((((ImgFlag2 << 1) + 7) >> 3) << 9)) | ImgFlag3));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((((Param[1] & 0xF) << 0x12) | (((Param[1] & 0xF0) >> 4) << 0xE)) | ((Param[0] & 0xF) << 8)) | (((Param[0] & 0xF0) >> 4) << 4))));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xF2000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((ImgFlag2 - 1) << 0xE) | ((ImgFlag1 - 1) << 2))));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte >= 0x20 && CommandByte <= 0x25)
+                    {
+                        UInt32 ImgSize = 0, ImgType = 0, ImgFlag1 = 0, ImgFlag2 = 0, ImgFlag3 = 0;
+                        UInt32[] ImgTypes = { 0, 0, 0, 3, 3, 3, 0 }; ///0=RGBA, 3=IA
+                        UInt32[] STheight = { 0x20, 0x20, 0x40, 0x20, 0x20, 0x40, 0x20 }; ///looks like
+                        UInt32[] STwidth = { 0x20, 0x40, 0x20, 0x20, 0x40, 0x20, 0x20 };
+                        byte[] Param = new byte[3];
+
+                        Param[0] = UncompressRead.ReadByte();
+                        Param[1] = UncompressRead.ReadByte();
+                        Param[2] = UncompressRead.ReadByte();
+
+
+                        ImgType = ImgTypes[CommandByte - 0x20];
+                        ImgFlag1 = STheight[CommandByte - 0x20];
+                        ImgFlag2 = STwidth[CommandByte - 0x20];
+                        ImgFlag3 = 0;
+
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((ImgType | 0xFD000000) | 0x100000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((Param[0] << 0xB) + 0x05000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xE8000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((ImgType << 0x15) | 0xF5000000) | 0x100000) | (Param[2] & 0xF)));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((Param[2] & 0xF0) >> 4) << 0x18)));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xE6000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+
+                        ImgSize = (ImgFlag2 * ImgFlag1) - 1;
+                        if (ImgSize > 0x7FF) ImgSize = 0x7FF;
+
+                        UInt32 Unknown2x = new UInt32();
+
+                        Unknown2x = 1;
+                        Unknown2x = (ImgFlag2 << 1) >> 3; ///purpose of this value is unknown
+
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xF3000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((((Unknown2x + 0x7FF) / Unknown2x) | (((Param[2] & 0xF0) >> 4) << 0x18)) | (ImgSize << 0xC)));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+
+                    }
+                    if (CommandByte == 0x26)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBB000001));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFFFFFFFF));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x27)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBB000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00010001));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x28)
+                    {
+                        //flip4 = mainseg.ReadBytes(2);
+                        //Array.Reverse(flip4);
+                        uint address = UncompressRead.ReadUInt16();
+
+
+                        int lvertCount = UncompressRead.ReadByte() & 0x3F;
+                        int lvertIndex = UncompressRead.ReadByte() & 0x3F;
+
+
+
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | (lvertIndex * 2) << 16 | (lvertCount << 10) + (16 * (lvertCount) - 1)));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | address * 16));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x29)
+                    {
+                        value16 = UncompressRead.ReadUInt16();
+                        indexA = (value16 >> 10) & 0x1F;
+                        indexB = (value16 >> 5) & 0x1F;
+                        indexC = value16 & 0x1F;
+
+
+
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBF000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x2A)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB8000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x2B)
+                    {
+                        value16 = UncompressRead.ReadUInt16();
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x06000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((0x07000000 | (value16 * 8))));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x2D)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xBE000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00000140));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x2E)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D002E));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D002E));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x2F)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D002F));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D002F));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x30)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D0030));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xD00D0030));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte >= 0x33 && CommandByte <= 0x52)
+                    {
+
+                        value16 = UncompressRead.ReadUInt16();
+
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | (((CommandByte - 0x32) * 0x410) - 1)));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x04000000 | (value16 * 16)));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x53)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFCFFFFFF));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xFFFCF279));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+
+                    if (CommandByte == 0x54)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB900031D));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00442D58));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x55)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB900031D));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00404DD8));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x56)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB7000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00002000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x57)
+                    {
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB6000000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0x00002000));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                    }
+                    if (CommandByte == 0x58)
+                    {
+
+                        value16 = UncompressRead.ReadUInt16();
+                        indexA = (value16 >> 10) & 0x1F;
+                        indexB = (value16 >> 5) & 0x1F;
+                        indexC = value16 & 0x1F;
+
+
+
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32(0xB1000000 | (indexC << 17) | (indexB << 9) | indexA << 1));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+                        value16 = UncompressRead.ReadUInt16();
+                        indexA = (value16 >> 10) & 0x1F;
+                        indexB = (value16 >> 5) & 0x1F;
+                        indexC = value16 & 0x1F;
+
+                        flip4 = BitConverter.GetBytes(Convert.ToUInt32((indexC << 17) | (indexB << 9) | indexA << 1));
+                        Array.Reverse(flip4);
+                        CompressWrite.Write(flip4);
+
+                    }
+                    if (i > 2415)
+                    {
+                        ///MessageBox.Show(i.ToString() + "-Finished Order 0x" + commandbyte.ToString("X"));
+                    }
+                }
+            }
+
+            byte[] seg7 = CompressMem.ToArray();
+
+            return (seg7);
+
+
+
+
+
         }
         public byte[] compress_seg7(byte[] ROM)
         {

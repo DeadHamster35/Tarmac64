@@ -21,6 +21,11 @@ using System.Windows;
 using System.Xml;
 using Tarmac64_Library;
 using SharpDX;
+using Aspose.ThreeD;
+using Aspose.ThreeD.Formats;
+using Aspose.ThreeD.Utilities;
+
+using Aspose.ThreeD.Entities;
 
 using F3DSharp;
 using System.Windows.Media;
@@ -39,6 +44,12 @@ using static System.Windows.Forms.AxHost;
 using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 using Cereal64.Microcodes.F3DEX.DataElements.Commands;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Assimp.Unmanaged;
+using System.Runtime.Remoting.Contexts;
+using SharpGL.SceneGraph.Assets;
+using SharpGL.SceneGraph.Shaders;
+using Aspose.ThreeD.Formats;
 
 namespace Tarmac64_Library
 {
@@ -3070,6 +3081,34 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
         }
 
+        public byte[] InflateVertex(byte[] Segment4)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+            memoryStream.Write(Segment4, 0, Segment4.Length);
+            memoryStream.Position = 0;
+
+            MemoryStream OutputStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(OutputStream);
+
+            for (int This = 0; This < (Segment4.Length / 14); This++)
+            {
+                
+                binaryWriter.Write(binaryReader.ReadInt16());
+                binaryWriter.Write(binaryReader.ReadInt16());
+                binaryWriter.Write(binaryReader.ReadInt16());
+                binaryWriter.Write(Convert.ToInt16(0));
+                binaryWriter.Write(binaryReader.ReadInt16());
+                binaryWriter.Write(binaryReader.ReadInt16());
+                binaryWriter.Write(binaryReader.ReadByte());
+                binaryWriter.Write(binaryReader.ReadByte());
+                binaryWriter.Write(binaryReader.ReadByte());
+                binaryWriter.Write(binaryReader.ReadByte());
+            }
+
+            return OutputStream.ToArray();
+        }
+
         public byte[] WriteVertexBinary14(TM64_Geometry.Vertex ThisVert)
         {
             return WriteVertexBinary14(
@@ -5257,7 +5296,7 @@ namespace Tarmac64_Library
             return sectionCount;
         }
 
-        public Matrix4x4 GetTotalTransform(Node Base, Assimp.Scene FBX)
+        public Matrix4x4 GetTotalTransform(Assimp.Node Base, Assimp.Scene FBX)
         {
             Matrix4x4 OutTransform = Base.Transform;
             while (Base.Parent != FBX.RootNode)
@@ -5271,7 +5310,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64Bone LoadBone(Node Base, Assimp.Scene FBX, float ModelScale)
+        public OK64Bone LoadBone(Assimp.Node Base, Assimp.Scene FBX, float ModelScale)
         {
             OK64Bone NewBone = new OK64Bone();
             NewBone.Name = Base.Name;
@@ -5813,8 +5852,8 @@ namespace Tarmac64_Library
         }
         public OK64Bone LoadSkeleton (Assimp.Scene FBX, float ModelScale)
         {
-            
-            Node Base = FBX.RootNode.FindNode("BodyBone");
+
+            Assimp.Node Base = FBX.RootNode.FindNode("BodyBone");
             OK64Bone Skeleton = LoadBone(Base, FBX, ModelScale);
 
             Animation Anime = FBX.Animations[0];
@@ -6689,7 +6728,854 @@ namespace Tarmac64_Library
             return Output.ToArray();
 
         }
+        public class MK64SurfaceStruct
+        {
+            public uint dlist { get; set; }      //display list to parse
+            public byte type { get; set; }       //surface type
+            public byte area { get; set; }        //area ID to render
+            public short flags { get; set; }
+        };
 
+        public void RecursiveBullshit(uint Surf, uint Address, BinaryReader Seg4Reader, BinaryReader Seg6Reader, BinaryReader Seg7Reader, Aspose.ThreeD.Scene ExportData, Aspose.ThreeD.Entities.Mesh WorkMesh)
+        {
+            F3DEX095 F3D = new F3DEX095();
+            ///hahahahahahahahahahahahahahahahahahahahahahahahahaha
+            bool B8 = false;
+            uint VertexCache = 0;
+            Seg7Reader.BaseStream.Position = Address -= 0x07000000;
+            while (!B8)
+            {
+                byte CommandByte = Seg7Reader.ReadByte();
+                switch (CommandByte)
+                {
+                    case (0x04):
+                        {
+                            //Load Vertex
+                            Seg7Reader.BaseStream.Position += 3;
+                            VertexCache = BitConverter.ToUInt32(F3D.BigEndian(Seg7Reader.ReadUInt32()), 0);
+                            VertexCache -= 0x04000000; //Segmented Address
+                            break;
+                        }
+                    case (0x06):
+                        {
+                            Seg7Reader.BaseStream.Position += 3;
+                            uint AddressB = BitConverter.ToUInt32(F3D.BigEndian(Seg7Reader.ReadUInt32()), 0);
+                            long SavePoint = Seg7Reader.BaseStream.Position;
+                            RecursiveBullshit(Surf, AddressB, Seg4Reader, Seg6Reader, Seg7Reader, ExportData, WorkMesh);
+                            Seg7Reader.BaseStream.Position = SavePoint;
+                            break;
+                        }
+                    case (0xB1):
+                        {
+
+
+
+                            int Index;
+
+                            for (int ThisFace = 0; ThisFace < 2; ThisFace++)
+                            {
+                                int CurrentVertIndex = WorkMesh.ControlPoints.Count;
+                                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                                {
+                                    Index = Seg7Reader.ReadByte() / 2;
+                                    Seg4Reader.BaseStream.Position = VertexCache + (Index * 16);
+                                    Vertex Vert = new Vertex();
+                                    Vert.position = new Position();
+
+                                    Vert.position.x = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                    Vert.position.z = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                    Vert.position.y = Convert.ToInt16(BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0) * -1);
+                                    Seg4Reader.ReadInt16();//Padding
+                                    Vert.position.sBase = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                    Vert.position.tBase = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+
+                                    Vert.color = new OK64Color();
+                                    Vert.color.R = Seg4Reader.ReadByte();
+                                    Vert.color.G = Seg4Reader.ReadByte();
+                                    Vert.color.B = Seg4Reader.ReadByte();
+                                    Vert.color.A = Seg4Reader.ReadByte();
+
+                                    Aspose.ThreeD.Utilities.Vector4 Positional = new Aspose.ThreeD.Utilities.Vector4();
+                                    Positional.X = Vert.position.x;
+                                    Positional.Y = Vert.position.y;
+                                    Positional.Z = Vert.position.z;
+                                    Positional.W = 1; //w for wut
+
+                                    WorkMesh.ControlPoints.Add(Positional);
+
+
+                                    float UValue = Vert.position.sBase / 32.0f / 32.0f;
+                                    float VValue = Vert.position.tBase / 32.0f / 32.0f;
+
+                                    // Create UVset
+                                    //VertexElementUV elementUV = WorkMesh.CreateElementUV(Aspose.ThreeD.Entities.TextureMapping.Diffuse, MappingMode.PolygonVertex, ReferenceMode.IndexToDirect);
+                                    // Copy the data to the UV vertex element 
+
+                                    Aspose.ThreeD.Utilities.Vector4 UVWT = new Aspose.ThreeD.Utilities.Vector4
+                                    (
+                                        UValue,
+                                        VValue,
+                                        0.0f,
+                                        1.0f
+                                    );
+
+                                    //elementUV.Data.Add(UVWT);
+
+                                    // Create a vertex color element
+                                    //VertexElementVertexColor colorElement = new VertexElementVertexColor();
+                                    //colorElement.MappingMode = MappingMode.PolygonVertex;
+                                    //colorElement.ReferenceMode = ReferenceMode.Direct;
+
+
+
+                                    // Add vertex colors (Vector4 format)
+
+                                    float RValue, GValue, BValue, AValue;
+                                    RValue = Vert.color.R / 252.0f;
+                                    GValue = Vert.color.G / 252.0f;
+                                    BValue = Vert.color.B / 252.0f;
+                                    AValue = Vert.color.A / 255.0f;
+                                    //colorElement.Data.Add(new Aspose.ThreeD.Utilities.Vector4(RValue, GValue, BValue, AValue)); // Red
+                                    //WorkMesh.VertexElements.Add(colorElement);
+                                }
+                                List<int> IndexList = new List<int>();
+                                IndexList.Add(CurrentVertIndex);
+                                IndexList.Add(CurrentVertIndex + 1);
+                                IndexList.Add(CurrentVertIndex + 2);
+
+                                WorkMesh.CreatePolygon(IndexList.ToArray());
+
+                                if (ThisFace == 0)
+                                {
+                                    Seg7Reader.BaseStream.Position += 1;
+                                }
+
+                            }
+
+
+
+                            //Two Triangles
+                            break;
+                        }
+
+                    case (0xBF):
+                        {
+
+
+                            Seg7Reader.BaseStream.Position += 4;
+                            int Index;
+                            int CurrentVertIndex = WorkMesh.ControlPoints.Count;
+
+                            for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                            {
+                                Index = Seg7Reader.ReadByte() / 2;
+                                Seg4Reader.BaseStream.Position = VertexCache + (Index * 16);
+                                Vertex Vert = new Vertex();
+                                Vert.position = new Position();
+
+                                Vert.position.x = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                Vert.position.z = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                Vert.position.y = Convert.ToInt16(BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0) * -1);
+                                Seg4Reader.ReadInt16();//Padding
+                                Vert.position.sBase = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                Vert.position.tBase = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+
+                                Vert.color = new OK64Color();
+                                Vert.color.R = Seg4Reader.ReadByte();
+                                Vert.color.G = Seg4Reader.ReadByte();
+                                Vert.color.B = Seg4Reader.ReadByte();
+                                Vert.color.A = Seg4Reader.ReadByte();
+
+                                Aspose.ThreeD.Utilities.Vector4 Positional = new Aspose.ThreeD.Utilities.Vector4();
+                                Positional.X = Vert.position.x;
+                                Positional.Y = Vert.position.y;
+                                Positional.Z = Vert.position.z;
+                                Positional.W = 1; //w for wut
+
+                                WorkMesh.ControlPoints.Add(Positional);
+
+
+                                // Create UVset
+                                //VertexElementUV elementUV = WorkMesh.CreateElementUV(Aspose.ThreeD.Entities.TextureMapping.Diffuse, MappingMode.PolygonVertex, ReferenceMode.IndexToDirect);
+                                // Copy the data to the UV vertex element 
+
+                                float UValue = Vert.position.sBase / 32.0f / 32.0f;
+                                float VValue = Vert.position.tBase / 32.0f / 32.0f;
+
+                                Aspose.ThreeD.Utilities.Vector4 UVWT = new Aspose.ThreeD.Utilities.Vector4
+                                (
+                                    UValue,
+                                    VValue,
+                                    0.0f,
+                                    1.0f
+                                );
+
+                                //elementUV.Data.Add(UVWT);
+                                // Create a vertex color element
+                                //VertexElementVertexColor colorElement = new VertexElementVertexColor();
+                                //colorElement.MappingMode = MappingMode.PolygonVertex;
+                                //colorElement.ReferenceMode = ReferenceMode.Direct;
+
+
+
+                                // Add vertex colors (Vector4 format)
+
+                                float RValue, GValue, BValue, AValue;
+                                RValue = Vert.color.R / 252.0f;
+                                GValue = Vert.color.G / 252.0f;
+                                BValue = Vert.color.B / 252.0f;
+                                AValue = Vert.color.A / 255.0f;
+                                //colorElement.Data.Add(new Aspose.ThreeD.Utilities.Vector4(RValue, GValue, BValue, AValue)); // Red
+                                //WorkMesh.VertexElements.Add(colorElement);
+                            }
+                            List<int> IndexList = new List<int>();
+                            IndexList.Add(CurrentVertIndex);
+                            IndexList.Add(CurrentVertIndex + 1);
+                            IndexList.Add(CurrentVertIndex + 2);
+
+                            WorkMesh.CreatePolygon(IndexList.ToArray());
+                            //One Triangle
+                            break;
+                        }
+                    case (0xB8):
+                        {
+
+                            Aspose.ThreeD.Node node = ExportData.RootNode.CreateChildNode("Mesh-Sub" + Address.ToString("X").ToString(), WorkMesh);
+                            Seg7Reader.BaseStream.Position += 7;
+                            //End DL
+                            B8 = true;
+                            break;
+                        }
+                    default:
+                        {
+                            Seg7Reader.BaseStream.Position += 3;
+                            //lolwut
+                            break;
+                        }
+
+                }
+            }
+        }
+
+
+        public void ExportSurfaceMap(byte[] Segment4, byte[] Segment6, byte[] Segment7, uint Offset)
+        {
+            MemoryStream Seg4Stream = new MemoryStream(Segment4);
+            MemoryStream Seg6Stream = new MemoryStream(Segment6);
+            MemoryStream Seg7Stream = new MemoryStream(Segment7);
+            BinaryReader Seg4Reader = new BinaryReader(Seg4Stream);
+            BinaryReader Seg6Reader = new BinaryReader(Seg6Stream);
+            BinaryReader Seg7Reader = new BinaryReader(Seg7Stream);
+
+            F3DEX095 F3D = new F3DEX095();
+
+            Seg6Reader.BaseStream.Position = Offset;
+
+            Aspose.ThreeD.Scene ExportData = new Aspose.ThreeD.Scene();
+
+
+            MK64SurfaceStruct Surf = new MK64SurfaceStruct();
+            while (true)
+            {
+                Surf.dlist = BitConverter.ToUInt32(F3D.BigEndian(Seg6Reader.ReadUInt32()), 0);
+                Surf.type = Seg6Reader.ReadByte();
+                Surf.area = Seg6Reader.ReadByte();
+                Surf.flags = BitConverter.ToInt16(F3D.BigEndian(Seg6Reader.ReadInt16()), 0);
+
+                if (Surf.dlist == 0)
+                {
+                    break;
+                }
+
+                uint VertexCache = 0;
+                Seg7Reader.BaseStream.Position = Surf.dlist - 0x07000000;
+                bool B8 = false;
+
+                
+
+                Aspose.ThreeD.Entities.Mesh WorkMesh = new Aspose.ThreeD.Entities.Mesh("Mesh" + Surf.dlist.ToString("X").ToString());
+
+                while (!B8)
+                {
+                    byte CommandByte = Seg7Reader.ReadByte();
+                    switch (CommandByte)
+                    {
+                        case (0x04):
+                            {
+                                //Load Vertex
+                                Seg7Reader.BaseStream.Position += 3;
+                                VertexCache = BitConverter.ToUInt32(F3D.BigEndian(Seg7Reader.ReadUInt32()), 0);
+                                VertexCache -= 0x04000000; //Segmented Address
+                                break;
+                            }
+                        case (0x06):
+                            {
+                                Seg7Reader.BaseStream.Position += 3;
+                                uint Address = BitConverter.ToUInt32(F3D.BigEndian(Seg7Reader.ReadUInt32()), 0);
+                                long SavePoint = Seg7Reader.BaseStream.Position;
+                                RecursiveBullshit(Surf.dlist, Address, Seg4Reader, Seg6Reader, Seg7Reader, ExportData, WorkMesh);
+                                Seg7Reader.BaseStream.Position = SavePoint;
+                                break;
+                            }
+                        case (0xB1):
+                            {
+
+
+
+                                int Index;
+
+                                for (int ThisFace = 0; ThisFace < 2; ThisFace++)
+                                {
+                                    int CurrentVertIndex = WorkMesh.ControlPoints.Count;
+                                    for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                                    {
+                                        Index = Seg7Reader.ReadByte() / 2;
+                                        Seg4Reader.BaseStream.Position = VertexCache + (Index * 16);
+                                        Vertex Vert = new Vertex();
+                                        Vert.position = new Position();
+
+                                        Vert.position.x = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                        Vert.position.z = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                        Vert.position.y = Convert.ToInt16(BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0) * -1);
+                                        Seg4Reader.ReadInt16();//Padding
+                                        Vert.position.sBase = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                        Vert.position.tBase = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+
+                                        Vert.color = new OK64Color();
+                                        Vert.color.R = Seg4Reader.ReadByte();
+                                        Vert.color.G = Seg4Reader.ReadByte();
+                                        Vert.color.B = Seg4Reader.ReadByte();
+                                        Vert.color.A = Seg4Reader.ReadByte();
+
+                                        Aspose.ThreeD.Utilities.Vector4 Positional = new Aspose.ThreeD.Utilities.Vector4();
+                                        Positional.X = Vert.position.x;
+                                        Positional.Y = Vert.position.y;
+                                        Positional.Z = Vert.position.z;
+                                        Positional.W = 1; //w for wut
+
+                                        WorkMesh.ControlPoints.Add(Positional);
+
+
+                                        float UValue = Vert.position.sBase / 32.0f / 32.0f;
+                                        float VValue = Vert.position.tBase / 32.0f / 32.0f;
+
+                                        // Create UVset
+                                        //VertexElementUV elementUV = WorkMesh.CreateElementUV(Aspose.ThreeD.Entities.TextureMapping.Diffuse, MappingMode.PolygonVertex, ReferenceMode.IndexToDirect);
+                                        // Copy the data to the UV vertex element 
+
+                                        Aspose.ThreeD.Utilities.Vector4 UVWT = new Aspose.ThreeD.Utilities.Vector4
+                                        (
+                                            UValue,
+                                            VValue,
+                                            0.0f,
+                                            1.0f
+                                        );
+
+                                        //elementUV.Data.Add(UVWT);
+
+                                        // Create a vertex color element
+                                        //VertexElementVertexColor colorElement = new VertexElementVertexColor();
+                                        //colorElement.MappingMode = MappingMode.PolygonVertex;
+                                        //colorElement.ReferenceMode = ReferenceMode.Direct;
+
+
+
+                                        // Add vertex colors (Vector4 format)
+
+                                        float RValue, GValue, BValue, AValue;
+                                        RValue = Vert.color.R / 252.0f;
+                                        GValue = Vert.color.G / 252.0f;
+                                        BValue = Vert.color.B / 252.0f;
+                                        AValue = Vert.color.A / 255.0f;
+                                        //colorElement.Data.Add(new Aspose.ThreeD.Utilities.Vector4(RValue, GValue, BValue, AValue)); // Red
+                                        //WorkMesh.VertexElements.Add(colorElement);
+                                    }
+                                    List<int> IndexList = new List<int>();
+                                    IndexList.Add(CurrentVertIndex);
+                                    IndexList.Add(CurrentVertIndex + 1);
+                                    IndexList.Add(CurrentVertIndex + 2);
+
+                                    WorkMesh.CreatePolygon(IndexList.ToArray());
+
+                                    if (ThisFace == 0)
+                                    {
+                                        Seg7Reader.BaseStream.Position += 1;
+                                    }
+
+                                }
+
+
+
+                                //Two Triangles
+                                break;
+                            }
+
+                        case (0xBF):
+                            {
+
+
+                                Seg7Reader.BaseStream.Position += 4;
+                                int Index;
+                                int CurrentVertIndex = WorkMesh.ControlPoints.Count;
+
+                                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                                {
+                                    Index = Seg7Reader.ReadByte() / 2;
+                                    Seg4Reader.BaseStream.Position = VertexCache + (Index * 16);
+                                    Vertex Vert = new Vertex();
+                                    Vert.position = new Position();
+
+                                    Vert.position.x = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                    Vert.position.z = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                    Vert.position.y = Convert.ToInt16(BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0) * -1);
+                                    Seg4Reader.ReadInt16();//Padding
+                                    Vert.position.sBase = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+                                    Vert.position.tBase = BitConverter.ToInt16(F3D.BigEndian(Seg4Reader.ReadInt16()), 0);
+
+                                    Vert.color = new OK64Color();
+                                    Vert.color.R = Seg4Reader.ReadByte();
+                                    Vert.color.G = Seg4Reader.ReadByte();
+                                    Vert.color.B = Seg4Reader.ReadByte();
+                                    Vert.color.A = Seg4Reader.ReadByte();
+
+                                    Aspose.ThreeD.Utilities.Vector4 Positional = new Aspose.ThreeD.Utilities.Vector4();
+                                    Positional.X = Vert.position.x;
+                                    Positional.Y = Vert.position.y;
+                                    Positional.Z = Vert.position.z;
+                                    Positional.W = 1; //w for wut
+
+                                    WorkMesh.ControlPoints.Add(Positional);
+
+
+                                    // Create UVset
+                                    //VertexElementUV elementUV = WorkMesh.CreateElementUV(Aspose.ThreeD.Entities.TextureMapping.Diffuse, MappingMode.PolygonVertex, ReferenceMode.IndexToDirect);
+                                    // Copy the data to the UV vertex element 
+
+                                    float UValue = Vert.position.sBase / 32.0f / 32.0f;
+                                    float VValue = Vert.position.tBase / 32.0f / 32.0f;
+
+                                    Aspose.ThreeD.Utilities.Vector4 UVWT = new Aspose.ThreeD.Utilities.Vector4
+                                    (
+                                        UValue,
+                                        VValue,
+                                        0.0f,
+                                        1.0f
+                                    );
+
+                                    //elementUV.Data.Add(UVWT);
+                                    // Create a vertex color element
+                                    //VertexElementVertexColor colorElement = new VertexElementVertexColor();
+                                    //colorElement.MappingMode = MappingMode.PolygonVertex;
+                                    //colorElement.ReferenceMode = ReferenceMode.Direct;
+
+
+
+                                    // Add vertex colors (Vector4 format)
+
+                                    float RValue, GValue, BValue, AValue;
+                                    RValue = Vert.color.R / 252.0f;
+                                    GValue = Vert.color.G / 252.0f;
+                                    BValue = Vert.color.B / 252.0f;
+                                    AValue = Vert.color.A / 255.0f;
+                                    //colorElement.Data.Add(new Aspose.ThreeD.Utilities.Vector4(RValue, GValue, BValue, AValue)); // Red
+                                    //WorkMesh.VertexElements.Add(colorElement);
+                                }
+                                List<int> IndexList = new List<int>();
+                                IndexList.Add(CurrentVertIndex);
+                                IndexList.Add(CurrentVertIndex + 1);
+                                IndexList.Add(CurrentVertIndex + 2);
+
+                                WorkMesh.CreatePolygon(IndexList.ToArray());
+                                //One Triangle
+                                break;
+                            }
+                        case (0xB8):
+                            {
+
+                                Aspose.ThreeD.Node node = ExportData.RootNode.CreateChildNode("Mesh" + Surf.dlist.ToString("X").ToString(), WorkMesh);
+                                Seg7Reader.BaseStream.Position += 7;
+                                //End DL
+                                B8 = true;
+                                break;
+                            }
+                        default:
+                            {
+                                Seg7Reader.BaseStream.Position += 3;
+                                //lolwut
+                                break;
+                            }
+
+                    }
+                }
+            }
+
+            SaveFileDialog SaveFile = new SaveFileDialog();
+            if (SaveFile.ShowDialog() == DialogResult.OK)
+            {
+
+                try
+                {
+
+                    ExportData.Save(SaveFile.FileName, FileFormat.FBX7700ASCII);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Assimp Error: {ex.Message}");
+                }
+
+            }
+        }
+
+        public void ExportGeometry(byte[] Segment4, byte[] Segment7, byte[] Segment5, int TexWidth, int TexHeight)
+        {
+            TM64 Tarmac = new TM64();
+            F3DEX095 F3D = new F3DEX095();
+            byte[] Segment7Raw = Tarmac.Decompress_seg7(Segment7);
+            byte[] Segment4Raw = Tarmac.DecompressMIO0(Segment4);
+            byte[] VertexData = InflateVertex(Segment4Raw);
+
+            MemoryStream VertexStream = new MemoryStream();
+            BinaryReader VertexReader = new BinaryReader(VertexStream);
+            VertexStream.Write(VertexData, 0, VertexData.Length);
+
+            MemoryStream ModelStream = new MemoryStream();
+            BinaryReader ModelReader = new BinaryReader(ModelStream);
+            ModelStream.Write(Segment7Raw, 0, Segment7Raw.Length);
+
+            VertexStream.Position = 0;
+            ModelStream.Position = 0;
+
+
+            uint VertexCache = 0;
+            Aspose.ThreeD.Scene ExportData = new Aspose.ThreeD.Scene();
+
+
+            Aspose.ThreeD.Entities.Mesh WorkMesh = new Aspose.ThreeD.Entities.Mesh();
+
+            ModelReader.BaseStream.Position += 8;
+
+            while (true)
+            {
+                if (ModelReader.BaseStream.Position >= ModelReader.BaseStream.Length)
+                {
+                    break;
+                }
+
+                byte CommandByte = ModelReader.ReadByte();
+                switch(CommandByte)
+                {
+                    case (0x04):
+                        {
+                            //Load Vertex
+                            ModelReader.BaseStream.Position += 3;
+                            VertexCache = BitConverter.ToUInt32(F3D.BigEndian(ModelReader.ReadUInt32()), 0);
+                            VertexCache -= 0x04000000; //Segmented Address
+                            break;
+                        }
+                    case (0xB1):
+                        {
+                            
+                            
+
+                            int Index;
+                            
+                            for (int ThisFace = 0; ThisFace < 2; ThisFace++)
+                            {
+                                int CurrentVertIndex = WorkMesh.ControlPoints.Count;
+                                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                                {
+                                    Index = ModelReader.ReadByte() / 2;
+                                    VertexReader.BaseStream.Position = VertexCache + (Index * 16);
+                                    Vertex Vert = new Vertex();
+                                    Vert.position = new Position();
+                                    
+                                    Vert.position.x = BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16()), 0);
+                                    Vert.position.z = BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16()), 0);
+                                    Vert.position.y = Convert.ToInt16(BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16()), 0) * -1);
+                                    VertexReader.ReadInt16();//Padding
+                                    Vert.position.sBase = BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16()), 0);
+                                    Vert.position.tBase = BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16()), 0);
+
+                                    Vert.color = new OK64Color();
+                                    Vert.color.R = VertexReader.ReadByte();
+                                    Vert.color.G = VertexReader.ReadByte();
+                                    Vert.color.B = VertexReader.ReadByte();
+                                    Vert.color.A = VertexReader.ReadByte();
+
+                                    Aspose.ThreeD.Utilities.Vector4 Positional = new Aspose.ThreeD.Utilities.Vector4();
+                                    Positional.X = Vert.position.x;
+                                    Positional.Y = Vert.position.y;
+                                    Positional.Z = Vert.position.z;
+                                    Positional.W = 1; //w for wut
+
+                                    WorkMesh.ControlPoints.Add(Positional);
+
+
+                                    float UValue = Vert.position.sBase / 32.0f / TexWidth;
+                                    float VValue = Vert.position.tBase / 32.0f / TexHeight;
+
+                                    // Create UVset
+                                    //VertexElementUV elementUV = WorkMesh.CreateElementUV(Aspose.ThreeD.Entities.TextureMapping.Diffuse, MappingMode.PolygonVertex, ReferenceMode.IndexToDirect);
+                                    // Copy the data to the UV vertex element 
+
+                                    Aspose.ThreeD.Utilities.Vector4 UVWT = new Aspose.ThreeD.Utilities.Vector4
+                                    (
+                                        UValue,
+                                        VValue,
+                                        0.0f,
+                                        1.0f
+                                    );
+
+                                    //elementUV.Data.Add(UVWT);
+
+                                    // Create a vertex color element
+                                    //VertexElementVertexColor colorElement = new VertexElementVertexColor();
+                                    //colorElement.MappingMode = MappingMode.PolygonVertex;
+                                    //colorElement.ReferenceMode = ReferenceMode.Direct;
+
+
+
+                                    // Add vertex colors (Vector4 format)
+
+                                    float RValue, GValue, BValue, AValue;
+                                    RValue = Vert.color.R / 252.0f;
+                                    GValue = Vert.color.G / 252.0f;
+                                    BValue = Vert.color.B / 252.0f;
+                                    AValue = Vert.color.A / 255.0f;
+                                    //colorElement.Data.Add(new Aspose.ThreeD.Utilities.Vector4(RValue, GValue, BValue, AValue)); // Red
+                                    //WorkMesh.VertexElements.Add(colorElement);
+                                }
+                                List<int> IndexList = new List<int>();
+                                IndexList.Add(CurrentVertIndex);
+                                IndexList.Add(CurrentVertIndex + 1);
+                                IndexList.Add(CurrentVertIndex + 2);
+
+                                WorkMesh.CreatePolygon(IndexList.ToArray());
+
+                                if (ThisFace == 0)
+                                {
+                                    ModelReader.BaseStream.Position += 1;
+                                }
+                                
+                            }
+                            
+
+
+                            //Two Triangles
+                            break;
+                        }
+
+                    case (0xBF):
+                        {
+
+
+                            ModelReader.BaseStream.Position += 4;
+                            int Index;
+                            int CurrentVertIndex = WorkMesh.ControlPoints.Count;
+
+                            for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                            {
+                                Index = ModelReader.ReadByte() / 2;
+                                VertexReader.BaseStream.Position = VertexCache + (Index * 16);
+                                Vertex Vert = new Vertex();
+                                Vert.position = new Position();
+
+                                Vert.position.x = BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16()), 0);
+                                Vert.position.z = BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16()), 0);
+                                Vert.position.y = BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16() * -1), 0);
+                                VertexReader.ReadInt16();//Padding
+                                Vert.position.sBase = BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16()), 0);
+                                Vert.position.tBase = BitConverter.ToInt16(F3D.BigEndian(VertexReader.ReadInt16()), 0);
+
+                                Vert.color = new OK64Color();
+                                Vert.color.R = VertexReader.ReadByte();
+                                Vert.color.G = VertexReader.ReadByte();
+                                Vert.color.B = VertexReader.ReadByte();
+                                Vert.color.A = VertexReader.ReadByte();
+
+                                Aspose.ThreeD.Utilities.Vector4 Positional = new Aspose.ThreeD.Utilities.Vector4();
+                                Positional.X = Vert.position.x;
+                                Positional.Y = Vert.position.y;
+                                Positional.Z = Vert.position.z;
+                                Positional.W = 1; //w for wut
+
+                                WorkMesh.ControlPoints.Add(Positional);
+
+
+                                // Create UVset
+                                //VertexElementUV elementUV = WorkMesh.CreateElementUV(Aspose.ThreeD.Entities.TextureMapping.Diffuse, MappingMode.PolygonVertex, ReferenceMode.IndexToDirect);
+                                // Copy the data to the UV vertex element 
+
+                                float UValue = Vert.position.sBase / 32.0f / TexWidth;
+                                float VValue = Vert.position.tBase / 32.0f / TexHeight;
+
+                                Aspose.ThreeD.Utilities.Vector4 UVWT = new Aspose.ThreeD.Utilities.Vector4
+                                (
+                                    UValue,
+                                    VValue,
+                                    0.0f,
+                                    1.0f
+                                );
+
+                                //elementUV.Data.Add(UVWT);
+                                // Create a vertex color element
+                                //VertexElementVertexColor colorElement = new VertexElementVertexColor();
+                                //colorElement.MappingMode = MappingMode.PolygonVertex;
+                                //colorElement.ReferenceMode = ReferenceMode.Direct;
+
+
+
+                                // Add vertex colors (Vector4 format)
+
+                                float RValue, GValue, BValue, AValue;
+                                RValue = Vert.color.R / 252.0f;
+                                GValue = Vert.color.G / 252.0f;
+                                BValue = Vert.color.B / 252.0f;
+                                AValue = Vert.color.A / 255.0f;
+                                //colorElement.Data.Add(new Aspose.ThreeD.Utilities.Vector4(RValue, GValue, BValue, AValue)); // Red
+                                //WorkMesh.VertexElements.Add(colorElement);
+                            }
+                            List<int> IndexList = new List<int>();
+                            IndexList.Add(CurrentVertIndex);
+                            IndexList.Add(CurrentVertIndex + 1);
+                            IndexList.Add(CurrentVertIndex + 2);
+
+                            WorkMesh.CreatePolygon(IndexList.ToArray());
+                            //One Triangle
+                            break;
+                        }
+                    case (0xB8):
+                        {
+                            Aspose.ThreeD.Node node = ExportData.RootNode.CreateChildNode("Cube", WorkMesh);
+                            
+                            WorkMesh = new Aspose.ThreeD.Entities.Mesh("Mesh" + (ExportData.RootNode.ChildNodes.Count - 1).ToString());
+                            
+                            ModelReader.BaseStream.Position += 7;
+                            //End DL
+                            break;
+                        }
+                    default:
+                        {
+                            ModelReader.BaseStream.Position += 7;
+                            //lolwut
+                            break;
+                        }
+
+                }
+            }
+
+
+
+            SaveFileDialog SaveFile = new SaveFileDialog();
+            if (SaveFile.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    ExportData.Save(SaveFile.FileName, FileFormat.FBX7700ASCII);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Assimp Error: {ex.Message}");
+                }
+
+            }
+        }
+
+
+        public void CubeMeDaddyO()
+        {
+            // Initialize a new scene
+            Aspose.ThreeD.Scene scene = new Aspose.ThreeD.Scene();
+            Aspose.ThreeD.Node cubeNode = scene.RootNode.CreateChildNode("Cube");
+
+
+            // Define cube vertices
+            Aspose.ThreeD.Utilities.Vector4[] vertices = new Aspose.ThreeD.Utilities.Vector4[]
+            {
+            new Aspose.ThreeD.Utilities.Vector4(-1, -1,  1), // 0
+            new Aspose.ThreeD.Utilities.Vector4( 1, -1,  1), // 1
+            new Aspose.ThreeD.Utilities.Vector4( 1,  1,  1), // 2
+            new Aspose.ThreeD.Utilities.Vector4(-1,  1,  1), // 3
+            new Aspose.ThreeD.Utilities.Vector4(-1, -1, -1), // 4
+            new Aspose.ThreeD.Utilities.Vector4( 1, -1, -1), // 5
+            new Aspose.ThreeD.Utilities.Vector4( 1,  1, -1), // 6
+            new Aspose.ThreeD.Utilities.Vector4(-1,  1, -1)  // 7
+            };
+
+            // Define cube faces using triangles (two per quad)
+            int[] indices = new int[]
+            {
+            0, 1, 2,  2, 3, 0,  // Front
+            1, 5, 6,  6, 2, 1,  // Right
+            5, 4, 7,  7, 6, 5,  // Back
+            4, 0, 3,  3, 7, 4,  // Left
+            3, 2, 6,  6, 7, 3,  // Top
+            4, 5, 1,  1, 0, 4   // Bottom
+            };
+
+            // Define UV coordinates
+            Aspose.ThreeD.Utilities.Vector4[] uvs = new Aspose.ThreeD.Utilities.Vector4[]
+            {
+                new Aspose.ThreeD.Utilities.Vector4(1, 0, 0, 1), // Red
+                new Aspose.ThreeD.Utilities.Vector4(0, 1, 0, 1), // Green
+                new Aspose.ThreeD.Utilities.Vector4(0, 0, 0, 1), // Blue
+                new Aspose.ThreeD.Utilities.Vector4(1, 1, 0, 1), // Yellow
+                new Aspose.ThreeD.Utilities.Vector4(1, 0, 0, 1), // Red
+                new Aspose.ThreeD.Utilities.Vector4(0, 1, 0, 1), // Green
+                new Aspose.ThreeD.Utilities.Vector4(0, 0, 0, 1), // Blue
+                new Aspose.ThreeD.Utilities.Vector4(1, 1, 0, 1), // Yellow
+            };
+            // Define vertex colors
+            Aspose.ThreeD.Utilities.Vector4[] colors = new Aspose.ThreeD.Utilities.Vector4[]
+            {
+                new Aspose.ThreeD.Utilities.Vector4(1, 0, 0, 1), // Red
+                new Aspose.ThreeD.Utilities.Vector4(0, 1, 0, 1), // Green
+                new Aspose.ThreeD.Utilities.Vector4(0, 0, 1, 1), // Blue
+                new Aspose.ThreeD.Utilities.Vector4(1, 1, 0, 1), // Yellow
+                new Aspose.ThreeD.Utilities.Vector4(1, 0, 1, 1), // Magenta
+                new Aspose.ThreeD.Utilities.Vector4(0, 1, 1, 1), // Cyan
+                new Aspose.ThreeD.Utilities.Vector4(1, 1, 1, 1), // White
+                new Aspose.ThreeD.Utilities.Vector4(0, 0, 0, 1)  // Black
+            };
+
+            Aspose.ThreeD.Entities.Mesh mesh = new Aspose.ThreeD.Entities.Mesh();
+            mesh.ControlPoints.AddRange(vertices);
+            // Add vertex positions
+
+            // Add vertex colors
+            VertexElementVertexColor colorElement = mesh.CreateElement(VertexElementType.VertexColor, MappingMode.ControlPoint, ReferenceMode.Direct) as VertexElementVertexColor;
+            colorElement.SetData(new Aspose.ThreeD.Utilities.Vector4[]
+            {
+                new Aspose.ThreeD.Utilities.Vector4(1, 0, 0, 1), // Red
+                new Aspose.ThreeD.Utilities.Vector4(0, 1, 0, 1), // Green
+                new Aspose.ThreeD.Utilities.Vector4(0, 0, 1, 1), // Blue
+                new Aspose.ThreeD.Utilities.Vector4(1, 1, 0, 1), // Yellow
+                new Aspose.ThreeD.Utilities.Vector4(1, 0, 1, 1), // Magenta
+                new Aspose.ThreeD.Utilities.Vector4(0, 1, 1, 1), // Cyan
+                new Aspose.ThreeD.Utilities.Vector4(1, 1, 1, 1), // White
+                new Aspose.ThreeD.Utilities.Vector4(0, 0, 0, 1)  // Black
+            });
+
+            // Add UV coordinates
+            VertexElementUV uvElement = mesh.CreateElement(VertexElementType.UV) as VertexElementUV;
+            uvElement.Data.AddRange(uvs);
+
+            // Define triangle faces
+            mesh.CreatePolygon(indices);
+
+            // Attach mesh to the node
+            cubeNode.Entity = mesh;
+
+            // Save the scene
+            SaveFileDialog FileSave = new SaveFileDialog();
+            if (FileSave.ShowDialog() == DialogResult.OK)
+            {
+                string outputPath = "CubeWithColorsAndUVs.fbx";
+                scene.Save(FileSave.FileName, FileFormat.FBX7500ASCII);
+            }
+            
+
+        }
         public string[] WriteGeometryRSP(TM64_Geometry.OK64F3DObject TargetObject, TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
         {
             List<string> Output = new List<string>();
