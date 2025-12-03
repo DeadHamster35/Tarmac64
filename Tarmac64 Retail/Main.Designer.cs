@@ -111,11 +111,11 @@
             this.patchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.applyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.courseUpgraderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.GLControl = new Tarmac64_Retail.GLViewer();
-            this.courseUpgraderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SurfaceMap.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.SectionViews.SuspendLayout();
@@ -507,10 +507,10 @@
             // 
             this.TextureData.AutoScroll = true;
             this.TextureData.Controls.Add(this.TextureControl);
-            this.TextureData.Location = new System.Drawing.Point(4, 22);
+            this.TextureData.Location = new System.Drawing.Point(4, 40);
             this.TextureData.Name = "TextureData";
             this.TextureData.Padding = new System.Windows.Forms.Padding(3);
-            this.TextureData.Size = new System.Drawing.Size(307, 612);
+            this.TextureData.Size = new System.Drawing.Size(307, 594);
             this.TextureData.TabIndex = 1;
             this.TextureData.Text = "Textures";
             this.TextureData.UseVisualStyleBackColor = true;
@@ -520,7 +520,7 @@
             // 
             this.TextureControl.Location = new System.Drawing.Point(0, 0);
             this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 850);
+            this.TextureControl.Size = new System.Drawing.Size(289, 1000);
             this.TextureControl.TabIndex = 0;
             this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
             // 
@@ -568,9 +568,9 @@
             // PathTab
             // 
             this.PathTab.Controls.Add(this.PathControl);
-            this.PathTab.Location = new System.Drawing.Point(4, 22);
+            this.PathTab.Location = new System.Drawing.Point(4, 40);
             this.PathTab.Name = "PathTab";
-            this.PathTab.Size = new System.Drawing.Size(307, 612);
+            this.PathTab.Size = new System.Drawing.Size(307, 594);
             this.PathTab.TabIndex = 5;
             this.PathTab.Text = "Path Settings";
             this.PathTab.UseVisualStyleBackColor = true;
@@ -975,28 +975,28 @@
             // oBJToolStripMenuItem
             // 
             this.oBJToolStripMenuItem.Name = "oBJToolStripMenuItem";
-            this.oBJToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.oBJToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.oBJToolStripMenuItem.Text = "Ghost Extractor";
             this.oBJToolStripMenuItem.Click += new System.EventHandler(this.oBJToolStripMenuItem_Click);
             // 
             // songExtractorToolStripMenuItem
             // 
             this.songExtractorToolStripMenuItem.Name = "songExtractorToolStripMenuItem";
-            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.songExtractorToolStripMenuItem.Text = "Song Extractor";
             this.songExtractorToolStripMenuItem.Click += new System.EventHandler(this.songExtractorToolStripMenuItem_Click);
             // 
             // objectTypeCompilerToolStripMenuItem
             // 
             this.objectTypeCompilerToolStripMenuItem.Name = "objectTypeCompilerToolStripMenuItem";
-            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.objectTypeCompilerToolStripMenuItem.Text = "Object Compiler";
             this.objectTypeCompilerToolStripMenuItem.Click += new System.EventHandler(this.objectTypeCompilerToolStripMenuItem_Click);
             // 
             // rOMBuiderToolStripMenuItem
             // 
             this.rOMBuiderToolStripMenuItem.Name = "rOMBuiderToolStripMenuItem";
-            this.rOMBuiderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rOMBuiderToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.rOMBuiderToolStripMenuItem.Text = "Game Buider";
             this.rOMBuiderToolStripMenuItem.Click += new System.EventHandler(this.rOMBuiderToolStripMenuItem_Click);
             // 
@@ -1006,7 +1006,7 @@
             this.createToolStripMenuItem,
             this.applyToolStripMenuItem});
             this.patchToolStripMenuItem.Name = "patchToolStripMenuItem";
-            this.patchToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.patchToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.patchToolStripMenuItem.Text = "Patch";
             // 
             // createToolStripMenuItem
@@ -1022,6 +1022,13 @@
             this.applyToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.applyToolStripMenuItem.Text = "Apply";
             this.applyToolStripMenuItem.Click += new System.EventHandler(this.applyToolStripMenuItem_Click);
+            // 
+            // courseUpgraderToolStripMenuItem
+            // 
+            this.courseUpgraderToolStripMenuItem.Name = "courseUpgraderToolStripMenuItem";
+            this.courseUpgraderToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.courseUpgraderToolStripMenuItem.Text = "Course Upgrader";
+            this.courseUpgraderToolStripMenuItem.Click += new System.EventHandler(this.courseUpgraderToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -1057,13 +1064,6 @@
             this.GLControl.Size = new System.Drawing.Size(915, 657);
             this.GLControl.TabIndex = 3;
             this.GLControl.Load += new System.EventHandler(this.GLControl_Load);
-            // 
-            // courseUpgraderToolStripMenuItem
-            // 
-            this.courseUpgraderToolStripMenuItem.Name = "courseUpgraderToolStripMenuItem";
-            this.courseUpgraderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.courseUpgraderToolStripMenuItem.Text = "Course Upgrader";
-            this.courseUpgraderToolStripMenuItem.Click += new System.EventHandler(this.courseUpgraderToolStripMenuItem_Click);
             // 
             // Main
             // 

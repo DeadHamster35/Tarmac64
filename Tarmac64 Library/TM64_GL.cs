@@ -408,18 +408,18 @@ namespace Tarmac64_Library
         {
             bool Enable = false;
 
-            if (TextureObject.GeometryBools[5])
+            if (TextureObject.ColorCombine.GeometryBools[5])
             {
                 Enable = true;
 
                 GL.CullFace(OpenGL.GL_FRONT_AND_BACK);
                 
             }
-            else if (TextureObject.GeometryBools[3])
+            else if (TextureObject.ColorCombine.GeometryBools[3])
             {
                 Enable = true;
 
-                if (TextureObject.GeometryBools[4])
+                if (TextureObject.ColorCombine.GeometryBools[4])
                 {
                     GL.CullFace(OpenGL.GL_FRONT_AND_BACK);
                     
@@ -429,7 +429,7 @@ namespace Tarmac64_Library
                     GL.CullFace(OpenGL.GL_FRONT);
                 }
             }
-            else if (TextureObject.GeometryBools[4])
+            else if (TextureObject.ColorCombine.GeometryBools[4])
             {
                 Enable = true;
 

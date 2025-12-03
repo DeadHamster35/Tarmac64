@@ -607,7 +607,7 @@ namespace Tarmac64_Retail
                     if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
                     {
                         
-                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.RawTexture.f3dexPosition | 0x06000000)));
+                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.TexelData.F3DEXPosition | 0x06000000)));
                         binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollS)));
                         binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollT)));
                     }
@@ -620,7 +620,7 @@ namespace Tarmac64_Retail
                         if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
                         {
 
-                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.RawTexture.f3dexPosition | 0x0A000000)));
+                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.TexelData.F3DEXPosition | 0x0A000000)));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollS)));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollT)));
                         }
@@ -696,7 +696,7 @@ namespace Tarmac64_Retail
                     {
                         if (textureObject.textureScreen == (CurrentScreen + 1))
                         {
-                            flip = BitConverter.GetBytes(Convert.ToInt32(textureObject.RawTexture.segmentPosition | 0x05000000));
+                            flip = BitConverter.GetBytes(Convert.ToInt32(textureObject.TexelData.segmentPosition | 0x05000000));
                             Array.Reverse(flip);
                             binaryWriter.Write(flip);
                         }
@@ -708,7 +708,7 @@ namespace Tarmac64_Retail
                         {
                             if (textureObject.textureScreen == (CurrentScreen + 1))
                             {
-                                binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.RawTexture.segmentPosition | 0x0A000000)));
+                                binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.TexelData.segmentPosition | 0x0A000000)));
                             }
                         }
                     }
@@ -1069,7 +1069,7 @@ namespace Tarmac64_Retail
 
             for (int ThisTexture = 0; ThisTexture < materialCount; ThisTexture++)
             {
-                RenderMaterialBox.Items.Add(textureArray[ThisTexture].textureName);
+                RenderMaterialBox.Items.Add(textureArray[ThisTexture].TexelData.textureName);
             }
 
             
@@ -1080,7 +1080,7 @@ namespace Tarmac64_Retail
             UpdateSVDisplay();
             UpdateGLView();
 
-            TextureControl.textureBox.SelectedIndex = 0;
+            TextureControl.MaterialSelect.SelectedIndex = 0;
             
             PathControl.loaded = true;
 

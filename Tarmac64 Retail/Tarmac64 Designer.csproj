@@ -136,11 +136,11 @@
     <Compile Include="Windows\CourseUpgrader.Designer.cs">
       <DependentUpon>CourseUpgrader.cs</DependentUpon>
     </Compile>
-    <Compile Include="Windows\DebugTools.cs">
+    <Compile Include="Windows\ColorCombineEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Windows\DebugTools.Designer.cs">
-      <DependentUpon>DebugTools.cs</DependentUpon>
+    <Compile Include="Windows\ColorCombineEditor.Designer.cs">
+      <DependentUpon>ColorCombineEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows\LoadBarForm.cs">
       <SubType>Form</SubType>
@@ -237,8 +237,8 @@
     <EmbeddedResource Include="Windows\CourseUpgrader.resx">
       <DependentUpon>CourseUpgrader.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Windows\DebugTools.resx">
-      <DependentUpon>DebugTools.cs</DependentUpon>
+    <EmbeddedResource Include="Windows\ColorCombineEditor.resx">
+      <DependentUpon>ColorCombineEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\LoadBarForm.resx">
       <DependentUpon>LoadBarForm.cs</DependentUpon>

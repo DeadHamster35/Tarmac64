@@ -282,7 +282,7 @@ namespace Tarmac64_Retail
                         (!File.Exists(NewType.TextureData[ThisTexture].texturePath))
                     )
                     {
-                        MessageBox.Show("Error loading texture " + NewType.TextureData[ThisTexture].textureName + " for " + NewType.Name);
+                        MessageBox.Show("Error loading texture " + NewType.TextureData[ThisTexture].TexelData.textureName + " for " + NewType.Name);
                         if (FileOpen.ShowDialog() == DialogResult.OK)
                         {
                             if (FileOpen.FileName != null)
@@ -381,7 +381,7 @@ namespace Tarmac64_Retail
                     (!File.Exists(NewType.TextureData[ThisTexture].texturePath))
                 )
                 {
-                    MessageBox.Show("Error loading texture " + NewType.TextureData[ThisTexture].textureName + " for " + NewType.Name);
+                    MessageBox.Show("Error loading texture " + NewType.TextureData[ThisTexture].TexelData.textureName + " for " + NewType.Name);
                     if (FileOpen.ShowDialog() == DialogResult.OK)
                     {
                         if (FileOpen.FileName != null)

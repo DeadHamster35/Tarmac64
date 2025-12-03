@@ -252,7 +252,7 @@ namespace Tarmac64_Library
 
             return NewData.ToArray();
         }
-        
+
         public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, bool[] Values)
         {
             XmlElement NewElement = XMLDoc.CreateElement(Name);
@@ -305,6 +305,13 @@ namespace Tarmac64_Library
                 }
 
             }
+            Parent.AppendChild(NewElement);
+        }
+
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, bool Value)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            NewElement.InnerText = Value.ToString();
             Parent.AppendChild(NewElement);
         }
         public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, byte Value)
@@ -1492,7 +1499,7 @@ namespace Tarmac64_Library
             {
                 byte[] compressedPalette = Tarmac.CompressMIO0(paletteData);
                 File.WriteAllBytes(childDirectory + ".PALETTE", paletteData);
-                File.WriteAllBytes(childDirectory + ".PALETTE.MIO0", compressedTexture);
+                File.WriteAllBytes(childDirectory + ".PALETTE.MIO0", compressedPalette);
             }
 
 

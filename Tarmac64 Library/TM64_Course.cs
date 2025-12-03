@@ -731,19 +731,19 @@ namespace Tarmac64_Library
             for (int ThisTexture = 0; ThisTexture < TextureCount; ThisTexture++)
             {
                 NewType.TextureData[ThisTexture] = new TM64_Geometry.OK64Texture();
-                NewType.TextureData[ThisTexture].textureName = binaryReader.ReadString();
+                NewType.TextureData[ThisTexture].TexelData.textureName = binaryReader.ReadString();
 
-                NewType.TextureData[ThisTexture].CombineModeA = binaryReader.ReadInt32();
-                NewType.TextureData[ThisTexture].CombineModeB = binaryReader.ReadInt32();
+                NewType.TextureData[ThisTexture].ColorCombine.CombineModeA = binaryReader.ReadInt32();
+                NewType.TextureData[ThisTexture].ColorCombine.CombineModeB = binaryReader.ReadInt32();
 
-                NewType.TextureData[ThisTexture].GeometryBools = new bool[F3DEX095_Parameters.GeometryModes.Length];
+                NewType.TextureData[ThisTexture].ColorCombine.GeometryBools = new bool[F3DEX095_Parameters.GeometryModes.Length];
                 for (int ThisBool = 0; ThisBool < F3DEX095_Parameters.GeometryModes.Length; ThisBool++)
                 {
-                    NewType.TextureData[ThisTexture].GeometryBools[ThisBool] = binaryReader.ReadBoolean();
+                    NewType.TextureData[ThisTexture].ColorCombine.GeometryBools[ThisBool] = binaryReader.ReadBoolean();
                 }
 
-                NewType.TextureData[ThisTexture].RenderModeA = binaryReader.ReadInt32();
-                NewType.TextureData[ThisTexture].RenderModeB = binaryReader.ReadInt32();
+                NewType.TextureData[ThisTexture].ColorCombine.RenderModeA = binaryReader.ReadInt32();
+                NewType.TextureData[ThisTexture].ColorCombine.RenderModeB = binaryReader.ReadInt32();
 
                 NewType.TextureData[ThisTexture].texturePath = binaryReader.ReadString();
                 if ((NewType.TextureData[ThisTexture].texturePath != "NULL") && (NewType.TextureData[ThisTexture].texturePath != null))
@@ -975,7 +975,7 @@ namespace Tarmac64_Library
                         {
                             ModelCount++;
 
-                            binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].TextureData[SaveData[currentItem].ModelData[ThisModel].materialID].RawTexture.f3dexPosition));
+                            binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].TextureData[SaveData[currentItem].ModelData[ThisModel].materialID].F3DEXPosition));
                             binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].ModelData[ThisModel].ListPosition));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[currentItem].ModelData[ThisModel].meshPosition.Length)));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[currentItem].ModelScale * 100)));
@@ -996,7 +996,7 @@ namespace Tarmac64_Library
                         {
                             ModelCount++;
                             
-                            binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].TextureData[SaveData[currentItem].ModelData[ThisModel].materialID].RawTexture.f3dexPosition));
+                            binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].TextureData[SaveData[currentItem].ModelData[ThisModel].materialID].F3DEXPosition));
                             binaryWriter.Write(F3D.BigEndian(SaveData[currentItem].ModelData[ThisModel].ListPosition));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[currentItem].ModelData[ThisModel].meshPosition.Length)));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(SaveData[currentItem].ModelScale * 100)));
@@ -1489,15 +1489,15 @@ namespace Tarmac64_Library
                 CourseData.ModelData.TextureObjects[CurrentTexture].texturePath = binaryReader.ReadString();
                 if (CourseData.ModelData.TextureObjects[CurrentTexture].texturePath != "NULL")
                 {
-                    CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedSize = binaryReader.ReadInt32();
-                    CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.fileSize = binaryReader.ReadInt32();
-                    CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedTexture = binaryReader.ReadBytes(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedSize);
-                    CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.TextureData = binaryReader.ReadBytes(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.fileSize);
+                    CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.compressedSize = binaryReader.ReadInt32();
+                    CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.fileSize = binaryReader.ReadInt32();
+                    CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.compressedTexture = binaryReader.ReadBytes(CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.compressedSize);
+                    CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.TextureData = binaryReader.ReadBytes(CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.fileSize);
 
                     DataLength = binaryReader.ReadInt32();
                     if (DataLength != 0)
                     {
-                        CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.PaletteData = binaryReader.ReadBytes(DataLength);
+                        CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.PaletteData = binaryReader.ReadBytes(DataLength);
                     }
                 }
             }
@@ -1763,38 +1763,24 @@ namespace Tarmac64_Library
 
 
             binaryWriter.Write(CourseData.ModelData.TextureObjects.Length);
-            List<int> SkippedMaterials = new List<int>();
-            for (int CurrentTexture = 0; CurrentTexture < CourseData.ModelData.TextureObjects.Length; CurrentTexture++)
-            {
-                foreach (var Index in CourseData.ModelData.TextureObjects[CurrentTexture].TextureOverWrite)
-                {
-                    SkippedMaterials.Add(Index);
-                }
-            }
+
             for (int CurrentTexture= 0;CurrentTexture < CourseData.ModelData.TextureObjects.Length;CurrentTexture++)
             {
-                if (!SkippedMaterials.Contains(CurrentTexture) && ((CourseData.ModelData.TextureObjects[CurrentTexture].texturePath != null) && (CourseData.ModelData.TextureObjects[CurrentTexture].texturePath != "NULL")) )
+                binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].texturePath);
+                binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.compressedSize);
+                binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.fileSize);                    
+                binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.compressedTexture);
+                binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.TextureData);
+                if (CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.PaletteData != null)
                 {
-                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].texturePath);
-                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedSize);
-                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.fileSize);                    
-                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.compressedTexture);
-                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.TextureData);
-                    if (CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.PaletteData != null)
-                    {
-                        binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.PaletteData.Length);
-                        binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].RawTexture.PaletteData);
-                    }
-                    else
-                    {
-                        binaryWriter.Write(0);
-                    }
-
+                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.PaletteData.Length);
+                    binaryWriter.Write(CourseData.ModelData.TextureObjects[CurrentTexture].TexelData.PaletteData);
                 }
                 else
                 {
-                    binaryWriter.Write("NULL");
+                    binaryWriter.Write(0);
                 }
+
                 
                 
             }
