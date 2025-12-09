@@ -102,6 +102,7 @@ namespace Tarmac64_Retail
         }
 
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
+        TM64_Texture TarmacTexture = new TM64_Texture();
         TM64_Paths tm64Path = new TM64_Paths();
         TM64 tm64 = new TM64();
 
@@ -202,7 +203,7 @@ namespace Tarmac64_Retail
             
             
 
-            TarmacGeometry.BuildTextures(textureArray);
+            TarmacTexture.BuildTextures(textureArray);
                     
 
             //build segment 7 out of the main course objects and surface geometry
@@ -319,7 +320,7 @@ namespace Tarmac64_Retail
                 PathData = ListStream.ToArray();
 
 
-                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5, Convert.ToBoolean(CourseData.Fog.FogToggle) );
+                textureList = TarmacTexture.compileCourseTexture(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5, Convert.ToBoolean(CourseData.Fog.FogToggle) );
                 if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic, true))
                 {
                     return;
@@ -359,7 +360,6 @@ namespace Tarmac64_Retail
 
                 memoryStream = new MemoryStream();
                 binaryWriter = new BinaryWriter(memoryStream);
-                byte[] byteArray = new byte[0];
 
                 binaryWriter.Write(F3D.gsSPEndDisplayList());
 
@@ -441,7 +441,7 @@ namespace Tarmac64_Retail
                 ListData = ListStream.ToArray();
 
 
-                textureList = TarmacGeometry.compileCourseTexture(segment6, textureArray, 8 + ListData.Length, 5, Convert.ToBoolean(CourseData.Fog.FogToggle));
+                textureList = TarmacTexture.compileCourseTexture(segment6, textureArray, 8 + ListData.Length, 5, Convert.ToBoolean(CourseData.Fog.FogToggle));
                 if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic))
                 {
                     return;
@@ -607,7 +607,7 @@ namespace Tarmac64_Retail
                     if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
                     {
                         
-                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.TexelData.F3DEXPosition | 0x06000000)));
+                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.CCPosition | 0x06000000)));
                         binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollS)));
                         binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollT)));
                     }
@@ -620,7 +620,7 @@ namespace Tarmac64_Retail
                         if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
                         {
 
-                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.TexelData.F3DEXPosition | 0x0A000000)));
+                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.CCPosition | 0x0A000000)));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollS)));
                             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollT)));
                         }
@@ -891,7 +891,7 @@ namespace Tarmac64_Retail
                     int oldMatCount = textureArray.Length;
 
 
-                    textureArray = TarmacGeometry.loadTextures(FBX, FBXfilePath);
+                    textureArray = TarmacTexture.loadTextures(FBX, FBXfilePath);
                     materialCount = textureArray.Length;
                     TextureBitmaps = new Bitmap[textureArray.Length];
 

@@ -64,7 +64,9 @@ namespace Tarmac64_Retail
 
         AssimpContext importer = new AssimpContext();
         TM64_Course TarmacCourse = new TM64_Course();
+        TM64_Texture TarmacTexture = new TM64_Texture();
         TM64_Geometry TarmacGeometry = new TM64_Geometry();
+        TM64_Animation TarmacAnime = new TM64_Animation();
         TM64 Tarmac = new TM64();
         TM64_Objects TarmacObject = new TM64_Objects();
         Scene SceneData = new Scene();
@@ -88,7 +90,7 @@ namespace Tarmac64_Retail
 
                 SceneData = importer.ImportFile(ModelBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
                 ModelData = TarmacGeometry.CreateObjects(SceneData, NewType.TextureData, true);
-                TextureControl.textureArray = TarmacGeometry.loadTextures(SceneData, ModelBox.Text);
+                TextureControl.textureArray = TarmacTexture.loadTextures(SceneData, ModelBox.Text);
                 TextureControl.AddNewTextures(TextureControl.textureArray.Length);
                 TextureControl.Loaded = true;
             }
@@ -131,7 +133,7 @@ namespace Tarmac64_Retail
             {
                 NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
                 var WalkData = importer.ImportFile(WalkBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                NewType.ObjectAnimations.Animation = TarmacGeometry.LoadSkeleton(WalkData, NewType.ModelScale);
+                NewType.ObjectAnimations.Animation = TarmacAnime.LoadSkeleton(WalkData, NewType.ModelScale);
             }
             else
             {
@@ -297,22 +299,6 @@ namespace Tarmac64_Retail
         }
 
 
-        private void BuildBtn_Click(object sender, EventArgs e)
-        {
-
-            SaveFileDialog FileSave = new SaveFileDialog();
-            FileSave.Filter = "OK64Object|*.ok64.OBJECT|All Files(*.*)|*.";
-            FileSave.DefaultExt = ".ok64.OBJECT";
-            if (FileSave.ShowDialog() == DialogResult.OK)
-            {
-                PrepCurrentObject();
-
-                File.WriteAllBytes(FileSave.FileName, Tarmac.CompressMIO0(TarmacCourse.SaveObjectType(NewType)));
-
-            }
-            
-
-        }
 
         private void ResetParameterNames(object sender, CellEditEventArgs e)
         {
@@ -324,6 +310,7 @@ namespace Tarmac64_Retail
 
         private void ResetParameterView()
         {
+
             
             ParameterView.Theme = OLVTheme.VistaExplorer;
             ParameterView.ItemFont = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);

@@ -520,7 +520,7 @@
             // 
             this.TextureControl.Location = new System.Drawing.Point(0, 0);
             this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(289, 1000);
+            this.TextureControl.Size = new System.Drawing.Size(289, 1085);
             this.TextureControl.TabIndex = 0;
             this.TextureControl.Load += new System.EventHandler(this.TextureControl_Load);
             // 
@@ -568,9 +568,9 @@
             // PathTab
             // 
             this.PathTab.Controls.Add(this.PathControl);
-            this.PathTab.Location = new System.Drawing.Point(4, 40);
+            this.PathTab.Location = new System.Drawing.Point(4, 22);
             this.PathTab.Name = "PathTab";
-            this.PathTab.Size = new System.Drawing.Size(307, 594);
+            this.PathTab.Size = new System.Drawing.Size(307, 612);
             this.PathTab.TabIndex = 5;
             this.PathTab.Text = "Path Settings";
             this.PathTab.UseVisualStyleBackColor = true;

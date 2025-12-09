@@ -37,6 +37,7 @@ namespace Tarmac64_Library
         SaveFileDialog FileSave = new SaveFileDialog();
         TM64 Tarmac = new TM64();
         TM64_Geometry TarmacGeo = new TM64_Geometry();
+        TM64_Texture TarmacTexture = new TM64_Texture();
         TM64_Geometry.OK64F3DObject[][] MasterObjects = new TM64_Geometry.OK64F3DObject[0][];
         TM64_Geometry.OK64Texture[][] TextureObjects = new TM64_Geometry.OK64Texture[0][];
         int lastMaterial = 0;
@@ -77,7 +78,7 @@ namespace Tarmac64_Library
                     Assimp.Node masterNode = ModelData.RootNode.FindNode("Render Objects");
                     if (masterNode != null)
                     {
-                        TextureObjects[currentFile] = TarmacGeo.loadTextures(ModelData, FBXFilePath);
+                        TextureObjects[currentFile] = TarmacTexture.loadTextures(ModelData, FBXFilePath);
                         MasterObjects[currentFile] = TarmacGeo.CreateObjects(ModelData, TextureObjects[currentFile]);
                     }
                     else
@@ -172,8 +173,8 @@ namespace Tarmac64_Library
             for (int currentItem = 0; currentItem < MasterObjects.Length; currentItem++)
             {
 
-                OutputData = TarmacGeo.WriteModelTextures(OutputData, TextureObjects[currentItem], DataLength);
-                OutputData = TarmacGeo.CompileTextureObjects(OutputData, TextureObjects[currentItem], DataLength, SegmentID);
+                OutputData = TarmacTexture.WriteModelTextures(OutputData, TextureObjects[currentItem], DataLength);
+                OutputData = TarmacTexture.CompileTextureObjects(OutputData, TextureObjects[currentItem], DataLength, SegmentID);
                 OutputData = TarmacGeo.CompileF3DObject(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], DataLength, SegmentID);
 
 
@@ -190,7 +191,7 @@ namespace Tarmac64_Library
                     SegmentPosition = (MasterObjects[currentItem][ThisChild].meshPosition[0] | (SegmentID << 24));
                     hText += "extern const int " + MasterObjects[currentItem][ThisChild].objectName + "_geometry;" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
                     cText += "const int " + MasterObjects[currentItem][ThisChild].objectName + "_geometry= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
-                    SegmentPosition = (TextureObjects[currentItem][MasterObjects[currentItem][ThisChild].materialID].F3DEXPosition | (SegmentID << 24));
+                    SegmentPosition = (TextureObjects[currentItem][MasterObjects[currentItem][ThisChild].materialID].CCPosition | (SegmentID << 24));
                     hText += "extern const int " + MasterObjects[currentItem][ThisChild].objectName + "_texture;" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
                     cText += "const int " + MasterObjects[currentItem][ThisChild].objectName + "_texture= 0x" + SegmentPosition.ToString("X").PadLeft(8, '0') + ";" + Environment.NewLine;
                     OutputData = TarmacGeo.CompileObjectList(OutputData, MasterObjects[currentItem][ThisChild], TextureObjects[currentItem], SegmentID);
@@ -241,8 +242,8 @@ namespace Tarmac64_Library
             for (int currentItem = 0; currentItem < MasterObjects.Length; currentItem++)
             {
 
-                OutputData = TarmacGeo.WriteModelTextures(OutputData, TextureObjects[currentItem], DataLength);
-                OutputData = TarmacGeo.CompileTextureObjects(OutputData, TextureObjects[currentItem], DataLength, SegmentID);
+                OutputData = TarmacTexture.WriteModelTextures(OutputData, TextureObjects[currentItem], DataLength);
+                OutputData = TarmacTexture.CompileTextureObjects(OutputData, TextureObjects[currentItem], DataLength, SegmentID);
                 OutputData = TarmacGeo.CompileF3DObject(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], DataLength, SegmentID);
 
                 foreach (var SubTexture in TextureObjects[currentItem])
