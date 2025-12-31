@@ -1,54 +1,53 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Drawing.Imaging;
-using System.Numerics;
+﻿using Aspose.ThreeD;
+using Aspose.ThreeD.Entities;
+using Aspose.ThreeD.Formats;
+using Aspose.ThreeD.Render;
+using Aspose.ThreeD.Utilities;
 using Assimp;  //for handling model data
-using Texture64;  //for handling texture data
-using Cereal64.Microcodes.F3DEX.DataElements;
+using Assimp.Unmanaged;
 using Cereal64.Common.DataElements;
 using Cereal64.Common.Rom;
 using Cereal64.Common.Utils.Encoding;
-using System.Text.RegularExpressions;
-using System.Security.Permissions;
-using System.Windows;
-using System.Xml;
-using Tarmac64_Library;
-using SharpDX;
-using Aspose.ThreeD;
-using Aspose.ThreeD.Formats;
-using Aspose.ThreeD.Utilities;
-
-using Aspose.ThreeD.Entities;
-
+using Cereal64.Microcodes.F3DEX.DataElements;
+using Cereal64.Microcodes.F3DEX.DataElements.Commands;
 using F3DSharp;
-using System.Windows.Media;
-using System.Windows.Media.Media3D;
-using System.Collections.Concurrent;
-using System.Windows.Media.Imaging;
-using System.Data;
-using System.Security.Policy;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using SharpDX;
 using SharpGL.SceneGraph;
-using static Tarmac64_Library.TM64_Geometry;
+using SharpGL.SceneGraph.Assets;
+using SharpGL.SceneGraph.Quadrics;
+using SharpGL.SceneGraph.Shaders;
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using System.Runtime.Remoting.Contexts;
+using System.Security.Permissions;
+using System.Security.Policy;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
+using System.Xml;
+using System.Xml.Linq;
+using Tarmac64_Library;
+using Texture64;  //for handling texture data
+using static System.Collections.Specialized.BitVector32;
+using static System.Windows.Forms.AxHost;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
-using static System.Collections.Specialized.BitVector32;
-using SharpGL.SceneGraph.Quadrics;
-using static System.Windows.Forms.AxHost;
-using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
-using Cereal64.Microcodes.F3DEX.DataElements.Commands;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Assimp.Unmanaged;
-using System.Runtime.Remoting.Contexts;
-using SharpGL.SceneGraph.Assets;
-using SharpGL.SceneGraph.Shaders;
+using static Tarmac64_Library.TM64_Geometry;
 
 namespace Tarmac64_Library
 {
@@ -155,227 +154,6 @@ namespace Tarmac64_Library
             public int segmentPosition { get; set; }
         }
 
-
-        public class OK64TexelData
-        {
-
-            public string textureName { get; set; }
-            public Image textureBitmap { get; set; }
-            public byte[] compressedTexture { get; set; }
-            public byte[] PaletteData { get; set; }
-            public byte[] TextureData { get; set; }
-            public int compressedSize { get; set; }
-            public int fileSize { get; set; }
-            public int segmentPosition { get; set; }
-            public int palettePosition { get; set; }
-            public int paletteSize { get; set; }
-        }
-        public class OK64ColorCombine
-        {
-            public int CycleMode { get; set; }
-            public bool AdvancedModeA { get; set; }
-            public bool AdvancedModeB { get; set; }
-            public int[] CombineValuesA { get; set; }
-            public int[] CombineValuesB { get; set; }
-            public int CombineModeA { get; set; }
-            public int CombineModeB { get; set; }
-            public int RenderModeA { get; set; }
-            public int RenderModeB { get; set; }
-            public UInt32 GeometryModes { get; set; }
-            public bool[] GeometryBools { get; set; }
-            public int TextureFilter { get; set; }
-            public System.Drawing.Color Environment { get; set; }
-            public System.Drawing.Color Primary { get; set; }
-            public int EnvironmentAlpha { get; set; }
-            public int PrimaryAlpha { get; set; }
-        }
-        public class OK64Texture
-        {
-            public OK64Texture()
-            {
-                ColorCombine = new OK64ColorCombine();
-                TexelData = new OK64TexelData();
-                ColorCombine.Environment = System.Drawing.Color.White;
-                ColorCombine.Primary = System.Drawing.Color.White;
-                ColorCombine.EnvironmentAlpha = 255;
-                ColorCombine.PrimaryAlpha = 255;    
-
-                ColorCombine.AdvancedModeA = false;
-                ColorCombine.AdvancedModeB = false;
-                ColorCombine.CombineValuesA = new int[8];
-                ColorCombine.CombineValuesB = new int[8];
-            }
-            public OK64Texture(XmlDocument XMLDoc, string Parent, int ChildIndex)
-            {
-                TM64 Tarmac = new TM64();
-                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
-                XmlNode Target = Owner.ChildNodes[ChildIndex];
-                ColorCombine = new OK64ColorCombine();
-                TexelData = new OK64TexelData();
-
-                string HeaderName = "Texture_" + ChildIndex.ToString();
-                TexelData.textureName = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "textureName");
-                texturePath = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "texturePath");
-                alphaPath = Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "alphaPath");
-
-                ColorCombine.CycleMode = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "CycleMode", "0"));
-
-                ColorCombine.CombineModeA = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "CombineModeA","0"));
-                ColorCombine.CombineModeB = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "CombineModeB", "0"));
-
-                ColorCombine.RenderModeA = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "RenderModeA", "0"));
-                ColorCombine.RenderModeB = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "RenderModeB", "0"));
-
-                ColorCombine.GeometryModes = Convert.ToUInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "GeometryModes", "0"));
-                ColorCombine.GeometryBools = new bool[12];
-                BitSize = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "BitSize", "0"));
-
-                ColorCombine.TextureFilter = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "TextureFilter", "0"));
-                TextureFormat = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "TextureFormat", "0"));
-                
-
-                SFlag = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "SFlag", "0"));
-                TFlag = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "TFlag", "0"));
-
-                textureScrollS = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "textureScrollS", "0"));
-                textureScrollT = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "textureScrollT", "0"));
-
-                textureScreen = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "textureScreen", "0"));
-
-                GLShiftS = Convert.ToDouble(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "GLShiftS", "0"));
-                GLShiftT = Convert.ToDouble(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "GLShiftT", "0"));
-
-
-                ColorCombine.GeometryBools = new bool[12];
-                int[] KDL = Tarmac.LoadElements(XMLDoc, Parent + "/" + HeaderName, "GeometryBools", "0");
-                for (int ThisBool = 0; ThisBool < 12; ThisBool++)
-                {
-                    ColorCombine.GeometryBools[ThisBool] = Convert.ToBoolean(KDL[ThisBool]);
-                }
-
-
-                ColorCombine.AdvancedModeA = Convert.ToBoolean(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "AdvanceA", "false"));
-                ColorCombine.AdvancedModeB = Convert.ToBoolean(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "AdvanceB", "false"));
-
-
-                ColorCombine.CombineValuesA = Tarmac.LoadElements(XMLDoc, Parent + "/" + HeaderName, "CombineValuesA", "0");
-                ColorCombine.CombineValuesB = Tarmac.LoadElements(XMLDoc, Parent + "/" + HeaderName, "CombineValuesB", "0");
-
-
-                int R, G, B;
-
-                R = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "EnvR", "255"));
-                G = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "EnvG", "255"));
-                B = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "EnvB", "255"));
-
-                ColorCombine.Environment = System.Drawing.Color.FromArgb(255, R, G, B);
-                ColorCombine.EnvironmentAlpha = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "EnvA", "255"));
-
-                R = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "PrimR", "255"));
-                G = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "PrimG", "255"));
-                B = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "PrimB", "255"));
-
-                ColorCombine.Primary = System.Drawing.Color.FromArgb(255, R, G, B);
-                ColorCombine.PrimaryAlpha = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Parent + "/" + HeaderName, "PrimA", "255"));
-
-                //
-                // Process TexelData
-                //
-
-                TexelData = new OK64TexelData();
-                if (File.Exists(texturePath))
-                {
-                    using (var fs = new FileStream(texturePath, FileMode.Open, FileAccess.Read))
-                    {
-                        Image Raw = Image.FromStream(fs);
-                        TexelData.textureBitmap = Raw;
-                        textureWidth = Raw.Width;
-                        textureHeight = Raw.Height;
-                        fs.Close();
-                    }
-                }
-            }
-            
-            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int TextureID)
-            {
-                TM64 Tarmac = new TM64();
-                XmlElement TextureXML = XMLDoc.CreateElement("Texture_"+TextureID.ToString());
-                Parent.AppendChild(TextureXML);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "textureName", TexelData.textureName);
-
-                if (texturePath != null)
-                {
-                    Tarmac.GenerateElement(XMLDoc, TextureXML, "texturePath", texturePath);
-                }
-                else
-                {
-                    Tarmac.GenerateElement(XMLDoc, TextureXML, "texturePath", "NULL");
-                }
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "CycleMode", ColorCombine.CycleMode);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "CombineModeA", ColorCombine.CombineModeA);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "CombineModeB", ColorCombine.CombineModeB);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "RenderModeA", ColorCombine.RenderModeA);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "RenderModeB", ColorCombine.RenderModeB);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "GeometryModes", ColorCombine.GeometryModes);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "alphaPath", alphaPath);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "BitSize", BitSize);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "TextureFilter", ColorCombine.TextureFilter);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "TextureFormat", TextureFormat);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "SFlag", SFlag);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "TFlag", TFlag);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "textureScrollS", textureScrollS);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "textureScrollT", textureScrollT);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "textureScreen", textureScreen);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "GLShiftS", GLShiftS);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "GLShiftT", GLShiftT);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "GeometryBools", ColorCombine.GeometryBools);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "AdvanceA", ColorCombine.AdvancedModeA);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "AdvanceA", ColorCombine.AdvancedModeB);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "CombineValuesA", ColorCombine.CombineValuesA);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "CombineValuesB", ColorCombine.CombineValuesB);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "EnvR", ColorCombine.Environment.R);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "EnvG", ColorCombine.Environment.G);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "EnvB", ColorCombine.Environment.B);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "EnvA", ColorCombine.EnvironmentAlpha);
-
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "PrimR", ColorCombine.Primary.R);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "PrimG", ColorCombine.Primary.G);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "PrimB", ColorCombine.Primary.B);
-                Tarmac.GenerateElement(XMLDoc, TextureXML, "PrimA", ColorCombine.PrimaryAlpha);
-
-
-            }
-
-            public int CCPosition { get; set; }
-
-            public OK64TexelData TexelData { get; set; }
-            public OK64ColorCombine ColorCombine { get; set; }
-
-            public string texturePath { get; set; }
-            public string alphaPath { get; set; }
-            public int textureWidth { get; set; }
-            public int textureHeight { get; set; }
-            public int BitSize { get; set; }
-            public int TextureFormat { get; set; }
-            public int SFlag { get; set; }
-            public int TFlag { get; set; }
-            public int textureScrollS { get; set; }
-            public int textureScrollT { get; set; }
-            public int textureScreen { get; set; }
-            public double GLShiftS { get; set; }
-            public double GLShiftT { get; set; }
-        }
 
 
         public class OK64F3DGroup
@@ -1515,7 +1293,7 @@ namespace Tarmac64_Library
         }
 
 
-        public OK64F3DObject CreateF3DObject (Assimp.Scene fbx, Assimp.Node objectNode, OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false, bool DisregardOrigin = false)
+        public OK64F3DObject CreateF3DObject (Assimp.Scene fbx, Assimp.Node objectNode, TM64_Texture.OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false, bool DisregardOrigin = false)
         {
             OK64F3DObject newObject = new OK64F3DObject();
             TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
@@ -1885,25 +1663,28 @@ namespace Tarmac64_Library
         }
 
 
-        public bool CheckST(OK64F3DObject Object, OK64Texture textureObject)
+        public bool CheckST(OK64F3DObject Object, TM64_Texture.OK64Texture textureObject)
         {
             bool CheckError = false;
             foreach (var Mesh in Object.modelGeometry)
             {
                 foreach (var Vert in Mesh.VertData)
                 {
-                    
-                    if (Vert.position.sBase * textureObject.textureWidth > 32768 | Vert.position.sBase * textureObject.textureWidth < -32768)
+                    for (int ThisTexel = 0; ThisTexel < textureObject.TexelData.Count; ThisTexel++)
                     {
-                        CheckError = true;
-                    }
-                    else
-                    {
-                        if (Vert.position.tBase * textureObject.textureHeight > 32768 | Vert.position.tBase * textureObject.textureHeight < -32768)
+                        if (Vert.position.sBase * textureObject.TexelData[ThisTexel].textureWidth > 32768 | Vert.position.sBase * textureObject.TexelData[ThisTexel].textureWidth < -32768)
                         {
-                            CheckError = true;
+                            return true;
+                        }
+                        else
+                        {
+                            if (Vert.position.tBase * textureObject.TexelData[ThisTexel].textureHeight > 32768 | Vert.position.tBase * textureObject.TexelData[ThisTexel].textureHeight < -32768)
+                            {
+                                return true;
+                            }
                         }
                     }
+                    
                 }
             }
             return CheckError;
@@ -1942,7 +1723,7 @@ namespace Tarmac64_Library
             return masterList.ToArray();
         }
 
-        public OK64F3DObject[] LoadMaster(ref OK64F3DGroup[] groupArray, Assimp.Scene fbx, OK64Texture[] textureArray, bool AlphaCH = false)
+        public OK64F3DObject[] LoadMaster(ref OK64F3DGroup[] groupArray, Assimp.Scene fbx, TM64_Texture.OK64Texture[] textureArray, bool AlphaCH = false)
         {
             
             var masterNode = fbx.RootNode.FindNode("Render Objects");
@@ -1991,7 +1772,7 @@ namespace Tarmac64_Library
 
 
 
-        public OK64F3DObject[] CreateObjects(Assimp.Scene fbx, OK64Texture[] textureArray, bool DisregardOrigin = false)
+        public OK64F3DObject[] CreateObjects(Assimp.Scene fbx, TM64_Texture.OK64Texture[] textureArray, bool DisregardOrigin = false)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0; 
@@ -2018,7 +1799,7 @@ namespace Tarmac64_Library
             return outputObjects;
         }
 
-        public OK64F3DObject[] CreateMasters(Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray, bool AlphaCH = false)
+        public OK64F3DObject[] CreateMasters(Assimp.Scene fbx, int sectionCount, TM64_Texture.OK64Texture[] textureArray, bool AlphaCH = false)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0;
@@ -2039,7 +1820,7 @@ namespace Tarmac64_Library
             return outputObjects;
         }
 
-        public OK64F3DObject[] CreateMasterNoHeader(Assimp.Scene fbx, OK64Texture[] textureArray)
+        public OK64F3DObject[] CreateMasterNoHeader(Assimp.Scene fbx, TM64_Texture.OK64Texture[] textureArray)
         {
             List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
             int currentObject = 0;
@@ -2052,7 +1833,7 @@ namespace Tarmac64_Library
             return outputObjects;
         }
 
-        public OK64F3DObject[] LoadCollisions(Assimp.Scene fbx, int sectionCount, OK64Texture[] textureArray)
+        public OK64F3DObject[] LoadCollisions(Assimp.Scene fbx, int sectionCount, TM64_Texture.OK64Texture[] textureArray)
          {   
             int totalIndexCount = 0;
             int totalIndex = 0;
@@ -2134,7 +1915,7 @@ namespace Tarmac64_Library
 
             return SurfaceObjects.ToArray();
         }
-        public OK64F3DObject[] CreateCollisionsNoHeader(Assimp.Scene fbx, OK64Texture[] textureArray)
+        public OK64F3DObject[] CreateCollisionsNoHeader(Assimp.Scene fbx, TM64_Texture.OK64Texture[] textureArray)
         {
             int totalIndexCount = 0;
             int totalIndex = 0;
@@ -2241,7 +2022,7 @@ namespace Tarmac64_Library
             return sectionList;
         }
 
-        public byte[] CompileF3DObject(byte[] InputData, OK64F3DObject[] MasterObjects, OK64Texture[] TextureObjects, int vertMagic, int Segment)
+        public byte[] CompileF3DObject(byte[] InputData, OK64F3DObject[] MasterObjects, TM64_Texture.OK64Texture[] TextureObjects, int vertMagic, int Segment)
         {
 
 
@@ -2306,21 +2087,9 @@ namespace Tarmac64_Library
                         {
                             MessageBox.Show("Fatal UV Error " + cObj.objectName);
                         }
-                        if (TextureObjects[cObj.materialID].SFlag == -1)
-                        {
-                            ThisVert.position.s = 0;
-                            ThisVert.position.t = 0;
-                        }
-                        //else if ((TextureObjects[cObj.materialID].SFlag > 0) || (TextureObjects[cObj.materialID].TFlag > 0))
-                        {
-                          //  ThisVert.position.s = Convert.ToInt16(ThisVert.position.sPure * 32 * TextureObjects[cObj.materialID].textureWidth);
-                            //ThisVert.position.t = Convert.ToInt16(ThisVert.position.tPure * 32 * TextureObjects[cObj.materialID].textureHeight);
-                        }
-                        //else                        
-                        {
-                            ThisVert.position.s = Convert.ToInt16(ThisVert.position.sBase * TextureObjects[cObj.materialID].textureWidth);
-                            ThisVert.position.t = Convert.ToInt16(ThisVert.position.tBase * TextureObjects[cObj.materialID].textureHeight);
-                        }
+                        ThisVert.position.s = Convert.ToInt16(ThisVert.position.sBase * TextureObjects[cObj.materialID].TexelData[0].textureWidth);
+                        ThisVert.position.t = Convert.ToInt16(ThisVert.position.tBase * TextureObjects[cObj.materialID].TexelData[0].textureHeight);
+                        
                         
 
                         binaryWriter.Write(WriteVertexBinary16(ThisVert));
@@ -2506,7 +2275,7 @@ namespace Tarmac64_Library
 
             return memoryStream.ToArray();
         }
-        public bool CompileCourseObjects(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, OK64Texture[] textureObject, int vertMagic, bool BoundingToggle = false)
+        public bool CompileCourseObjects(ref int outMagic, ref byte[] outseg4, ref byte[] outseg7, byte[] segment4, byte[] segment7, OK64F3DObject[] courseObject, TM64_Texture.OK64Texture[] textureObject, int vertMagic, bool BoundingToggle = false)
         {
 
 
@@ -2584,28 +2353,28 @@ namespace Tarmac64_Library
                         Convert.ToInt16(LocalBounds.highZ),
                         1, 1,
                         252, 252, 252, 255
-                        ));
+                    ));
                     seg4w.Write(WriteVertexBinary14(
                         Convert.ToInt16(LocalBounds.lowX),
                         Convert.ToInt16(LocalBounds.highY),
                         Convert.ToInt16(LocalBounds.highZ),
                         0, 1,
                         252, 252, 252, 255
-                        ));
+                    ));
                     seg4w.Write(WriteVertexBinary14(
                         Convert.ToInt16(LocalBounds.highX),
                         Convert.ToInt16(LocalBounds.lowY),
                         Convert.ToInt16(LocalBounds.highZ),
                         1, 1,
                         252, 252, 252, 255
-                        ));
+                    ));
                     seg4w.Write(WriteVertexBinary14(
                         Convert.ToInt16(LocalBounds.lowX),
                         Convert.ToInt16(LocalBounds.lowY),
                         Convert.ToInt16(LocalBounds.highZ),
                         0, 1,
                         252, 252, 252, 255
-                        ));
+                    ));
 
 
 
@@ -2615,28 +2384,28 @@ namespace Tarmac64_Library
                         Convert.ToInt16(LocalBounds.lowZ),
                         1, 0,
                         252, 252, 252, 255
-                        ));
+                    ));
                     seg4w.Write(WriteVertexBinary14(
                         Convert.ToInt16(LocalBounds.lowX),
                         Convert.ToInt16(LocalBounds.highY),
                         Convert.ToInt16(LocalBounds.lowZ),
                         0, 0,
                         252, 252, 252, 255
-                        ));
+                    ));
                     seg4w.Write(WriteVertexBinary14(
                         Convert.ToInt16(LocalBounds.highX),
                         Convert.ToInt16(LocalBounds.lowY),
                         Convert.ToInt16(LocalBounds.lowZ),
                         1, 0,
                         252, 252, 252, 255
-                        ));
+                    ));
                     seg4w.Write(WriteVertexBinary14(
                         Convert.ToInt16(LocalBounds.lowX),
                         Convert.ToInt16(LocalBounds.lowY),
                         Convert.ToInt16(LocalBounds.lowZ),
                         0, 0,
                         252,252,252,255
-                        ));
+                    ));
                     
                     seg7w.Write(F3D.gsSPVertex(Convert.ToUInt32(Segment | relativeZero), 8, 0));
                     relativeZero += (8 * 16);
@@ -2665,21 +2434,12 @@ namespace Tarmac64_Library
                             MessageBox.Show("Fatal UV Error " + cObj.objectName);
                             return false;
                         }
-                        if (textureObject[cObj.materialID].SFlag == -1)
-                        {
-                            ThisVert.position.s = 0;
-                            ThisVert.position.t = 0;
-                        }
-                        else if ((textureObject[cObj.materialID].SFlag > 0) || (textureObject[cObj.materialID].TFlag > 0))
-                        {
-                            ThisVert.position.s = Convert.ToInt16(ThisVert.position.sBase * textureObject[cObj.materialID].textureWidth);
-                            ThisVert.position.t = Convert.ToInt16(ThisVert.position.tBase * textureObject[cObj.materialID].textureHeight);
-                        }
-                        else                        
-                        {
-                            ThisVert.position.s = Convert.ToInt16(ThisVert.position.sBase * textureObject[cObj.materialID].textureWidth);
-                            ThisVert.position.t = Convert.ToInt16(ThisVert.position.tBase * textureObject[cObj.materialID].textureHeight);
-                        }
+
+                        
+                        
+                        ThisVert.position.s = Convert.ToInt16(ThisVert.position.sBase * textureObject[cObj.materialID].TexelData[0].textureWidth);
+                        ThisVert.position.t = Convert.ToInt16(ThisVert.position.tBase * textureObject[cObj.materialID].TexelData[0].textureHeight);
+                        
 
                         OK64Color TargetColor = new OK64Color();
                         switch (cObj.surfaceProperty)
@@ -2778,7 +2538,7 @@ namespace Tarmac64_Library
             return true;
         }
 
-        public int ZSort(OK64Texture TextureObject)
+        public int ZSort(TM64_Texture.OK64Texture TextureObject)
         {
             int[] Check = new int[]
             {
@@ -2852,7 +2612,7 @@ namespace Tarmac64_Library
             return Check[TextureObject.ColorCombine.RenderModeA];
         }
 
-        public bool XLUCheck(OK64Texture TextureObject)
+        public bool XLUCheck(TM64_Texture.OK64Texture TextureObject)
         {
             bool[] Check = new bool[]
             {
@@ -2898,7 +2658,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] CompileObjectList(byte[] OutputData, OK64F3DObject courseObject, OK64Texture[] textureObject, int SegmentID)
+        public byte[] CompileObjectList(byte[] OutputData, OK64F3DObject courseObject, TM64_Texture.OK64Texture[] textureObject, int SegmentID)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -2961,19 +2721,6 @@ namespace Tarmac64_Library
                     seg6w.Write(byteArray);
 
                 }
-                if (textureWritten && (textureObject[currentTexture].TexelData.paletteSize > 0))
-                {
-                    seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
-                    seg6w.Write(
-                        F3D.gsSPTexture(
-                            65535,
-                            65535,
-                            0,
-                            0,
-                            1
-                        )
-                    );
-                }
             }
 
             byteArray = BitConverter.GetBytes(0xB8000000);
@@ -2989,7 +2736,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] CompileF3DList(ref OK64SectionList[] sectionOut, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, OK64Texture[] textureObject)
+        public byte[] CompileF3DList(ref OK64SectionList[] sectionOut, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, TM64_Texture.OK64Texture[] textureObject)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -3061,21 +2808,6 @@ namespace Tarmac64_Library
                                 }
                             }
 
-
-                            if (textureWritten && (textureObject[currentTexture].TexelData.paletteSize > 0))
-                            {
-                                seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
-                                //set MIP levels to 0.
-                                seg6w.Write(
-                                    F3D.gsSPTexture(
-                                        65535,
-                                        65535,
-                                        0,
-                                        0,
-                                        1
-                                    )
-                                );
-                            }
                             
 
                         }
@@ -3102,7 +2834,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] CompileXLUList(ref OK64SectionList[] sectionOut, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, OK64Texture[] textureObject)
+        public byte[] CompileXLUList(ref OK64SectionList[] sectionOut, OK64F3DObject[] courseObject, OK64SectionList[] sectionList, TM64_Texture.OK64Texture[] textureObject)
         {
             //this function will create display lists for each of the section views based on the OK64F3DObject array.
             //this array had been previously written to segment 7 and the offsets to each of those objects' meshes...
@@ -3177,20 +2909,6 @@ namespace Tarmac64_Library
                                     }
 
                                 }
-
-                                if (textureWritten && (textureObject[currentTexture].TexelData.paletteSize > 0))
-                                {
-                                    seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
-                                    seg6w.Write(
-                                        F3D.gsSPTexture(
-                                            65535,
-                                            65535,
-                                            0,
-                                            0,
-                                            1
-                                        )
-                                    );
-                                }
                             }
                             
                         }
@@ -3208,7 +2926,7 @@ namespace Tarmac64_Library
             return seg6m.ToArray();
         }
 
-        public byte[] CompileBattleXLU(OK64F3DObject[] courseObject, OK64Texture[] textureObject)
+        public byte[] CompileBattleXLU(OK64F3DObject[] courseObject, TM64_Texture.OK64Texture[] textureObject)
         {
 
 
@@ -3270,7 +2988,7 @@ namespace Tarmac64_Library
             seg6w.Write(byteArray);
             return seg6m.ToArray();
         }
-        public byte[] CompileBattleList(OK64F3DObject[] courseObject, OK64Texture[] textureObject)
+        public byte[] CompileBattleList(OK64F3DObject[] courseObject, TM64_Texture.OK64Texture[] textureObject)
         {
 
 
@@ -3317,19 +3035,6 @@ namespace Tarmac64_Library
                                     seg6w.Write(byteArray);
                                 }
                             }
-                        }
-                        if (textureWritten && (textureObject[currentTexture].TexelData.paletteSize > 0))
-                        {
-                            seg6w.Write(F3D.gsDPSetTextureLUT(F3DEX095_Parameters.G_TT_NONE));
-                            seg6w.Write(
-                                F3D.gsSPTexture(
-                                    65535,
-                                    65535,
-                                    0,
-                                    0,
-                                    1
-                                )
-                            );
                         }
                     }
 
@@ -3880,416 +3585,7 @@ namespace Tarmac64_Library
         }
 
 
-
-        public string GetRGBAString(TM64_Geometry.OK64Texture TextureObject, int Height, int Width)
-        {
-            int R, G, B, A;
-            int ThisPixel = (Height * TextureObject.textureWidth) + Width;
-            return "0x" + TextureObject.TexelData.TextureData[ThisPixel * 2].ToString("X").PadLeft(2, '0') + TextureObject.TexelData.TextureData[1 + (ThisPixel * 2)].ToString("X").PadLeft(2, '0') + ", ";
-        }
-
-
-        public string[] WriteVertDataC(TM64_Geometry.OK64F3DObject F3DObject, TM64_Geometry.OK64Texture TextureObject)
-        {
-            List<string> Output = new List<string>();
-
-            Output.Add("Vtx " + F3DObject.objectName + "_V[] = {");
-            OK64F3DModel[] CrunchedModel = CrunchF3DModel(F3DObject);
-
-            /*{ { 15,30,0}, 0, 	{2048, 	   0},  {255, 255, 254, 255} }*/
-            foreach (var Crunch in CrunchedModel)
-            {
-                foreach (var Vert in Crunch.VertexCache)
-                {
-                    Vert.position.s = Convert.ToInt16(Vert.position.sBase * TextureObject.textureWidth);
-                    Vert.position.t = Convert.ToInt16(Vert.position.tBase * TextureObject.textureHeight);
-
-                    Output.Add(
-                        "{ {  { " + Vert.position.x.ToString() + ", " + Vert.position.z.ToString() + ", " + (-1 * Vert.position.y).ToString() +
-                        " }, 0,  {" + Vert.position.s.ToString() + ", " + Vert.position.t.ToString() + "}, " +
-                        "{" + Vert.color.R.ToString() + ", " + Vert.color.G.ToString() + ", " + Vert.color.B.ToString() + ", " + Vert.color.A.ToString() + "} } },"
-                        );
-                }
-            }
-
-            Output.Add("};");
-
-            return Output.ToArray();
-        }
-        public List<string> WriteTextureC(TM64_Geometry.OK64Texture TextureObject)
-        {
-            List<string> TextureData = new List<string>();
-
-            if ((TextureObject.texturePath != null) && (TextureObject.texturePath != "NULL"))
-            {
-                TextureData.Add("unsigned short " + TextureObject.TexelData.textureName + "[] = {");
-
-                MemoryStream memoryStream = new MemoryStream(TextureObject.TexelData.TextureData);
-                BinaryReader binaryReader = new BinaryReader(memoryStream);
-                binaryReader.BaseStream.Position = 0;
-                while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
-                {
-                    string RowString = "";
-                    
-                    for (int ThisRow = 0; ThisRow < 8; ThisRow++)
-                    {
-                        RowString += "0x"+BitConverter.ToString(binaryReader.ReadBytes(2)).Replace("-","")+ ", ";
-                    }
-                    TextureData.Add(RowString);
-                }
-                TextureData.Add("};");
-                TextureData.Add("");
-
-                if (TextureObject.TexelData.PaletteData != null)
-                {
-                    TextureData.Add("unsigned short " + TextureObject.TexelData.textureName + "_PAL[] = {");
-
-                    memoryStream = new MemoryStream(TextureObject.TexelData.PaletteData);
-                    binaryReader = new BinaryReader(memoryStream);
-                    binaryReader.BaseStream.Position = 0;
-                    while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
-                    {
-                        string RowString = "";
-
-                        for (int ThisRow = 0; ThisRow < 8; ThisRow++)
-                        {
-                            RowString += "0x" + BitConverter.ToString(binaryReader.ReadBytes(2)).Replace("-", "") + ", ";
-                        }
-                        TextureData.Add(RowString);
-                    }
-                    TextureData.Add("};");
-                    TextureData.Add("");
-
-
-                }
-            }
-            return TextureData;
-        }
-
-
-        public string[] WriteRGBA16_RSP(TM64_Geometry.OK64F3DObject TargetObject, TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
-        {
-            
-            List<string> Output = new List<string>();
-            F3DSharp.F3DEX095 F3D = new F3DSharp.F3DEX095();
-            string[] CombineNames = F3DSharp.F3DEX095_Parameters.GCCModeNames;
-            string[] GeometryNames = F3DSharp.F3DEX095_Parameters.GeometryModeNames;
-            string[] RenderNames = F3DSharp.F3DEX095_Parameters.RenderModeNamesSimple;
-            string[] FormatNames = F3DSharp.F3DEX095_Parameters.TextureFormatNames;
-            string[] BitSizeNames = F3DSharp.F3DEX095_Parameters.BitSizeNames;
-            string[] ModeNames = F3DSharp.F3DEX095_Parameters.TextureModeNames;
-            uint[] BitSizes = F3DSharp.F3DEX095_Parameters.BitSizes;
-            uint[] GIMSize = F3DSharp.F3DEX095_Parameters.G_IM_ArrayLineBytes;
-
-
-            MessageBox.Show("Unsupported - Needs Rewrite");
-            UInt32 heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
-            UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
-
-
-            return Output.ToArray();
-
-        }
-
-
-        public string[] WriteCI_RSP(TM64_Geometry.OK64F3DObject TargetObject, TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
-        {
-
-            List<string> Output = new List<string>();
-            F3DSharp.F3DEX095 F3D = new F3DSharp.F3DEX095();
-            string[] CombineNames = F3DSharp.F3DEX095_Parameters.GCCModeNames;
-            string[] GeometryNames = F3DSharp.F3DEX095_Parameters.GeometryModeNames;
-            string[] RenderNames = F3DSharp.F3DEX095_Parameters.RenderModeNamesSimple;
-            string[] FormatNames = F3DSharp.F3DEX095_Parameters.TextureFormatNames;
-            string[] BitSizeNames = F3DSharp.F3DEX095_Parameters.BitSizeNames;
-            string[] ModeNames = F3DSharp.F3DEX095_Parameters.TextureModeNames;
-            uint[] BitSizes = F3DSharp.F3DEX095_Parameters.BitSizes;
-            uint[] GIMSize = F3DSharp.F3DEX095_Parameters.G_IM_ArrayLineBytes;
-
-
-
-            UInt32 heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
-            UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
-
-
-            return Output.ToArray();
-
-        }
-        public string[] WriteRSPCommands(TM64_Geometry.OK64F3DObject TargetObject, TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
-        {
-            List<string> Output = new List<string>();
-            F3DSharp.F3DEX095 F3D = new F3DSharp.F3DEX095();
-            string[] CombineNames = F3DSharp.F3DEX095_Parameters.GCCModeNames;
-            string[] GeometryNames = F3DSharp.F3DEX095_Parameters.GeometryModeNames;
-            string[] RenderNames = F3DSharp.F3DEX095_Parameters.RenderModeNamesSimple;
-            string[] FormatNames = F3DSharp.F3DEX095_Parameters.TextureFormatNames;
-            string[] BitSizeNames = F3DSharp.F3DEX095_Parameters.BitSizeNames;
-            string[] ModeNames = F3DSharp.F3DEX095_Parameters.TextureModeNames;
-            uint[] BitSizes = F3DSharp.F3DEX095_Parameters.BitSizes;
-            uint[] GIMSize = F3DSharp.F3DEX095_Parameters.G_IM_ArrayLineBytes;
-
-            UInt32 heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
-            UInt32 widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
-
-
-            TextureObject.ColorCombine.GeometryModes = 0;
-            for (int ThisCheck = 0; ThisCheck < F3DSharp.F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
-            {
-                if (TextureObject.ColorCombine.GeometryBools[ThisCheck])
-                {
-                    TextureObject.ColorCombine.GeometryModes |= F3DSharp.F3DEX095_Parameters.GeometryModes[ThisCheck];
-                }
-            }
-
-
-            Output.Add("void GFX_" + TargetObject.objectName + " ()");
-            Output.Add("{");
-
-
-            //LOAD TEXTURE DATA RGBA16
-            switch(TextureObject.TextureFormat)
-            {
-
-                case 0:
-                default:
-                    {
-                        Output.AddRange(WriteRGBA16_RSP(TargetObject, TextureObject, GraphPtr));
-                        break;
-                    }
-                case 2:
-                    {
-                        
-                        break;
-                    }
-                case 3:
-                case 4:
-                    {
-                        
-                        break;
-                    }
-                case 1:
-                    {
-                        MessageBox.Show("ERROR - " + TextureObject.TexelData.textureName + " - YUV Format not supported.");
-                        break;
-                    }
-            }
         
-
-
-            int VertIndex = 0;
-            int LocalVertIndex = 0;
-            int FaceIndex = 0;
-            bool Finished = false;
-
-            while (!Finished)
-            {
-                Output.Add("");
-                Output.Add("\tgSPVertex( " + GraphPtr + "++, &" + TargetObject.objectName + "_V[" + VertIndex.ToString() + "] , 30, 0);");
-                LocalVertIndex = 0;
-                for (int ThisFace = 0; ThisFace < 5; ThisFace++)
-                {
-                    if ((FaceIndex + 1) < TargetObject.modelGeometry.Length)
-                    {
-                        Output.Add("\t\tgSP2Triangles( " + GraphPtr + "++, " +
-                            LocalVertIndex.ToString() + ", " +
-                            (LocalVertIndex + 1).ToString() + ", " +
-                            (LocalVertIndex + 2).ToString() + ", " +
-                            "0, " +
-                            (LocalVertIndex + 3).ToString() + ", " +
-                            (LocalVertIndex + 4).ToString() + ", " +
-                            (LocalVertIndex + 5).ToString() + ", " +
-                            "0 );"
-                            );
-
-                        FaceIndex += 2;
-                        VertIndex += 6;
-                        LocalVertIndex += 6;
-                    }
-                    else if (FaceIndex < TargetObject.modelGeometry.Length)
-                    {
-                        Output.Add("\t\tgSP2Triangles( " + GraphPtr + "++, " +
-                            "0, " +
-                            "0, " +
-                            "0, " +
-                            "0, " +
-                            VertIndex.ToString() +
-                            (VertIndex + 1).ToString() + ", " +
-                            (VertIndex + 2).ToString() + ", " +
-                            "0 );"
-                            );
-
-                        FaceIndex += 1;
-                        LocalVertIndex += 3;
-                        VertIndex += 3;
-                    }
-                    else
-                    {
-                        Finished = true;
-                        ThisFace = 5;
-                    }
-
-
-                }
-
-            }
-
-            Output.Add("");
-            Output.Add("\t//End DrawCalls");
-            Output.Add("\t//End " + TargetObject.objectName);
-            Output.Add("");
-
-
-            Output.Add("}");
-            return Output.ToArray();
-        }
-
-
-        public string[] WriteTextureRSP(TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
-        {
-            List<string> Output = new List<string>();
-            F3DSharp.F3DEX095 F3D = new F3DSharp.F3DEX095();
-            string[] CombineNames = F3DSharp.F3DEX095_Parameters.GCCModeNames;
-            string[] GeometryNames = F3DSharp.F3DEX095_Parameters.GeometryModeNames;
-            string[] RenderNames = F3DSharp.F3DEX095_Parameters.RenderModeNamesSimple;
-            string[] FormatNames = F3DSharp.F3DEX095_Parameters.TextureFormatNames;
-            string[] BitSizeNames = F3DSharp.F3DEX095_Parameters.BitSizeNames;
-            string[] ModeNames = F3DSharp.F3DEX095_Parameters.TextureModeNames;
-            uint[] BitSizes = F3DSharp.F3DEX095_Parameters.BitSizes;
-            uint[] GIMSize = F3DSharp.F3DEX095_Parameters.G_IM_ArrayLineBytes;
-
-            UInt32 heightex, widthex;
-            if (TextureObject.textureHeight != 0)
-            {
-                heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
-                widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
-            }
-            else
-            {
-                heightex = 0;
-                widthex = 0;
-            }
-
-            MessageBox.Show("Error Unsupported Code");
-            /*
-            TextureObject.GeometryModes = 0;
-            for (int ThisCheck = 0; ThisCheck < F3DSharp.F3DEX095_Parameters.GeometryModes.Length; ThisCheck++)
-            {
-                if (TextureObject.GeometryBools[ThisCheck])
-                {
-                    TextureObject.GeometryModes |= F3DSharp.F3DEX095_Parameters.GeometryModes[ThisCheck];
-                }
-            }
-            */
-
-            Output.Add("Gfx Draw_" + TextureObject.TexelData.textureName + "_T[] = ");
-            Output.Add("{");
-
-
-            //LOAD TEXTURE DATA RGBA16
-            switch (TextureObject.TextureFormat)
-            {
-
-                case 0:
-                default:
-                    {
-                        Output.AddRange(WriteRGBA16_RSP(TextureObject, GraphPtr));
-                        break;
-                    }
-                case 2:
-                    {
-                        //ci
-                        Output.AddRange(WriteCI_RSP(TextureObject));
-                        break;
-                    }
-                case 3:
-                case 4:
-                    {
-                        //ia
-                        MessageBox.Show("ERROR - " + TextureObject.TexelData.textureName + " - IA Format not supported.");
-                        break;
-                    }
-                case 1:
-                    {
-                        MessageBox.Show("ERROR - " + TextureObject.TexelData.textureName + " - YUV Format not supported.");
-                        break;
-                    }
-            }
-
-
-
-            Output.Add(Environment.NewLine);
-            Output.Add("\tgsSPEndDisplayList(),");
-            Output.Add("");
-
-
-            Output.Add("};");
-            return Output.ToArray();
-        }
-
-
-        public string[] WriteRGBA16_RSP(TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
-        {
-
-            List<string> Output = new List<string>();
-            F3DSharp.F3DEX095 F3D = new F3DSharp.F3DEX095();
-            string[] CombineNames = F3DSharp.F3DEX095_Parameters.GCCModeNames;
-            string[] GeometryNames = F3DSharp.F3DEX095_Parameters.GeometryModeNames;
-            string[] RenderNames = F3DSharp.F3DEX095_Parameters.RenderModeNamesSimple;
-            string[] FormatNames = F3DSharp.F3DEX095_Parameters.TextureFormatNames;
-            string[] BitSizeNames = F3DSharp.F3DEX095_Parameters.BitSizeNames;
-            string[] ModeNames = F3DSharp.F3DEX095_Parameters.TextureModeNames;
-            uint[] BitSizes = F3DSharp.F3DEX095_Parameters.BitSizes;
-            uint[] GIMSize = F3DSharp.F3DEX095_Parameters.G_IM_ArrayLineBytes;
-
-
-            UInt32 heightex, widthex;
-            if (TextureObject.textureHeight != 0)
-            {
-                heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
-                widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
-            }
-            else
-            {
-                heightex = 0;
-                widthex = 0;
-            }
-
-            return Output.ToArray();
-
-        }
-
-        public string[] WriteCI_RSP(TM64_Geometry.OK64Texture TextureObject)
-        {
-
-            List<string> Output = new List<string>();
-            F3DSharp.F3DEX095 F3D = new F3DSharp.F3DEX095();
-            string[] CombineNames = F3DSharp.F3DEX095_Parameters.GCCModeNames;
-            string[] GeometryNames = F3DSharp.F3DEX095_Parameters.GeometryModeNames;
-            string[] RenderNames = F3DSharp.F3DEX095_Parameters.RenderModeNamesSimple;
-            string[] FormatNames = F3DSharp.F3DEX095_Parameters.TextureFormatNames;
-            string[] BitSizeNames = F3DSharp.F3DEX095_Parameters.BitSizeNames;
-            string[] ModeNames = F3DSharp.F3DEX095_Parameters.TextureModeNames;
-            uint[] BitSizes = F3DSharp.F3DEX095_Parameters.BitSizes;
-            uint[] GIMSize = F3DSharp.F3DEX095_Parameters.G_IM_ArrayLineBytes;
-
-
-
-
-            UInt32 heightex, widthex;
-            if (TextureObject.textureHeight != 0)
-            {
-                heightex = Convert.ToUInt32(Math.Log(TextureObject.textureHeight) / Math.Log(2));
-                widthex = Convert.ToUInt32(Math.Log(TextureObject.textureWidth) / Math.Log(2));
-            }
-            else
-            {
-                heightex = 0;
-                widthex = 0;
-            }
-
-            return Output.ToArray();
-
-        }
         public class MK64SurfaceStruct
         {
             public uint dlist { get; set; }      //display list to parse
@@ -5138,7 +4434,7 @@ namespace Tarmac64_Library
             
 
         }
-        public string[] WriteGeometryRSP(TM64_Geometry.OK64F3DObject TargetObject, TM64_Geometry.OK64Texture TextureObject, string GraphPtr)
+        public string[] WriteGeometryRSP(TM64_Geometry.OK64F3DObject TargetObject, TM64_Texture.OK64Texture TextureObject, string GraphPtr)
         {
             List<string> Output = new List<string>();
             F3DSharp.F3DEX095 F3D = new F3DSharp.F3DEX095();

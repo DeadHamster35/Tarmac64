@@ -59,7 +59,7 @@ namespace Tarmac64_Retail
         public TM64_Geometry.OK64F3DObject[] SurfaceModel = new TM64_Geometry.OK64F3DObject[0];
         public List<TM64_Course.OKObject> CourseObjects = new List<TM64_Course.OKObject>();
         public TM64_Course.OKObjectType[] ObjectTypes = new TM64_Course.OKObjectType[0];
-        public TM64_Geometry.OK64Texture[] TextureObjects = new TM64_Geometry.OK64Texture[0];
+        public TM64_Texture.OK64Texture[] TextureObjects = new TM64_Texture.OK64Texture[0];
 
 
         public Bitmap[] BitmapData = new Bitmap[0];
@@ -313,9 +313,9 @@ namespace Tarmac64_Retail
 
         private void ShiftST(int ThisTexture)
         {
-            double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollT) / 32.0) / 4.0);
+            double Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].TexelData[0].textureScrollT) / 32.0) / 4.0);
             TextureObjects[ThisTexture].GLShiftT -= Add;
-            Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].textureScrollS) / 32.0) / 4.0);
+            Add = Convert.ToDouble(((FrameTime / 33.333) * (TextureObjects[ThisTexture].TexelData[0].textureScrollS) / 32.0) / 4.0);
             TextureObjects[ThisTexture].GLShiftS -= Add;
 
             while (TextureObjects[ThisTexture].GLShiftT > 1)
@@ -343,10 +343,10 @@ namespace Tarmac64_Retail
         {
             for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
             {
-                if (TextureObjects[ThisTexture].texturePath != null)
+                if (TextureObjects[ThisTexture].TexelData[0].texturePath != null)
                 {
                     //check if this is a Framebuffer-Texture
-                    if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
+                    if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].TexelData[0].textureScreen == 0))
                     {
                         //Draw Regular Textured Objects.
 
@@ -468,10 +468,10 @@ namespace Tarmac64_Retail
         {
             for (int ThisTexture = 0; ThisTexture < TextureObjects.Length; ThisTexture++)
             {
-                if (TextureObjects[ThisTexture].texturePath != null)
+                if (TextureObjects[ThisTexture].TexelData[0].texturePath != null)
                 {
                     //check if this is a Framebuffer-Texture
-                    if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].textureScreen == 0))
+                    if (!RenderCheckbox.Checked || (TextureObjects[ThisTexture].TexelData[0].textureScreen == 0))
                     {
                         //Draw Regular Textured Objects.
 

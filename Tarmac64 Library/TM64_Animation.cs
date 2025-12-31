@@ -15,13 +15,14 @@ namespace Tarmac64_Library
 
         F3DEX095 F3D = new F3DEX095();
 
+
         public class OK64Bone
         {
             public string Name { get; set; }
             public int FrameCount { get; set; }
             public short[] Origin { get; set; }
             public OK64Bone[] Children { get; set; }
-            public int MeshCount { get; set; }
+            public int NodeCount { get; set; }
             public OK64Animation Animation { get; set; }
             public UInt32 TranslationOffset { get; set; }
             public UInt32 RotationOffset { get; set; }
@@ -49,7 +50,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] WriteAnimationModels(OK64Bone Skeleton, TM64_Course.OKObjectType SaveObject, int Magic)
+        public byte[] WriteAnimeNodes(OK64Bone Skeleton, TM64_Course.OKObjectType SaveObject, int Magic)
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -66,7 +67,7 @@ namespace Tarmac64_Library
                 }
             }
 
-            Skeleton.MeshCount = MeshCount;
+            Skeleton.NodeCount = MeshCount;
 
             for (int ThisObject = 0; ThisObject < SaveObject.ModelData.Length; ThisObject++)
             {
@@ -88,11 +89,12 @@ namespace Tarmac64_Library
 
             for (int ThisChild = 0; ThisChild < Skeleton.Children.Length; ThisChild++)
             {
-                binaryWriter.Write(WriteAnimationModels(Skeleton.Children[ThisChild], SaveObject, Convert.ToInt32(binaryWriter.BaseStream.Length + Magic)));
+                binaryWriter.Write(WriteAnimeNodes(Skeleton.Children[ThisChild], SaveObject, Convert.ToInt32(binaryWriter.BaseStream.Length + Magic)));
             }
 
             return memoryStream.ToArray();
         }
+
 
         public byte[] WriteAnimationData(OK64Bone Skeleton, UInt32 Magic)
         {
@@ -154,7 +156,7 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
         }
 
-        public byte[] WriteAnimationTableData(OK64Bone Skeleton, TM64_Course.OKObjectType SaveObject)
+        public byte[] WriteAnimeSkeleton(OK64Bone Skeleton, TM64_Course.OKObjectType SaveObject)
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -162,9 +164,6 @@ namespace Tarmac64_Library
             binaryWriter.Write(F3D.BigEndian(Skeleton.TranslationOffset));
             binaryWriter.Write(F3D.BigEndian(Skeleton.RotationOffset));
             binaryWriter.Write(F3D.BigEndian(Skeleton.ScalingOffset));
-            //PAD
-            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(-1)));
-
 
             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationTime.Length)));
             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationTime.Length)));
@@ -173,7 +172,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(-1)));
 
 
-            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.MeshCount)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.NodeCount)));
             binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Children.Length)));
 
             binaryWriter.Write(F3D.BigEndian(Convert.ToSingle(SaveObject.ModelScale)));
@@ -182,7 +181,7 @@ namespace Tarmac64_Library
 
             foreach (var ChildBone in Skeleton.Children)
             {
-                binaryWriter.Write(WriteAnimationTableData(ChildBone, SaveObject));
+                binaryWriter.Write(WriteAnimeSkeleton(ChildBone, SaveObject));
             }
 
             return memoryStream.ToArray();
@@ -197,7 +196,7 @@ namespace Tarmac64_Library
             
             binaryWriter.Write(F3D.BigEndian(Skeleton.FrameCount));
 
-            binaryWriter.Write(WriteAnimationTableData(Skeleton, SaveData));
+            binaryWriter.Write(WriteAnimeSkeleton(Skeleton, SaveData));
 
 
             return memoryStream.ToArray();
@@ -277,8 +276,6 @@ namespace Tarmac64_Library
             return Angle;
         }
 
-
-
         public OK64Animation LoadAnimation(NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
         {
             OK64Animation NewAnime = new OK64Animation();
@@ -339,9 +336,6 @@ namespace Tarmac64_Library
             }
             return NewAnime;
         }
-
-
-
 
         public OK64Bone ParseAnimation(Scene FBX, NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
         {

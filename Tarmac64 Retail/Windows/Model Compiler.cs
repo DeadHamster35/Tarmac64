@@ -39,7 +39,7 @@ namespace Tarmac64_Library
         TM64_Geometry TarmacGeo = new TM64_Geometry();
         TM64_Texture TarmacTexture = new TM64_Texture();
         TM64_Geometry.OK64F3DObject[][] MasterObjects = new TM64_Geometry.OK64F3DObject[0][];
-        TM64_Geometry.OK64Texture[][] TextureObjects = new TM64_Geometry.OK64Texture[0][];
+        TM64_Texture.OK64Texture[][] TextureObjects = new TM64_Texture.OK64Texture[0][];
         int lastMaterial = 0;
         int materialCount = 0;
         int LastSelectedIndex = -1;
@@ -58,7 +58,7 @@ namespace Tarmac64_Library
                 string[] fileList = Directory.GetFiles(dialog.FileName, "*.FBX*", SearchOption.AllDirectories);
                 AssimpContext importer = new AssimpContext();
                 MasterObjects = new TM64_Geometry.OK64F3DObject[fileList.Length][];
-                TextureObjects = new TM64_Geometry.OK64Texture[fileList.Length][];
+                TextureObjects = new TM64_Texture.OK64Texture[fileList.Length][];
 
                 FBXBox.Items.Clear();
 
@@ -109,7 +109,7 @@ namespace Tarmac64_Library
             dialog.IsFolderPicker = false;
 
             MasterObjects = new TM64_Geometry.OK64F3DObject[1][];
-            TextureObjects = new TM64_Geometry.OK64Texture[1][];
+            TextureObjects = new TM64_Texture.OK64Texture[1][];
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
 
@@ -239,55 +239,11 @@ namespace Tarmac64_Library
             List<string> OutputFile = new List<string>();
             List<string> HFileOutput = new List<string>();
 
-            for (int currentItem = 0; currentItem < MasterObjects.Length; currentItem++)
-            {
-
-                OutputData = TarmacTexture.WriteModelTextures(OutputData, TextureObjects[currentItem], DataLength);
-                OutputData = TarmacTexture.CompileTextureObjects(OutputData, TextureObjects[currentItem], DataLength, SegmentID);
-                OutputData = TarmacGeo.CompileF3DObject(OutputData, MasterObjects[currentItem], TextureObjects[currentItem], DataLength, SegmentID);
-
-                foreach (var SubTexture in TextureObjects[currentItem])
-                {
-                    if (SubTexture.texturePath != null)
-                    {
-                        OutputFile.AddRange(TarmacGeo.WriteTextureC(SubTexture));
-                    }
-                }
-
-                foreach (var SubMesh in MasterObjects[currentItem])
-                {
-                    OutputFile.AddRange(TarmacGeo.WriteVertDataC(SubMesh, TextureObjects[currentItem][SubMesh.materialID]));
-                }
-
-
-
-                foreach (var SubText in TextureObjects[currentItem])
-                {
-                    OutputFile.AddRange(TarmacGeo.WriteTextureRSP(SubText, "GraphPtrOffset"));
-                    HFileOutput.Add("extern Gfx Draw_" + SubText.TexelData.textureName + "_T();");
-                }
-
-                foreach (var SubMesh in MasterObjects[currentItem])
-                {
-
-                    OutputFile.AddRange(TarmacGeo.WriteGeometryRSP(SubMesh, TextureObjects[currentItem][SubMesh.materialID], "GraphPtrOffset"));
-
-
-                    HFileOutput.Add("extern Gfx Draw_" + SubMesh.objectName + "_M();");
-                }
-
-            }
-
-            if (FileSave.ShowDialog() == DialogResult.OK)
-            {
-                string savePath = Path.GetDirectoryName(FileSave.FileName);
-                string fileName = Path.GetFileNameWithoutExtension(FileSave.FileName);
-                File.WriteAllLines(Path.Combine(savePath, fileName + ".c"), OutputFile.ToArray());
-                File.WriteAllLines(Path.Combine(savePath, fileName + ".h"), HFileOutput.ToArray());
-            }
-
+            MessageBox.Show("Function unavailable");
 
         }
+        
+
         private void button4_Click(object sender, EventArgs e)
         {
             ExportCData();

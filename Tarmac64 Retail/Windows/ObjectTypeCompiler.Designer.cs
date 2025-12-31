@@ -113,7 +113,7 @@
             this.TextureControl.AutoScroll = true;
             this.TextureControl.Location = new System.Drawing.Point(3, 3);
             this.TextureControl.Name = "TextureControl";
-            this.TextureControl.Size = new System.Drawing.Size(292, 825);
+            this.TextureControl.Size = new System.Drawing.Size(292, 1075);
             this.TextureControl.TabIndex = 269;
             // 
             // panel2

@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.TextureBox = new System.Windows.Forms.TextBox();
+            this.TexelAddBtn = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.TexelSelect = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.TexelReplaceBTN = new System.Windows.Forms.Button();
             this.alphaMaskBox = new System.Windows.Forms.TextBox();
             this.AlphaMaskCheckbox = new System.Windows.Forms.CheckBox();
@@ -73,18 +73,18 @@
             this.button4 = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.EAlphaBox = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.PAlphaBox = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.CycleBox = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.AdvanceBBtn = new System.Windows.Forms.Button();
             this.AdvanceABtn = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.PrimColorBTN = new System.Windows.Forms.Button();
             this.EnvColorBTN = new System.Windows.Forms.Button();
-            this.CycleBox = new System.Windows.Forms.ComboBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.PAlphaBox = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.EAlphaBox = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bitm)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -92,19 +92,19 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.button1);
+            this.groupBox5.Controls.Add(this.label1);
+            this.groupBox5.Controls.Add(this.BitBox);
+            this.groupBox5.Controls.Add(this.CodecBox);
+            this.groupBox5.Controls.Add(this.label55);
+            this.groupBox5.Controls.Add(this.TextureBox);
+            this.groupBox5.Controls.Add(this.TexelAddBtn);
             this.groupBox5.Controls.Add(this.label10);
-            this.groupBox5.Controls.Add(this.comboBox1);
-            this.groupBox5.Controls.Add(this.label3);
             this.groupBox5.Controls.Add(this.TexelSelect);
+            this.groupBox5.Controls.Add(this.label3);
             this.groupBox5.Controls.Add(this.TexelReplaceBTN);
             this.groupBox5.Controls.Add(this.alphaMaskBox);
             this.groupBox5.Controls.Add(this.AlphaMaskCheckbox);
-            this.groupBox5.Controls.Add(this.label1);
-            this.groupBox5.Controls.Add(this.BitBox);
             this.groupBox5.Controls.Add(this.bitm);
-            this.groupBox5.Controls.Add(this.CodecBox);
-            this.groupBox5.Controls.Add(this.label55);
             this.groupBox5.Controls.Add(this.textureScrollTBox);
             this.groupBox5.Controls.Add(this.textureScrollSBox);
             this.groupBox5.Controls.Add(this.label58);
@@ -127,15 +127,25 @@
             this.groupBox5.Text = "Texel Data";
             this.groupBox5.Enter += new System.EventHandler(this.groupBox5_Enter);
             // 
-            // button1
+            // TextureBox
             // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.button1.Location = new System.Drawing.Point(245, 31);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(25, 23);
-            this.button1.TabIndex = 63;
-            this.button1.Text = "+";
-            this.button1.UseVisualStyleBackColor = true;
+            this.TextureBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.TextureBox.Location = new System.Drawing.Point(69, 335);
+            this.TextureBox.Margin = new System.Windows.Forms.Padding(5);
+            this.TextureBox.Name = "TextureBox";
+            this.TextureBox.Size = new System.Drawing.Size(168, 20);
+            this.TextureBox.TabIndex = 64;
+            // 
+            // TexelAddBtn
+            // 
+            this.TexelAddBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.TexelAddBtn.Location = new System.Drawing.Point(245, 31);
+            this.TexelAddBtn.Name = "TexelAddBtn";
+            this.TexelAddBtn.Size = new System.Drawing.Size(25, 23);
+            this.TexelAddBtn.TabIndex = 63;
+            this.TexelAddBtn.Text = "+";
+            this.TexelAddBtn.UseVisualStyleBackColor = true;
+            this.TexelAddBtn.Click += new System.EventHandler(this.button1_Click);
             // 
             // label10
             // 
@@ -149,16 +159,19 @@
             this.label10.TabIndex = 62;
             this.label10.Text = "Texel";
             // 
-            // comboBox1
+            // TexelSelect
             // 
-            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(69, 33);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(5);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(168, 21);
-            this.comboBox1.TabIndex = 61;
+            this.TexelSelect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.TexelSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.TexelSelect.FormattingEnabled = true;
+            this.TexelSelect.Items.AddRange(new object[] {
+            "Texel 0"});
+            this.TexelSelect.Location = new System.Drawing.Point(69, 33);
+            this.TexelSelect.Margin = new System.Windows.Forms.Padding(5);
+            this.TexelSelect.Name = "TexelSelect";
+            this.TexelSelect.Size = new System.Drawing.Size(168, 21);
+            this.TexelSelect.TabIndex = 61;
+            this.TexelSelect.SelectedIndexChanged += new System.EventHandler(this.TexelSelect_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -171,17 +184,6 @@
             this.label3.Size = new System.Drawing.Size(41, 13);
             this.label3.TabIndex = 60;
             this.label3.Text = "Texture";
-            // 
-            // TexelSelect
-            // 
-            this.TexelSelect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.TexelSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.TexelSelect.FormattingEnabled = true;
-            this.TexelSelect.Location = new System.Drawing.Point(69, 335);
-            this.TexelSelect.Margin = new System.Windows.Forms.Padding(5);
-            this.TexelSelect.Name = "TexelSelect";
-            this.TexelSelect.Size = new System.Drawing.Size(168, 21);
-            this.TexelSelect.TabIndex = 59;
             // 
             // TexelReplaceBTN
             // 
@@ -222,7 +224,7 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(17, 521);
+            this.label1.Location = new System.Drawing.Point(17, 430);
             this.label1.Margin = new System.Windows.Forms.Padding(5);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(42, 13);
@@ -234,7 +236,7 @@
             this.BitBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.BitBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.BitBox.FormattingEnabled = true;
-            this.BitBox.Location = new System.Drawing.Point(69, 518);
+            this.BitBox.Location = new System.Drawing.Point(69, 427);
             this.BitBox.Margin = new System.Windows.Forms.Padding(5);
             this.BitBox.Name = "BitBox";
             this.BitBox.Size = new System.Drawing.Size(201, 21);
@@ -258,7 +260,7 @@
             this.CodecBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CodecBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.CodecBox.FormattingEnabled = true;
-            this.CodecBox.Location = new System.Drawing.Point(69, 487);
+            this.CodecBox.Location = new System.Drawing.Point(69, 396);
             this.CodecBox.Margin = new System.Windows.Forms.Padding(5);
             this.CodecBox.Name = "CodecBox";
             this.CodecBox.Size = new System.Drawing.Size(201, 21);
@@ -270,7 +272,7 @@
             this.label55.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label55.AutoSize = true;
             this.label55.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label55.Location = new System.Drawing.Point(22, 490);
+            this.label55.Location = new System.Drawing.Point(22, 399);
             this.label55.Margin = new System.Windows.Forms.Padding(5);
             this.label55.Name = "label55";
             this.label55.Size = new System.Drawing.Size(37, 13);
@@ -281,7 +283,7 @@
             // 
             this.textureScrollTBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.textureScrollTBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textureScrollTBox.Location = new System.Drawing.Point(200, 457);
+            this.textureScrollTBox.Location = new System.Drawing.Point(200, 519);
             this.textureScrollTBox.Margin = new System.Windows.Forms.Padding(5);
             this.textureScrollTBox.Name = "textureScrollTBox";
             this.textureScrollTBox.Size = new System.Drawing.Size(70, 20);
@@ -292,7 +294,7 @@
             // 
             this.textureScrollSBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.textureScrollSBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textureScrollSBox.Location = new System.Drawing.Point(69, 457);
+            this.textureScrollSBox.Location = new System.Drawing.Point(69, 519);
             this.textureScrollSBox.Margin = new System.Windows.Forms.Padding(5);
             this.textureScrollSBox.Name = "textureScrollSBox";
             this.textureScrollSBox.Size = new System.Drawing.Size(70, 20);
@@ -304,7 +306,7 @@
             this.label58.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label58.AutoSize = true;
             this.label58.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label58.Location = new System.Drawing.Point(150, 460);
+            this.label58.Location = new System.Drawing.Point(150, 522);
             this.label58.Margin = new System.Windows.Forms.Padding(5);
             this.label58.Name = "label58";
             this.label58.Size = new System.Drawing.Size(40, 13);
@@ -316,7 +318,7 @@
             this.label59.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label59.AutoSize = true;
             this.label59.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label59.Location = new System.Drawing.Point(17, 460);
+            this.label59.Location = new System.Drawing.Point(17, 522);
             this.label59.Margin = new System.Windows.Forms.Padding(5);
             this.label59.Name = "label59";
             this.label59.Size = new System.Drawing.Size(42, 13);
@@ -328,7 +330,7 @@
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(153, 399);
+            this.label4.Location = new System.Drawing.Point(153, 461);
             this.label4.Margin = new System.Windows.Forms.Padding(5);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
@@ -340,7 +342,7 @@
             this.heightBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.heightBox.Enabled = false;
             this.heightBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.heightBox.Location = new System.Drawing.Point(200, 396);
+            this.heightBox.Location = new System.Drawing.Point(200, 458);
             this.heightBox.Margin = new System.Windows.Forms.Padding(5);
             this.heightBox.Name = "heightBox";
             this.heightBox.Size = new System.Drawing.Size(70, 20);
@@ -351,7 +353,7 @@
             this.label56.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label56.AutoSize = true;
             this.label56.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label56.Location = new System.Drawing.Point(148, 429);
+            this.label56.Location = new System.Drawing.Point(148, 491);
             this.label56.Margin = new System.Windows.Forms.Padding(5);
             this.label56.Name = "label56";
             this.label56.Size = new System.Drawing.Size(42, 13);
@@ -369,7 +371,7 @@
             "Mirror",
             "Clamp",
             "Mirrored Clamp"});
-            this.TFlagBox.Location = new System.Drawing.Point(200, 426);
+            this.TFlagBox.Location = new System.Drawing.Point(200, 488);
             this.TFlagBox.Margin = new System.Windows.Forms.Padding(5);
             this.TFlagBox.Name = "TFlagBox";
             this.TFlagBox.Size = new System.Drawing.Size(70, 21);
@@ -381,7 +383,7 @@
             this.label33.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label33.AutoSize = true;
             this.label33.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label33.Location = new System.Drawing.Point(12, 429);
+            this.label33.Location = new System.Drawing.Point(12, 491);
             this.label33.Margin = new System.Windows.Forms.Padding(5);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(47, 13);
@@ -399,7 +401,7 @@
             "Mirror",
             "Clamp",
             "Mirrored Clamp"});
-            this.SFlagBox.Location = new System.Drawing.Point(69, 426);
+            this.SFlagBox.Location = new System.Drawing.Point(69, 488);
             this.SFlagBox.Margin = new System.Windows.Forms.Padding(5);
             this.SFlagBox.Name = "SFlagBox";
             this.SFlagBox.Size = new System.Drawing.Size(70, 21);
@@ -411,7 +413,7 @@
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(26, 399);
+            this.label5.Location = new System.Drawing.Point(26, 461);
             this.label5.Margin = new System.Windows.Forms.Padding(5);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(33, 13);
@@ -423,7 +425,7 @@
             this.widthBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.widthBox.Enabled = false;
             this.widthBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.widthBox.Location = new System.Drawing.Point(69, 396);
+            this.widthBox.Location = new System.Drawing.Point(69, 458);
             this.widthBox.Margin = new System.Windows.Forms.Padding(5);
             this.widthBox.Name = "widthBox";
             this.widthBox.Size = new System.Drawing.Size(70, 20);
@@ -435,7 +437,7 @@
             this.FilterBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.FilterBox.FormattingEnabled = true;
-            this.FilterBox.Location = new System.Drawing.Point(69, 201);
+            this.FilterBox.Location = new System.Drawing.Point(69, 192);
             this.FilterBox.Margin = new System.Windows.Forms.Padding(5);
             this.FilterBox.Name = "FilterBox";
             this.FilterBox.Size = new System.Drawing.Size(201, 21);
@@ -447,7 +449,7 @@
             this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(19, 204);
+            this.label8.Location = new System.Drawing.Point(19, 195);
             this.label8.Margin = new System.Windows.Forms.Padding(5);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(29, 13);
@@ -459,7 +461,7 @@
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(6, 80);
+            this.label2.Location = new System.Drawing.Point(6, 71);
             this.label2.Margin = new System.Windows.Forms.Padding(5);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(55, 13);
@@ -471,7 +473,7 @@
             this.CombineBoxB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CombineBoxB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.CombineBoxB.FormattingEnabled = true;
-            this.CombineBoxB.Location = new System.Drawing.Point(69, 108);
+            this.CombineBoxB.Location = new System.Drawing.Point(69, 99);
             this.CombineBoxB.Margin = new System.Windows.Forms.Padding(5);
             this.CombineBoxB.Name = "CombineBoxB";
             this.CombineBoxB.Size = new System.Drawing.Size(168, 21);
@@ -483,7 +485,7 @@
             this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(6, 111);
+            this.label22.Location = new System.Drawing.Point(6, 102);
             this.label22.Margin = new System.Windows.Forms.Padding(5);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(55, 13);
@@ -495,7 +497,7 @@
             this.CombineBoxA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CombineBoxA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.CombineBoxA.FormattingEnabled = true;
-            this.CombineBoxA.Location = new System.Drawing.Point(69, 77);
+            this.CombineBoxA.Location = new System.Drawing.Point(69, 68);
             this.CombineBoxA.Margin = new System.Windows.Forms.Padding(5);
             this.CombineBoxA.Name = "CombineBoxA";
             this.CombineBoxA.Size = new System.Drawing.Size(168, 21);
@@ -507,7 +509,7 @@
             this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(5, 324);
+            this.label16.Location = new System.Drawing.Point(5, 315);
             this.label16.Margin = new System.Windows.Forms.Padding(5);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(52, 26);
@@ -519,7 +521,7 @@
             // 
             this.GeoModeBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.GeoModeBox.FormattingEnabled = true;
-            this.GeoModeBox.Location = new System.Drawing.Point(69, 297);
+            this.GeoModeBox.Location = new System.Drawing.Point(69, 288);
             this.GeoModeBox.Margin = new System.Windows.Forms.Padding(5);
             this.GeoModeBox.Name = "GeoModeBox";
             this.GeoModeBox.Size = new System.Drawing.Size(201, 79);
@@ -531,7 +533,7 @@
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(11, 142);
+            this.label6.Location = new System.Drawing.Point(11, 133);
             this.label6.Margin = new System.Windows.Forms.Padding(5);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(48, 13);
@@ -543,7 +545,7 @@
             this.RenderBoxA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RenderBoxA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.RenderBoxA.FormattingEnabled = true;
-            this.RenderBoxA.Location = new System.Drawing.Point(69, 139);
+            this.RenderBoxA.Location = new System.Drawing.Point(69, 130);
             this.RenderBoxA.Margin = new System.Windows.Forms.Padding(5);
             this.RenderBoxA.Name = "RenderBoxA";
             this.RenderBoxA.Size = new System.Drawing.Size(201, 21);
@@ -555,7 +557,7 @@
             this.RenderBoxB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RenderBoxB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.RenderBoxB.FormattingEnabled = true;
-            this.RenderBoxB.Location = new System.Drawing.Point(69, 170);
+            this.RenderBoxB.Location = new System.Drawing.Point(69, 161);
             this.RenderBoxB.Margin = new System.Windows.Forms.Padding(5);
             this.RenderBoxB.Name = "RenderBoxB";
             this.RenderBoxB.Size = new System.Drawing.Size(201, 21);
@@ -567,7 +569,7 @@
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(11, 173);
+            this.label7.Location = new System.Drawing.Point(11, 164);
             this.label7.Margin = new System.Windows.Forms.Padding(5);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(48, 13);
@@ -587,7 +589,7 @@
             "Mid-Right",
             "Bottom-Left",
             "Bottom-Right"});
-            this.screenBox.Location = new System.Drawing.Point(69, 386);
+            this.screenBox.Location = new System.Drawing.Point(69, 377);
             this.screenBox.Margin = new System.Windows.Forms.Padding(5);
             this.screenBox.Name = "screenBox";
             this.screenBox.Size = new System.Drawing.Size(201, 21);
@@ -599,7 +601,7 @@
             this.label62.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label62.AutoSize = true;
             this.label62.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label62.Location = new System.Drawing.Point(19, 389);
+            this.label62.Location = new System.Drawing.Point(19, 380);
             this.label62.Margin = new System.Windows.Forms.Padding(5);
             this.label62.Name = "label62";
             this.label62.Size = new System.Drawing.Size(40, 13);
@@ -685,10 +687,83 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Color Combine";
             // 
+            // EAlphaBox
+            // 
+            this.EAlphaBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.EAlphaBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.EAlphaBox.Location = new System.Drawing.Point(200, 225);
+            this.EAlphaBox.Margin = new System.Windows.Forms.Padding(5);
+            this.EAlphaBox.Name = "EAlphaBox";
+            this.EAlphaBox.Size = new System.Drawing.Size(70, 20);
+            this.EAlphaBox.TabIndex = 74;
+            this.EAlphaBox.TextChanged += new System.EventHandler(this.EAlphaBox_TextChanged);
+            // 
+            // label15
+            // 
+            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(143, 228);
+            this.label15.Margin = new System.Windows.Forms.Padding(5);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(47, 13);
+            this.label15.TabIndex = 75;
+            this.label15.Text = "E. Alpha";
+            // 
+            // PAlphaBox
+            // 
+            this.PAlphaBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.PAlphaBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.PAlphaBox.Location = new System.Drawing.Point(200, 256);
+            this.PAlphaBox.Margin = new System.Windows.Forms.Padding(5);
+            this.PAlphaBox.Name = "PAlphaBox";
+            this.PAlphaBox.Size = new System.Drawing.Size(70, 20);
+            this.PAlphaBox.TabIndex = 71;
+            this.PAlphaBox.TextChanged += new System.EventHandler(this.PAlphaBox_TextChanged);
+            // 
+            // label14
+            // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(143, 259);
+            this.label14.Margin = new System.Windows.Forms.Padding(5);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(47, 13);
+            this.label14.TabIndex = 73;
+            this.label14.Text = "P. Alpha";
+            // 
+            // CycleBox
+            // 
+            this.CycleBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.CycleBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.CycleBox.FormattingEnabled = true;
+            this.CycleBox.Items.AddRange(new object[] {
+            "One-Cycle Mode",
+            "Two-Cycle Mode"});
+            this.CycleBox.Location = new System.Drawing.Point(69, 37);
+            this.CycleBox.Margin = new System.Windows.Forms.Padding(5);
+            this.CycleBox.Name = "CycleBox";
+            this.CycleBox.Size = new System.Drawing.Size(201, 21);
+            this.CycleBox.TabIndex = 68;
+            this.CycleBox.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
+            // 
+            // label13
+            // 
+            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(22, 40);
+            this.label13.Margin = new System.Windows.Forms.Padding(5);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(37, 13);
+            this.label13.TabIndex = 69;
+            this.label13.Text = "Cycles";
+            // 
             // AdvanceBBtn
             // 
             this.AdvanceBBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.AdvanceBBtn.Location = new System.Drawing.Point(245, 108);
+            this.AdvanceBBtn.Location = new System.Drawing.Point(245, 99);
             this.AdvanceBBtn.Name = "AdvanceBBtn";
             this.AdvanceBBtn.Size = new System.Drawing.Size(25, 23);
             this.AdvanceBBtn.TabIndex = 67;
@@ -699,7 +774,7 @@
             // AdvanceABtn
             // 
             this.AdvanceABtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.AdvanceABtn.Location = new System.Drawing.Point(245, 75);
+            this.AdvanceABtn.Location = new System.Drawing.Point(245, 66);
             this.AdvanceABtn.Name = "AdvanceABtn";
             this.AdvanceABtn.Size = new System.Drawing.Size(25, 23);
             this.AdvanceABtn.TabIndex = 64;
@@ -712,7 +787,7 @@
             this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(5, 270);
+            this.label12.Location = new System.Drawing.Point(5, 261);
             this.label12.Margin = new System.Windows.Forms.Padding(5);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(54, 13);
@@ -724,7 +799,7 @@
             this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(6, 237);
+            this.label11.Location = new System.Drawing.Point(6, 228);
             this.label11.Margin = new System.Windows.Forms.Padding(5);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(53, 13);
@@ -735,7 +810,7 @@
             // 
             this.PrimColorBTN.BackColor = System.Drawing.Color.White;
             this.PrimColorBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.PrimColorBTN.Location = new System.Drawing.Point(69, 265);
+            this.PrimColorBTN.Location = new System.Drawing.Point(69, 256);
             this.PrimColorBTN.Margin = new System.Windows.Forms.Padding(5);
             this.PrimColorBTN.Name = "PrimColorBTN";
             this.PrimColorBTN.Size = new System.Drawing.Size(70, 23);
@@ -748,84 +823,13 @@
             this.EnvColorBTN.BackColor = System.Drawing.Color.White;
             this.EnvColorBTN.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.EnvColorBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.EnvColorBTN.Location = new System.Drawing.Point(69, 232);
+            this.EnvColorBTN.Location = new System.Drawing.Point(69, 223);
             this.EnvColorBTN.Margin = new System.Windows.Forms.Padding(5);
             this.EnvColorBTN.Name = "EnvColorBTN";
             this.EnvColorBTN.Size = new System.Drawing.Size(70, 23);
             this.EnvColorBTN.TabIndex = 64;
             this.EnvColorBTN.UseVisualStyleBackColor = false;
             this.EnvColorBTN.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // CycleBox
-            // 
-            this.CycleBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CycleBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.CycleBox.FormattingEnabled = true;
-            this.CycleBox.Items.AddRange(new object[] {
-            "One-Cycle Mode",
-            "Two-Cycle Mode"});
-            this.CycleBox.Location = new System.Drawing.Point(69, 46);
-            this.CycleBox.Margin = new System.Windows.Forms.Padding(5);
-            this.CycleBox.Name = "CycleBox";
-            this.CycleBox.Size = new System.Drawing.Size(201, 21);
-            this.CycleBox.TabIndex = 68;
-            this.CycleBox.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
-            // 
-            // label13
-            // 
-            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(22, 49);
-            this.label13.Margin = new System.Windows.Forms.Padding(5);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(37, 13);
-            this.label13.TabIndex = 69;
-            this.label13.Text = "Cycles";
-            // 
-            // PAlphaBox
-            // 
-            this.PAlphaBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.PAlphaBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.PAlphaBox.Location = new System.Drawing.Point(200, 265);
-            this.PAlphaBox.Margin = new System.Windows.Forms.Padding(5);
-            this.PAlphaBox.Name = "PAlphaBox";
-            this.PAlphaBox.Size = new System.Drawing.Size(70, 20);
-            this.PAlphaBox.TabIndex = 71;
-            // 
-            // label14
-            // 
-            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(143, 268);
-            this.label14.Margin = new System.Windows.Forms.Padding(5);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(47, 13);
-            this.label14.TabIndex = 73;
-            this.label14.Text = "P. Alpha";
-            // 
-            // EAlphaBox
-            // 
-            this.EAlphaBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EAlphaBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.EAlphaBox.Location = new System.Drawing.Point(200, 234);
-            this.EAlphaBox.Margin = new System.Windows.Forms.Padding(5);
-            this.EAlphaBox.Name = "EAlphaBox";
-            this.EAlphaBox.Size = new System.Drawing.Size(70, 20);
-            this.EAlphaBox.TabIndex = 74;
-            // 
-            // label15
-            // 
-            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(143, 237);
-            this.label15.Margin = new System.Windows.Forms.Padding(5);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(47, 13);
-            this.label15.TabIndex = 75;
-            this.label15.Text = "E. Alpha";
             // 
             // TextureEditor
             // 
@@ -837,9 +841,11 @@
             this.Controls.Add(this.button3);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.MaterialSelect);
+            this.DoubleBuffered = true;
             this.Name = "TextureEditor";
             this.Size = new System.Drawing.Size(289, 1075);
             this.Load += new System.EventHandler(this.TextureEditor_Load);
+            this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.TextureEditor_Scroll);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bitm)).EndInit();
@@ -893,10 +899,9 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label3;
-        public System.Windows.Forms.ComboBox TexelSelect;
         private System.Windows.Forms.Label label10;
-        public System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Button button1;
+        public System.Windows.Forms.ComboBox TexelSelect;
+        private System.Windows.Forms.Button TexelAddBtn;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button PrimColorBTN;
@@ -909,5 +914,6 @@
         private System.Windows.Forms.Label label15;
         public System.Windows.Forms.TextBox PAlphaBox;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox TextureBox;
     }
 }

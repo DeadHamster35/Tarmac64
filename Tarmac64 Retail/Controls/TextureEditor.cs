@@ -1,35 +1,36 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Forms;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Diagnostics;
+﻿using Aspose.ThreeD.Render;
+using Assimp;
+using Cereal64.Microcodes.F3DEX.DataElements;
+using F3DSharp;
+using Fluent;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using OverKart64_Retail.Windows;
+using SharpGL;
+using SharpGL.SceneGraph.Core;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Text;
-using System.Collections;
-using Assimp;
-using Tarmac64_Library;
-using System.Text.RegularExpressions;
-using Tarmac64_Library.Properties;
-using SharpGL;
-using SharpGL.SceneGraph.Core;
 using System.Drawing.Design;
-using System.Xml;
-using System.Windows.Input;
-using System.Drawing.Imaging;
-using Cereal64.Microcodes.F3DEX.DataElements;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using F3DSharp;
 using System.Drawing.Drawing2D;
-using Texture64;
-using Fluent;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-using OverKart64_Retail.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Xml;
+using Tarmac64_Library;
+using Tarmac64_Library.Properties;
+using Texture64;
 
 namespace Tarmac64_Retail
 {
@@ -47,7 +48,7 @@ namespace Tarmac64_Retail
         F3DEX095_Parameters F3DParam = new F3DEX095_Parameters();
 
         int lastMaterial = 0;
-        public TM64_Geometry.OK64Texture[] textureArray = new TM64_Geometry.OK64Texture[0];
+        public TM64_Texture.OK64Texture[] textureArray = new TM64_Texture.OK64Texture[0];
         //ColorCombineEditor
         ColorCombineEditor CCEdit = new ColorCombineEditor();
         
@@ -67,26 +68,34 @@ namespace Tarmac64_Retail
                 bitm.Update();
                 bitm.Refresh();
                 Locked = true;
-                if (textureArray[MaterialSelect.SelectedIndex].texturePath != null)
+                int Texel = TexelSelect.SelectedIndex;
+                if (textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].texturePath != null)
                 {
+                    TextureBox.Text = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].texturePath;
+                    alphaMaskBox.Text = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].alphaPath;
+                    
+                    if (textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].alphaPath != "")
+                    {
+                        AlphaMaskCheckbox.Checked = true;
+                    }
 
-                    alphaMaskBox.Text = textureArray[MaterialSelect.SelectedIndex].alphaPath;
+                    heightBox.Text = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureHeight.ToString();
+                    widthBox.Text = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureWidth.ToString();
 
-                    heightBox.Text = textureArray[MaterialSelect.SelectedIndex].textureHeight.ToString();
-                    widthBox.Text = textureArray[MaterialSelect.SelectedIndex].textureWidth.ToString();
+                    SFlagBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].SFlag;
+                    TFlagBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].TFlag;
 
-                    SFlagBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].SFlag;
-                    TFlagBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].TFlag;
+                    textureScrollSBox.Text = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureScrollS.ToString();
+                    textureScrollTBox.Text = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureScrollT.ToString();
 
-                    textureScrollSBox.Text = textureArray[MaterialSelect.SelectedIndex].textureScrollS.ToString();
-                    textureScrollTBox.Text = textureArray[MaterialSelect.SelectedIndex].textureScrollT.ToString();
-
-                    CodecBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].TextureFormat;
-                    BitBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].BitSize;
+                    CodecBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].TextureFormat;
+                    BitBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].BitSize;
                 }
                 else
                 {
+                    TextureBox.Text = "";
                     alphaMaskBox.Text = "";
+                    AlphaMaskCheckbox.Checked = false;
                     heightBox.Text = "";
                     widthBox.Text = "";
                     SFlagBox.SelectedIndex = -1;
@@ -99,7 +108,7 @@ namespace Tarmac64_Retail
 
                 CycleBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].ColorCombine.CycleMode;
                 FilterBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].ColorCombine.TextureFilter;
-                screenBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].textureScreen;
+                screenBox.SelectedIndex = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureScreen;
 
                 if (!textureArray[MaterialSelect.SelectedIndex].ColorCombine.AdvancedModeA)
                 {
@@ -151,19 +160,20 @@ namespace Tarmac64_Retail
             MaterialSelect.Items.Clear();
             for (int materialIndex = 0; materialIndex < MaterialCount; materialIndex++)
             {
-                if (textureArray[materialIndex].texturePath != null)
+                if (textureArray[materialIndex].TexelData[0].texturePath != null)
                 {
-                    MaterialSelect.Items.Add("Texture-" + materialIndex.ToString() + " " + textureArray[materialIndex].TexelData.textureName);                    
+                    MaterialSelect.Items.Add("Texture-" + materialIndex.ToString() + " " + textureArray[materialIndex].TexelData[0].textureName);                    
                     textureCount++;
                 }
                 else
                 {
                     //MessageBox.Show("Warning! Material " + fbx.Materials[materialIndex].Name + " does not have a diffuse texture and cannot be used.");                    
-                    MaterialSelect.Items.Add("Shaded- " + materialIndex.ToString() + " - " + textureArray[materialIndex].TexelData.textureName);                    
+                    MaterialSelect.Items.Add("Shaded- " + materialIndex.ToString() + " - " + textureArray[materialIndex].TexelData[0].textureName);                    
                 }
                 
             }
             MaterialSelect.SelectedIndex = 0;
+            TexelSelect.SelectedIndex = 0;
             return textureCount;
         }
 
@@ -174,8 +184,6 @@ namespace Tarmac64_Retail
 
         private void TextureEditor_Load(object sender, EventArgs e)
         {
-
-            
 
             foreach (var ThisName in F3DEX095_Parameters.GCCModeNames)
             {                
@@ -211,10 +219,10 @@ namespace Tarmac64_Retail
             string ParentPath = "/SaveFile/TextureArray";
             TM64 Tarmac = new TM64();
             int Count = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "Count"));
-            textureArray = new TM64_Geometry.OK64Texture[Count];
+            textureArray = new TM64_Texture.OK64Texture[Count];
             for (int ThisTex = 0; ThisTex < textureArray.Length; ThisTex++)
             {
-                textureArray[ThisTex] = new TM64_Geometry.OK64Texture(XMLDoc, ParentPath, (ThisTex));
+                textureArray[ThisTex] = new TM64_Texture.OK64Texture(XMLDoc, ParentPath, (ThisTex));
             }
                 
         }
@@ -234,17 +242,8 @@ namespace Tarmac64_Retail
 
         private void textureBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
-            if (UpdateTextureDisplay())
-            {
-                lastMaterial = MaterialSelect.SelectedIndex;
-            }
-            else
-            {
-                MaterialSelect.SelectedIndex = lastMaterial;
-                MessageBox.Show("Selected Material Unavailable!");
-            }
-            
+            TexelSelect.SelectedIndex = 0;
+            UpdateTextureDisplay();
         }
 
         private void widthBox_TextChanged(object sender, EventArgs e)
@@ -269,19 +268,20 @@ namespace Tarmac64_Retail
 
         private void UpdateTextureData(bool NewItem = false, int NewIndex = -1)
         {
+            int Texel = TexelSelect.SelectedIndex;
             if ((Loaded) && (!Locked))
             {
                 int Parse;
                 if (int.TryParse(textureScrollTBox.Text, out Parse))
                 {
-                    textureArray[MaterialSelect.SelectedIndex].textureScrollT = Parse;
+                    textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureScrollT = Parse;
                 }
                 if (int.TryParse(textureScrollSBox.Text, out Parse))
                 {
-                    textureArray[MaterialSelect.SelectedIndex].textureScrollS = Parse;
+                    textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureScrollS = Parse;
                 }
 
-                textureArray[MaterialSelect.SelectedIndex].textureScreen = screenBox.SelectedIndex;
+                textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureScreen = screenBox.SelectedIndex;
 
                 textureArray[MaterialSelect.SelectedIndex].ColorCombine.CycleMode = CycleBox.SelectedIndex;
                 textureArray[MaterialSelect.SelectedIndex].ColorCombine.RenderModeA = RenderBoxA.SelectedIndex;
@@ -298,15 +298,21 @@ namespace Tarmac64_Retail
                         textureArray[MaterialSelect.SelectedIndex].ColorCombine.GeometryBools[ThisCheck] = GeoModeBox.GetItemChecked(ThisCheck);
                     }
                 }
-                textureArray[MaterialSelect.SelectedIndex].SFlag = SFlagBox.SelectedIndex;
-                textureArray[MaterialSelect.SelectedIndex].TFlag = TFlagBox.SelectedIndex;
+                textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].SFlag = SFlagBox.SelectedIndex;
+                textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].TFlag = TFlagBox.SelectedIndex;
 
-                textureArray[MaterialSelect.SelectedIndex].BitSize = BitBox.SelectedIndex;
-                textureArray[MaterialSelect.SelectedIndex].TextureFormat = CodecBox.SelectedIndex;
+                textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].BitSize = BitBox.SelectedIndex;
+                textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].TextureFormat = CodecBox.SelectedIndex;
                 textureArray[MaterialSelect.SelectedIndex].ColorCombine.TextureFilter = FilterBox.SelectedIndex;
 
-
-
+                if (int.TryParse(EAlphaBox.Text, out Parse))
+                {
+                    textureArray[MaterialSelect.SelectedIndex].ColorCombine.EnvironmentAlpha = Parse;
+                }
+                if (int.TryParse(PAlphaBox.Text, out Parse))
+                {
+                    textureArray[MaterialSelect.SelectedIndex].ColorCombine.PrimaryAlpha = Parse;
+                }
                 if (!textureArray[MaterialSelect.SelectedIndex].ColorCombine.AdvancedModeA)
                 {
                     textureArray[MaterialSelect.SelectedIndex].ColorCombine.CombineModeA = CombineBoxA.SelectedIndex;
@@ -387,20 +393,21 @@ namespace Tarmac64_Retail
 
         private void bitm_Paint(object sender, PaintEventArgs e)
         {
+            int Texel = TexelSelect.SelectedIndex;
             if ((Loaded) && (MaterialSelect.SelectedIndex >= 0))
             {
-                if (!File.Exists(textureArray[MaterialSelect.SelectedIndex].texturePath))
+                if (!File.Exists(textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].texturePath))
                 {
                     return;
                 }
-                if (textureArray[MaterialSelect.SelectedIndex].textureHeight == 0)
+                if (textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureHeight == 0)
                 {
                     return;
                 }
 
 
-                int THeight = textureArray[MaterialSelect.SelectedIndex].textureHeight;
-                int TWidth = textureArray[MaterialSelect.SelectedIndex].textureWidth;
+                int THeight = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureHeight;
+                int TWidth = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureWidth;
 
                 if (THeight > TWidth)
                 {
@@ -415,15 +422,15 @@ namespace Tarmac64_Retail
                 int XOff = Convert.ToInt32((bitm.Width - TWidth) / 2.0f);
                 int YOff = Convert.ToInt32((bitm.Height - THeight) / 2.0f);
                 e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
-                Bitmap Draw = new Bitmap(textureArray[MaterialSelect.SelectedIndex].texturePath);
+                Bitmap Draw = new Bitmap(textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].texturePath);
                 e.Graphics.DrawImage(
                    Draw,
                     new Rectangle(XOff, YOff, TWidth, THeight),
                     // destination rectangle 
                     0,
                     0,           // upper-left corner of source rectangle
-                    textureArray[MaterialSelect.SelectedIndex].textureWidth,       // width of source rectangle
-                    textureArray[MaterialSelect.SelectedIndex].textureHeight,      // height of source rectangle
+                    textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureWidth,       // width of source rectangle
+                    textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].textureHeight,      // height of source rectangle
                     GraphicsUnit.Pixel);
             }
             else
@@ -435,13 +442,14 @@ namespace Tarmac64_Retail
 
         private void AlphaMaskCheckbox_CheckedChanged(object sender, EventArgs e)
         {
+            int Texel = TexelSelect.SelectedIndex;
             if ((Loaded) && (!Locked))
             {
                 Locked = true;
 
                 if (!AlphaMaskCheckbox.Checked)
                 {
-                    textureArray[MaterialSelect.SelectedIndex].alphaPath = "";
+                    textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].alphaPath = "";
                 }
                 else
                 {
@@ -451,12 +459,12 @@ namespace Tarmac64_Retail
                     {
                         if (File.Exists(FileOpen.FileName))
                         {
-                            textureArray[MaterialSelect.SelectedIndex].alphaPath = FileOpen.FileName;
+                            textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].alphaPath = FileOpen.FileName;
                         }
                     }
 
                 }
-                alphaMaskBox.Text = textureArray[MaterialSelect.SelectedIndex].alphaPath;
+                alphaMaskBox.Text = textureArray[MaterialSelect.SelectedIndex].TexelData[Texel].alphaPath;
                 Locked = false;
             }
 
@@ -477,28 +485,29 @@ namespace Tarmac64_Retail
             FileSave.InitialDirectory = okSettings.ProjectDirectory;
             FileSave.Filter = "Tarmac Texture|*.ok64.Texture|All Files (*.*)|*.*";
 
-            TM64_Geometry.OK64Texture Local = textureArray[MaterialSelect.SelectedIndex];
-            
+            TM64_Texture.OK64Texture Local = textureArray[MaterialSelect.SelectedIndex];
+
+            int Texel = TexelSelect.SelectedIndex;
             if (FileSave.ShowDialog() == DialogResult.OK)
             {
                 List<string> Output = new List<string>();
 
-                Output.Add(Local.TexelData.textureName);
-                Output.Add(Local.texturePath);
-                Output.Add(Local.alphaPath);
+                Output.Add(Local.TexelData[Texel].textureName);
+                Output.Add(Local.TexelData[Texel].texturePath);
+                Output.Add(Local.TexelData[Texel].alphaPath);
                 Output.Add(Local.ColorCombine.CombineModeA.ToString());
                 Output.Add(Local.ColorCombine.CombineModeB.ToString());
                 Output.Add(Local.ColorCombine.RenderModeA.ToString());
                 Output.Add(Local.ColorCombine.RenderModeB.ToString());
                 Output.Add(Local.ColorCombine.GeometryModes.ToString());
-                Output.Add(Local.BitSize.ToString());
+                Output.Add(Local.TexelData[Texel].BitSize.ToString());
                 Output.Add(Local.ColorCombine.TextureFilter.ToString());
-                Output.Add(Local.TextureFormat.ToString());
-                Output.Add(Local.SFlag.ToString());
-                Output.Add(Local.TFlag.ToString());
-                Output.Add(Local.textureScrollS.ToString());
-                Output.Add(Local.textureScrollT.ToString());
-                Output.Add(Local.textureScreen.ToString());
+                Output.Add(Local.TexelData[Texel].TextureFormat.ToString());
+                Output.Add(Local.TexelData[Texel].SFlag.ToString());
+                Output.Add(Local.TexelData[Texel].TFlag.ToString());
+                Output.Add(Local.TexelData[Texel].textureScrollS.ToString());
+                Output.Add(Local.TexelData[Texel].textureScrollT.ToString());
+                Output.Add(Local.TexelData[Texel].textureScreen.ToString());
                 Output.Add(Local.GLShiftS.ToString());
                 Output.Add(Local.GLShiftT.ToString());
 
@@ -518,15 +527,15 @@ namespace Tarmac64_Retail
             FileOpen.InitialDirectory = okSettings.ProjectDirectory;
             FileOpen.Filter = "Tarmac Texture|*.ok64.Texture|All Files (*.*)|*.*";
 
-            TM64_Geometry.OK64Texture Local = textureArray[MaterialSelect.SelectedIndex];
-            
+            TM64_Texture.OK64Texture Local = textureArray[MaterialSelect.SelectedIndex];
+            int Texel = TexelSelect.SelectedIndex;
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
                 string[] Input = File.ReadAllLines(FileOpen.FileName);
                 int ThisLine = 0;
-                Local.TexelData.textureName = Input[ThisLine++];
-                Local.texturePath = Input[ThisLine++];
-                Local.alphaPath = Input[ThisLine++];
+                Local.TexelData[Texel].textureName = Input[ThisLine++];
+                Local.TexelData[Texel].texturePath = Input[ThisLine++];
+                Local.TexelData[Texel].alphaPath = Input[ThisLine++];
                 Local.ColorCombine.CombineModeA = Convert.ToInt32(Input[ThisLine++]);
                 Local.ColorCombine.CombineModeB = Convert.ToInt32(Input[ThisLine++]);
 
@@ -534,38 +543,38 @@ namespace Tarmac64_Retail
                 Local.ColorCombine.RenderModeB = Convert.ToInt32(Input[ThisLine++]);
 
                 Local.ColorCombine.GeometryModes = Convert.ToUInt32(Input[ThisLine++]);
-                Local.BitSize = Convert.ToInt32(Input[ThisLine++]);
+                Local.TexelData[Texel].BitSize = Convert.ToInt32(Input[ThisLine++]);
                 Local.ColorCombine.TextureFilter = Convert.ToInt32(Input[ThisLine++]);
-                Local.TextureFormat = Convert.ToInt32(Input[ThisLine++]);
-                Local.SFlag = Convert.ToInt32(Input[ThisLine++]);
-                Local.TFlag = Convert.ToInt32(Input[ThisLine++]);
-                Local.textureScrollS = Convert.ToInt32(Input[ThisLine++]);
-                Local.textureScrollT = Convert.ToInt32(Input[ThisLine++]);
-                Local.textureScreen = Convert.ToInt32(Input[ThisLine++]);
+                Local.TexelData[Texel].TextureFormat = Convert.ToInt32(Input[ThisLine++]);
+                Local.TexelData[Texel].SFlag = Convert.ToInt32(Input[ThisLine++]);
+                Local.TexelData[Texel].TFlag = Convert.ToInt32(Input[ThisLine++]);
+                Local.TexelData[Texel].textureScrollS = Convert.ToInt32(Input[ThisLine++]);
+                Local.TexelData[Texel].textureScrollT = Convert.ToInt32(Input[ThisLine++]);
+                Local.TexelData[Texel].textureScreen = Convert.ToInt32(Input[ThisLine++]);
                 Local.GLShiftS = Convert.ToInt32(Input[ThisLine++]);
                 Local.GLShiftT = Convert.ToInt32(Input[ThisLine++]);
 
-                if (File.Exists(Local.texturePath))
+                if (File.Exists(Local.TexelData[Texel].texturePath))
                 {
-                    using (var fs = new FileStream(Local.texturePath, FileMode.Open, FileAccess.Read))
+                    using (var fs = new FileStream(Local.TexelData[Texel].texturePath, FileMode.Open, FileAccess.Read))
                     {
-                        Local.TexelData.textureBitmap = Image.FromStream(fs);
+                        Local.TexelData[Texel].textureBitmap = Image.FromStream(fs);
                     }
                 }
-                Local.textureWidth = Local.TexelData.textureBitmap.Width;
-                Local.textureHeight = Local.TexelData.textureBitmap.Height;
+                Local.TexelData[Texel].textureWidth = Local.TexelData[Texel].textureBitmap.Width;
+                Local.TexelData[Texel].textureHeight = Local.TexelData[Texel].textureBitmap.Height;
 
                 int materialIndex = MaterialSelect.SelectedIndex;
 
 
-                if (Local.texturePath != null)
+                if (Local.TexelData[Texel].texturePath != null)
                 {
-                    MaterialSelect.Items[materialIndex] = ("Texture-" + materialIndex.ToString() + " " + Local.TexelData.textureName);
+                    MaterialSelect.Items[materialIndex] = ("Texture-" + materialIndex.ToString() + " " + Local.TexelData[Texel].textureName);
                 }
                 else
                 {
                     //MessageBox.Show("Warning! Material " + fbx.Materials[materialIndex].Name + " does not have a diffuse texture and cannot be used.");                    
-                    MaterialSelect.Items[materialIndex] = ("Shaded- " + materialIndex.ToString() + " - " + Local.TexelData.textureName);
+                    MaterialSelect.Items[materialIndex] = ("Shaded- " + materialIndex.ToString() + " - " + Local.TexelData[Texel].textureName);
                 }
 
 
@@ -585,18 +594,19 @@ namespace Tarmac64_Retail
             {
                 if (File.Exists(FileOpen.FileName))
                 {
-                    TM64_Geometry.OK64Texture Local = textureArray[MaterialSelect.SelectedIndex];
-                    Local.texturePath = FileOpen.FileName;
+                    int Texel = TexelSelect.SelectedIndex;
+                    TM64_Texture.OK64Texture Local = textureArray[MaterialSelect.SelectedIndex];
+                    Local.TexelData[Texel].texturePath = FileOpen.FileName;
 
-                    if (File.Exists(Local.texturePath))
+                    if (File.Exists(Local.TexelData[Texel].texturePath))
                     {
-                        using (var fs = new FileStream(Local.texturePath, FileMode.Open, FileAccess.Read))
+                        using (var fs = new FileStream(Local.TexelData[Texel].texturePath, FileMode.Open, FileAccess.Read))
                         {
-                            Local.TexelData.textureBitmap = Image.FromStream(fs);
+                            Local.TexelData[Texel].textureBitmap = Image.FromStream(fs);
                         }
                     }
-                    Local.textureWidth = Local.TexelData.textureBitmap.Width;
-                    Local.textureHeight = Local.TexelData.textureBitmap.Height;
+                    Local.TexelData[Texel].textureWidth = Local.TexelData[Texel].textureBitmap.Width;
+                    Local.TexelData[Texel].textureHeight = Local.TexelData[Texel].textureBitmap.Height;
 
                     textureArray[MaterialSelect.SelectedIndex] = Local;
                     if (UpdateParent != null)
@@ -681,6 +691,65 @@ namespace Tarmac64_Retail
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateTextureData();
+        }
+
+        private void TextureEditor_Scroll(object sender, ScrollEventArgs e)
+        {
+
+        }
+
+        
+        private void AddNewTexel()
+        {
+            TM64_Texture.OK64TexelData NewTexel = new TM64_Texture.OK64TexelData();
+
+            NewTexel.textureName = "";
+            NewTexel.textureScrollS = 0;
+            NewTexel.textureScrollT = 0;
+            NewTexel.textureScreen = 0;
+            NewTexel.texturePath = "";
+            NewTexel.alphaPath = "";
+            NewTexel.SFlag = 0;
+            NewTexel.TFlag = 0;
+            NewTexel.TextureFormat = Array.IndexOf(F3DEX095_Parameters.TextureFormats, F3DEX095_Parameters.G_IM_FMT_RGBA);
+            NewTexel.BitSize = Array.IndexOf(F3DEX095_Parameters.BitSizes, F3DEX095_Parameters.G_IM_SIZ_16b);
+            NewTexel.textureWidth = 32;
+            NewTexel.textureHeight = 32;
+
+            textureArray[MaterialSelect.SelectedIndex].TexelData.Add(NewTexel);
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (textureArray[MaterialSelect.SelectedIndex].TexelData.Count > 1)
+            {
+                textureArray[MaterialSelect.SelectedIndex].TexelData.RemoveAt(1);
+                TexelSelect.Items.RemoveAt(1);
+            }
+            else
+            {
+                AddNewTexel();
+                TexelSelect.Items.Add("Texel 1");
+            }
+
+            UpdateTextureDisplay();
+
+            
+
+        }
+
+        private void EAlphaBox_TextChanged(object sender, EventArgs e)
+        {
+            UpdateTextureData();
+        }
+
+        private void PAlphaBox_TextChanged(object sender, EventArgs e)
+        {
+            UpdateTextureData();
+        }
+
+        private void TexelSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateTextureDisplay();
         }
 
         private void textureCodecBox_SelectedIndexChanged(object sender, EventArgs e)

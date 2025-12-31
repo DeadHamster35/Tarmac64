@@ -264,11 +264,11 @@ namespace Tarmac64_Library
                 
                 glTexture.Destroy(gl);
                 if (
-                    (TargetObjectType.TextureData[Geometry.materialID].texturePath != null) &&
-                    (File.Exists(TargetObjectType.TextureData[Geometry.materialID].texturePath))
+                    (TargetObjectType.TextureData[Geometry.materialID].TexelData[0].texturePath != null) &&
+                    (File.Exists(TargetObjectType.TextureData[Geometry.materialID].TexelData[0].texturePath))
                 )
                 {
-                    glTexture.Create(gl, TargetObjectType.TextureData[Geometry.materialID].texturePath);
+                    glTexture.Create(gl, TargetObjectType.TextureData[Geometry.materialID].TexelData[0].texturePath);
                     glTexture.Bind(gl);
                 }
                 else
@@ -285,8 +285,8 @@ namespace Tarmac64_Library
 
 
 
-                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TargetObjectType.TextureData[Geometry.materialID].SFlag] });
-                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[TargetObjectType.TextureData[Geometry.materialID].TFlag] });
+                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TargetObjectType.TextureData[Geometry.materialID].TexelData[0].SFlag] });
+                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[TargetObjectType.TextureData[Geometry.materialID].TexelData[0].TFlag] });
                 gl.Begin(OpenGL.GL_TRIANGLES);
                 foreach (var Face in Geometry.modelGeometry)
                 {                    
@@ -361,7 +361,7 @@ namespace Tarmac64_Library
             }
         }
 
-        public void DrawTexturedTexturedNoFlush(OpenGL gL, TM64_Geometry.OK64Texture oK64Texture, TM64_Geometry.OK64F3DObject oK64F3DObject)
+        public void DrawTexturedTexturedNoFlush(OpenGL gL, TM64_Texture.OK64Texture oK64Texture, TM64_Geometry.OK64F3DObject oK64F3DObject)
         {
             throw new NotImplementedException();
         }
@@ -404,7 +404,7 @@ namespace Tarmac64_Library
                 OpenGL.GL_REPEAT,
         };
 
-        public void DrawGLCull(OpenGL GL, TM64_Geometry.OK64Texture TextureObject)
+        public void DrawGLCull(OpenGL GL, TM64_Texture.OK64Texture TextureObject)
         {
             bool Enable = false;
 
@@ -447,7 +447,7 @@ namespace Tarmac64_Library
         }
 
 
-        public void DrawTextureFlush(OpenGL gl, TM64_Geometry.OK64Texture[] textureArray, Texture glTexture, int TargetID)
+        public void DrawTextureFlush(OpenGL gl, TM64_Texture.OK64Texture[] textureArray, Texture glTexture, int TargetID)
         {
 
 
@@ -458,12 +458,12 @@ namespace Tarmac64_Library
             glTexture.Bind(gl);
 
 
-            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[textureArray[TargetID].SFlag] });
-            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[textureArray[TargetID].TFlag] });
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[textureArray[TargetID].TexelData[0].SFlag] });
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[textureArray[TargetID].TexelData[0].TFlag] });
 
 
         }
-        public void DrawTextureFlushScreen(OpenGL gl, int Width, int Height, TM64_Geometry.OK64Texture TextureObject, Texture glTexture)
+        public void DrawTextureFlushScreen(OpenGL gl, int Width, int Height, TM64_Texture.OK64Texture TextureObject, Texture glTexture)
         {
 
 
@@ -472,16 +472,16 @@ namespace Tarmac64_Library
 
             
 
-            glTexture.Create(gl, RenderScreen(gl, TextureObject.textureScreen - 1, Width, Height));
+            glTexture.Create(gl, RenderScreen(gl, TextureObject.TexelData[0].textureScreen - 1, Width, Height));
             glTexture.Bind(gl);
 
             uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
 
-            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.SFlag] });
-            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.SFlag] });
-            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[TextureObject.TFlag] });
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.TexelData[0].SFlag] });
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.TexelData[0].SFlag] });
+            gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[TextureObject.TexelData[0].TFlag] });
         }
-        public void DrawTexturedNoFlush(OpenGL gl, TM64_Geometry.OK64Texture TextureObject, TM64_Geometry.OK64F3DObject targetObject)
+        public void DrawTexturedNoFlush(OpenGL gl, TM64_Texture.OK64Texture TextureObject, TM64_Geometry.OK64F3DObject targetObject)
         {
 
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
@@ -611,16 +611,16 @@ namespace Tarmac64_Library
 
         }
 
-        public void DrawTextured(OpenGL gl, TM64_Geometry.OK64Texture[] textureArray, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
+        public void DrawTextured(OpenGL gl, TM64_Texture.OK64Texture[] textureArray, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
         {
             
             glTexture.Destroy(gl);
             gl.Enable(OpenGL.GL_TEXTURE_2D);
-            if (textureArray[targetObject.materialID].texturePath == null)
+            if (textureArray[targetObject.materialID].TexelData[0].texturePath == null)
             {
                 MessageBox.Show("Error loading texture for " + targetObject.objectName);
             }
-            glTexture.Create(gl, textureArray[targetObject.materialID].texturePath);
+            glTexture.Create(gl, textureArray[targetObject.materialID].TexelData[0].texturePath);
             glTexture.Bind(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.Begin(OpenGL.GL_TRIANGLES);
@@ -632,16 +632,16 @@ namespace Tarmac64_Library
             
         }
 
-        public void DrawTextured(OpenGL gl, TM64_Geometry.OK64Texture[] textureArray, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject, int[] Zone)
+        public void DrawTextured(OpenGL gl, TM64_Texture.OK64Texture[] textureArray, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject, int[] Zone)
         {
             
             glTexture.Destroy(gl);
             gl.Enable(OpenGL.GL_TEXTURE_2D);
-            if (textureArray[targetObject.materialID].texturePath == null)
+            if (textureArray[targetObject.materialID].TexelData[0].texturePath == null)
             {
                 MessageBox.Show("Error loading texture for " + targetObject.objectName);
             }
-            glTexture.Create(gl, textureArray[targetObject.materialID].texturePath);
+            glTexture.Create(gl, textureArray[targetObject.materialID].TexelData[0].texturePath);
             glTexture.Bind(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.Begin(OpenGL.GL_TRIANGLES);

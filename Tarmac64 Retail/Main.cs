@@ -139,9 +139,9 @@ namespace Tarmac64_Retail
         List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>();
 
         TM64_Geometry.OK64F3DObject[] surfaceObjects = new TM64_Geometry.OK64F3DObject[0];
-    
 
-        TM64_Geometry.OK64Texture[] textureArray = new TM64_Geometry.OK64Texture[0];
+
+        TM64_Texture.OK64Texture[] textureArray = new TM64_Texture.OK64Texture[0];
         Bitmap[] TextureBitmaps = new Bitmap[0];
         
 
@@ -320,7 +320,7 @@ namespace Tarmac64_Retail
                 PathData = ListStream.ToArray();
 
 
-                textureList = TarmacTexture.compileCourseTexture(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5, Convert.ToBoolean(CourseData.Fog.FogToggle) );
+                textureList = TarmacTexture.CompileTextureObjects(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5, Convert.ToBoolean(CourseData.Fog.FogToggle) );
                 if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic, true))
                 {
                     return;
@@ -441,7 +441,7 @@ namespace Tarmac64_Retail
                 ListData = ListStream.ToArray();
 
 
-                textureList = TarmacTexture.compileCourseTexture(segment6, textureArray, 8 + ListData.Length, 5, Convert.ToBoolean(CourseData.Fog.FogToggle));
+                textureList = TarmacTexture.CompileTextureObjects(segment6, textureArray, 8 + ListData.Length, 5, Convert.ToBoolean(CourseData.Fog.FogToggle));
                 if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic))
                 {
                     return;
@@ -574,18 +574,24 @@ namespace Tarmac64_Retail
             int scrollCount = 0;
             foreach (var textureObject in CourseData.ModelData.TextureObjects)
             {
-                if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                for (int ThisTexel = 0; ThisTexel < textureObject.TexelData.Count; ThisTexel++)
                 {
-                    scrollCount++;
+                    if (textureObject.TexelData[ThisTexel].textureScrollS != 0 || textureObject.TexelData[ThisTexel].textureScrollT != 0)
+                    {
+                        scrollCount++;
+                    }
                 }
             }
             foreach (var ObjectType in TypeList)
             {
                 foreach (var textureObject in ObjectType.TextureData)
                 {
-                    if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                    for (int ThisTexel = 0; ThisTexel < textureObject.TexelData.Count; ThisTexel++)
                     {
-                        scrollCount++;
+                        if (textureObject.TexelData[ThisTexel].textureScrollS != 0 || textureObject.TexelData[ThisTexel].textureScrollT != 0)
+                        {
+                            scrollCount++;
+                        }
                     }
                 }
             }
@@ -604,12 +610,14 @@ namespace Tarmac64_Retail
 
                 foreach (var textureObject in CourseData.ModelData.TextureObjects)
                 {
-                    if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                    for (int ThisTexel = 0; ThisTexel < textureObject.TexelData.Count; ThisTexel++)
                     {
-                        
-                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.CCPosition | 0x06000000)));
-                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollS)));
-                        binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollT)));
+                        if (textureObject.TexelData[ThisTexel].textureScrollS != 0 || textureObject.TexelData[ThisTexel].textureScrollT != 0)
+                        {
+                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.TexelData[ThisTexel].F3DPosition | 0x06000000)));
+                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.TexelData[ThisTexel].textureScrollS)));
+                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.TexelData[ThisTexel].textureScrollT)));
+                        }
                     }
                 }
 
@@ -617,12 +625,14 @@ namespace Tarmac64_Retail
                 {
                     foreach (var textureObject in ObjectType.TextureData)
                     {
-                        if (textureObject.textureScrollS != 0 || textureObject.textureScrollT != 0)
+                        for (int ThisTexel = 0; ThisTexel < textureObject.TexelData.Count; ThisTexel++)
                         {
-
-                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.CCPosition | 0x0A000000)));
-                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollS)));
-                            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.textureScrollT)));
+                            if (textureObject.TexelData[ThisTexel].textureScrollS != 0 || textureObject.TexelData[ThisTexel].textureScrollT != 0)
+                            {
+                                binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.TexelData[ThisTexel].F3DPosition | 0x0A000000)));
+                                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.TexelData[ThisTexel].textureScrollS)));
+                                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(textureObject.TexelData[ThisTexel].textureScrollT)));
+                            }
                         }
                     }
                 }
@@ -664,13 +674,17 @@ namespace Tarmac64_Retail
             binaryWriter = new BinaryWriter(memoryStream);
 
 
+
             //screendata
             int screenCount = 0;
             foreach (var textureObject in CourseData.ModelData.TextureObjects)
             {
-                if (textureObject.textureScreen > 0)
+                for (int ThisTexel = 0; ThisTexel < textureObject.TexelData.Count; ThisTexel++)
                 {
-                    screenCount++;
+                    if (textureObject.TexelData[ThisTexel].textureScreen > 0)
+                    {
+                        screenCount++;
+                    }
                 }
             }
 
@@ -678,9 +692,12 @@ namespace Tarmac64_Retail
             {
                 foreach (var textureObject in ObjectType.TextureData)
                 {
-                    if (textureObject.textureScreen > 0)
+                    for (int ThisTexel = 0; ThisTexel < textureObject.TexelData.Count; ThisTexel++)
                     {
-                        screenCount++;
+                        if (textureObject.TexelData[ThisTexel].textureScreen > 0)
+                        {
+                            screenCount++;
+                        }
                     }
                 }
             }
@@ -694,11 +711,14 @@ namespace Tarmac64_Retail
                 {
                     foreach (var textureObject in CourseData.ModelData.TextureObjects)
                     {
-                        if (textureObject.textureScreen == (CurrentScreen + 1))
+                        for (int ThisTexel = 0; ThisTexel < textureObject.TexelData.Count; ThisTexel++)
                         {
-                            flip = BitConverter.GetBytes(Convert.ToInt32(textureObject.TexelData.segmentPosition | 0x05000000));
-                            Array.Reverse(flip);
-                            binaryWriter.Write(flip);
+                            if (textureObject.TexelData[ThisTexel].textureScreen == (CurrentScreen + 1))
+                            {
+                                flip = BitConverter.GetBytes(Convert.ToInt32(textureObject.TexelData[ThisTexel].imagePosition | 0x05000000));
+                                Array.Reverse(flip);
+                                binaryWriter.Write(flip);
+                            }
                         }
                     }
 
@@ -706,9 +726,12 @@ namespace Tarmac64_Retail
                     {
                         foreach (var textureObject in ObjectType.TextureData)
                         {
-                            if (textureObject.textureScreen == (CurrentScreen + 1))
+                            for (int ThisTexel = 0; ThisTexel < textureObject.TexelData.Count; ThisTexel++)
                             {
-                                binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.TexelData.segmentPosition | 0x0A000000)));
+                                if (textureObject.TexelData[ThisTexel].textureScreen == (CurrentScreen + 1))
+                                {
+                                    binaryWriter.Write(F3D.BigEndian(Convert.ToInt32(textureObject.TexelData[ThisTexel].imagePosition | 0x0A000000)));
+                                }
                             }
                         }
                     }
@@ -824,10 +847,6 @@ namespace Tarmac64_Retail
 
 
 
-        private void ReplaceStandard()
-        {
-
-        }
         private void ReplacePaths(bool Overwrite = false)
         {
             OpenFileDialog OpenFile = new OpenFileDialog();
@@ -879,7 +898,7 @@ namespace Tarmac64_Retail
 
                     materialCount = FBX.MaterialCount;
 
-                    
+
                     //
                     // Textures
                     //
@@ -887,7 +906,7 @@ namespace Tarmac64_Retail
 
 
 
-                    TM64_Geometry.OK64Texture[] OldTextures = textureArray;
+                    TM64_Texture.OK64Texture[] OldTextures = textureArray;
                     int oldMatCount = textureArray.Length;
 
 
@@ -904,7 +923,7 @@ namespace Tarmac64_Retail
                         {
                             for (int ThisNew = 0;ThisNew < textureArray.Length; ThisNew++)
                             {
-                                if (textureArray[ThisNew].texturePath == OldTextures[ThisOld].texturePath)
+                                if (textureArray[ThisNew].TexelData[0].texturePath == OldTextures[ThisOld].TexelData[0].texturePath)
                                 {
                                     textureArray[ThisNew] = OldTextures[ThisOld];
                                 }
@@ -997,13 +1016,13 @@ namespace Tarmac64_Retail
             {
 
                 //Update the GL Bitmap Cache
-                if (textureArray[ThisTex].texturePath != null)
+                if (textureArray[ThisTex].TexelData[0].texturePath != null)
                 {
-                    if (File.Exists(textureArray[ThisTex].texturePath))
+                    if (File.Exists(textureArray[ThisTex].TexelData[0].texturePath))
                     {
                         try
                         {
-                            TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
+                            TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].TexelData[0].texturePath);
                         }
                         catch
                         {
@@ -1063,13 +1082,13 @@ namespace Tarmac64_Retail
             {
                 surfmaterialBox.Items.Add(surfaceTypeID[surfacematerialIndex].ToString() + "- " + surfaceType[surfacematerialIndex]);
             }
-            TextureControl.Loaded = true;
+            
             TextureControl.textureArray = textureArray;
             TextureControl.AddNewTextures(materialCount);
-
+            TextureControl.Loaded = true;
             for (int ThisTexture = 0; ThisTexture < materialCount; ThisTexture++)
             {
-                RenderMaterialBox.Items.Add(textureArray[ThisTexture].TexelData.textureName);
+                RenderMaterialBox.Items.Add(textureArray[ThisTexture].TexelData[0].textureName);
             }
 
             
@@ -1152,13 +1171,13 @@ namespace Tarmac64_Retail
                 {
 
                     //Update the GL Bitmap Cache
-                    if (textureArray[ThisTex].texturePath != null)
+                    if (textureArray[ThisTex].TexelData[0].texturePath != null)
                     {
-                        if (File.Exists(textureArray[ThisTex].texturePath))
+                        if (File.Exists(textureArray[ThisTex].TexelData[0].texturePath))
                         {
                             try
                             {
-                                TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].texturePath);
+                                TextureBitmaps[ThisTex] = new Bitmap(textureArray[ThisTex].TexelData[0].texturePath);
                             }
                             catch
                             {
@@ -2084,6 +2103,11 @@ namespace Tarmac64_Retail
         {
             CourseUpgrader f2 = new CourseUpgrader();
             f2.Show();
+        }
+
+        private void TextureControl_Scroll(object sender, ScrollEventArgs e)
+        {
+            
         }
 
         private void masterBox_AfterSelect(object sender, TreeViewEventArgs e)
