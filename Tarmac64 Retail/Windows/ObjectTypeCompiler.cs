@@ -89,20 +89,41 @@ namespace Tarmac64_Retail
                 ModelBox.Text = FileOpen.FileName;
 
                 SceneData = importer.ImportFile(ModelBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                ModelData = TarmacGeometry.CreateObjects(SceneData, NewType.TextureData, true);
                 TextureControl.textureArray = TarmacTexture.loadTextures(SceneData, ModelBox.Text);
                 TextureControl.AddNewTextures(TextureControl.textureArray.Length);
                 TextureControl.Loaded = true;
             }
         }
         TM64_Course.OKObjectType NewType = new TM64_Course.OKObjectType();
-        public void PrepCurrentObject()
+        public bool PrepCurrentObject()
         {
             NewType = new TM64_Course.OKObjectType();
             NewType.Name = NameBox.Text;
             NewType.TextureData = TextureControl.textureArray;
             NewType.Flag = Convert.ToInt16(FlagBox.Text);
             NewType.ObjectHitbox = HitboxArray;
+
+            if (!File.Exists(ModelBox.Text)) 
+            {
+                MessageBox.Show("Objects need a valid model");
+                return false;
+            }
+
+            SceneData = importer.ImportFile(ModelBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+
+            if (SceneData.HasAnimations)
+            {
+                //ha okay fuck me guess we just completely rewrite my asset import pipeline for fucking blender.
+
+                NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
+                NewType.ObjectAnimations.Animation = TarmacAnime.LoadSkeleton(SceneData, NewType.ModelScale);
+                ModelData = TarmacAnime.GetMeshes(SceneData, TextureControl.textureArray);
+            }
+            else
+            {
+                ModelData = TarmacGeometry.CreateObjects(SceneData, NewType.TextureData, true);
+            }
+            
 
             float TempFloat;
             if (Single.TryParse(ScaleBox.Text, out TempFloat))
@@ -112,7 +133,7 @@ namespace Tarmac64_Retail
             else
             {
                 MessageBox.Show("Scale Parsing Error. Check scale value.");
-                return;
+                return false;
             }
 
 
@@ -126,21 +147,9 @@ namespace Tarmac64_Retail
                 NewType.Behavior.Parameters[ThisParameter].Value = ParameterList[ThisParameter].Value;
             }
 
-
-
-
-            if (AToggleBox.Checked)
-            {
-                NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
-                var WalkData = importer.ImportFile(WalkBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-                NewType.ObjectAnimations.Animation = TarmacAnime.LoadSkeleton(WalkData, NewType.ModelScale);
-            }
-            else
-            {
-                NewType.ObjectAnimations = null;
-            }
-
             NewType.ModelData = ModelData;
+
+            
 
 
 
@@ -176,6 +185,9 @@ namespace Tarmac64_Retail
             {
                 NewType.ZSortToggle = 0;
             }
+
+
+            return true;
         }
 
         public void ReloadUI()
@@ -391,8 +403,6 @@ namespace Tarmac64_Retail
             SoundTypeBox.SelectedIndex = 0;
             SoundNameBox.SelectedIndex = 0;
             ResetParameterView();
-
-            WalkBox.Enabled = false;
             NameBox.Focus();
         }
 
@@ -421,20 +431,10 @@ namespace Tarmac64_Retail
             FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
             if (FileOpen.ShowDialog() == DialogResult.OK)
             {
-                WalkBox.Text = FileOpen.FileName;
+                AnimeBox.Text = FileOpen.FileName;
             }
         }
 
-        private void AToggleBox_CheckedChanged(object sender, EventArgs e)
-        {
-            WalkBox.Enabled = AToggleBox.Checked;
-        }
-
-
-        private void AToggleBox_CheckedChanged_1(object sender, EventArgs e)
-        {
-            WalkBox.Enabled = AToggleBox.Checked;
-        }
 
         private void HitboxBtn_Click(object sender, EventArgs e)
         {
@@ -560,6 +560,14 @@ namespace Tarmac64_Retail
 
         private void SaveXMLClick(object sender, EventArgs e)
         {
+
+
+            if (!PrepCurrentObject())
+            {
+                return;
+            }
+
+
             SaveFileDialog FileSave = new SaveFileDialog();
 
             FileSave.Filter = "Tarmac Object (*.ok64.OBJECT)|*.ok64.OBJECT|All Files (*.*)|*.*";
@@ -570,7 +578,7 @@ namespace Tarmac64_Retail
                 string FilePath = FileSave.FileName;
                 XmlDocument XMLDoc = new XmlDocument();
                 TM64 Tarmac = new TM64();
-                PrepCurrentObject();
+
                 XmlElement XMLData = XMLDoc.CreateElement("SaveFile");
                 
                 NewType.SaveXML(XMLDoc, XMLData, 0);

@@ -80,6 +80,7 @@ namespace Tarmac64_Retail
         public bool UpdateDraw = false;
         public bool AntiFlicker = true;
         public bool DrawSky = true;
+        bool Loaded = false;
 
         public event EventHandler UpdateParent;
 
@@ -90,6 +91,10 @@ namespace Tarmac64_Retail
 
         public void RefreshView()
         {
+            if(!Loaded)
+            {
+                return;
+            }
 
             GL.End();
             GL.MatrixMode(OpenGL.GL_PROJECTION);
@@ -707,7 +712,7 @@ namespace Tarmac64_Retail
             GL.AlphaFunc(OpenGL.GL_GREATER, Convert.ToSingle(0.1));
             GL.Enable(OpenGL.GL_ALPHA_TEST);
             GL.Enable(OpenGL.GL_BLEND);
-            GL.BlendEquation(OpenGL.GL_ADD);
+            //GL.BlendEquation(OpenGL.GL_ADD);
             GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             GL.ShadeModel(OpenGL.GL_SMOOTH);
             GL.Enable(OpenGL.GL_COLOR_MATERIAL);
@@ -974,12 +979,15 @@ namespace Tarmac64_Retail
             TargetedObject = -1;
             OKSelectedObject = -1;
             GL = GLWindow.OpenGL;
+            GLTexture = new SharpGL.SceneGraph.Assets.Texture[1];
+            GLTexture[0] = new SharpGL.SceneGraph.Assets.Texture();
             RefreshView();
             FrameWatch.Start();
             LocalCamera.Cursor = TarmacGeometry.CreateStandard(1.5f);
             LocalCamera.flashRed = new float[] { 1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
             LocalCamera.flashYellow = new float[] { 1.0f, 1.0f, 0.0f, 1.0f, 0.0f };
             LocalCamera.flashWhite = new float[] { 1.0f, 1.0f, 1.0f, 0.5f, 0.0f };
+            Loaded = true;
         }
 
         private void GLWindow_Load(object sender, EventArgs e)

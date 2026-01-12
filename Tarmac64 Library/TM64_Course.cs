@@ -259,6 +259,14 @@ namespace Tarmac64_Library
                     Behavior.Parameters[ThisParameter].Name = "Parameter" + ThisParameter.ToString();
                     Behavior.Parameters[ThisParameter].Value = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, HeaderName + "/ParameterData", "Parameter_"+ThisParameter.ToString(), "0"));
                 }
+
+                bool AnimeCheck = Convert.ToBoolean(Tarmac.LoadElement(XMLDoc, HeaderName, "AnimeCheck", "False"));
+                if (AnimeCheck)
+                {
+                    ObjectAnimations = new OKObjectAnimations();
+                    ObjectAnimations.Animation = new TM64_Animation.OK64Bone(XMLDoc, HeaderName + "/AnimeData", "TarmacRoot", 0);
+                    
+                }
             }
             public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, int ObjectID)
             {
@@ -316,6 +324,22 @@ namespace Tarmac64_Library
                     Tarmac.GenerateElement(XMLDoc, ParameterXML, "Parameter_"+ThisParameter.ToString(), Behavior.Parameters[ThisParameter].Value.ToString()); 
                 }
                 ObjectXML.AppendChild(ParameterXML);
+
+
+                //New Addition V8
+                //Check if Animations Exist
+                bool AnimeBool = (ObjectAnimations != null);
+
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "AnimeCheck", AnimeBool);
+                
+                if (AnimeBool)
+                {
+                    XmlElement AnimeXML = XMLDoc.CreateElement("AnimeData");
+
+                    ObjectAnimations.Animation.SaveXML(XMLDoc, AnimeXML, "TarmacRoot", 0);
+                    ObjectXML.AppendChild(AnimeXML);
+                }
+                
             }
         }
 
@@ -370,6 +394,7 @@ namespace Tarmac64_Library
             public byte[] Segment6 { get; set; }
             public byte[] Segment7 { get; set; }
             public byte[] Segment9 { get; set; }
+            public byte[] Segment5 { get; set; }
             public int Segment5ROM { get; set; }
             public int Segment5Length { get; set; }
             public int Segment5CompressedLength { get; set; }

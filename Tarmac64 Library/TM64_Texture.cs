@@ -1450,7 +1450,8 @@ namespace Tarmac64_Library
                 }
             }
             byte[] UncompressedData = memoryStream.ToArray();
-            byte[] CompressedData = Tarmac.CompressMIO0(UncompressedData);
+            Course.Segment5 = UncompressedData;
+            byte[] CompressedData = Tarmac.CompressMIO0(Course.Segment5);
 
 
             memoryStream = new MemoryStream();

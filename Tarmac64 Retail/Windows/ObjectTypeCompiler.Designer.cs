@@ -32,6 +32,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.TextureControl = new Tarmac64_Retail.TextureEditor();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label17 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.solidBox = new System.Windows.Forms.CheckBox();
             this.label25 = new System.Windows.Forms.Label();
@@ -56,6 +57,8 @@
             this.EffectBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.StatusBox = new System.Windows.Forms.ComboBox();
+            this.AnimeBox = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.ParameterView = new Fluent.FluentListView();
             this.label10 = new System.Windows.Forms.Label();
             this.FlagBox = new System.Windows.Forms.TextBox();
@@ -63,11 +66,6 @@
             this.ZSortBox = new System.Windows.Forms.CheckBox();
             this.GravityBox = new System.Windows.Forms.CheckBox();
             this.CameraAlignBox = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.AToggleBox = new System.Windows.Forms.CheckBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.WalkBox = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
             this.RenderBox = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
@@ -94,7 +92,6 @@
             this.panel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -121,12 +118,14 @@
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.panel2.AutoScroll = true;
+            this.panel2.Controls.Add(this.label17);
             this.panel2.Controls.Add(this.groupBox3);
+            this.panel2.Controls.Add(this.AnimeBox);
+            this.panel2.Controls.Add(this.button1);
             this.panel2.Controls.Add(this.ParameterView);
             this.panel2.Controls.Add(this.label10);
             this.panel2.Controls.Add(this.FlagBox);
             this.panel2.Controls.Add(this.groupBox2);
-            this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Controls.Add(this.label16);
             this.panel2.Controls.Add(this.RenderBox);
             this.panel2.Controls.Add(this.label14);
@@ -151,6 +150,16 @@
             this.panel2.Size = new System.Drawing.Size(246, 700);
             this.panel2.TabIndex = 240;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(176, 67);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(36, 13);
+            this.label17.TabIndex = 243;
+            this.label17.Text = "Anime";
+            this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // groupBox3
             // 
@@ -177,7 +186,7 @@
             this.groupBox3.Controls.Add(this.EffectBox);
             this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.StatusBox);
-            this.groupBox3.Location = new System.Drawing.Point(5, 65);
+            this.groupBox3.Location = new System.Drawing.Point(5, 95);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(5);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(220, 247);
@@ -398,6 +407,25 @@
             this.StatusBox.TabIndex = 304;
             this.StatusBox.SelectedIndexChanged += new System.EventHandler(this.HitboxComboIndexChange);
             // 
+            // AnimeBox
+            // 
+            this.AnimeBox.Location = new System.Drawing.Point(5, 65);
+            this.AnimeBox.Margin = new System.Windows.Forms.Padding(5);
+            this.AnimeBox.Name = "AnimeBox";
+            this.AnimeBox.Size = new System.Drawing.Size(131, 20);
+            this.AnimeBox.TabIndex = 1;
+            this.AnimeBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(144, 62);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(25, 23);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "...";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // ParameterView
             // 
             this.ParameterView.BackColor = System.Drawing.SystemColors.ControlLight;
@@ -410,7 +438,8 @@
             this.ParameterView.EnableRenaming = false;
             this.ParameterView.EnableTileView = false;
             this.ParameterView.ItemFont = null;
-            this.ParameterView.Location = new System.Drawing.Point(5, 640);
+            this.ParameterView.Location = new System.Drawing.Point(5, 585);
+            this.ParameterView.Margin = new System.Windows.Forms.Padding(5);
             this.ParameterView.Name = "ParameterView";
             this.ParameterView.ShowColumns = true;
             this.ParameterView.ShowDescription = true;
@@ -424,7 +453,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(175, 446);
+            this.label10.Location = new System.Drawing.Point(175, 385);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(27, 13);
             this.label10.TabIndex = 293;
@@ -433,7 +462,7 @@
             // 
             // FlagBox
             // 
-            this.FlagBox.Location = new System.Drawing.Point(117, 443);
+            this.FlagBox.Location = new System.Drawing.Point(117, 382);
             this.FlagBox.Margin = new System.Windows.Forms.Padding(5);
             this.FlagBox.Name = "FlagBox";
             this.FlagBox.Size = new System.Drawing.Size(50, 20);
@@ -446,7 +475,7 @@
             this.groupBox2.Controls.Add(this.ZSortBox);
             this.groupBox2.Controls.Add(this.GravityBox);
             this.groupBox2.Controls.Add(this.CameraAlignBox);
-            this.groupBox2.Location = new System.Drawing.Point(5, 530);
+            this.groupBox2.Location = new System.Drawing.Point(5, 469);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(220, 77);
             this.groupBox2.TabIndex = 20;
@@ -488,65 +517,9 @@
             this.CameraAlignBox.Text = "Face Camera";
             this.CameraAlignBox.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.AToggleBox);
-            this.groupBox1.Controls.Add(this.label17);
-            this.groupBox1.Controls.Add(this.WalkBox);
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Location = new System.Drawing.Point(5, 320);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(220, 85);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Animations";
-            // 
-            // AToggleBox
-            // 
-            this.AToggleBox.AutoSize = true;
-            this.AToggleBox.Enabled = false;
-            this.AToggleBox.Location = new System.Drawing.Point(10, 24);
-            this.AToggleBox.Name = "AToggleBox";
-            this.AToggleBox.Size = new System.Drawing.Size(136, 17);
-            this.AToggleBox.TabIndex = 0;
-            this.AToggleBox.Text = "Animated Object (Slow)";
-            this.AToggleBox.UseVisualStyleBackColor = true;
-            this.AToggleBox.CheckedChanged += new System.EventHandler(this.AToggleBox_CheckedChanged_1);
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(171, 52);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(27, 13);
-            this.label17.TabIndex = 243;
-            this.label17.Text = "FBX";
-            this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // WalkBox
-            // 
-            this.WalkBox.Enabled = false;
-            this.WalkBox.Location = new System.Drawing.Point(8, 49);
-            this.WalkBox.Margin = new System.Windows.Forms.Padding(5);
-            this.WalkBox.Name = "WalkBox";
-            this.WalkBox.Size = new System.Drawing.Size(123, 20);
-            this.WalkBox.TabIndex = 1;
-            this.WalkBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // button1
-            // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(139, 47);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(25, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "...";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // label16
             // 
-            this.label16.Location = new System.Drawing.Point(175, 409);
+            this.label16.Location = new System.Drawing.Point(175, 348);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(46, 27);
             this.label16.TabIndex = 288;
@@ -555,7 +528,7 @@
             // 
             // RenderBox
             // 
-            this.RenderBox.Location = new System.Drawing.Point(117, 413);
+            this.RenderBox.Location = new System.Drawing.Point(117, 352);
             this.RenderBox.Margin = new System.Windows.Forms.Padding(5);
             this.RenderBox.Name = "RenderBox";
             this.RenderBox.Size = new System.Drawing.Size(50, 20);
@@ -565,7 +538,7 @@
             // 
             // label14
             // 
-            this.label14.Location = new System.Drawing.Point(174, 497);
+            this.label14.Location = new System.Drawing.Point(174, 436);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(39, 27);
             this.label14.TabIndex = 284;
@@ -575,14 +548,14 @@
             // SoundTypeBox
             // 
             this.SoundTypeBox.FormattingEnabled = true;
-            this.SoundTypeBox.Location = new System.Drawing.Point(106, 501);
+            this.SoundTypeBox.Location = new System.Drawing.Point(106, 440);
             this.SoundTypeBox.Name = "SoundTypeBox";
             this.SoundTypeBox.Size = new System.Drawing.Size(59, 21);
             this.SoundTypeBox.TabIndex = 19;
             // 
             // label13
             // 
-            this.label13.Location = new System.Drawing.Point(61, 498);
+            this.label13.Location = new System.Drawing.Point(61, 437);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(39, 27);
             this.label13.TabIndex = 282;
@@ -591,7 +564,7 @@
             // 
             // SoundRangeBox
             // 
-            this.SoundRangeBox.Location = new System.Drawing.Point(5, 502);
+            this.SoundRangeBox.Location = new System.Drawing.Point(5, 441);
             this.SoundRangeBox.Margin = new System.Windows.Forms.Padding(5);
             this.SoundRangeBox.Name = "SoundRangeBox";
             this.SoundRangeBox.Size = new System.Drawing.Size(50, 20);
@@ -602,7 +575,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(174, 474);
+            this.label12.Location = new System.Drawing.Point(174, 413);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(38, 13);
             this.label12.TabIndex = 280;
@@ -612,7 +585,7 @@
             // SoundNameBox
             // 
             this.SoundNameBox.FormattingEnabled = true;
-            this.SoundNameBox.Location = new System.Drawing.Point(5, 471);
+            this.SoundNameBox.Location = new System.Drawing.Point(5, 410);
             this.SoundNameBox.Name = "SoundNameBox";
             this.SoundNameBox.Size = new System.Drawing.Size(162, 21);
             this.SoundNameBox.TabIndex = 17;
@@ -620,7 +593,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(62, 439);
+            this.label9.Location = new System.Drawing.Point(62, 378);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(37, 26);
             this.label9.TabIndex = 274;
@@ -629,7 +602,7 @@
             // 
             // LevelBump
             // 
-            this.LevelBump.Location = new System.Drawing.Point(5, 443);
+            this.LevelBump.Location = new System.Drawing.Point(5, 382);
             this.LevelBump.Margin = new System.Windows.Forms.Padding(5);
             this.LevelBump.Name = "LevelBump";
             this.LevelBump.Size = new System.Drawing.Size(50, 20);
@@ -640,7 +613,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(63, 416);
+            this.label8.Location = new System.Drawing.Point(63, 355);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(34, 13);
             this.label8.TabIndex = 272;
@@ -648,7 +621,7 @@
             // 
             // ScaleBox
             // 
-            this.ScaleBox.Location = new System.Drawing.Point(5, 413);
+            this.ScaleBox.Location = new System.Drawing.Point(5, 352);
             this.ScaleBox.Margin = new System.Windows.Forms.Padding(5);
             this.ScaleBox.Name = "ScaleBox";
             this.ScaleBox.Size = new System.Drawing.Size(50, 20);
@@ -659,7 +632,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(174, 616);
+            this.label6.Location = new System.Drawing.Point(174, 557);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(49, 13);
             this.label6.TabIndex = 267;
@@ -669,7 +642,8 @@
             // BehaviorBox
             // 
             this.BehaviorBox.FormattingEnabled = true;
-            this.BehaviorBox.Location = new System.Drawing.Point(5, 613);
+            this.BehaviorBox.Location = new System.Drawing.Point(5, 554);
+            this.BehaviorBox.Margin = new System.Windows.Forms.Padding(5);
             this.BehaviorBox.Name = "BehaviorBox";
             this.BehaviorBox.Size = new System.Drawing.Size(162, 21);
             this.BehaviorBox.TabIndex = 6;
@@ -777,8 +751,6 @@
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -791,10 +763,8 @@
         private System.Windows.Forms.CheckBox ZSortBox;
         private System.Windows.Forms.CheckBox GravityBox;
         private System.Windows.Forms.CheckBox CameraAlignBox;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox AToggleBox;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox WalkBox;
+        private System.Windows.Forms.TextBox AnimeBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox RenderBox;

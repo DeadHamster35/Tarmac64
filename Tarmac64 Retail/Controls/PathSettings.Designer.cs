@@ -134,12 +134,12 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(201, 29);
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.label9.Location = new System.Drawing.Point(201, 28);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(56, 13);
+            this.label9.Size = new System.Drawing.Size(48, 13);
             this.label9.TabIndex = 290;
-            this.label9.Text = "Lap Count";
+            this.label9.Text = "GP Laps";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // GoalBannerBox

@@ -1,4 +1,5 @@
 ﻿using Assimp;
+using Cereal64.Common;
 using F3DSharp;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
+using System.Xml;
 
 namespace Tarmac64_Library
 {
@@ -21,13 +23,65 @@ namespace Tarmac64_Library
             public string Name { get; set; }
             public int FrameCount { get; set; }
             public short[] Origin { get; set; }
-            public OK64Bone[] Children { get; set; }
-            public int NodeCount { get; set; }
             public OK64Animation Animation { get; set; }
+            public OK64Bone[] Children { get; set; }
+
+            //compilation data below
+            //not saved to XML
+            public int NodeCount { get; set; }
             public UInt32 TranslationOffset { get; set; }
             public UInt32 RotationOffset { get; set; }
             public UInt32 ScalingOffset { get; set; }
             public UInt32 MeshListOffset { get; set; }
+
+            public OK64Bone()
+            {
+
+            }
+            public OK64Bone(XmlDocument XMLDoc, string Parent, string ParentBone, int ChildIndex)
+            {
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+                string Target = Parent + "/Bone_" + ParentBone + ChildIndex.ToString();
+
+                Name = Tarmac.LoadElement(XMLDoc, Target, "Name", "DefaultBone" + ChildIndex.ToString());
+
+                FrameCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Target, "FrameCount", "0"));
+                Origin = new short[3];
+                Origin[0] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, Target, "OriginX", "0"));
+                Origin[1] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, Target, "OriginY", "0"));
+                Origin[2] = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, Target, "OriginZ", "0"));
+
+                Animation = new OK64Animation(XMLDoc, Target);
+                int Count = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Target, "ChildCount", "0"));
+                Children = new OK64Bone[Count];
+                for (int This = 0; This < Count; This++)
+                {
+                    Children[This] = new OK64Bone(XMLDoc, Target, Name, This);
+                }
+            }
+
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent, string ParentBone, int ChildIndex)
+            {
+                TM64 Tarmac = new TM64();
+                XmlElement BoneXML = XMLDoc.CreateElement("Bone_" + ParentBone + ChildIndex.ToString());
+                Parent.AppendChild(BoneXML);
+
+                Tarmac.GenerateElement(XMLDoc, BoneXML, "Name", Name);
+                Tarmac.GenerateElement(XMLDoc, BoneXML, "FrameCount", FrameCount);
+
+                Tarmac.GenerateElement(XMLDoc, BoneXML, "OriginX", Origin[0]);
+                Tarmac.GenerateElement(XMLDoc, BoneXML, "OriginY", Origin[1]);
+                Tarmac.GenerateElement(XMLDoc, BoneXML, "OriginZ", Origin[2]);
+
+                Animation.SaveXML(XMLDoc, BoneXML);
+
+                Tarmac.GenerateElement(XMLDoc, BoneXML, "ChildCount", Children.Length);
+                for (int This = 0; This < Children.Length; This++)
+                {
+                    Children[This].SaveXML(XMLDoc, BoneXML, Name, This);
+                }
+            }
 
         }
 
@@ -43,6 +97,89 @@ namespace Tarmac64_Library
             public short[][] ScalingData { get; set; }
 
             public float[][] RotationFloat { get; set; }
+
+            public OK64Animation()
+            {
+
+
+            }
+
+            public OK64Animation(XmlDocument XMLDoc, string Parent)
+            {
+                TM64 Tarmac = new TM64();
+                XmlNode Owner = XMLDoc.SelectSingleNode(Parent);
+                string Target = Parent + "/Anime";
+
+                int Length;
+
+                Length = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Target, "TransTime", "0"));
+                TranslationTime = Tarmac.LoadElementsS(XMLDoc, Target, "TransTimeValues", "0");
+
+                Length = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Target, "RotTime", "0"));
+                RotationTime = Tarmac.LoadElementsS(XMLDoc, Target, "RotTimeValues", "0");
+
+                Length = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Target, "ScaleTime", "0"));
+                ScaleTime = Tarmac.LoadElementsS(XMLDoc, Target, "ScaleTimeValues", "0");
+
+                Length = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Target, "TransData", "0"));
+                TranslationData = new short[Length][];
+                for (int This = 0; This < Length; This++)
+                {
+                    TranslationData[This] = Tarmac.LoadElementsS(XMLDoc, Target, "TransDataValues_" + This.ToString(), "0");
+                }
+
+                Length = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Target, "RotData", "0"));
+                RotationData = new short[Length][];
+                for (int This = 0; This < Length; This++)
+                {
+                    RotationData[This] = Tarmac.LoadElementsS(XMLDoc, Target, "RotDataValues_" + This.ToString(), "0");
+                }
+
+                Length = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, Target, "ScaleData", "0"));
+                ScalingData = new short[Length][];
+                for (int This = 0; This < Length; This++)
+                {
+                    ScalingData[This] = Tarmac.LoadElementsS(XMLDoc, Target, "ScaleDataValues_" + This.ToString(), "0");
+                }
+
+
+            }
+
+            public void SaveXML(XmlDocument XMLDoc, XmlElement Parent)
+            {
+                TM64 Tarmac = new TM64();
+                XmlElement AnimeXML = XMLDoc.CreateElement("Anime");
+                Parent.AppendChild(AnimeXML);
+
+                Tarmac.GenerateElement(XMLDoc, AnimeXML, "TransTime", TranslationTime.Length);
+                Tarmac.GenerateElement(XMLDoc, AnimeXML, "TransTimeValues", TranslationTime);
+
+                Tarmac.GenerateElement(XMLDoc, AnimeXML, "RotTime", RotationTime.Length);
+                Tarmac.GenerateElement(XMLDoc, AnimeXML, "RotTimeValues", RotationTime);
+
+                Tarmac.GenerateElement(XMLDoc, AnimeXML, "ScaleTime", ScaleTime.Length);
+                Tarmac.GenerateElement(XMLDoc, AnimeXML, "ScaleTimeValues", ScaleTime);
+
+                Tarmac.GenerateElement(XMLDoc, AnimeXML, "TransData", TranslationData.Length);
+                for (int This = 0; This < TranslationData.Length; This++)
+                {
+                    Tarmac.GenerateElement(XMLDoc, AnimeXML, "TransDataValues_"+ This.ToString(), TranslationData[This]);
+                }
+
+                Tarmac.GenerateElement(XMLDoc, AnimeXML, "RotData", RotationData.Length);
+                for (int This = 0; This < RotationData.Length; This++)
+                {
+                    Tarmac.GenerateElement(XMLDoc, AnimeXML, "RotDataValues_"+ This.ToString(), RotationData[This]);
+                }
+
+                Tarmac.GenerateElement(XMLDoc, AnimeXML, "ScaleData", ScalingData.Length);
+                for (int This = 0; This < ScalingData.Length; This++)
+                {
+                    Tarmac.GenerateElement(XMLDoc, AnimeXML, "ScaleDataValues_" + This.ToString(), ScalingData[This]);
+                }
+
+
+            }
         }
 
 
@@ -354,7 +491,7 @@ namespace Tarmac64_Library
         public OK64Bone LoadSkeleton(Scene FBX, float ModelScale)
         {
 
-            Node Base = FBX.RootNode.FindNode("BodyBone");
+            Node Base = FBX.RootNode.FindNode("Base");
             OK64Bone Skeleton = LoadBone(Base, FBX, ModelScale);
 
             Animation Anime = FBX.Animations[0];
@@ -365,6 +502,41 @@ namespace Tarmac64_Library
             }
             //GetTransforms(Skeleton, Skeleton.FrameCount, ModelScale);
             return Skeleton;
+        }
+
+        public void RecursiveMesh(Scene FBX, Node Base, TM64_Texture.OK64Texture[] TextureArray, List<TM64_Geometry.OK64F3DObject> MeshList)
+        {
+            TM64_Geometry TarmacGeo = new TM64_Geometry();
+
+            TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
+            TarmacSettings.LoadSettings();
+
+            for (int ThisNode = 0; ThisNode < Base.ChildCount; ThisNode++)
+            {
+                Node Sub = Base.Children[ThisNode];
+                if (Sub.HasMeshes)
+                {
+                    for (int ThisMesh = 0; ThisMesh < Sub.MeshCount; ThisMesh++)
+                    {
+                        TM64_Geometry.OK64F3DObject NewObj = TarmacGeo.CreateF3DObject(FBX, Sub, TextureArray, false, TarmacSettings.AlphaCH2, true);
+                        NewObj.BoneName = Sub.Parent.Name;
+                        MeshList.Add(NewObj);
+                    }
+                }
+                else
+                {
+                    RecursiveMesh(FBX, Sub, TextureArray, MeshList);
+                }
+            }
+            
+        }
+        public TM64_Geometry.OK64F3DObject[] GetMeshes(Scene FBX, TM64_Texture.OK64Texture[] TextureArray)
+        {
+            List<TM64_Geometry.OK64F3DObject> MeshList = new List<TM64_Geometry.OK64F3DObject>();
+            
+            Node Base = FBX.RootNode.FindNode("Base");
+            RecursiveMesh(FBX, Base, TextureArray, MeshList);
+            return MeshList.ToArray();
         }
 
     }

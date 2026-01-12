@@ -411,7 +411,7 @@
             // 
             this.label31.AutoSize = true;
             this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label31.Location = new System.Drawing.Point(245, 72);
+            this.label31.Location = new System.Drawing.Point(245, 71);
             this.label31.Margin = new System.Windows.Forms.Padding(5);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(24, 13);
@@ -423,7 +423,7 @@
             // 
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label30.Location = new System.Drawing.Point(245, 101);
+            this.label30.Location = new System.Drawing.Point(245, 100);
             this.label30.Margin = new System.Windows.Forms.Padding(5);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(24, 13);
@@ -542,7 +542,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(245, 130);
+            this.label2.Location = new System.Drawing.Point(245, 129);
             this.label2.Margin = new System.Windows.Forms.Padding(5);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(26, 13);
@@ -756,7 +756,7 @@
             // 
             this.label46.AutoSize = true;
             this.label46.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label46.Location = new System.Drawing.Point(246, 189);
+            this.label46.Location = new System.Drawing.Point(244, 188);
             this.label46.Name = "label46";
             this.label46.Size = new System.Drawing.Size(31, 13);
             this.label46.TabIndex = 162;
@@ -1341,7 +1341,7 @@
             // 
             this.label24.AutoSize = true;
             this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label24.Location = new System.Drawing.Point(239, 81);
+            this.label24.Location = new System.Drawing.Point(238, 80);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(31, 13);
             this.label24.TabIndex = 294;
@@ -1479,17 +1479,6 @@
             this.label1.Size = new System.Drawing.Size(57, 13);
             this.label1.TabIndex = 308;
             this.label1.Text = "GameType";
-            /*
-            //LapBox
-            this.LapBox.Location = new System.Drawing.Point(8, 58);
-            this.LapBox.Margin = new System.Windows.Forms.Padding(5);
-            this.LapBox.Name = "LapBox";
-            this.LapBox.Size = new System.Drawing.Size(55, 19);
-            this.LapBox.TabIndex = 301;
-            this.LapBox.Text = "3";
-            this.LapBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.LapBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.UpdateUIHandler);
-            */
             // 
             // GameTypeBox
             // 

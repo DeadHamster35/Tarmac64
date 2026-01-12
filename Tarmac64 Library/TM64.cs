@@ -290,6 +290,25 @@ namespace Tarmac64_Library
         }
 
 
+        public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, short[] Values)
+        {
+            XmlElement NewElement = XMLDoc.CreateElement(Name);
+            for (int ThisVal = 0; ThisVal < Values.Length;)
+            {
+                NewElement.InnerText += Values[ThisVal].ToString();
+
+                ThisVal++;
+
+                if (ThisVal < Values.Length)
+                {
+                    NewElement.InnerText += ",";
+                }
+
+            }
+            Parent.AppendChild(NewElement);
+        }
+
+
         public void GenerateElement(XmlDocument XMLDoc, XmlElement Parent, string Name, float[] Values)
         {
             XmlElement NewElement = XMLDoc.CreateElement(Name);
@@ -389,6 +408,23 @@ namespace Tarmac64_Library
                 foreach (var Tag in Items)
                 {
                     Elements.Add(Convert.ToInt32(Tag));
+                }
+            }
+            return Elements.ToArray();
+        }
+
+
+        public short[] LoadElementsS(XmlDocument XMLDoc, string Parent, string Name, string Default = "")
+        {
+            List<short> Elements = new List<short>();
+            XmlNode CheckNode = XMLDoc.SelectSingleNode("/" + Parent + "/" + Name);
+            if (CheckNode != null)
+            {
+                string Item = XmlConvert.DecodeName(CheckNode.InnerText);
+                string[] Items = Item.Split(',');
+                foreach (var Tag in Items)
+                {
+                    Elements.Add(Convert.ToInt16(Tag));
                 }
             }
             return Elements.ToArray();

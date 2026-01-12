@@ -223,10 +223,10 @@ namespace Tarmac64_Library
                                 if (DebugBox.Checked)
                                 {
                                     File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment4.bin", LocalCourse.Segment4);
-                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Seg4Compressed.MIO0", Tarmac.CompressMIO0(LocalCourse.Segment4));
+                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment5.bin", LocalCourse.Segment5);
                                     File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment6.bin", LocalCourse.Segment6);
-                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment9.bin", LocalCourse.Segment9);
                                     File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment7.bin", LocalCourse.Segment7);
+                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment9.bin", LocalCourse.Segment9);                                    
                                 }
 
 
@@ -281,9 +281,8 @@ namespace Tarmac64_Library
         private void CourseBox1_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Middle)
-            {
-                int CourseIndex = ((SetBox.SelectedIndex * 20) + (CupBox.SelectedIndex * 4));
-                CourseArray[CourseIndex] = null;
+            {   
+                CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][0] = null;
                 RefreshNames();
             }
         }
@@ -292,8 +291,7 @@ namespace Tarmac64_Library
         {
             if (e.Button == MouseButtons.Middle)
             {
-                int CourseIndex = ((SetBox.SelectedIndex * 20) + (CupBox.SelectedIndex * 4));
-                CourseArray[CourseIndex + 1] = null;
+                CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][1] = null;
                 RefreshNames();
             }
         }
@@ -302,8 +300,7 @@ namespace Tarmac64_Library
         {
             if (e.Button == MouseButtons.Middle)
             {
-                int CourseIndex = ((SetBox.SelectedIndex * 20) + (CupBox.SelectedIndex * 4));
-                CourseArray[CourseIndex + 2] = null;
+                CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][2] = null;
                 RefreshNames();
             }
         }
@@ -312,8 +309,7 @@ namespace Tarmac64_Library
         {
             if (e.Button == MouseButtons.Middle)
             {
-                int CourseIndex = ((SetBox.SelectedIndex * 20) + (CupBox.SelectedIndex * 4));
-                CourseArray[CourseIndex + 3] = null;
+                CourseArray[SetBox.SelectedIndex][CupBox.SelectedIndex][3] = null;
                 RefreshNames();
             }
         }
