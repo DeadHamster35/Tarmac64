@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Media.Media3D;
 using System.Xml;
 
@@ -243,7 +244,7 @@ namespace Tarmac64_Library
 
             foreach (var ChildBone in Skeleton.Children)
             {
-                binaryWriter.Write(WriteAnimationData(ChildBone, Convert.ToUInt32(binaryWriter.BaseStream.Position)));
+                binaryWriter.Write(WriteAnimationData(ChildBone, Convert.ToUInt32(Magic + binaryWriter.BaseStream.Position)));
             }
 
 
@@ -253,16 +254,16 @@ namespace Tarmac64_Library
             {
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][0])));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][2])));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][1])));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationData[ThisFrame][1] * -1)));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.RotationTime[ThisFrame])));
             }
 
             Skeleton.TranslationOffset = Convert.ToUInt32(binaryWriter.BaseStream.Position + Magic);
             for (int ThisFrame = 0; ThisFrame < Skeleton.Animation.TranslationData.Length; ThisFrame++)
             {
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][0])));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][2])));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][1] * -1)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][0] * 10)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][2] * 10)));
+                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationData[ThisFrame][1] * -10)));
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.TranslationTime[ThisFrame])));
             }
 
@@ -275,20 +276,6 @@ namespace Tarmac64_Library
                 binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(Skeleton.Animation.ScaleTime[ThisFrame])));
             }
 
-
-            return memoryStream.ToArray();
-        }
-
-        public byte[] BuildAnimationData(OK64Bone Skeleton, UInt32 Magic)
-        {
-
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            byte[] flip2 = new byte[2];
-            List<byte> AnimationData = new List<byte>();
-
-
-            binaryWriter.Write(WriteAnimationData(Skeleton, Magic));
 
             return memoryStream.ToArray();
         }
@@ -356,7 +343,7 @@ namespace Tarmac64_Library
         {
             OK64Bone NewBone = new OK64Bone();
             NewBone.Name = Base.Name;
-            NewBone.Children = new OK64Bone[Base.ChildCount];
+            List<OK64Bone> Children = new List<OK64Bone>();
 
             //Matrix4x4 OPrime = GetTotalTransform(Base, FBX);
 
@@ -369,54 +356,110 @@ namespace Tarmac64_Library
             //Base.Transform.
             for (int ThisChild = 0; ThisChild < Base.ChildCount; ThisChild++)
             {
-                NewBone.Children[ThisChild] = LoadBone(Base.Children[ThisChild], FBX, ModelScale);
+                if (!Base.Children[ThisChild].HasMeshes)
+                {
+                    Children.Add(LoadBone(Base.Children[ThisChild], FBX, ModelScale));
+                }
+                
             }
+            NewBone.Children = Children.ToArray();
+            
             return NewBone;
         }
 
-
-        public float[] ConvertEuler(Assimp.Quaternion Quat)
+        public static float[] EulerGPT(Assimp.Quaternion q)
         {
-            float[] Angle = new float[3];
+            float[] e = new float[3];
 
-            // roll (x-axis rotation)
-            float sinr_cosp = 2 * (Quat.W * Quat.X + Quat.Y * Quat.Z);
-            float cosr_cosp = 1 - 2 * (Quat.X * Quat.X + Quat.Y * Quat.Y);
-            Angle[0] = Convert.ToSingle((Math.Atan2(sinr_cosp, cosr_cosp)));
+            // roll (X)
+            float sinr_cosp = 2f * (q.W * q.X + q.Y * q.Z);
+            float cosr_cosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
+            float roll = (float)Math.Atan2(sinr_cosp, cosr_cosp);
 
-            // pitch (y-axis rotation)
-            float sinp = 2 * (Quat.W * Quat.Y - Quat.Z * Quat.X);
-            if (Math.Abs(sinp) >= 1)
+            // pitch (Y)
+            float sinp = 2f * (q.W * q.Y - q.Z * q.X);
+
+            float pitch;
+            bool gimbalLock = false;
+
+            if (Math.Abs(sinp) >= 1f)
             {
-                if (sinp > 0)
-                {
-                    Angle[1] = Convert.ToSingle((Math.PI / 2)); // use 90 degrees if out of range
-                }
-                else if (sinp < 0)
-                {
-                    Angle[1] = Convert.ToSingle((Math.PI / -2)); // use 90 degrees if out of range
-                }
+                // ±90° pitch
+                pitch = (float)(Math.PI / 2f * Math.Sign(sinp));
+                gimbalLock = true;
             }
             else
             {
-                Angle[1] = Convert.ToSingle((Math.Asin(sinp)));
+                pitch = (float)Math.Asin(sinp);
             }
 
+            // yaw (Z)
+            float siny_cosp = 2f * (q.W * q.Z + q.X * q.Y);
+            float cosy_cosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
+            float yaw = (float)Math.Atan2(siny_cosp, cosy_cosp);
 
-            // yaw (z-axis rotation)
-            float siny_cosp = 2 * (Quat.W * Quat.Z + Quat.X * Quat.Y);
-            float cosy_cosp = 1 - 2 * (Quat.Y * Quat.Y + Quat.Z * Quat.Z);
-            Angle[2] = Convert.ToSingle((Math.Atan2(siny_cosp, cosy_cosp)));
+            // ----------------------------
+            // CANONICALIZATION FIX
+            // ----------------------------
+            if (gimbalLock)
+            {
+                // When pitch = ±90°, roll and yaw collapse into one DOF.
+                // Canonical choice: push all rotation into roll, zero yaw.
+                yaw = 0f;
 
+                // Recompute roll so the quaternion still matches.
+                // roll = atan2(2*(w*x + y*z), 1 - 2*(x*x + z*z))
+                float sinr = 2f * (q.W * q.X + q.Y * q.Z);
+                float cosr = 1f - 2f * (q.X * q.X + q.Z * q.Z);
+                roll = (float)Math.Atan2(sinr, cosr);
+            }
 
-
-            return Angle;
+            e[0] = roll;
+            e[1] = pitch;
+            e[2] = yaw;
+            return e;
         }
 
-        public OK64Animation LoadAnimation(NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
+        public float[] EulerGPT2(Assimp.Quaternion q)
+        {
+            float[] angle = new float[3];
+
+            // pitch (Y)
+            float sinp = 2f * (q.W * q.Y - q.Z * q.X);
+
+            if (Math.Abs(sinp) >= 1f)
+            {
+                // Gimbal lock: pitch = ±90°
+                angle[1] = (float)(Math.PI / 2f * Math.Sign(sinp));
+
+                // Canonical choice: yaw = 0
+                angle[2] = 0f;
+
+                // Compute roll directly: roll = 2 * atan2(X, W)
+                angle[0] = 2f * (float)Math.Atan2(q.X, q.W);
+            }
+            else
+            {
+                // Normal case: use standard formulas
+
+                // roll (X)
+                float sinr_cosp = 2f * (q.W * q.X + q.Y * q.Z);
+                float cosr_cosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
+                angle[0] = (float)Math.Atan2(sinr_cosp, cosr_cosp);
+
+                angle[1] = (float)Math.Asin(sinp);
+
+                // yaw (Z)
+                float siny_cosp = 2f * (q.W * q.Z + q.X * q.Y);
+                float cosy_cosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
+                angle[2] = (float)Math.Atan2(siny_cosp, cosy_cosp);
+            }
+
+            return angle;
+        }
+        public OK64Animation LoadAnimation(NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount, float Scale)
         {
             OK64Animation NewAnime = new OK64Animation();
-
 
             NewAnime.TranslationTime = new short[AnimeChannel.PositionKeyCount];
             NewAnime.AnimationName = AnimeChannel.NodeName + "_anime";
@@ -427,7 +470,7 @@ namespace Tarmac64_Library
                 NewAnime.TranslationTime[ThisFrame] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Time);
                 for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                 {
-                    NewAnime.TranslationData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Value[ThisVector] * 10.0f);
+                    NewAnime.TranslationData[ThisFrame][ThisVector] = Convert.ToInt16(Scale * (AnimeChannel.PositionKeys[ThisFrame].Value[ThisVector] * 10.0f));
                 }
             }
 
@@ -442,7 +485,7 @@ namespace Tarmac64_Library
                 NewAnime.RotationFloat[ThisFrame] = new float[3];
                 NewAnime.RotationTime[ThisFrame] = Convert.ToInt16(AnimeChannel.RotationKeys[ThisFrame].Time);
 
-                float[] RotationTemp = ConvertEuler(AnimeChannel.RotationKeys[ThisFrame].Value);
+                float[] RotationTemp = EulerGPT2(AnimeChannel.RotationKeys[ThisFrame].Value);
 
                 for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                 {
@@ -450,6 +493,14 @@ namespace Tarmac64_Library
                     if (Math.Abs(NewAnime.RotationFloat[ThisFrame][ThisVector]) < 0.01f)
                     {
                         NewAnime.RotationFloat[ThisFrame][ThisVector] = 0f;
+                    }
+                    if (NewAnime.RotationFloat[ThisFrame][ThisVector] > 180.0f)
+                    {
+                        NewAnime.RotationFloat[ThisFrame][ThisVector] -= 180.0f;
+                    }
+                    if (NewAnime.RotationFloat[ThisFrame][ThisVector] < -180.0f)
+                    {
+                        NewAnime.RotationFloat[ThisFrame][ThisVector] += 180.0f;
                     }
                     NewAnime.RotationData[ThisFrame][ThisVector] = Convert.ToInt16(NewAnime.RotationFloat[ThisFrame][ThisVector] * 0xB6);
                 }
@@ -468,23 +519,23 @@ namespace Tarmac64_Library
                 NewAnime.ScaleTime[ThisFrame] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Time);
                 for (int ThisVector = 0; ThisVector < 3; ThisVector++)
                 {
-                    NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 10);
+                    NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(Scale * (AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 10));
                 }
             }
             return NewAnime;
         }
 
-        public OK64Bone ParseAnimation(Scene FBX, NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
+        public OK64Bone ParseAnimation(Scene FBX, NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount, float Scale)
         {
 
             if (Bone.Name == AnimeChannel.NodeName)
             {
-                Bone.Animation = LoadAnimation(AnimeChannel, Bone, FrameCount);
+                Bone.Animation = LoadAnimation(AnimeChannel, Bone, FrameCount, Scale);
                 Bone.FrameCount = FrameCount;
             }
             foreach (var Child in Bone.Children)
             {
-                ParseAnimation(FBX, AnimeChannel, Child, FrameCount);
+                ParseAnimation(FBX, AnimeChannel, Child, FrameCount, Scale);
             }
             return Bone;
         }
@@ -492,19 +543,23 @@ namespace Tarmac64_Library
         {
 
             Node Base = FBX.RootNode.FindNode("Base");
+            if (Base == null)
+            {
+                return null;
+            }
             OK64Bone Skeleton = LoadBone(Base, FBX, ModelScale);
 
             Animation Anime = FBX.Animations[0];
             Skeleton.FrameCount = Convert.ToInt32(Anime.DurationInTicks + 1);
             for (int ThisNode = 0; ThisNode < Anime.NodeAnimationChannelCount; ThisNode++)
             {
-                ParseAnimation(FBX, Anime.NodeAnimationChannels[ThisNode], Skeleton, Skeleton.FrameCount);
+                ParseAnimation(FBX, Anime.NodeAnimationChannels[ThisNode], Skeleton, Skeleton.FrameCount, ModelScale);
             }
             //GetTransforms(Skeleton, Skeleton.FrameCount, ModelScale);
             return Skeleton;
         }
 
-        public void RecursiveMesh(Scene FBX, Node Base, TM64_Texture.OK64Texture[] TextureArray, List<TM64_Geometry.OK64F3DObject> MeshList)
+        public void RecursiveMesh(Scene FBX, Node Base, TM64_Texture.OK64Texture[] TextureArray, List<TM64_Geometry.OK64F3DObject> MeshList, float AnimeScale)
         {
             TM64_Geometry TarmacGeo = new TM64_Geometry();
 
@@ -518,24 +573,24 @@ namespace Tarmac64_Library
                 {
                     for (int ThisMesh = 0; ThisMesh < Sub.MeshCount; ThisMesh++)
                     {
-                        TM64_Geometry.OK64F3DObject NewObj = TarmacGeo.CreateF3DObject(FBX, Sub, TextureArray, false, TarmacSettings.AlphaCH2, true);
+                        TM64_Geometry.OK64F3DObject NewObj = TarmacGeo.CreateF3DObject(FBX, Sub, TextureArray, false, TarmacSettings.AlphaCH2, true, AnimeScale);
                         NewObj.BoneName = Sub.Parent.Name;
                         MeshList.Add(NewObj);
                     }
                 }
                 else
                 {
-                    RecursiveMesh(FBX, Sub, TextureArray, MeshList);
+                    RecursiveMesh(FBX, Sub, TextureArray, MeshList, AnimeScale);
                 }
             }
             
         }
-        public TM64_Geometry.OK64F3DObject[] GetMeshes(Scene FBX, TM64_Texture.OK64Texture[] TextureArray)
+        public TM64_Geometry.OK64F3DObject[] GetMeshes(Scene FBX, TM64_Texture.OK64Texture[] TextureArray, float AnimeScale)
         {
             List<TM64_Geometry.OK64F3DObject> MeshList = new List<TM64_Geometry.OK64F3DObject>();
             
             Node Base = FBX.RootNode.FindNode("Base");
-            RecursiveMesh(FBX, Base, TextureArray, MeshList);
+            RecursiveMesh(FBX, Base, TextureArray, MeshList, AnimeScale);
             return MeshList.ToArray();
         }
 

@@ -1293,7 +1293,7 @@ namespace Tarmac64_Library
         }
 
 
-        public OK64F3DObject CreateF3DObject (Assimp.Scene fbx, Assimp.Node objectNode, TM64_Texture.OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false, bool DisregardOrigin = false)
+        public OK64F3DObject CreateF3DObject (Assimp.Scene fbx, Assimp.Node objectNode, TM64_Texture.OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false, bool DisregardOrigin = false, float AnimeScale = 1.0f)
         {
             OK64F3DObject newObject = new OK64F3DObject();
             TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
@@ -1361,6 +1361,10 @@ namespace Tarmac64_Library
                 BScale[1] = 1.0f;
                 BScale[2] = 1.0f;
             }
+
+            BScale[0] *= AnimeScale;
+            BScale[1] *= AnimeScale;
+            BScale[2] *= AnimeScale;
 
             List<int> xValues = new List<int>();
             List<int> yValues = new List<int>();
@@ -1810,6 +1814,27 @@ namespace Tarmac64_Library
                 for (int childObject = 0; childObject < surfaceNode.Children.Count; childObject++)
                 {
                     masterObjects.Add(CreateF3DObject(fbx,surfaceNode.Children[childObject], textureArray, false, AlphaCH));
+                    currentObject++;
+                }
+                List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
+            }
+
+            OK64F3DObject[] outputObjects = NaturalSort(masterObjects).ToArray();
+
+            return outputObjects;
+        }
+
+        public OK64F3DObject[] CreateMastersNoHeader(Assimp.Scene fbx, int sectionCount, TM64_Texture.OK64Texture[] textureArray, bool AlphaCH = false)
+        {
+            List<OK64F3DObject> masterObjects = new List<OK64F3DObject>();
+            int currentObject = 0;
+            for (int currentSection = 0; currentSection < sectionCount; currentSection++)
+            {
+                var surfaceNode = fbx.RootNode;
+
+                for (int childObject = 0; childObject < surfaceNode.Children.Count; childObject++)
+                {
+                    masterObjects.Add(CreateF3DObject(fbx, surfaceNode.Children[childObject], textureArray, false, AlphaCH));
                     currentObject++;
                 }
                 List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
@@ -3435,66 +3460,6 @@ namespace Tarmac64_Library
 
         }
 
-        public OK64Animation LoadAnimation(NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
-        {
-            OK64Animation NewAnime = new OK64Animation();
-
-
-            NewAnime.TranslationTime = new short[AnimeChannel.PositionKeyCount];
-            NewAnime.AnimationName = AnimeChannel.NodeName + "_anime";
-            NewAnime.TranslationData = new short[AnimeChannel.PositionKeyCount][];
-            for (int ThisFrame = 0; ThisFrame < AnimeChannel.PositionKeyCount; ThisFrame++)
-            {
-                NewAnime.TranslationData[ThisFrame] = new short[3];
-                NewAnime.TranslationTime[ThisFrame] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Time);
-                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                {
-                    NewAnime.TranslationData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.PositionKeys[ThisFrame].Value[ThisVector] * 10.0f);
-                }
-            }
-
-
-            NewAnime.RotationTime = new short[AnimeChannel.RotationKeyCount];
-            NewAnime.RotationData = new short[AnimeChannel.RotationKeyCount][];
-            NewAnime.RotationFloat = new float[AnimeChannel.RotationKeyCount][];
-            for (int ThisFrame = 0; ThisFrame < AnimeChannel.RotationKeyCount; ThisFrame++)
-            {
-
-                NewAnime.RotationData[ThisFrame] = new short[3];
-                NewAnime.RotationFloat[ThisFrame] = new float[3];
-                NewAnime.RotationTime[ThisFrame] = Convert.ToInt16(AnimeChannel.RotationKeys[ThisFrame].Time);
-
-                float[] RotationTemp = ConvertEuler(AnimeChannel.RotationKeys[ThisFrame].Value);
-
-                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                {
-                    NewAnime.RotationFloat[ThisFrame][ThisVector] = Convert.ToSingle(RotationTemp[ThisVector] / 0.01745329252);
-                    if (Math.Abs(NewAnime.RotationFloat[ThisFrame][ThisVector]) < 0.01f)
-                    {
-                        NewAnime.RotationFloat[ThisFrame][ThisVector] = 0f;
-                    }
-                    NewAnime.RotationData[ThisFrame][ThisVector] = Convert.ToInt16(NewAnime.RotationFloat[ThisFrame][ThisVector] * 0xB6);
-                }
-
-
-            }
-
-
-
-            NewAnime.ScaleTime = new short[AnimeChannel.ScalingKeyCount];
-            NewAnime.ScalingData = new short[AnimeChannel.ScalingKeyCount][];
-
-            for (int ThisFrame = 0; ThisFrame < AnimeChannel.ScalingKeyCount; ThisFrame++)
-            {
-                NewAnime.ScalingData[ThisFrame] = new short[3];
-                NewAnime.ScaleTime[ThisFrame] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Time);
-                for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-                {
-                    NewAnime.ScalingData[ThisFrame][ThisVector] = Convert.ToInt16(AnimeChannel.ScalingKeys[ThisFrame].Value[ThisVector] * 10);
-                }
-            }
-            return NewAnime;
-        }
 
         public Point3D RotatePoint(Point3D Point, float[] ObjectAngles)
         {
@@ -3504,86 +3469,6 @@ namespace Tarmac64_Library
             id.Rotate(new System.Windows.Media.Media3D.Quaternion(new System.Windows.Media.Media3D.Vector3D(0, 0, 1), ObjectAngles[2]));
             return id.Transform(Point);
         }
-
-
-        public OK64Bone TransformBone(OK64Bone Bone, OK64Bone Parent, int FrameCount, float ModelScale)
-        {
-            
-
-
-            for (int ThisFrame = 0; ThisFrame < FrameCount; ThisFrame++)
-            {
-                Point3D Root = new Point3D()
-                {
-                    X = (Bone.Animation.TranslationData[ThisFrame][0]),
-                    Y = (Bone.Animation.TranslationData[ThisFrame][1]),
-                    Z = (Bone.Animation.TranslationData[ThisFrame][2])
-                };
-                float[] Angle = new float[3]{
-                    Convert.ToSingle(Parent.Animation.RotationFloat[ThisFrame][0]),
-                    Convert.ToSingle(Parent.Animation.RotationFloat[ThisFrame][1]),
-                    Convert.ToSingle(Parent.Animation.RotationFloat[ThisFrame][2]),
-                };
-                Point3D Branch = RotatePoint(Root, Angle);
-
-                Bone.Animation.TranslationData[ThisFrame][0] = Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][0] + Branch.X);
-                Bone.Animation.TranslationData[ThisFrame][1] = Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][1] + Branch.Y);
-                Bone.Animation.TranslationData[ThisFrame][2] = Convert.ToInt16(Parent.Animation.TranslationData[ThisFrame][2] + Branch.Z);
-
-                Bone.Animation.RotationData[ThisFrame][0] += Parent.Animation.RotationData[ThisFrame][0];
-                Bone.Animation.RotationData[ThisFrame][1] += Parent.Animation.RotationData[ThisFrame][1];
-                Bone.Animation.RotationData[ThisFrame][2] += Parent.Animation.RotationData[ThisFrame][2];
-
-
-            }
-
-            foreach (var Child in Bone.Children)
-            {
-                TransformBone(Child, Bone, FrameCount, ModelScale);
-            }
-
-            return Bone;
-        }
-        public OK64Bone GetTransforms(OK64Bone Skeleton, int FrameCount, float ModelScale)
-        {
-            foreach (var Child in Skeleton.Children)
-            {
-                TransformBone(Child, Skeleton, FrameCount, ModelScale);
-            }
-
-            return Skeleton;
-        }
-
-        public OK64Bone ParseAnimation(Assimp.Scene FBX, NodeAnimationChannel AnimeChannel, OK64Bone Bone, int FrameCount)
-        {
-
-            if (Bone.Name == AnimeChannel.NodeName)
-            {
-                Bone.Animation = LoadAnimation(AnimeChannel, Bone, FrameCount);
-                Bone.FrameCount = FrameCount;
-            }
-            foreach (var Child in Bone.Children)
-            {
-                ParseAnimation(FBX, AnimeChannel, Child, FrameCount);
-            }
-            return Bone;
-        }
-        public OK64Bone LoadSkeleton (Assimp.Scene FBX, float ModelScale)
-        {
-
-            Assimp.Node Base = FBX.RootNode.FindNode("BodyBone");
-            OK64Bone Skeleton = LoadBone(Base, FBX, ModelScale);
-
-            Animation Anime = FBX.Animations[0];
-            Skeleton.FrameCount = Convert.ToInt32(Anime.DurationInTicks + 1);
-            for (int ThisNode = 0; ThisNode < Anime.NodeAnimationChannelCount; ThisNode++)
-            {
-                ParseAnimation(FBX, Anime.NodeAnimationChannels[ThisNode], Skeleton, Skeleton.FrameCount);
-            }
-            //GetTransforms(Skeleton, Skeleton.FrameCount, ModelScale);
-            return Skeleton;
-        }
-
 
         
         public class MK64SurfaceStruct

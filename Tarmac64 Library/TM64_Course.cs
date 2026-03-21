@@ -719,7 +719,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] CompileObjectModels(OKObjectType[] SaveData, bool FogToggle)
+        public byte[] CompileObjectModels(OKObjectType[] SaveData)
         {
             byte[] flip = new byte[0];
             byte[] OutputData = new byte[0];
@@ -733,7 +733,7 @@ namespace Tarmac64_Library
             for (int currentItem = 0; currentItem < SaveData.Length; currentItem++)
             {
                 OutputData = TarmacTexture.WriteRawTextures(OutputData, SaveData[currentItem].TextureData, DataLength);
-                OutputData = TarmacTexture.CompileTextureObjects(OutputData, SaveData[currentItem].TextureData, DataLength, 0xA, FogToggle);
+                OutputData = TarmacTexture.CompileTextureObjects(OutputData, SaveData[currentItem].TextureData, DataLength, 0xA);
                 OutputData = TarmacGeometry.CompileF3DObject(OutputData, SaveData[currentItem].ModelData, SaveData[currentItem].TextureData, DataLength, 0xA);                
             }
             binaryWriter.Write(OutputData);
@@ -813,7 +813,7 @@ namespace Tarmac64_Library
                     if (SaveData[ThisObject].ObjectAnimations.Animation != null)
                     {
                         
-                        binaryWriter.Write(TarmacAnime.BuildAnimationData(SaveData[ThisObject].ObjectAnimations.Animation, Convert.ToUInt32(Magic + binaryWriter.BaseStream.Position)));
+                        binaryWriter.Write(TarmacAnime.WriteAnimationData(SaveData[ThisObject].ObjectAnimations.Animation, Convert.ToUInt32(Magic + binaryWriter.BaseStream.Position)));
 
                         int addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
                         if (addressAlign == 16)

@@ -76,7 +76,9 @@ namespace Tarmac64_Retail
             { Convert.ToSingle(216/255.0), Convert.ToSingle(232 / 255.0), Convert.ToSingle(248 / 255.0) },
             { Convert.ToSingle(0/255.0), Convert.ToSingle(0 / 255.0), Convert.ToSingle(0 / 255.0) },
             };
-
+        public bool FogEnable;
+        public int[] FogColor = new int[4] { 240, 240, 240, 255 };
+        public int FogNear, FogFar;
         public bool UpdateDraw = false;
         public bool AntiFlicker = true;
         public bool DrawSky = true;
@@ -146,7 +148,7 @@ namespace Tarmac64_Retail
             GL.PopMatrix();
             GL.Viewport(0, 0, GLWindow.Width, GLWindow.Height);
             GL.LoadIdentity();
-            GL.Perspective(90.0f, (double)Width / (double)Height, 1, 15000);
+            GL.Perspective(90.0f, (double)Width / (double)Height, 1, 20000);
             GL.MatrixMode(OpenGL.GL_MODELVIEW);
 
 
@@ -719,8 +721,54 @@ namespace Tarmac64_Retail
             GL.Enable(OpenGL.GL_TEXTURE_2D);
             GL.FrontFace(OpenGL.GL_CCW);
 
-            //draw course model first
 
+            if (FogEnable)
+            {
+
+
+                // --- FOG SETUP BEGINS ---
+                GL.Enable(OpenGL.GL_FOG);
+
+                // 1. Fixed Color: Must be floats! 0-255 becomes 0.0-1.0
+                float[] FC = new float[4] {
+                FogColor[0] / 255f,
+                FogColor[1] / 255f,
+                FogColor[2] / 255f,
+                FogColor[3] / 255f,
+            };
+                GL.Fog(OpenGL.GL_FOG_COLOR, FC);
+
+                // 2. User Inputs (Toad's Turnpike = 900, 1000)
+                float n64Min = FogNear;
+                float n64Max = FogFar;
+
+                // 3. Camera Clipping Planes (The ones used in gl.Perspective)
+                float camNear = 10f;
+                float camFar = 2000f;
+
+                // 4. The SDK Macro Logic
+                float diff = n64Max - n64Min;
+                if (diff == 0) diff = 1;
+
+                float fm = 128000f / diff;
+                float fo = (500f - n64Min) * 256f / diff;
+
+                // 5. Calculate NDC (where 0 is fog start, 255 is full fog)
+                float ndcStart = (0f - fo) / fm;
+                float ndcEnd = (255f - fo) / fm;
+
+                // 6. Reverse Projection to get World Distance
+                // This translates the N64's non-linear depth back into OpenGL linear distance
+                float glStart = (2 * camNear * camFar) / (camFar + camNear - ndcStart * (camFar - camNear));
+                float glEnd = (2 * camNear * camFar) / (camFar + camNear - ndcEnd * (camFar - camNear));
+
+                // 7. Apply to OpenGL
+                GL.Fog(OpenGL.GL_FOG_MODE, OpenGL.GL_LINEAR);
+                GL.Fog(OpenGL.GL_FOG_START, glStart);
+                GL.Fog(OpenGL.GL_FOG_END, glEnd);
+             
+            }
+            //draw course model first
             switch (TargetingMode)
             {
                 case ControlMode.Scene:

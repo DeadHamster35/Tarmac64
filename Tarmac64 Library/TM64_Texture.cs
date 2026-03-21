@@ -286,7 +286,7 @@ namespace Tarmac64_Library
 
         }
 
-        public byte[] ColorCombine(OK64Texture TextureObject, UInt32 Segment, bool GeometryToggle = true, bool FogToggle = false, bool Transparent = false)
+        public byte[] ColorCombine(OK64Texture TextureObject, UInt32 Segment)
         {
 
             MemoryStream memoryStream = new MemoryStream();
@@ -364,24 +364,12 @@ namespace Tarmac64_Library
 
 
             //set render mode
-            if (FogToggle)
-            {
-                binaryWriter.Write(
-                    F3D.gsDPSetRenderMode(
-                        F3DEX095_Parameters.G_RM_FOG_SHADE_A,
-                        F3DEX095_Parameters.RenderModesSimple[TextureObject.ColorCombine.RenderModeB]
-                    )
-                );
-            }
-            else
-            {
-                binaryWriter.Write(
+            binaryWriter.Write(
                     F3D.gsDPSetRenderMode(
                         F3DEX095_Parameters.RenderModesSimple[TextureObject.ColorCombine.RenderModeA],
                         F3DEX095_Parameters.RenderModesSimple[TextureObject.ColorCombine.RenderModeB]
                     )
                 );
-            }
 
             //
             //
@@ -400,10 +388,7 @@ namespace Tarmac64_Library
                     TextureObject.ColorCombine.GeometryModes |= F3DEX095_Parameters.GeometryModes[ThisCheck];
                 }
             }
-            if (FogToggle)
-            {
-                TextureObject.ColorCombine.GeometryModes |= F3DEX095_Parameters.G_FOG;
-            }
+
             //set the mode we made above.
             binaryWriter.Write(F3D.gsSPSetGeometryMode(TextureObject.ColorCombine.GeometryModes)); 
             
@@ -413,7 +398,7 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
         }
 
-        public byte[] UntexturedPolygons(OK64Texture TextureObject, bool GeometryToggle = true, bool FogToggle = false)
+        public byte[] UntexturedPolygons()
         {
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -427,7 +412,7 @@ namespace Tarmac64_Library
 
             binaryWriter.Write
             (
-                F3D.gsSPTexture(65535, 65535, 0, 0, 1)
+                F3D.gsSPTexture(65535, 65535, 0, 0, 0)
             );
 
             //pipe sync.
@@ -445,7 +430,7 @@ namespace Tarmac64_Library
 
         }
 
-        public byte[] RGBA(OK64Texture TextureObject, UInt32 Segment, uint Tile, uint TMEM, bool FogToggle = false)
+        public byte[] RGBA(OK64Texture TextureObject, UInt32 Segment, uint Tile, uint TMEM)
         {
             byte[] SegmentByte = BitConverter.GetBytes(Segment);
             Array.Reverse(SegmentByte);
@@ -518,7 +503,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] CI(OK64Texture TextureObject, UInt32 Segment, uint Tile, uint TMEM, bool FogToggle = false)
+        public byte[] CI(OK64Texture TextureObject, UInt32 Segment, uint Tile, uint TMEM)
         {
 
             byte[] SegmentByte = BitConverter.GetBytes(Segment);
@@ -617,7 +602,7 @@ namespace Tarmac64_Library
         }
 
 
-        public byte[] IA(OK64Texture TextureObject, UInt32 Segment, uint Tile, uint TMEM, bool FogToggle = false)
+        public byte[] IA(OK64Texture TextureObject, UInt32 Segment, uint Tile, uint TMEM)
         {
             byte[] SegmentByte = BitConverter.GetBytes(Segment);
             Array.Reverse(SegmentByte);
@@ -710,7 +695,7 @@ namespace Tarmac64_Library
 
 
 
-        public byte[] CompileTextureObjects(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5, bool FogToggle = false)
+        public byte[] CompileTextureObjects(byte[] SegmentData, OK64Texture[] textureObject, int vertMagic, int SegmentID = 5)
         {
             byte[] byteArray = new byte[0];
 
@@ -738,14 +723,15 @@ namespace Tarmac64_Library
             {
                 uint TMEM = 0; 
 
-                if ((textureObject[materialID].TexelData[0].texturePath != null) && (textureObject[materialID].TexelData[0].texturePath != "NULL"))
+                
+                //Textured Polygons (Slow)
+                textureObject[materialID].CCPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
+
+                seg7w.Write(ColorCombine(textureObject[materialID], Convert.ToUInt32(SegmentID)));
+
+                for (int ThisTexel = 0; ThisTexel < textureObject[materialID].TexelData.Count; ThisTexel++)
                 {
-                    //Textured Polygons (Slow)
-                    textureObject[materialID].CCPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
-
-                    seg7w.Write(ColorCombine(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle, Transparent));
-
-                    for (int ThisTexel = 0; ThisTexel < textureObject[materialID].TexelData.Count; ThisTexel++)
+                    if ((textureObject[materialID].TexelData[0].texturePath != null) && (textureObject[materialID].TexelData[0].texturePath != "NULL"))
                     {
                         //Used for individual texture scrolling.
                         textureObject[materialID].TexelData[ThisTexel].F3DPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
@@ -756,18 +742,18 @@ namespace Tarmac64_Library
                             case 0:
                             default:
                             {
-                                seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), Convert.ToUInt32(ThisTexel), TMEM, FogToggle));
+                                seg7w.Write(RGBA(textureObject[materialID], Convert.ToUInt32(SegmentID), Convert.ToUInt32(ThisTexel), TMEM));
                                 break;
                             }
                             case 2:
                             {
-                                seg7w.Write(CI(textureObject[materialID], Convert.ToUInt32(SegmentID), Convert.ToUInt32(ThisTexel), TMEM, FogToggle));
+                                seg7w.Write(CI(textureObject[materialID], Convert.ToUInt32(SegmentID), Convert.ToUInt32(ThisTexel), TMEM));
                                 break;
                             }
                             case 3:
                             case 4:
                             {
-                                seg7w.Write(IA(textureObject[materialID], Convert.ToUInt32(SegmentID), Convert.ToUInt32(ThisTexel), TMEM, FogToggle));
+                                seg7w.Write(IA(textureObject[materialID], Convert.ToUInt32(SegmentID), Convert.ToUInt32(ThisTexel), TMEM));
                                 break;
                             }
                             case 1:
@@ -791,20 +777,19 @@ namespace Tarmac64_Library
                         int tmemWords = (totalBytes + 7) / 8;  // round up to nearest 64‑bit word
 
                         TMEM += (uint)tmemWords;
-
+                    }
+                    else
+                    {
+                        // Gouraud or Flat Shading (Fast)
+                        textureObject[materialID].TexelData[ThisTexel].F3DPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;                        
+                        seg7w.Write(UntexturedPolygons());
 
                     }
 
-
                 }
-                else
-                {
-                    // Gouraud or Flat Shading (Fast)
-                    textureObject[materialID].CCPosition = Convert.ToInt32(seg7w.BaseStream.Position) + vertMagic;
-                    seg7w.Write(ColorCombine(textureObject[materialID], Convert.ToUInt32(SegmentID), true, FogToggle, Transparent));
-                    seg7w.Write(UntexturedPolygons(textureObject[materialID], true, FogToggle));
 
-                }
+
+                
 
 
 
@@ -1141,7 +1126,7 @@ namespace Tarmac64_Library
                         {
                             binaryWriter.Write(Convert.ToByte(0x00));
                         }
-
+                        
 
 
                         // write compressed MIO0 texture to end of ROM.

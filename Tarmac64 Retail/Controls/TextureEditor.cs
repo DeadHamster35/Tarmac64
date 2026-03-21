@@ -174,6 +174,9 @@ namespace Tarmac64_Retail
             }
             MaterialSelect.SelectedIndex = 0;
             TexelSelect.SelectedIndex = 0;
+            Loaded = true;
+            UpdateTextureDisplay();
+
             return textureCount;
         }
 

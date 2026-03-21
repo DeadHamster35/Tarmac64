@@ -320,7 +320,7 @@ namespace Tarmac64_Retail
                 PathData = ListStream.ToArray();
 
 
-                textureList = TarmacTexture.CompileTextureObjects(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5, Convert.ToBoolean(CourseData.Fog.FogToggle) );
+                textureList = TarmacTexture.CompileTextureObjects(segment6, textureArray, (ListData.Length + 8 + PathData.Length),5);
                 if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic, true))
                 {
                     return;
@@ -441,7 +441,7 @@ namespace Tarmac64_Retail
                 ListData = ListStream.ToArray();
 
 
-                textureList = TarmacTexture.CompileTextureObjects(segment6, textureArray, 8 + ListData.Length, 5, Convert.ToBoolean(CourseData.Fog.FogToggle));
+                textureList = TarmacTexture.CompileTextureObjects(segment6, textureArray, 8 + ListData.Length, 5);
                 if (!TarmacGeometry.CompileCourseObjects(ref vertMagic, ref segment4, ref segment7, segment4, segment7, masterObjects, textureArray, vertMagic))
                 {
                     return;
@@ -537,7 +537,7 @@ namespace Tarmac64_Retail
             }
             
             
-            CourseData.ObjectModelData = TarmacCourse.CompileObjectModels(TypeList.ToArray(), Convert.ToBoolean(CourseData.Fog.FogToggle));
+            CourseData.ObjectModelData = TarmacCourse.CompileObjectModels(TypeList.ToArray());
             uint Magic = Convert.ToUInt32(CourseData.ObjectModelData.Length);
             CourseData.ObjectAnimationData = TarmacCourse.CompileObjectAnimation(TypeList.ToArray(), Magic);
             Magic += Convert.ToUInt32(CourseData.ObjectAnimationData.Length);
@@ -981,6 +981,7 @@ namespace Tarmac64_Retail
                         //No Section Nodes
                         sectionCount = 1;
                         CheckNode = FBX.RootNode.FindNode("Render Objects");
+                        masterObjects = TarmacGeometry.CreateMasterNoHeader(FBX, textureArray);
                         surfaceObjects = TarmacGeometry.CreateCollisionsNoHeader(FBX, textureArray);
                         surfaceObjects = TarmacGeometry.UpdateSectionIndexNoHeader(surfaceObjects, ref sectionCount);
 
@@ -991,10 +992,24 @@ namespace Tarmac64_Retail
                     sectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, FBX, 0);
                     XLUSectionList = TarmacGeometry.AutomateSection(sectionCount, surfaceObjects, masterObjects, surfaceBoundaries, FBX, 0);
 
-                    
 
 
 
+
+                    GLControl.SkyColors = new float[3, 3]
+                    {
+                    { Convert.ToSingle(SettingsControl.CourseData.SkyColors.TopColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.TopColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.TopColor.B / 255.0) },
+                    { Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.B / 255.0) },
+                    { Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.B / 255.0) },
+                    };
+                    GLControl.FogFar = SettingsControl.CourseData.Fog.StopDistance;
+                    GLControl.FogNear = SettingsControl.CourseData.Fog.StartDistance;
+                    GLControl.FogEnable = Convert.ToBoolean(SettingsControl.CourseData.Fog.FogToggle);
+
+                    GLControl.FogColor[0] = SettingsControl.CourseData.Fog.FogColor.R;
+                    GLControl.FogColor[1] = SettingsControl.CourseData.Fog.FogColor.G;
+                    GLControl.FogColor[2] = SettingsControl.CourseData.Fog.FogColor.B;
+                    GLControl.FogColor[3] = SettingsControl.CourseData.Fog.FogColor.A;
 
 
                     UpdateUIControls();
@@ -1208,6 +1223,15 @@ namespace Tarmac64_Retail
                     { Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.B / 255.0) },
                     { Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.B / 255.0) },
             };
+            GLControl.FogFar = SettingsControl.CourseData.Fog.StopDistance;
+            GLControl.FogNear = SettingsControl.CourseData.Fog.StartDistance;
+            GLControl.FogEnable = Convert.ToBoolean(SettingsControl.CourseData.Fog.FogToggle);
+
+            GLControl.FogColor[0] = SettingsControl.CourseData.Fog.FogColor.R;
+            GLControl.FogColor[1] = SettingsControl.CourseData.Fog.FogColor.G;
+            GLControl.FogColor[2] = SettingsControl.CourseData.Fog.FogColor.B;
+            GLControl.FogColor[3] = SettingsControl.CourseData.Fog.FogColor.A;
+
             GLControl.UpdateDraw = true;
             GLControl.DrawSky = Convert.ToBoolean(SettingsControl.CourseData.SkyboxBool);
         }

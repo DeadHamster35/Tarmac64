@@ -91,7 +91,7 @@ namespace Tarmac64_Retail
                 SceneData = importer.ImportFile(ModelBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
                 TextureControl.textureArray = TarmacTexture.loadTextures(SceneData, ModelBox.Text);
                 TextureControl.AddNewTextures(TextureControl.textureArray.Length);
-                TextureControl.Loaded = true;
+                
             }
         }
         TM64_Course.OKObjectType NewType = new TM64_Course.OKObjectType();
@@ -102,6 +102,28 @@ namespace Tarmac64_Retail
             NewType.TextureData = TextureControl.textureArray;
             NewType.Flag = Convert.ToInt16(FlagBox.Text);
             NewType.ObjectHitbox = HitboxArray;
+
+
+            float TempFloat;
+            if (Single.TryParse(ScaleBox.Text, out TempFloat))
+            {
+                NewType.ModelScale = TempFloat;
+            }
+            else
+            {
+                MessageBox.Show("Scale Parsing Error. Check scale value.");
+                return false;
+            }
+
+            float AnimeScale = 1.0f;
+            if (BlenderBox.Checked)
+            {
+                AnimeScale = 100.0f;
+                //fucking horseshit
+            }
+
+
+
 
             if (!File.Exists(ModelBox.Text)) 
             {
@@ -116,25 +138,29 @@ namespace Tarmac64_Retail
                 //ha okay fuck me guess we just completely rewrite my asset import pipeline for fucking blender.
 
                 NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
-                NewType.ObjectAnimations.Animation = TarmacAnime.LoadSkeleton(SceneData, NewType.ModelScale);
-                ModelData = TarmacAnime.GetMeshes(SceneData, TextureControl.textureArray);
+                NewType.ObjectAnimations.Animation = TarmacAnime.LoadSkeleton(SceneData, AnimeScale * NewType.ModelScale);
+
+                if (BlenderBox.Checked)
+                {
+                    //listen, fuck you. if you can fix this do it better.
+                    //I spent like 12 hours on this shit.
+                    NewType.ObjectAnimations.Animation.Animation.RotationFloat[0][0] -= 90;
+                    NewType.ObjectAnimations.Animation.Animation.RotationData[0][0] -= 16380;
+                }
+
+                if (NewType.ObjectAnimations.Animation == null)
+                {
+                    MessageBox.Show("Error - Could not find \"Base\" named Root-Bone in Animation FBX." + Environment.NewLine +
+                        "Tarmac requires the Root-Bone to build animation data.");
+                    return false;
+                }
+                ModelData = TarmacAnime.GetMeshes(SceneData, TextureControl.textureArray, AnimeScale);
             }
             else
             {
                 ModelData = TarmacGeometry.CreateObjects(SceneData, NewType.TextureData, true);
             }
             
-
-            float TempFloat;
-            if (Single.TryParse(ScaleBox.Text, out TempFloat))
-            {
-                NewType.ModelScale = TempFloat;
-            }
-            else
-            {
-                MessageBox.Show("Scale Parsing Error. Check scale value.");
-                return false;
-            }
 
 
             NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex);
@@ -424,18 +450,6 @@ namespace Tarmac64_Retail
             ResetParameterView();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog FileOpen = new OpenFileDialog();
-            FileOpen.InitialDirectory = TarmacSettings.ObjectDirectory;
-            FileOpen.Filter = "FBX File|*.FBX|All Files(*.*)|*.*";
-            if (FileOpen.ShowDialog() == DialogResult.OK)
-            {
-                AnimeBox.Text = FileOpen.FileName;
-            }
-        }
-
-
         private void HitboxBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog FileOpen = new OpenFileDialog();
@@ -613,6 +627,11 @@ namespace Tarmac64_Retail
             }
 
             ReloadUI();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
