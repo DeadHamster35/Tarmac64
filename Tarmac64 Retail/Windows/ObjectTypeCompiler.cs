@@ -425,7 +425,7 @@ namespace Tarmac64_Retail
             {
                 SoundNameBox.Items.Add(Name);
             }
-            BehaviorBox.SelectedIndex = 1;
+            BehaviorBox.SelectedIndex = 0;
             SoundTypeBox.SelectedIndex = 0;
             SoundNameBox.SelectedIndex = 0;
             ResetParameterView();

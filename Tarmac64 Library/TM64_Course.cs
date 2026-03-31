@@ -728,7 +728,7 @@ namespace Tarmac64_Library
             int DataLength = 0;
             F3DEX095 TarmacF3D = new F3DEX095();
 
-
+            int Magic = 0;
             
             for (int currentItem = 0; currentItem < SaveData.Length; currentItem++)
             {
@@ -911,7 +911,7 @@ namespace Tarmac64_Library
         }
 
 
-
+        
         public MemoryCard LoadGhost(byte[] fileData)
         {
             

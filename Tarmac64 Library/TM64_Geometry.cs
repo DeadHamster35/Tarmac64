@@ -1248,51 +1248,7 @@ namespace Tarmac64_Library
             }
             return memoryStream.ToArray();
         }
-        public byte[] WriteMasterObjects (OK64F3DObject[] ModelData)
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            binaryWriter.Write(ModelData.Length);
-            for (int ThisModel = 0; ThisModel < ModelData.Length; ThisModel++)
-            {
-                binaryWriter.Write(ModelData[ThisModel].objectName);
-                binaryWriter.Write(ModelData[ThisModel].BoneName);
-                binaryWriter.Write(ModelData[ThisModel].materialID);
-                binaryWriter.Write(ModelData[ThisModel].vertCount);
-                binaryWriter.Write(ModelData[ThisModel].faceCount);
-                for (int ThisBool = 0; ThisBool < 8; ThisBool++)
-                {
-                    binaryWriter.Write(ModelData[ThisModel].KillDisplayList[ThisBool]);
-                }
-
-                binaryWriter.Write(ModelData[ThisModel].modelGeometry.Length);
-                for (int ThisGeo = 0; ThisGeo < ModelData[ThisModel].modelGeometry.Length; ThisGeo++)
-                {
-
-                    for (int ThisVert = 0; ThisVert < 3; ThisVert++)
-                    {
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.x);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.y);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.z);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.u);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.v);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.sBase);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.tBase);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.sPure);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].position.tPure);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].color.R);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].color.G);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].color.B);
-                        binaryWriter.Write(ModelData[ThisModel].modelGeometry[ThisGeo].VertData[ThisVert].color.A);
-                    }
-
-
-                }
-            }
-            return memoryStream.ToArray();
-        }
-
-
+   
         public OK64F3DObject CreateF3DObject (Assimp.Scene fbx, Assimp.Node objectNode, TM64_Texture.OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false, bool DisregardOrigin = false, float AnimeScale = 1.0f)
         {
             OK64F3DObject newObject = new OK64F3DObject();

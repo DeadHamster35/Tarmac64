@@ -183,6 +183,7 @@
             this.BattleBoxC.TabIndex = 35;
             this.BattleBoxC.Text = "Battle";
             this.BattleBoxC.UseVisualStyleBackColor = true;
+            this.BattleBoxC.CheckedChanged += new System.EventHandler(this.GPBoxC_CheckedChanged);
             // 
             // VSBoxC
             // 
@@ -195,6 +196,7 @@
             this.VSBoxC.TabIndex = 34;
             this.VSBoxC.Text = "VS";
             this.VSBoxC.UseVisualStyleBackColor = true;
+            this.VSBoxC.CheckedChanged += new System.EventHandler(this.GPBoxC_CheckedChanged);
             // 
             // ExtraBoxC
             // 
@@ -599,7 +601,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ObjectControl.Location = new System.Drawing.Point(3, 3);
             this.ObjectControl.Name = "ObjectControl";
-            this.ObjectControl.Size = new System.Drawing.Size(289, 653);
+            this.ObjectControl.Size = new System.Drawing.Size(289, 606);
             this.ObjectControl.TabIndex = 1;
             this.ObjectControl.Load += new System.EventHandler(this.ObjectControl_Load);
             // 
@@ -653,6 +655,7 @@
             this.BattleBoxR.TabIndex = 35;
             this.BattleBoxR.Text = "Battle";
             this.BattleBoxR.UseVisualStyleBackColor = true;
+            this.BattleBoxR.CheckedChanged += new System.EventHandler(this.GPBoxR_CheckedChanged);
             // 
             // VSBoxR
             // 
@@ -665,6 +668,7 @@
             this.VSBoxR.TabIndex = 34;
             this.VSBoxR.Text = "VS";
             this.VSBoxR.UseVisualStyleBackColor = true;
+            this.VSBoxR.CheckedChanged += new System.EventHandler(this.GPBoxR_CheckedChanged);
             // 
             // CCExtraBoxR
             // 
@@ -677,6 +681,7 @@
             this.CCExtraBoxR.TabIndex = 33;
             this.CCExtraBoxR.Text = "Extra";
             this.CCExtraBoxR.UseVisualStyleBackColor = true;
+            this.CCExtraBoxR.CheckedChanged += new System.EventHandler(this.GPBoxR_CheckedChanged);
             // 
             // CC150BoxR
             // 
@@ -689,6 +694,7 @@
             this.CC150BoxR.TabIndex = 32;
             this.CC150BoxR.Text = "150";
             this.CC150BoxR.UseVisualStyleBackColor = true;
+            this.CC150BoxR.CheckedChanged += new System.EventHandler(this.GPBoxR_CheckedChanged);
             // 
             // CC100BoxR
             // 
@@ -701,6 +707,7 @@
             this.CC100BoxR.TabIndex = 31;
             this.CC100BoxR.Text = "100";
             this.CC100BoxR.UseVisualStyleBackColor = true;
+            this.CC100BoxR.CheckedChanged += new System.EventHandler(this.GPBoxR_CheckedChanged);
             // 
             // CC50BoxR
             // 
@@ -713,6 +720,7 @@
             this.CC50BoxR.TabIndex = 30;
             this.CC50BoxR.Text = "50";
             this.CC50BoxR.UseVisualStyleBackColor = true;
+            this.CC50BoxR.CheckedChanged += new System.EventHandler(this.GPBoxR_CheckedChanged);
             // 
             // TTBoxR
             // 
@@ -725,6 +733,7 @@
             this.TTBoxR.TabIndex = 29;
             this.TTBoxR.Text = "Time Trial";
             this.TTBoxR.UseVisualStyleBackColor = true;
+            this.TTBoxR.CheckedChanged += new System.EventHandler(this.GPBoxR_CheckedChanged);
             // 
             // GPBoxR
             // 
@@ -737,6 +746,7 @@
             this.GPBoxR.TabIndex = 28;
             this.GPBoxR.Text = "Grand Prix";
             this.GPBoxR.UseVisualStyleBackColor = true;
+            this.GPBoxR.CheckedChanged += new System.EventHandler(this.GPBoxR_CheckedChanged);
             // 
             // label1
             // 
@@ -934,28 +944,28 @@
             // replaceModelToolStripMenuItem
             // 
             this.replaceModelToolStripMenuItem.Name = "replaceModelToolStripMenuItem";
-            this.replaceModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.replaceModelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.replaceModelToolStripMenuItem.Text = "Replace Model";
             this.replaceModelToolStripMenuItem.Click += new System.EventHandler(this.replaceModelToolStripMenuItem_Click);
             // 
             // replacePathsToolStripMenuItem
             // 
             this.replacePathsToolStripMenuItem.Name = "replacePathsToolStripMenuItem";
-            this.replacePathsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.replacePathsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.replacePathsToolStripMenuItem.Text = "Replace Paths";
             this.replacePathsToolStripMenuItem.Click += new System.EventHandler(this.replacePathsToolStripMenuItem_Click);
             // 
             // importSVL3ToolStripMenuItem
             // 
             this.importSVL3ToolStripMenuItem.Name = "importSVL3ToolStripMenuItem";
-            this.importSVL3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importSVL3ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.importSVL3ToolStripMenuItem.Text = "Import SVL3";
             this.importSVL3ToolStripMenuItem.Click += new System.EventHandler(this.importSVL3ToolStripMenuItem_Click);
             // 
             // exportSVL3ToolStripMenuItem
             // 
             this.exportSVL3ToolStripMenuItem.Name = "exportSVL3ToolStripMenuItem";
-            this.exportSVL3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportSVL3ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exportSVL3ToolStripMenuItem.Text = "Export SVL3";
             this.exportSVL3ToolStripMenuItem.Click += new System.EventHandler(this.exportSVL3ToolStripMenuItem_Click);
             // 
@@ -974,28 +984,28 @@
             // oBJToolStripMenuItem
             // 
             this.oBJToolStripMenuItem.Name = "oBJToolStripMenuItem";
-            this.oBJToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.oBJToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.oBJToolStripMenuItem.Text = "Ghost Extractor";
             this.oBJToolStripMenuItem.Click += new System.EventHandler(this.oBJToolStripMenuItem_Click);
             // 
             // songExtractorToolStripMenuItem
             // 
             this.songExtractorToolStripMenuItem.Name = "songExtractorToolStripMenuItem";
-            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.songExtractorToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.songExtractorToolStripMenuItem.Text = "Song Extractor";
             this.songExtractorToolStripMenuItem.Click += new System.EventHandler(this.songExtractorToolStripMenuItem_Click);
             // 
             // objectTypeCompilerToolStripMenuItem
             // 
             this.objectTypeCompilerToolStripMenuItem.Name = "objectTypeCompilerToolStripMenuItem";
-            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.objectTypeCompilerToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.objectTypeCompilerToolStripMenuItem.Text = "Object Compiler";
             this.objectTypeCompilerToolStripMenuItem.Click += new System.EventHandler(this.objectTypeCompilerToolStripMenuItem_Click);
             // 
             // rOMBuiderToolStripMenuItem
             // 
             this.rOMBuiderToolStripMenuItem.Name = "rOMBuiderToolStripMenuItem";
-            this.rOMBuiderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rOMBuiderToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.rOMBuiderToolStripMenuItem.Text = "Game Buider";
             this.rOMBuiderToolStripMenuItem.Click += new System.EventHandler(this.rOMBuiderToolStripMenuItem_Click);
             // 
@@ -1005,20 +1015,20 @@
             this.createToolStripMenuItem,
             this.applyToolStripMenuItem});
             this.patchToolStripMenuItem.Name = "patchToolStripMenuItem";
-            this.patchToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.patchToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.patchToolStripMenuItem.Text = "Patch";
             // 
             // createToolStripMenuItem
             // 
             this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.createToolStripMenuItem.Text = "Create";
             this.createToolStripMenuItem.Click += new System.EventHandler(this.createToolStripMenuItem_Click);
             // 
             // applyToolStripMenuItem
             // 
             this.applyToolStripMenuItem.Name = "applyToolStripMenuItem";
-            this.applyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.applyToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.applyToolStripMenuItem.Text = "Apply";
             this.applyToolStripMenuItem.Click += new System.EventHandler(this.applyToolStripMenuItem_Click);
             // 
@@ -1035,14 +1045,14 @@
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(116, 22);
             this.aboutToolStripMenuItem1.Text = "Settings";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
             // aboutToolStripMenuItem2
             // 
             this.aboutToolStripMenuItem2.Name = "aboutToolStripMenuItem2";
-            this.aboutToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem2.Size = new System.Drawing.Size(116, 22);
             this.aboutToolStripMenuItem2.Text = "About";
             this.aboutToolStripMenuItem2.Click += new System.EventHandler(this.aboutToolStripMenuItem2_Click);
             // 

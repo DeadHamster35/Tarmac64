@@ -950,6 +950,7 @@ namespace Tarmac64_Retail
 
 
 
+                    
                     if (CheckNode != null)
                     {
                         //We've found a "Section #" node and will create surface maps from these.
@@ -1722,6 +1723,23 @@ namespace Tarmac64_Retail
             }
         }
 
+        private void GPBoxR_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RenderMeshListBox.SelectedIndex > -1)
+            {
+                if (CheckStop)
+                {
+                    masterObjects[RenderMeshListBox.SelectedIndex].KillDisplayList[0] = GPBoxR.Checked;
+                    masterObjects[RenderMeshListBox.SelectedIndex].KillDisplayList[1] = TTBoxR.Checked;
+                    masterObjects[RenderMeshListBox.SelectedIndex].KillDisplayList[2] = VSBoxR.Checked;
+                    masterObjects[RenderMeshListBox.SelectedIndex].KillDisplayList[3] = BattleBoxR.Checked;
+                    masterObjects[RenderMeshListBox.SelectedIndex].KillDisplayList[4] = CC50BoxR.Checked;
+                    masterObjects[RenderMeshListBox.SelectedIndex].KillDisplayList[5] = CC100BoxR.Checked;
+                    masterObjects[RenderMeshListBox.SelectedIndex].KillDisplayList[6] = CC150BoxR.Checked;
+                    masterObjects[RenderMeshListBox.SelectedIndex].KillDisplayList[7] = CCExtraBoxR.Checked;
+                }
+            }
+        }
         private void SurfaceMap_Click(object sender, EventArgs e)
         {
 
