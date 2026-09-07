@@ -1003,15 +1003,6 @@ namespace Tarmac64_Retail
                     { Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.B / 255.0) },
                     { Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.B / 255.0) },
                     };
-                    GLControl.FogFar = SettingsControl.CourseData.Fog.StopDistance;
-                    GLControl.FogNear = SettingsControl.CourseData.Fog.StartDistance;
-                    GLControl.FogEnable = Convert.ToBoolean(SettingsControl.CourseData.Fog.FogToggle);
-
-                    GLControl.FogColor[0] = SettingsControl.CourseData.Fog.FogColor.R;
-                    GLControl.FogColor[1] = SettingsControl.CourseData.Fog.FogColor.G;
-                    GLControl.FogColor[2] = SettingsControl.CourseData.Fog.FogColor.B;
-                    GLControl.FogColor[3] = SettingsControl.CourseData.Fog.FogColor.A;
-
 
                     UpdateUIControls();
 
@@ -1124,6 +1115,7 @@ namespace Tarmac64_Retail
             UpdateGLView();
             GLControl.UpdateDraw = true;
             GLControl.CacheTextures();
+            GLControl.CacheObjectTextures(ObjectControl.OKObjectTypeList.ToArray());
         }
 
         private void SectionBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1224,14 +1216,6 @@ namespace Tarmac64_Retail
                     { Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.MidColor.B / 255.0) },
                     { Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.R/255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.G / 255.0), Convert.ToSingle(SettingsControl.CourseData.SkyColors.BotColor.B / 255.0) },
             };
-            GLControl.FogFar = SettingsControl.CourseData.Fog.StopDistance;
-            GLControl.FogNear = SettingsControl.CourseData.Fog.StartDistance;
-            GLControl.FogEnable = Convert.ToBoolean(SettingsControl.CourseData.Fog.FogToggle);
-
-            GLControl.FogColor[0] = SettingsControl.CourseData.Fog.FogColor.R;
-            GLControl.FogColor[1] = SettingsControl.CourseData.Fog.FogColor.G;
-            GLControl.FogColor[2] = SettingsControl.CourseData.Fog.FogColor.B;
-            GLControl.FogColor[3] = SettingsControl.CourseData.Fog.FogColor.A;
 
             GLControl.UpdateDraw = true;
             GLControl.DrawSky = Convert.ToBoolean(SettingsControl.CourseData.SkyboxBool);
@@ -1242,6 +1226,7 @@ namespace Tarmac64_Retail
             OKObjectTypeList = ObjectControl.OKObjectTypeList;
             GLControl.OKObjectIndex = ObjectControl.ObjectTypeIndexBox.SelectedIndex;
             GLControl.ObjectTypes = ObjectControl.OKObjectTypeList.ToArray();
+            GLControl.CacheObjectTextures(ObjectControl.OKObjectTypeList.ToArray());
 
             GLControl.OKSelectedObject = -1;
             GLControl.TargetedObject = -1;

@@ -402,10 +402,10 @@ namespace Tarmac64_Library
                 B = Convert.ToByte(RGBA[2]);
                 A = Convert.ToByte(RGBA[3]);
 
-                RFloat = Convert.ToSingle(255.0f / R);
-                GFloat = Convert.ToSingle(255.0f / G);
-                BFloat = Convert.ToSingle(255.0f / B);
-                AFloat = Convert.ToSingle(255.0f / A);
+                RFloat = Convert.ToSingle(R / 255.0f);
+                GFloat = Convert.ToSingle(G / 255.0f);
+                BFloat = Convert.ToSingle(B / 255.0f);
+                AFloat = Convert.ToSingle(A / 255.0f);
             }
             public void SaveXML(XmlDocument XMLDoc, XmlElement Parent)
             {
@@ -2182,7 +2182,7 @@ namespace Tarmac64_Library
             return OutputStream.ToArray();
         }
 
-        public byte[] WriteVertexBinary14(TM64_Geometry.Vertex ThisVert)
+        public byte[] WriteVertexBinary14(TM64_Geometry.Vertex ThisVert, OK64Color TargetColor)
         {
             return WriteVertexBinary14(
                 ThisVert.position.x,
@@ -2190,10 +2190,10 @@ namespace Tarmac64_Library
                 ThisVert.position.z,
                 ThisVert.position.s,
                 ThisVert.position.t,
-                ThisVert.color.R,
-                ThisVert.color.G,
-                ThisVert.color.B,
-                ThisVert.color.A
+                TargetColor.R,
+                TargetColor.G,
+                TargetColor.B,
+                TargetColor.A
                 );
         
         }
@@ -2469,7 +2469,7 @@ namespace Tarmac64_Library
                                 }
                         }
 
-                        seg4w.Write(WriteVertexBinary14(ThisVert));
+                        seg4w.Write(WriteVertexBinary14(ThisVert, TargetColor));
 
                     }
 

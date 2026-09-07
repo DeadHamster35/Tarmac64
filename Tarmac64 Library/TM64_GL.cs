@@ -38,6 +38,147 @@ namespace Tarmac64_Library
             }
         }
 
+        public class OKObjectTextureCache
+        {
+            private readonly Dictionary<string, Texture> cachedTextures = new Dictionary<string, Texture>(StringComparer.OrdinalIgnoreCase);
+            private Texture missingTexture;
+
+            public static TM64_Texture.OK64TexelData GetFirstTexel(TM64_Course.OKObjectType objectType)
+            {
+                if (objectType == null || objectType.TextureData == null || objectType.TextureData.Length == 0)
+                {
+                    return null;
+                }
+                if (objectType.TextureData[0] == null || objectType.TextureData[0].TexelData == null || objectType.TextureData[0].TexelData.Count == 0)
+                {
+                    return null;
+                }
+                return objectType.TextureData[0].TexelData[0];
+            }
+
+            public Texture Get(OpenGL gl, TM64_Course.OKObjectType objectType)
+            {
+                TM64_Texture.OK64TexelData texel = GetFirstTexel(objectType);
+                if (texel == null || string.IsNullOrEmpty(texel.texturePath) || !File.Exists(texel.texturePath))
+                {
+                    return GetMissing(gl);
+                }
+
+                Texture texture;
+                if (cachedTextures.TryGetValue(texel.texturePath, out texture) && texture != null)
+                {
+                    return texture;
+                }
+
+                texture = new Texture();
+                try
+                {
+                    texture.Create(gl, texel.texturePath);
+                }
+                catch
+                {
+                    texture.Destroy(gl);
+                    return GetMissing(gl);
+                }
+
+                cachedTextures[texel.texturePath] = texture;
+                return texture;
+            }
+
+            public void Bind(OpenGL gl, TM64_Course.OKObjectType objectType)
+            {
+                Texture texture = Get(gl, objectType);
+                texture.Bind(gl);
+
+                TM64_Texture.OK64TexelData texel = GetFirstTexel(objectType);
+                if (texel == null)
+                {
+                    return;
+                }
+
+                uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
+                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[texel.SFlag] });
+                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[texel.TFlag] });
+            }
+
+            public void Sync(OpenGL gl, IEnumerable<TM64_Course.OKObjectType> objectTypes)
+            {
+                HashSet<string> livePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                if (objectTypes != null)
+                {
+                    foreach (TM64_Course.OKObjectType objectType in objectTypes)
+                    {
+                        TM64_Texture.OK64TexelData texel = GetFirstTexel(objectType);
+                        if (texel == null || string.IsNullOrEmpty(texel.texturePath) || !File.Exists(texel.texturePath))
+                        {
+                            continue;
+                        }
+
+                        livePaths.Add(texel.texturePath);
+                        Get(gl, objectType);
+                    }
+                }
+
+                List<string> evict = new List<string>();
+                foreach (KeyValuePair<string, Texture> entry in cachedTextures)
+                {
+                    if (!livePaths.Contains(entry.Key))
+                    {
+                        evict.Add(entry.Key);
+                    }
+                }
+
+                foreach (string path in evict)
+                {
+                    cachedTextures[path].Destroy(gl);
+                    cachedTextures.Remove(path);
+                }
+            }
+
+            public void Clear(OpenGL gl)
+            {
+                foreach (Texture texture in cachedTextures.Values)
+                {
+                    texture.Destroy(gl);
+                }
+                cachedTextures.Clear();
+
+                if (missingTexture != null)
+                {
+                    missingTexture.Destroy(gl);
+                    missingTexture = null;
+                }
+            }
+
+            private Texture GetMissing(OpenGL gl)
+            {
+                if (missingTexture == null)
+                {
+                    missingTexture = new Texture();
+                    missingTexture.Create(gl, Tarmac64_Library.Properties.Resources.TextureNotFound);
+                }
+                return missingTexture;
+            }
+        }
+
+        bool primitiveActive;
+
+        public void EndPrimitive(OpenGL gl)
+        {
+            if (primitiveActive)
+            {
+                gl.End();
+                primitiveActive = false;
+            }
+        }
+
+        public void BeginTriangles(OpenGL gl)
+        {
+            EndPrimitive(gl);
+            gl.Begin(OpenGL.GL_TRIANGLES);
+            primitiveActive = true;
+        }
+
 
 
 
@@ -126,7 +267,7 @@ namespace Tarmac64_Library
         {
             foreach (var subVert in subFace.VertData)
             {
-                gl.Color(subVert.color.R, subVert.color.G, subVert.color.B, 1.0f);
+                gl.Color(subVert.color.RFloat, subVert.color.GFloat, subVert.color.BFloat, 1.0f);
                 gl.TexCoord(subVert.position.u, subVert.position.v);
                 gl.Vertex(subVert.position.x + (Zone[0] * 500), subVert.position.y + (Zone[1] * 500), subVert.position.z + (Zone[2] * 250));
             }
@@ -134,10 +275,11 @@ namespace Tarmac64_Library
 
         public void DrawNorth(OpenGL gl, Texture glTexture, TMCamera LocalCamera)
         {
+            EndPrimitive(gl);
             glTexture.Destroy(gl);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             gl.Enable(OpenGL.GL_BLEND);
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
 
             
             float[] targetPosition = new float[3] { Convert.ToSingle(LocalCamera.target.X), Convert.ToSingle(LocalCamera.target.Y), Convert.ToSingle(LocalCamera.target.Z + 60) };
@@ -166,26 +308,24 @@ namespace Tarmac64_Library
             gl.Vertex(targetPosition[0] + -2.0f, targetPosition[1] + -2.0f, targetPosition[2] + -2.0f);
             gl.Color(0.0f, 0.0f, 1.0f);
             gl.Vertex(targetPosition[0] + -2.0f, targetPosition[1] + -2.0f, targetPosition[2] + 2.0f);
-            
+
+            EndPrimitive(gl);
         }
 
         public void DrawSection(OpenGL gl, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
         {
-            
+            EndPrimitive(gl);
             glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             gl.Enable(OpenGL.GL_BLEND);
-            gl.Begin(OpenGL.GL_TRIANGLES);
             DrawShaded(gl, targetObject, LocalCamera.flashRed);
-            
-            
         }
 
 
         public void DrawOKObjectShaded(OpenGL gl, Texture glTexture, TM64_Course.OKObject TargetObject, TM64_Course.OKObjectType TargetObjectType, float[] ObjectColor)
         {
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
             foreach (var ThisGeometry in TargetObjectType.ModelData)
             {
                 foreach (var Face in ThisGeometry.modelGeometry)
@@ -217,11 +357,12 @@ namespace Tarmac64_Library
                 }
 
             }
+            EndPrimitive(gl);
         }
 
         public void DrawOKObjectShaded(OpenGL gl, Texture glTexture, TM64_Course.OKObject TargetObject, TM64_Course.OKObjectType TargetObjectType)
         {
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
             foreach (var ThisGeometry in TargetObjectType.ModelData)
             {
                 float[] ObjectColor = ThisGeometry.objectColor;
@@ -253,64 +394,39 @@ namespace Tarmac64_Library
                     }
                 }
             }
+            EndPrimitive(gl);
         }
 
 
-        public void DrawOKObjectTextured(OpenGL gl, Texture glTexture, TM64_Course.OKObject TargetObject, TM64_Course.OKObjectType TargetObjectType)
+        public void DrawOKObjectTextured(OpenGL gl, OKObjectTextureCache textureCache, TM64_Course.OKObject TargetObject, TM64_Course.OKObjectType TargetObjectType)
         {
-            OpenFileDialog FileReplace = new OpenFileDialog();
+            EndPrimitive(gl);
+            gl.Enable(OpenGL.GL_TEXTURE_2D);
+            textureCache.Bind(gl, TargetObjectType);
+            BeginTriangles(gl);
             foreach (var Geometry in TargetObjectType.ModelData)
             {
-                
-                glTexture.Destroy(gl);
-                if (
-                    (TargetObjectType.TextureData[Geometry.materialID].TexelData[0].texturePath != null) &&
-                    (File.Exists(TargetObjectType.TextureData[Geometry.materialID].TexelData[0].texturePath))
-                )
-                {
-                    glTexture.Create(gl, TargetObjectType.TextureData[Geometry.materialID].TexelData[0].texturePath);
-                    glTexture.Bind(gl);
-                }
-                else
-                {
-                    glTexture.Create(gl, Tarmac64_Library.Properties.Resources.TextureNotFound);
-                    glTexture.Bind(gl);                   
-                }
-
-
-
-
-
-                uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
-
-
-
-                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TargetObjectType.TextureData[Geometry.materialID].TexelData[0].SFlag] });
-                gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[TargetObjectType.TextureData[Geometry.materialID].TexelData[0].TFlag] });
-                gl.Begin(OpenGL.GL_TRIANGLES);
                 foreach (var Face in Geometry.modelGeometry)
-                {                    
+                {
                     foreach (var subVert in Face.VertData)
                     {
                         Point3D VertexPoint = new Point3D() { X = subVert.position.x, Y = subVert.position.y, Z = subVert.position.z };
                         float[] ObjectAngle = new float[3] { TargetObject.OriginAngle[0], TargetObject.OriginAngle[1], TargetObject.OriginAngle[2] };
                         Point3D ThreeDPoint = RotatePoint(VertexPoint, ObjectAngle);
 
-                        gl.Color(subVert.color.R, subVert.color.G, subVert.color.B, 1.0f);
+                        gl.Color(subVert.color.RFloat, subVert.color.GFloat, subVert.color.BFloat, 1.0f);
                         gl.TexCoord(subVert.position.u, subVert.position.v);
                         gl.Vertex((ThreeDPoint.X * TargetObjectType.ModelScale) + TargetObject.OriginPosition[0], (ThreeDPoint.Y * TargetObjectType.ModelScale) + TargetObject.OriginPosition[1], (ThreeDPoint.Z * TargetObjectType.ModelScale) + TargetObject.OriginPosition[2]);
-                    }                    
+                    }
                 }
-
             }
-            
+            EndPrimitive(gl);
         }
 
 
         public void DrawShaded(OpenGL gl, TM64_Geometry.OK64F3DObject TargetObject, float[] colorArray)
         {
-            
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
             foreach (var subFace in TargetObject.modelGeometry)
             {
                 if (colorArray.Length > 3)
@@ -330,35 +446,36 @@ namespace Tarmac64_Library
                     }
                 }
             }
+            EndPrimitive(gl);
         }
 
         public void DrawGouraud(OpenGL gl, TM64_Geometry.OK64F3DObject TargetObject)
         {
-
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
             foreach (var subFace in TargetObject.modelGeometry)
             {
                 foreach (var subVert in subFace.VertData)
                 {
-                    gl.Color(subVert.color.R, subVert.color.G, subVert.color.B, subVert.color.A);
+                    gl.Color(subVert.color.RFloat, subVert.color.GFloat, subVert.color.BFloat, subVert.color.AFloat);
                     gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
                 }
             }
+            EndPrimitive(gl);
         }
 
 
         public void DrawGouraudObjectColor(OpenGL gl, TM64_Geometry.OK64F3DObject TargetObject)
         {
-
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
             foreach (var subFace in TargetObject.modelGeometry)
             {
                 foreach (var subVert in subFace.VertData)
                 {
-                    gl.Color(TargetObject.objectColor[0], TargetObject.objectColor[1], TargetObject.objectColor[2], 255);
+                    gl.Color(TargetObject.objectColor[0], TargetObject.objectColor[1], TargetObject.objectColor[2], 1.0f);
                     gl.Vertex(subVert.position.x, subVert.position.y, subVert.position.z);
                 }
             }
+            EndPrimitive(gl);
         }
 
         public void DrawTexturedTexturedNoFlush(OpenGL gL, TM64_Texture.OK64Texture oK64Texture, TM64_Geometry.OK64F3DObject oK64F3DObject)
@@ -368,10 +485,10 @@ namespace Tarmac64_Library
 
         public void DrawShaded(OpenGL gl, Texture glTexture, TM64_Geometry.OK64F3DObject TargetObject, float[] colorArray, int[] Zone)
         {
-            
+            EndPrimitive(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             glTexture.Destroy(gl);
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
             foreach (var subFace in TargetObject.modelGeometry)
             {
                 if (colorArray.Length > 3)
@@ -391,7 +508,7 @@ namespace Tarmac64_Library
                     }
                 }
             }
-            
+            EndPrimitive(gl);
         }
 
 
@@ -449,28 +566,21 @@ namespace Tarmac64_Library
 
         public void DrawTextureFlush(OpenGL gl, TM64_Texture.OK64Texture[] textureArray, Texture glTexture, int TargetID)
         {
-
-
-            gl.End();
+            EndPrimitive(gl);
 
             uint[] WrapTypes = { OpenGL.GL_REPEAT, OpenGL.GL_REPEAT, OpenGL.GL_MIRRORED_REPEAT, OpenGL.GL_CLAMP_TO_EDGE, OpenGL.GL_MIRRORED_REPEAT };
 
             glTexture.Bind(gl);
 
-
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[textureArray[TargetID].TexelData[0].SFlag] });
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[textureArray[TargetID].TexelData[0].TFlag] });
 
-
+            BeginTriangles(gl);
         }
         public void DrawTextureFlushScreen(OpenGL gl, int Width, int Height, TM64_Texture.OK64Texture TextureObject, Texture glTexture)
         {
-
-
-            gl.End();
+            EndPrimitive(gl);
             glTexture.Destroy(gl);
-
-            
 
             glTexture.Create(gl, RenderScreen(gl, TextureObject.TexelData[0].textureScreen - 1, Width, Height));
             glTexture.Bind(gl);
@@ -480,12 +590,11 @@ namespace Tarmac64_Library
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.TexelData[0].SFlag] });
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, new uint[] { WrapTypes[TextureObject.TexelData[0].SFlag] });
             gl.TexParameterI(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, new uint[] { WrapTypes[TextureObject.TexelData[0].TFlag] });
+
+            BeginTriangles(gl);
         }
         public void DrawTexturedNoFlush(OpenGL gl, TM64_Texture.OK64Texture TextureObject, TM64_Geometry.OK64F3DObject targetObject)
         {
-
-            gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            gl.Begin(OpenGL.GL_TRIANGLES);
             foreach (var subFace in targetObject.modelGeometry)
             {
                 DrawFace(gl, subFace, TextureObject.GLShiftS, TextureObject.GLShiftT);
@@ -613,7 +722,7 @@ namespace Tarmac64_Library
 
         public void DrawTextured(OpenGL gl, TM64_Texture.OK64Texture[] textureArray, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
         {
-            
+            EndPrimitive(gl);
             glTexture.Destroy(gl);
             gl.Enable(OpenGL.GL_TEXTURE_2D);
             if (textureArray[targetObject.materialID].TexelData[0].texturePath == null)
@@ -623,18 +732,17 @@ namespace Tarmac64_Library
             glTexture.Create(gl, textureArray[targetObject.materialID].TexelData[0].texturePath);
             glTexture.Bind(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
             foreach (var subFace in targetObject.modelGeometry)
             {
                 DrawFace(gl, subFace);
             }
-            
-            
+            EndPrimitive(gl);
         }
 
         public void DrawTextured(OpenGL gl, TM64_Texture.OK64Texture[] textureArray, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject, int[] Zone)
         {
-            
+            EndPrimitive(gl);
             glTexture.Destroy(gl);
             gl.Enable(OpenGL.GL_TEXTURE_2D);
             if (textureArray[targetObject.materialID].TexelData[0].texturePath == null)
@@ -644,23 +752,23 @@ namespace Tarmac64_Library
             glTexture.Create(gl, textureArray[targetObject.materialID].TexelData[0].texturePath);
             glTexture.Bind(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
             foreach (var subFace in targetObject.modelGeometry)
             {
                 DrawFace(gl, subFace, Zone);
             }
-            
+            EndPrimitive(gl);
         }
 
 
         public void DrawCursor(OpenGL gl, TMCamera LocalCamera, Texture glTexture)
         {
-            
+            EndPrimitive(gl);
             glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             gl.Enable(OpenGL.GL_BLEND);
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
 
             foreach (var Face in LocalCamera.Cursor)
             {
@@ -671,20 +779,17 @@ namespace Tarmac64_Library
                 }
             }
 
-            
+            EndPrimitive(gl);
         }
         public void DrawTarget(OpenGL gl, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject)
         {
-            
+            EndPrimitive(gl);
             glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             gl.Enable(OpenGL.GL_BLEND);
-            gl.Begin(OpenGL.GL_TRIANGLES);
 
             DrawShaded(gl, targetObject, LocalCamera.flashWhite);
-
-            
         }
 
 
@@ -693,24 +798,21 @@ namespace Tarmac64_Library
 
         public void DrawTarget(OpenGL gl, TMCamera LocalCamera, Texture glTexture, TM64_Geometry.OK64F3DObject targetObject, int[] Zone)
         {
-            
+            EndPrimitive(gl);
             glTexture.Destroy(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             gl.Enable(OpenGL.GL_BLEND);
-            gl.Begin(OpenGL.GL_TRIANGLES);
-            
+
             DrawShaded(gl, glTexture, targetObject, LocalCamera.flashWhite, Zone);
-            
-            
         }
 
 
         public void DrawWire(OpenGL gl, TM64_Geometry.OK64F3DObject targetObject)
         {
-            
+            EndPrimitive(gl);
             gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
-            gl.Begin(OpenGL.GL_TRIANGLES);
+            BeginTriangles(gl);
             foreach (var subFace in targetObject.modelGeometry)
             {
                 var colorArray = targetObject.objectColor;
@@ -731,6 +833,7 @@ namespace Tarmac64_Library
                     }
                 }
             }
+            EndPrimitive(gl);
         }
 
 

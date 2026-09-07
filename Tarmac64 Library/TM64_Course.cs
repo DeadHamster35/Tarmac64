@@ -19,6 +19,7 @@ namespace Tarmac64_Library
 {
     public class TM64_Course
     {
+        public const int SprintLapCount = 255;
 
         
         TM64 Tarmac = new TM64();
@@ -2277,7 +2278,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(courseData.OK64HeaderData.GoalBannerToggle);
             binaryWriter.Write(courseData.OK64HeaderData.SkyboxToggle); ;            
             binaryWriter.Write(Convert.ToChar(courseData.ManualTempo));
-            binaryWriter.Write(Convert.ToChar(courseData.LapCount));
+            binaryWriter.Write(Convert.ToByte(courseData.LapCount));
 
 
             binaryWriter.Write(F3D.BigEndian(courseData.MusicID));
@@ -3105,7 +3106,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(courseData.OK64HeaderData.GoalBannerToggle);
             binaryWriter.Write(courseData.OK64HeaderData.SkyboxToggle); ;
             binaryWriter.Write(Convert.ToChar(courseData.ManualTempo));
-            binaryWriter.Write(Convert.ToChar(courseData.LapCount));
+            binaryWriter.Write(Convert.ToByte(courseData.LapCount));
 
 
             binaryWriter.Write(F3D.BigEndian(courseData.MusicID));

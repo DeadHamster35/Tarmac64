@@ -95,7 +95,6 @@
             // SprintRadio
             // 
             this.SprintRadio.AutoSize = true;
-            this.SprintRadio.Enabled = false;
             this.SprintRadio.Location = new System.Drawing.Point(12, 55);
             this.SprintRadio.Margin = new System.Windows.Forms.Padding(5);
             this.SprintRadio.Name = "SprintRadio";
@@ -109,7 +108,6 @@
             // CircuitRadio
             // 
             this.CircuitRadio.AutoSize = true;
-            this.CircuitRadio.Enabled = false;
             this.CircuitRadio.Location = new System.Drawing.Point(12, 26);
             this.CircuitRadio.Margin = new System.Windows.Forms.Padding(5);
             this.CircuitRadio.Name = "CircuitRadio";

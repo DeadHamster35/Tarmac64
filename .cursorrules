@@ -1,0 +1,62 @@
+# Workspace Layout
+
+This workspace is three related Mario Kart 64 projects. Treat them as one pipeline, not three isolated apps.
+
+## Tarmac (this project) — C#
+
+C# toolset that builds custom levels and objects for Mario Kart 64 (USA .Z64).
+
+- `Tarmac64.sln` is the Visual Studio solution.
+- `Tarmac64 Library` — core library: course/object data, geometry, textures, animation, sound, GL preview.
+- `Tarmac64 Retail` (Tarmac64 Designer) — GUI for editing levels and objects.
+- `Tarmac64 Game Builder` — game builder frontend.
+- `TarmacCL` — command-line frontend.
+
+Output from Tarmac is consumed by OverKart when playing custom courses.
+
+## Library — C / ASM (sibling folder)
+
+Shared N64 runtime used by OverKart and other legacy projects. Compiled with GCC (`mips64-elf-gcc`, VR4300) and Armips.
+
+This library has been copied into multiple user/legacy projects. Expect substantial bloat. Do not treat unused-looking code as safe to delete; other projects may still depend on it.
+
+Typical areas: `CustomCourses`, `CustomObjects`, `CustomParticles`, `MusicSound`, `Player`, `Gametypes`, `GameVariables` (NTSC; PAL/JP exist for other work only).
+
+## OverKart5 — C / ASM (sibling folder)
+
+ROM-mod project. Uses Library to hook the original Mario Kart 64 ROM, add new modes, and run custom levels produced by Tarmac.
+
+- Built with GCC and Armips.
+- `BUILD.asm` is the Armips entry; it includes Library via `..\library\`.
+
+# Working Rules
+
+## Data contract
+
+Treat the Tarmac → Library → OverKart data contract as frozen. Course headers, object layouts, and ROM table offsets (for example `ok_HeaderROM` at `0xBE9178`) are shared across C# writers and C/ASM readers. Changing a struct field, size, or order in one project without the others will silently break custom courses.
+
+## RAM map
+
+The RAM map is required, not optional documentation.
+
+- OverKart owns `0x80400000–0x804FFFFF`.
+- Custom course ASM owns `0x80500000–0x805FFFFF`.
+- Course data grows backward from the end of RAM near `0x80800000`.
+
+Keep `OKHeader.h` and `OKHeader.asm` in lockstep. Do not invent new RAM without asking.
+
+## Regions
+
+NTSC (USA) is the only supported region for Tarmac and custom levels. PAL and JP files exist in Library/OverKart for other or legacy work; they are not a supported target for Tarmac or custom courses. Do not mix region offsets, and do not add PAL/JP custom-level support unless explicitly asked.
+
+## Library bloat
+
+Do not clean, modernize, or delete "unused" Library code. No drive-by refactors, no `#pragma once` conversions, no .NET upgrades, and no stripping of spare/legacy files. Other projects may still depend on code that looks unused here.
+
+## Stack and style
+
+Match the existing stack and style. Tarmac is .NET Framework 4.8 WinForms (`Tarmac64_Library` / `Tarmac64_Retail`), not WPF or .NET 8. N64 C is GCC for VR4300 with the current flags (`-O1 -mtune=vr4300 -mabi=32 -G0`). Do not change compiler flags, ABI, or microcode (`F3DEX_GBI`) unless asked.
+
+## ROM hooks
+
+ROM hooks live in Armips, not just C. `BUILD.asm` is the patch map (`.org` / `JAL` sites). A new C function that is never hooked does nothing; a hook to the wrong address crashes the game. Propose C and ASM together.

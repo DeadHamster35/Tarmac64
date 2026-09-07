@@ -1,0 +1,8 @@
+---
+description: Require explicit user approval before any file changes
+alwaysApply: true
+---
+
+# Require Approval Before Changes
+
+Do not make changes to any files without first confirming approval. Do not delete files without confirming approval. Do not modify or add any code without explicit manual review and approval by the User.

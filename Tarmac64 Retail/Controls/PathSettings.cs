@@ -80,9 +80,11 @@ namespace Tarmac64_Retail
             CourseData.PathCount = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "PathCount", "1"));
             CourseData.DistributeBool = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "DistributeBool", "0"));
             CourseData.LapCount = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, ParentPath, "LapCount", "3"));
+            ApplyLapCountUI();
 
             int FXCount = Convert.ToInt32(Tarmac.LoadElement(XMLDoc, ParentPath, "EffectCount", "0"));
             PathFX = new List<TM64_Course.PathEffect>();
+            
             PathIndexBox.Items.Clear();
 
             ParentPath = "/SaveFile/PathSettings/PathEffects";
@@ -109,6 +111,7 @@ namespace Tarmac64_Retail
                 
                 PathFX.Add(NewFX);                
             }
+            CourseData.PathSettings.PathEffects = PathFX.ToArray();
             PathTypeBox.SelectedIndex = -1;
             blocked = false;
         }
@@ -217,6 +220,8 @@ namespace Tarmac64_Retail
 
             CircuitRadio.Checked = true;
             GoalBannerBox.Checked = true;
+            CourseData.LapCount = 3;
+            ApplyLapCountUI();
         }
 
         public void UpdatePaths()
@@ -280,9 +285,21 @@ namespace Tarmac64_Retail
 
 
 
-            if (int.TryParse(LapCountBox.Text, out ParseInt))
+            if (SprintRadio.Checked)
             {
-                CourseData.LapCount = Convert.ToInt16(ParseInt);
+                CourseData.LapCount = TM64_Course.SprintLapCount;
+            }
+            else if (int.TryParse(LapCountBox.Text, out ParseInt))
+            {
+                if (ParseInt < 1)
+                {
+                    ParseInt = 1;
+                }
+                if (ParseInt > 9)
+                {
+                    ParseInt = 9;
+                }
+                CourseData.LapCount = ParseInt;
             }
 
             if (int.TryParse(PathCountBox.Text, out ParseInt))
@@ -324,17 +341,10 @@ namespace Tarmac64_Retail
                     AdjB.Text = PathFX[PFXID].AdjColor.B.ToString();
                     PathTypeBox.SelectedIndex = PathFX[PFXID].Type;
                 }
+
+                ApplyLapCountUI();
                 
 
-                
-
-                int ParseInt;
-                if (int.TryParse(LapCountBox.Text, out ParseInt))
-                {
-                    CourseData.LapCount = ParseInt;
-                }
-
-                
                 PathCountBox.Text = CourseData.PathCount.ToString();
                 BombPointBox.Text = CourseData.BombArray[BombIndexBox.SelectedIndex].Point.ToString();
                 BombTypeBox.SelectedIndex = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;
@@ -412,21 +422,55 @@ namespace Tarmac64_Retail
 
         }
 
+        private void ApplyLapCountUI()
+        {
+            bool sprint = (CourseData.LapCount == TM64_Course.SprintLapCount);
+            SprintRadio.Checked = sprint;
+            CircuitRadio.Checked = !sprint;
+            LapCountBox.Enabled = !sprint;
+            if (sprint)
+            {
+                LapCountBox.Text = "1";
+            }
+            else
+            {
+                LapCountBox.Text = CourseData.LapCount.ToString();
+            }
+        }
+
         private void SprintRadio_CheckedChanged(object sender, EventArgs e)
         {
-            LapCountBox.Enabled = true;
+            if (blocked)
+            {
+                return;
+            }
+            LapCountBox.Enabled = !SprintRadio.Checked;
             if (SprintRadio.Checked)
             {
-                LapCountBox.Enabled = false;
+                CourseData.LapCount = TM64_Course.SprintLapCount;
+                LapCountBox.Text = "1";
+            }
+            if (loaded)
+            {
+                UpdatePaths();
             }
         }
 
         private void CircuitRadio_CheckedChanged(object sender, EventArgs e)
         {
-            LapCountBox.Enabled = true;
-            if (SprintRadio.Checked)
+            if (blocked)
             {
-                LapCountBox.Enabled = false;
+                return;
+            }
+            LapCountBox.Enabled = !SprintRadio.Checked;
+            if (CircuitRadio.Checked && (CourseData.LapCount == TM64_Course.SprintLapCount))
+            {
+                CourseData.LapCount = 3;
+                LapCountBox.Text = "3";
+            }
+            if (loaded)
+            {
+                UpdatePaths();
             }
         }
 

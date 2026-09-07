@@ -67,6 +67,7 @@ namespace Tarmac64_Retail
 
         public OpenGL GL = new OpenGL();
         public SharpGL.SceneGraph.Assets.Texture[] GLTexture = new SharpGL.SceneGraph.Assets.Texture[1];
+        public TM64_GL.OKObjectTextureCache ObjectTextureCache = new TM64_GL.OKObjectTextureCache();
         int GLShadeIndex = 0;
         int GLObjectIndex = 0;
 
@@ -76,9 +77,6 @@ namespace Tarmac64_Retail
             { Convert.ToSingle(216/255.0), Convert.ToSingle(232 / 255.0), Convert.ToSingle(248 / 255.0) },
             { Convert.ToSingle(0/255.0), Convert.ToSingle(0 / 255.0), Convert.ToSingle(0 / 255.0) },
             };
-        public bool FogEnable;
-        public int[] FogColor = new int[4] { 240, 240, 240, 255 };
-        public int FogNear, FogFar;
         public bool UpdateDraw = false;
         public bool AntiFlicker = true;
         public bool DrawSky = true;
@@ -98,29 +96,28 @@ namespace Tarmac64_Retail
                 return;
             }
 
-            GL.End();
-            GL.MatrixMode(OpenGL.GL_PROJECTION);
-            GL.LoadIdentity();
-            GL.PushMatrix();
-            GL.Ortho2D(-1, 1.0, -1, 1.0);
-
-
-            GL.MatrixMode(OpenGL.GL_MODELVIEW);
-
-
-            GL.Disable(OpenGL.GL_CULL_FACE);
-            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-            GL.Enable(OpenGL.GL_BLEND);
-            //GLTexture[GLShadeIndex].Destroy(GL);
-            GLTexture[GLShadeIndex].Bind(GL);
-
-
+            TarmacGL.EndPrimitive(GL);
+            GL.Viewport(0, 0, GLWindow.Width, GLWindow.Height);
 
             if (DrawSky)
             {
-                GL.Begin(OpenGL.GL_QUADS);
+                GL.Disable(OpenGL.GL_DEPTH_TEST);
+                GL.Disable(OpenGL.GL_TEXTURE_2D);
+                GL.Disable(OpenGL.GL_CULL_FACE);
+                GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+                GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+                GL.Enable(OpenGL.GL_BLEND);
 
+                GL.MatrixMode(OpenGL.GL_PROJECTION);
+                GL.PushMatrix();
+                GL.LoadIdentity();
+                GL.Ortho2D(-1, 1.0, -1, 1.0);
+
+                GL.MatrixMode(OpenGL.GL_MODELVIEW);
+                GL.PushMatrix();
+                GL.LoadIdentity();
+
+                GL.Begin(OpenGL.GL_QUADS);
 
                 GL.Color(SkyColors[0, 0], SkyColors[0, 1], SkyColors[0, 2]);
                 GL.Vertex(-1.0, 1.0);
@@ -136,22 +133,21 @@ namespace Tarmac64_Retail
                 GL.Color(SkyColors[2, 0], SkyColors[2, 1], SkyColors[2, 2]);
                 GL.Vertex(1.0, -1.0);
                 GL.Vertex(-1.0, -1.0);
+
+                GL.End();
+
+                GL.PopMatrix();
+                GL.MatrixMode(OpenGL.GL_PROJECTION);
+                GL.PopMatrix();
             }
-            
 
-            GL.End();
-
-
-
-            GL.PopMatrix();
+            double aspect = GLWindow.Height == 0 ? 1.0 : (double)GLWindow.Width / (double)GLWindow.Height;
             GL.MatrixMode(OpenGL.GL_PROJECTION);
-            GL.PopMatrix();
-            GL.Viewport(0, 0, GLWindow.Width, GLWindow.Height);
             GL.LoadIdentity();
-            GL.Perspective(90.0f, (double)Width / (double)Height, 1, 20000);
+            GL.Perspective(90.0f, aspect, 1, 20000);
+
             GL.MatrixMode(OpenGL.GL_MODELVIEW);
-
-
+            GL.LoadIdentity();
         }
 
         public void CacheTextures()
@@ -171,6 +167,21 @@ namespace Tarmac64_Retail
             GLTexture[GLObjectIndex] = new SharpGL.SceneGraph.Assets.Texture();
             GLTexture[GLShadeIndex] = new SharpGL.SceneGraph.Assets.Texture();
         }
+
+        public void CacheObjectTextures()
+        {
+            CacheObjectTextures(ObjectTypes);
+        }
+
+        public void CacheObjectTextures(TM64_Course.OKObjectType[] objectTypes)
+        {
+            if (!Loaded || GL == null)
+            {
+                return;
+            }
+            ObjectTextureCache.Sync(GL, objectTypes);
+        }
+
         private void GLWindow_Resized(object sender, EventArgs e)
         {
             RefreshView();
@@ -358,8 +369,9 @@ namespace Tarmac64_Retail
                         //Draw Regular Textured Objects.
 
                         ShiftST(ThisTexture);
-                        TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
+                        TarmacGL.EndPrimitive(GL);
                         TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+                        TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
 
                         for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
                         {
@@ -379,8 +391,9 @@ namespace Tarmac64_Retail
                         //Draw Framebuffer Textured Objects.
 
                         ShiftST(ThisTexture);
-                        TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
+                        TarmacGL.EndPrimitive(GL);
                         TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+                        TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
 
                         for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
                         {
@@ -397,12 +410,12 @@ namespace Tarmac64_Retail
                 else
                 {
                     //Draw Gouraud Objects
+                    TarmacGL.EndPrimitive(GL);
 
                     GL.Disable(OpenGL.GL_CULL_FACE);
                     GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
                     GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                     GL.Enable(OpenGL.GL_BLEND);
-                    //GLTexture[GLShadeIndex].Destroy(GL);
                     GLTexture[GLShadeIndex].Bind(GL);
 
                     for (int ThisObject = 0; ThisObject < SectionList.Length; ThisObject++)
@@ -426,7 +439,7 @@ namespace Tarmac64_Retail
             }
             if (chkWireframe.Checked)
             {
-                GL.End();
+                TarmacGL.EndPrimitive(GL);
                 GLTexture[GLShadeIndex].Bind(GL);
                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
 
@@ -440,18 +453,13 @@ namespace Tarmac64_Retail
             }
             for (int ThisSurf = 0; ThisSurf < SurfaceModel.Length; ThisSurf++)
             {
-
-
-                GL.End();
+                TarmacGL.EndPrimitive(GL);
                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                GL.Begin(OpenGL.GL_TRIANGLES);
-                //Draw Gouraud Objects
 
                 GL.Disable(OpenGL.GL_CULL_FACE);
                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
                 GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                 GL.Enable(OpenGL.GL_BLEND);
-                //GLTexture[GLShadeIndex].Destroy(GL);
                 GLTexture[GLShadeIndex].Bind(GL);
                 TarmacGL.DrawShaded(GL, SurfaceModel[ThisSurf], LocalCamera.flashRed);
                 //re-enable textured polygons
@@ -483,8 +491,9 @@ namespace Tarmac64_Retail
                         //Draw Regular Textured Objects.
 
                         ShiftST(ThisTexture);
-                        TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
+                        TarmacGL.EndPrimitive(GL);
                         TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+                        TarmacGL.DrawTextureFlush(GL, TextureObjects, GLTexture[ThisTexture], ThisTexture);
 
                         
                         for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
@@ -502,8 +511,9 @@ namespace Tarmac64_Retail
                         //Draw Framebuffer Textured Objects.
 
                         ShiftST(ThisTexture);
-                        TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
+                        TarmacGL.EndPrimitive(GL);
                         TarmacGL.DrawGLCull(GL, TextureObjects[ThisTexture]);
+                        TarmacGL.DrawTextureFlushScreen(GL, GLWindow.Width, GLWindow.Height, TextureObjects[ThisTexture], GLTexture[ThisTexture]);
 
                         for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
                         {
@@ -517,12 +527,12 @@ namespace Tarmac64_Retail
                 else
                 {
                     //Draw Gouraud Objects
+                    TarmacGL.EndPrimitive(GL);
 
                     GL.Disable(OpenGL.GL_CULL_FACE);
                     GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
                     GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                     GL.Enable(OpenGL.GL_BLEND);
-                    //GLTexture[GLShadeIndex].Destroy(GL);
                     GLTexture[GLShadeIndex].Bind(GL);
 
 
@@ -550,6 +560,7 @@ namespace Tarmac64_Retail
 
         private void DrawDefaultGouraud()
         {
+            TarmacGL.EndPrimitive(GL);
             GL.Disable(OpenGL.GL_CULL_FACE);
             GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
@@ -576,6 +587,7 @@ namespace Tarmac64_Retail
 
         private void DrawSectionGouraud()
         {
+            TarmacGL.EndPrimitive(GL);
             GL.Disable(OpenGL.GL_CULL_FACE);
             GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
@@ -593,7 +605,7 @@ namespace Tarmac64_Retail
 
             if (chkWireframe.Checked)
             {
-                GL.End();
+                TarmacGL.EndPrimitive(GL);
                 GLTexture[GLShadeIndex].Bind(GL);
                 GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
 
@@ -608,7 +620,7 @@ namespace Tarmac64_Retail
 
 
             //re-enable textured polygons
-            GL.End();
+            TarmacGL.EndPrimitive(GL);
             GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             GL.Enable(OpenGL.GL_TEXTURE_2D);
             GL.Enable(OpenGL.GL_BLEND);
@@ -617,14 +629,43 @@ namespace Tarmac64_Retail
             GL.Enable(OpenGL.GL_COLOR_MATERIAL);
             GL.Enable(OpenGL.GL_TEXTURE_2D);
             GL.FrontFace(OpenGL.GL_CCW);
-            GL.Begin(OpenGL.GL_TRIANGLES);
         }
 
 
 
 
+        private void DrawSectionHighlight()
+        {
+            if (CourseModel.Length == 0)
+            {
+                return;
+            }
+
+            TarmacGL.EndPrimitive(GL);
+            GL.Disable(OpenGL.GL_DEPTH_TEST);
+            GL.Disable(OpenGL.GL_CULL_FACE);
+            GL.Disable(OpenGL.GL_TEXTURE_2D);
+            GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
+            GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.Enable(OpenGL.GL_BLEND);
+            GLTexture[GLShadeIndex].Bind(GL);
+
+            if (TargetedSection >= 0 && TargetedSection < CourseModel.Length)
+            {
+                TarmacGL.DrawShaded(GL, CourseModel[TargetedSection], LocalCamera.flashWhite);
+            }
+            if (SelectedSection >= 0 && SelectedSection < CourseModel.Length && SelectedSection != TargetedSection)
+            {
+                TarmacGL.DrawShaded(GL, CourseModel[SelectedSection], LocalCamera.flashWhite);
+            }
+
+            GL.Enable(OpenGL.GL_DEPTH_TEST);
+            GL.Enable(OpenGL.GL_TEXTURE_2D);
+        }
+
         private void DrawSurface()
         {
+            TarmacGL.EndPrimitive(GL);
             GL.Disable(OpenGL.GL_CULL_FACE);
             GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
@@ -657,14 +698,14 @@ namespace Tarmac64_Retail
                 {
                     if (ObjectTypes[CourseObjects[ThisObject].TypeIndex].TextureData != null)
                     {
-                        GL.End();
+                        TarmacGL.EndPrimitive(GL);
                         GL.Enable(OpenGL.GL_TEXTURE_2D);
                         GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-                        TarmacGL.DrawOKObjectTextured(GL, GLTexture[GLObjectIndex], CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].TypeIndex]);
+                        TarmacGL.DrawOKObjectTextured(GL, ObjectTextureCache, CourseObjects[ThisObject], ObjectTypes[CourseObjects[ThisObject].TypeIndex]);
                     }
                     else
                     {
-                        GL.End();
+                        TarmacGL.EndPrimitive(GL);
                         GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
                         GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                         GL.Enable(OpenGL.GL_BLEND);
@@ -675,7 +716,7 @@ namespace Tarmac64_Retail
                 }
             }
 
-            GL.End();
+            TarmacGL.EndPrimitive(GL);
             GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
             GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             GL.Enable(OpenGL.GL_BLEND);
@@ -697,7 +738,7 @@ namespace Tarmac64_Retail
             {
                 if ((ThisObject != TargetedObject) && (ThisObject != OKSelectedObject))
                 {
-                    GL.End();
+                    TarmacGL.EndPrimitive(GL);
                     GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
                     GL.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
                     GL.Enable(OpenGL.GL_BLEND);
@@ -708,7 +749,7 @@ namespace Tarmac64_Retail
         }
         private void DrawScene()
         {
-            GL.End();
+            TarmacGL.EndPrimitive(GL);
             GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
 
             GL.AlphaFunc(OpenGL.GL_GREATER, Convert.ToSingle(0.1));
@@ -720,54 +761,8 @@ namespace Tarmac64_Retail
             GL.Enable(OpenGL.GL_COLOR_MATERIAL);
             GL.Enable(OpenGL.GL_TEXTURE_2D);
             GL.FrontFace(OpenGL.GL_CCW);
+            GL.Disable(OpenGL.GL_FOG);
 
-
-            if (FogEnable)
-            {
-
-
-                // --- FOG SETUP BEGINS ---
-                GL.Enable(OpenGL.GL_FOG);
-
-                // 1. Fixed Color: Must be floats! 0-255 becomes 0.0-1.0
-                float[] FC = new float[4] {
-                FogColor[0] / 255f,
-                FogColor[1] / 255f,
-                FogColor[2] / 255f,
-                FogColor[3] / 255f,
-            };
-                GL.Fog(OpenGL.GL_FOG_COLOR, FC);
-
-                // 2. User Inputs (Toad's Turnpike = 900, 1000)
-                float n64Min = FogNear;
-                float n64Max = FogFar;
-
-                // 3. Camera Clipping Planes (The ones used in gl.Perspective)
-                float camNear = 10f;
-                float camFar = 2000f;
-
-                // 4. The SDK Macro Logic
-                float diff = n64Max - n64Min;
-                if (diff == 0) diff = 1;
-
-                float fm = 128000f / diff;
-                float fo = (500f - n64Min) * 256f / diff;
-
-                // 5. Calculate NDC (where 0 is fog start, 255 is full fog)
-                float ndcStart = (0f - fo) / fm;
-                float ndcEnd = (255f - fo) / fm;
-
-                // 6. Reverse Projection to get World Distance
-                // This translates the N64's non-linear depth back into OpenGL linear distance
-                float glStart = (2 * camNear * camFar) / (camFar + camNear - ndcStart * (camFar - camNear));
-                float glEnd = (2 * camNear * camFar) / (camFar + camNear - ndcEnd * (camFar - camNear));
-
-                // 7. Apply to OpenGL
-                GL.Fog(OpenGL.GL_FOG_MODE, OpenGL.GL_LINEAR);
-                GL.Fog(OpenGL.GL_FOG_START, glStart);
-                GL.Fog(OpenGL.GL_FOG_END, glEnd);
-             
-            }
             //draw course model first
             switch (TargetingMode)
             {
@@ -794,6 +789,7 @@ namespace Tarmac64_Retail
                         {
                             DrawSectionGouraud();
                         }
+                        DrawSectionHighlight();
                         break;
                     }
 
@@ -839,11 +835,11 @@ namespace Tarmac64_Retail
             TM64_Geometry TarmacGeo = new TM64_Geometry();
             TM64_Geometry.Face[] Marker = TarmacGeo.CreateStandard(Convert.ToSingle(5.0));
 
-            GL.End();
+            TarmacGL.EndPrimitive(GL);
             GL.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_FILL);
-            GL.Begin(OpenGL.GL_TRIANGLES);
             if (CheckboxPaths.Checked)
             {
+                TarmacGL.BeginTriangles(GL);
                 foreach (var ThisPath in PathMarker)
                 {
                     foreach (var ThisMark in ThisPath.pathmarker)
@@ -854,6 +850,7 @@ namespace Tarmac64_Retail
                         }
                     }
                 }
+                TarmacGL.EndPrimitive(GL);
             }
 
         }
@@ -917,7 +914,7 @@ namespace Tarmac64_Retail
 
 
                 GL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-                GL.Disable(OpenGL.GL_DEPTH_TEST);
+                GL.MatrixMode(OpenGL.GL_MODELVIEW);
                 GL.LoadIdentity();
                 RefreshView();
                 GL.Enable(OpenGL.GL_DEPTH_TEST);
@@ -946,7 +943,7 @@ namespace Tarmac64_Retail
                 GL.LookAt(LocalCamera.position.X, LocalCamera.position.Y, LocalCamera.position.Z, LocalCamera.target.X, LocalCamera.target.Y, LocalCamera.target.Z, 0, 0, 1);
 
                 DrawScene();
-                GL.End();
+                TarmacGL.EndPrimitive(GL);
 
 
                 string Error = GL.GetErrorDescription(GL.GetError());
@@ -955,7 +952,7 @@ namespace Tarmac64_Retail
             }
 
 
-            GL.End();
+            TarmacGL.EndPrimitive(GL);
 
 
         }
@@ -1196,9 +1193,6 @@ namespace Tarmac64_Retail
                 return;
             }
             UpdateDraw = true;
-            RefreshView();
-            
-            
 
             double[] pointA = GL.UnProject(e.Location.X, GLWindow.Height - e.Location.Y, 0);
             double[] pointB = GL.UnProject(e.Location.X, GLWindow.Height - e.Location.Y, 1);
