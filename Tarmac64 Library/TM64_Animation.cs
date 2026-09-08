@@ -571,11 +571,11 @@ namespace Tarmac64_Library
                 Node Sub = Base.Children[ThisNode];
                 if (Sub.HasMeshes)
                 {
-                    for (int ThisMesh = 0; ThisMesh < Sub.MeshCount; ThisMesh++)
+                    List<TM64_Geometry.OK64F3DObject> SplitObjects = TarmacGeo.CreateF3DObjectsByMaterial(FBX, Sub, TextureArray, false, TarmacSettings.AlphaCH2, true, AnimeScale);
+                    for (int ThisObject = 0; ThisObject < SplitObjects.Count; ThisObject++)
                     {
-                        TM64_Geometry.OK64F3DObject NewObj = TarmacGeo.CreateF3DObject(FBX, Sub, TextureArray, false, TarmacSettings.AlphaCH2, true, AnimeScale);
-                        NewObj.BoneName = Sub.Parent.Name;
-                        MeshList.Add(NewObj);
+                        SplitObjects[ThisObject].BoneName = Sub.Parent.Name;
+                        MeshList.Add(SplitObjects[ThisObject]);
                     }
                 }
                 else

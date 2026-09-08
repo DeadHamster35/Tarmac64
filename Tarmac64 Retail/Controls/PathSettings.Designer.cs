@@ -35,6 +35,11 @@
             this.label9 = new System.Windows.Forms.Label();
             this.GoalBannerBox = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.NewPathButton = new System.Windows.Forms.Button();
+            this.DeletePathButton = new System.Windows.Forms.Button();
+            this.NormalizePathButton = new System.Windows.Forms.Button();
+            this.LoadedPathBox = new System.Windows.Forms.ComboBox();
+            this.labelLoadedPath = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.DistributeBox = new System.Windows.Forms.CheckBox();
             this.PathCountBox = new System.Windows.Forms.TextBox();
@@ -154,6 +159,11 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.NewPathButton);
+            this.groupBox5.Controls.Add(this.DeletePathButton);
+            this.groupBox5.Controls.Add(this.NormalizePathButton);
+            this.groupBox5.Controls.Add(this.LoadedPathBox);
+            this.groupBox5.Controls.Add(this.labelLoadedPath);
             this.groupBox5.Controls.Add(this.label1);
             this.groupBox5.Controls.Add(this.DistributeBox);
             this.groupBox5.Controls.Add(this.PathCountBox);
@@ -161,10 +171,61 @@
             this.groupBox5.Location = new System.Drawing.Point(5, 293);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(5);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(277, 56);
+            this.groupBox5.Size = new System.Drawing.Size(277, 137);
             this.groupBox5.TabIndex = 308;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Course Paths";
+            // 
+            // NewPathButton
+            // 
+            this.NewPathButton.Location = new System.Drawing.Point(10, 78);
+            this.NewPathButton.Name = "NewPathButton";
+            this.NewPathButton.Size = new System.Drawing.Size(125, 23);
+            this.NewPathButton.TabIndex = 301;
+            this.NewPathButton.Text = "New Path";
+            this.NewPathButton.UseVisualStyleBackColor = true;
+            this.NewPathButton.Click += new System.EventHandler(this.NewPathButton_Click);
+            // 
+            // DeletePathButton
+            // 
+            this.DeletePathButton.Location = new System.Drawing.Point(140, 78);
+            this.DeletePathButton.Name = "DeletePathButton";
+            this.DeletePathButton.Size = new System.Drawing.Size(125, 23);
+            this.DeletePathButton.TabIndex = 302;
+            this.DeletePathButton.Text = "Delete Path";
+            this.DeletePathButton.UseVisualStyleBackColor = true;
+            this.DeletePathButton.Click += new System.EventHandler(this.DeletePathButton_Click);
+            // 
+            // NormalizePathButton
+            // 
+            this.NormalizePathButton.Location = new System.Drawing.Point(10, 107);
+            this.NormalizePathButton.Name = "NormalizePathButton";
+            this.NormalizePathButton.Size = new System.Drawing.Size(255, 23);
+            this.NormalizePathButton.TabIndex = 300;
+            this.NormalizePathButton.Text = "Normalize Path (20)";
+            this.NormalizePathButton.UseVisualStyleBackColor = true;
+            this.NormalizePathButton.Click += new System.EventHandler(this.NormalizePathButton_Click);
+            // 
+            // LoadedPathBox
+            // 
+            this.LoadedPathBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.LoadedPathBox.FormattingEnabled = true;
+            this.LoadedPathBox.Location = new System.Drawing.Point(90, 51);
+            this.LoadedPathBox.Margin = new System.Windows.Forms.Padding(5);
+            this.LoadedPathBox.Name = "LoadedPathBox";
+            this.LoadedPathBox.Size = new System.Drawing.Size(175, 21);
+            this.LoadedPathBox.TabIndex = 298;
+            this.LoadedPathBox.SelectedIndexChanged += new System.EventHandler(this.LoadedPathBox_SelectedIndexChanged);
+            // 
+            // labelLoadedPath
+            // 
+            this.labelLoadedPath.AutoSize = true;
+            this.labelLoadedPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.labelLoadedPath.Location = new System.Drawing.Point(8, 55);
+            this.labelLoadedPath.Name = "labelLoadedPath";
+            this.labelLoadedPath.Size = new System.Drawing.Size(70, 13);
+            this.labelLoadedPath.TabIndex = 299;
+            this.labelLoadedPath.Text = "Loaded Path";
             // 
             // label1
             // 
@@ -481,7 +542,7 @@
             this.groupBox1.Controls.Add(this.BombTypeBox);
             this.groupBox1.Controls.Add(this.BombIndexBox);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
-            this.groupBox1.Location = new System.Drawing.Point(5, 357);
+            this.groupBox1.Location = new System.Drawing.Point(5, 438);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(277, 71);
             this.groupBox1.TabIndex = 310;
@@ -557,7 +618,7 @@
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox3);
             this.Name = "PathSettings";
-            this.Size = new System.Drawing.Size(289, 435);
+            this.Size = new System.Drawing.Size(289, 520);
             this.Load += new System.EventHandler(this.PathSettings_Load);
             this.LapFinishLine.ResumeLayout(false);
             this.LapFinishLine.PerformLayout();
@@ -579,6 +640,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox DistributeBox;
         private System.Windows.Forms.TextBox PathCountBox;
+        private System.Windows.Forms.ComboBox LoadedPathBox;
+        private System.Windows.Forms.Label labelLoadedPath;
+        private System.Windows.Forms.Button NewPathButton;
+        private System.Windows.Forms.Button DeletePathButton;
+        private System.Windows.Forms.Button NormalizePathButton;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox AdjR;
         private System.Windows.Forms.TextBox AdjG;

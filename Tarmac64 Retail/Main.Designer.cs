@@ -581,7 +581,7 @@
             // 
             this.PathControl.Location = new System.Drawing.Point(0, 0);
             this.PathControl.Name = "PathControl";
-            this.PathControl.Size = new System.Drawing.Size(289, 435);
+            this.PathControl.Size = new System.Drawing.Size(289, 520);
             this.PathControl.TabIndex = 0;
             // 
             // Object

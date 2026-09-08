@@ -37,8 +37,53 @@ namespace Tarmac64_Retail
 
         TM64 Tarmac = new TM64();
         TM64_Course TarmacCourse = new TM64_Course();
+        TM64_Paths TarmacPath = new TM64_Paths();
         TM64.OK64Settings okSettings = new TM64.OK64Settings();
         public TM64_Course.Course CourseData = new TM64_Course.Course();
+        public TM64_Paths.Pathlist[] LoadedPaths = new TM64_Paths.Pathlist[0];
+        public bool NewPathMode = false;
+
+        public int SelectedPathIndex
+        {
+            get
+            {
+                return LoadedPathBox.SelectedIndex;
+            }
+        }
+
+        public void ReloadLoadedPaths(TM64_Paths.Pathlist[] paths)
+        {
+            LoadedPaths = paths;
+            int KeepIndex = LoadedPathBox.SelectedIndex;
+            bool Backup = blocked;
+            blocked = true;
+            LoadedPathBox.Items.Clear();
+            if (paths != null)
+            {
+                for (int ThisPath = 0; ThisPath < paths.Length; ThisPath++)
+                {
+                    int MarkerCount = 0;
+                    if ((paths[ThisPath] != null) && (paths[ThisPath].pathmarker != null))
+                    {
+                        MarkerCount = paths[ThisPath].pathmarker.Count;
+                    }
+                    LoadedPathBox.Items.Add("Path " + ThisPath.ToString() + " (" + MarkerCount.ToString() + ")");
+                }
+            }
+            if ((KeepIndex >= 0) && (KeepIndex < LoadedPathBox.Items.Count))
+            {
+                LoadedPathBox.SelectedIndex = KeepIndex;
+            }
+            else if (LoadedPathBox.Items.Count > 0)
+            {
+                LoadedPathBox.SelectedIndex = 0;
+            }
+            blocked = Backup;
+            if ((!blocked) && (UpdateParent != null))
+            {
+                UpdateParent(this, EventArgs.Empty);
+            }
+        }
 
         public void LoadPathSettings(MemoryStream memoryStream)
         {
@@ -484,6 +529,123 @@ namespace Tarmac64_Retail
         {
             UpdatePaths();
             UpdateUI();
+        }
+
+        private void LoadedPathBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (blocked)
+            {
+                return;
+            }
+            if (UpdateParent != null)
+            {
+                UpdateParent(this, EventArgs.Empty);
+            }
+        }
+
+        private void NormalizePathButton_Click(object sender, EventArgs e)
+        {
+            int PathIndex = LoadedPathBox.SelectedIndex;
+            if ((LoadedPaths == null) || (PathIndex < 0) || (PathIndex >= LoadedPaths.Length) ||
+                (LoadedPaths[PathIndex] == null) || (LoadedPaths[PathIndex].pathmarker == null) ||
+                (LoadedPaths[PathIndex].pathmarker.Count < 2))
+            {
+                MessageBox.Show("Load a path with at least two markers before normalizing.", "Normalize Path");
+                return;
+            }
+
+            DialogResult Confirm = MessageBox.Show(
+                "Replace the selected path with new markers spaced 20 units apart along the current spline?",
+                "Normalize Path",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Warning);
+            if (Confirm != DialogResult.OK)
+            {
+                return;
+            }
+
+            DialogResult PathType = MessageBox.Show(
+                "Normalize as a Circuit (loop the last marker back to the first)?\n\nYes = Circuit\nNo = Sprint",
+                "Normalize Path",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question);
+            if (PathType == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            bool CircuitPath = (PathType == DialogResult.Yes);
+            LoadedPaths[PathIndex].pathmarker = TarmacPath.NormalizePath(LoadedPaths[PathIndex].pathmarker, TM64_Paths.MarkerSpacing, CircuitPath);
+            ReloadLoadedPaths(LoadedPaths);
+        }
+
+        public void AddLoadedPath(TM64_Paths.Pathlist NewPath)
+        {
+            if ((NewPath == null) || (NewPath.pathmarker == null))
+            {
+                return;
+            }
+            List<TM64_Paths.Pathlist> PathList = new List<TM64_Paths.Pathlist>();
+            if (LoadedPaths != null)
+            {
+                PathList.AddRange(LoadedPaths);
+            }
+            PathList.Add(NewPath);
+            bool Backup = blocked;
+            blocked = true;
+            ReloadLoadedPaths(PathList.ToArray());
+            if (LoadedPathBox.Items.Count > 0)
+            {
+                LoadedPathBox.SelectedIndex = LoadedPathBox.Items.Count - 1;
+            }
+            blocked = Backup;
+        }
+
+        public void CancelNewPathMode()
+        {
+            NewPathMode = false;
+            NewPathButton.Text = "New Path";
+        }
+
+        private void NewPathButton_Click(object sender, EventArgs e)
+        {
+            NewPathMode = !NewPathMode;
+            if (NewPathMode)
+            {
+                NewPathButton.Text = "Save Path";
+            }
+            else
+            {
+                NewPathButton.Text = "New Path";
+            }
+            if (UpdateParent != null)
+            {
+                UpdateParent(this, EventArgs.Empty);
+            }
+        }
+
+        private void DeletePathButton_Click(object sender, EventArgs e)
+        {
+            int PathIndex = LoadedPathBox.SelectedIndex;
+            if ((LoadedPaths == null) || (PathIndex < 0) || (PathIndex >= LoadedPaths.Length))
+            {
+                MessageBox.Show("Select a path to delete.", "Delete Path");
+                return;
+            }
+
+            DialogResult Confirm = MessageBox.Show(
+                "Delete Path " + PathIndex.ToString() + " from the loaded path list?",
+                "Delete Path",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Warning);
+            if (Confirm != DialogResult.OK)
+            {
+                return;
+            }
+
+            List<TM64_Paths.Pathlist> PathList = LoadedPaths.ToList();
+            PathList.RemoveAt(PathIndex);
+            ReloadLoadedPaths(PathList.ToArray());
         }
 
         private void ColorUpdate()

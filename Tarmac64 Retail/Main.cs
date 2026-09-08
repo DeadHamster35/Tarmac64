@@ -88,6 +88,7 @@ namespace Tarmac64_Retail
             ObjectControl.UpdateZoomToTarget += ZoomToObject;
             TextureControl.UpdateParent += TextureRequestUpdate;
             SettingsControl.UpdateParent += SettingsRequestUpdate;
+            PathControl.UpdateParent += PathRequestUpdate;
 
             tabControl1.SelectedIndex = 0;
             tabControl1.SelectedIndex = 1;
@@ -861,6 +862,7 @@ namespace Tarmac64_Retail
                 {
                     string popFile = OpenFile.FileName;
                     PathArray = tm64Path.LoadPOP3(popFile, surfaceObjects);
+                    PathControl.ReloadLoadedPaths(PathArray);
                 }
             }
 
@@ -1109,6 +1111,7 @@ namespace Tarmac64_Retail
             TextureControl.MaterialSelect.SelectedIndex = 0;
             
             PathControl.loaded = true;
+            PathControl.ReloadLoadedPaths(PathArray);
 
 
 
@@ -1239,6 +1242,29 @@ namespace Tarmac64_Retail
                 }
             }
 
+            GLControl.UpdateDraw = true;
+        }
+        public void PathRequestUpdate(object sender, EventArgs e)
+        {
+            if (PathControl.NewPathMode)
+            {
+                if (!GLControl.NewPathMode)
+                {
+                    GLControl.BeginNewPath();
+                }
+            }
+            else if (GLControl.NewPathMode)
+            {
+                TM64_Paths.Pathlist NewPath = GLControl.FinishNewPath();
+                if (NewPath != null)
+                {
+                    PathControl.AddLoadedPath(NewPath);
+                }
+            }
+
+            PathArray = PathControl.LoadedPaths;
+            GLControl.PathMarker = PathArray;
+            GLControl.SelectedPath = PathControl.SelectedPathIndex;
             GLControl.UpdateDraw = true;
         }
         public void GLRequestUpdate(object sender, EventArgs e)
@@ -1586,10 +1612,25 @@ namespace Tarmac64_Retail
         {
             if (loaded)
             {
+                if ((GLControl.TargetingMode == GLViewer.ControlMode.Path) && (tabControl1.SelectedIndex != 1))
+                {
+                    GLControl.CancelNewPath();
+                    PathControl.CancelNewPathMode();
+                }
                 switch (tabControl1.SelectedIndex)
                 {
-                    case 0:
                     case 1:
+                        {
+                            GLControl.CourseModel = masterObjects;
+                            GLControl.SurfaceModel = new TM64_Geometry.OK64F3DObject[0];
+                            GLControl.CourseObjects = new List<TM64_Course.OKObject>();
+                            GLControl.ObjectTypes = new TM64_Course.OKObjectType[0];
+                            GLControl.SectionList = new int[0];
+                            GLControl.TargetingMode = GLViewer.ControlMode.Path;
+                            GLControl.SelectedPath = PathControl.SelectedPathIndex;
+                            break;
+                        }
+                    case 0:
                     case 2:
                     default:
                         {
@@ -1664,10 +1705,7 @@ namespace Tarmac64_Retail
                 GLControl.UpdateDraw = true;
                 GLControl.TextureObjects = textureArray;
                 GLControl.BitmapData = TextureBitmaps;
-                if (PathArray.Length > 0) 
-                {                    
-                    GLControl.PathMarker = PathArray;
-                }
+                GLControl.PathMarker = PathArray;
             }
         }
 

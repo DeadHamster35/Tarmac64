@@ -120,6 +120,97 @@ namespace Tarmac64_Library
             }
         }
 
+        public const float MarkerSpacing = 20.0f;
+
+        public List<Marker> NormalizePath(List<Marker> source, float spacing, bool circuit)
+        {
+            List<Marker> result = new List<Marker>();
+            if ((source == null) || (source.Count == 0))
+            {
+                return result;
+            }
+            if (source.Count == 1)
+            {
+                result.Add(CopyMarker(source[0], source[0]));
+                return result;
+            }
+
+            result.Add(CopyMarker(source[0], source[0]));
+            double nextSampleDistance = spacing;
+            double traveled = 0;
+            int SegmentCount = source.Count - 1;
+            if (circuit)
+            {
+                SegmentCount = source.Count;
+            }
+
+            for (int ThisMark = 0; ThisMark < SegmentCount; ThisMark++)
+            {
+                Marker PointA = source[ThisMark];
+                Marker PointB = source[0];
+                if (ThisMark < (source.Count - 1))
+                {
+                    PointB = source[ThisMark + 1];
+                }
+                double SegmentLength = MarkerDistance(PointA, PointB);
+                if (SegmentLength <= 0.0001)
+                {
+                    continue;
+                }
+
+                while ((traveled + SegmentLength) >= nextSampleDistance)
+                {
+                    double SampleT = (nextSampleDistance - traveled) / SegmentLength;
+                    result.Add(LerpMarker(PointA, PointB, SampleT, source[0]));
+                    nextSampleDistance += spacing;
+                }
+                traveled += SegmentLength;
+            }
+
+            if (circuit)
+            {
+                if ((result.Count > 1) && (MarkerDistance(result[result.Count - 1], result[0]) <= 0.5))
+                {
+                    result.RemoveAt(result.Count - 1);
+                }
+            }
+            else if (MarkerDistance(result[result.Count - 1], source[source.Count - 1]) > 0.5)
+            {
+                result.Add(CopyMarker(source[source.Count - 1], source[0]));
+            }
+            return result;
+        }
+
+        private Marker CopyMarker(Marker source, Marker colorSource)
+        {
+            Marker NewMark = new Marker();
+            NewMark.X = source.X;
+            NewMark.Y = source.Y;
+            NewMark.Z = source.Z;
+            NewMark.Flag = source.Flag;
+            NewMark.Color = colorSource.Color;
+            return NewMark;
+        }
+
+        private Marker LerpMarker(Marker PointA, Marker PointB, double SampleT, Marker colorSource)
+        {
+            Marker NewMark = new Marker();
+            NewMark.X = Convert.ToInt32(PointA.X + ((PointB.X - PointA.X) * SampleT));
+            NewMark.Y = Convert.ToInt32(PointA.Y + ((PointB.Y - PointA.Y) * SampleT));
+            NewMark.Z = Convert.ToInt32(PointA.Z + ((PointB.Z - PointA.Z) * SampleT));
+            NewMark.Flag = PointA.Flag;
+            NewMark.Color = colorSource.Color;
+            return NewMark;
+        }
+
+        private double MarkerDistance(Marker PointA, Marker PointB)
+        {
+            double DeltaX = PointB.X - PointA.X;
+            double DeltaY = PointB.Y - PointA.Y;
+            double DeltaZ = PointB.Z - PointA.Z;
+            return Math.Sqrt((DeltaX * DeltaX) + (DeltaY * DeltaY) + (DeltaZ * DeltaZ));
+        }
+
         public class BattleMarker
         {
 

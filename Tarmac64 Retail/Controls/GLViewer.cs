@@ -34,6 +34,7 @@ namespace Tarmac64_Retail
             Render,
             Surface,
             Objects,
+            Path,
         }
 
         TM64 Tarmac = new TM64();
@@ -44,7 +45,7 @@ namespace Tarmac64_Retail
         public TM64_GL.TMCamera LocalCamera = new TM64_GL.TMCamera();
 
         public ControlMode TargetingMode = ControlMode.Scene;
-        public int SelectedRender, SelectedSection, SelectedSurface, SelectedObject;
+        public int SelectedRender, SelectedSection, SelectedSurface, SelectedObject, SelectedPath = -1;
         public int TargetedRender, TargetedSection, TargetedSurface, TargetedObject;
 
 
@@ -54,6 +55,11 @@ namespace Tarmac64_Retail
         int ScreenRenderIndex = -1;
 
         public TM64_Paths.Pathlist[] PathMarker = new TM64_Paths.Pathlist[0];
+        public bool NewPathMode = false;
+        public TM64_Paths.Pathlist DraftPath = null;
+        bool PathSurfaceHit = false;
+        float[] DraftPathColor = new float[3] { 1.0f, 1.0f, 0.0f };
+        const float PathMarkerLift = 1.0f;
         Bitmap[] ScreenRenders = new Bitmap[6];
         public TM64_Geometry.OK64F3DObject[] CourseModel = new TM64_Geometry.OK64F3DObject[0];
         public TM64_Geometry.OK64F3DObject[] SurfaceModel = new TM64_Geometry.OK64F3DObject[0];
@@ -88,6 +94,73 @@ namespace Tarmac64_Retail
 
 
         public bool SpeedChangeLock = false;
+
+        public void BeginNewPath()
+        {
+            if (NewPathMode && (DraftPath != null))
+            {
+                return;
+            }
+            Random RNG = new Random();
+            NewPathMode = true;
+            PathSurfaceHit = false;
+            DraftPath = new TM64_Paths.Pathlist();
+            DraftPath.pathmarker = new List<TM64_Paths.Marker>();
+            DraftPathColor = new float[3]
+            {
+                Convert.ToSingle(RNG.NextDouble()),
+                Convert.ToSingle(RNG.NextDouble()),
+                Convert.ToSingle(RNG.NextDouble())
+            };
+            UpdateDraw = true;
+        }
+
+        public TM64_Paths.Pathlist FinishNewPath()
+        {
+            TM64_Paths.Pathlist Result = null;
+            if ((DraftPath != null) && (DraftPath.pathmarker != null) && (DraftPath.pathmarker.Count >= 2))
+            {
+                Result = DraftPath;
+            }
+            NewPathMode = false;
+            DraftPath = null;
+            PathSurfaceHit = false;
+            UpdateDraw = true;
+            return Result;
+        }
+
+        public void CancelNewPath()
+        {
+            NewPathMode = false;
+            DraftPath = null;
+            PathSurfaceHit = false;
+            UpdateDraw = true;
+        }
+
+        private TM64_Paths.Marker CreateMarkerAtHit()
+        {
+            TM64_Paths.Marker NewMark = new TM64_Paths.Marker();
+            NewMark.X = Convert.ToInt32(LocalCamera.marker.X);
+            NewMark.Y = Convert.ToInt32(LocalCamera.marker.Y);
+            NewMark.Z = Convert.ToInt32(LocalCamera.marker.Z + PathMarkerLift);
+            NewMark.Flag = 1;
+            if ((DraftPath != null) && (DraftPath.pathmarker != null) && (DraftPath.pathmarker.Count > 0))
+            {
+                NewMark.Flag = DraftPath.pathmarker[DraftPath.pathmarker.Count - 1].Flag;
+            }
+            NewMark.Color = DraftPathColor;
+            return NewMark;
+        }
+
+        private void PlaceDraftPathMarker()
+        {
+            if ((DraftPath == null) || (DraftPath.pathmarker == null) || (!PathSurfaceHit))
+            {
+                return;
+            }
+            DraftPath.pathmarker.Add(CreateMarkerAtHit());
+            UpdateDraw = true;
+        }
 
         public void RefreshView()
         {
@@ -767,6 +840,7 @@ namespace Tarmac64_Retail
             switch (TargetingMode)
             {
                 case ControlMode.Scene:
+                case ControlMode.Path:
                     {
                         if (CheckboxTextured.Checked)
                         {
@@ -840,14 +914,34 @@ namespace Tarmac64_Retail
             if (CheckboxPaths.Checked)
             {
                 TarmacGL.BeginTriangles(GL);
-                foreach (var ThisPath in PathMarker)
+                for (int PathIndex = 0; PathIndex < PathMarker.Length; PathIndex++)
                 {
-                    foreach (var ThisMark in ThisPath.pathmarker)
+                    if ((PathMarker[PathIndex] == null) || (PathMarker[PathIndex].pathmarker == null))
+                    {
+                        continue;
+                    }
+                    if ((TargetingMode == ControlMode.Path) && (PathIndex != SelectedPath))
+                    {
+                        continue;
+                    }
+                    foreach (var ThisMark in PathMarker[PathIndex].pathmarker)
                     {
                         foreach (var ThisFace in Marker)
                         {
                             TarmacGL.DrawMarker(GL, GLTexture[GLShadeIndex], ThisFace, ThisMark.Color, ThisMark);
                         }
+                    }
+                }
+                TarmacGL.EndPrimitive(GL);
+            }
+            if ((NewPathMode) && (DraftPath != null) && (DraftPath.pathmarker != null))
+            {
+                TarmacGL.BeginTriangles(GL);
+                foreach (var ThisMark in DraftPath.pathmarker)
+                {
+                    foreach (var ThisFace in Marker)
+                    {
+                        TarmacGL.DrawMarker(GL, GLTexture[GLShadeIndex], ThisFace, ThisMark.Color, ThisMark);
                     }
                 }
                 TarmacGL.EndPrimitive(GL);
@@ -1052,6 +1146,14 @@ namespace Tarmac64_Retail
                     {
                         break;
                     }
+                case (ControlMode.Path):
+                    {
+                        if ((NewPathMode) && (e.Button == MouseButtons.Right))
+                        {
+                            PlaceDraftPathMarker();
+                        }
+                        break;
+                    }
                 case (ControlMode.Render):
                     {
                         if (TargetedRender != -1)
@@ -1239,6 +1341,22 @@ namespace Tarmac64_Retail
                 case ControlMode.Scene:
                 default:
                     {
+                        break;
+                    }
+                case ControlMode.Path:
+                    {
+                        PathSurfaceHit = false;
+                        for (int ThisObject = 0; ThisObject < CourseModel.Length; ThisObject++)
+                        {
+                            if (MouseTest(out Intersection, CourseModel[ThisObject], RayOrigin, RayTarget))
+                            {
+                                if ((objectDistance == -1) || (objectDistance > Intersection.X))
+                                {
+                                    objectDistance = Intersection.X;
+                                }
+                            }
+                        }
+                        PathSurfaceHit = (objectDistance != -1);
                         break;
                     }
                 case ControlMode.Section:

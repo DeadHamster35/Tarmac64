@@ -1249,7 +1249,7 @@ namespace Tarmac64_Library
             return memoryStream.ToArray();
         }
    
-        public OK64F3DObject CreateF3DObject (Assimp.Scene fbx, Assimp.Node objectNode, TM64_Texture.OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false, bool DisregardOrigin = false, float AnimeScale = 1.0f)
+        public OK64F3DObject CreateF3DObject (Assimp.Scene fbx, Assimp.Node objectNode, TM64_Texture.OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false, bool DisregardOrigin = false, float AnimeScale = 1.0f, int FilterMaterial = -1)
         {
             OK64F3DObject newObject = new OK64F3DObject();
             TM64.OK64Settings TarmacSettings = new TM64.OK64Settings();
@@ -1277,7 +1277,14 @@ namespace Tarmac64_Library
                 newObject.modelGeometry = CreateStandard(0);
                 return newObject;
             } 
-            newObject.materialID = fbx.Meshes[objectNode.MeshIndices[0]].MaterialIndex;
+            if (FilterMaterial >= 0)
+            {
+                newObject.materialID = FilterMaterial;
+            }
+            else
+            {
+                newObject.materialID = fbx.Meshes[objectNode.MeshIndices[0]].MaterialIndex;
+            }
             int vertCount = 0;
             int faceCount = 0;
 
@@ -1330,6 +1337,10 @@ namespace Tarmac64_Library
 
             foreach (var childMesh in objectNode.MeshIndices)
             {
+                if (FilterMaterial >= 0 && fbx.Meshes[childMesh].MaterialIndex != FilterMaterial)
+                {
+                    continue;
+                }
 
                 vertCount = vertCount + fbx.Meshes[childMesh].VertexCount;
                 faceCount = faceCount + fbx.Meshes[childMesh].FaceCount;
@@ -1343,6 +1354,11 @@ namespace Tarmac64_Library
                 }
                 
             }
+
+            if (FilterMaterial >= 0 && faceCount == 0)
+            {
+                return null;
+            }
             
             newObject.vertCount = vertCount;
             newObject.faceCount = faceCount;
@@ -1353,6 +1369,10 @@ namespace Tarmac64_Library
             
             foreach (var childMesh in objectNode.MeshIndices)
             {
+                if (FilterMaterial >= 0 && fbx.Meshes[childMesh].MaterialIndex != FilterMaterial)
+                {
+                    continue;
+                }
 
                 foreach (var childPoly in fbx.Meshes[childMesh].Faces)
                 {
@@ -1622,6 +1642,85 @@ namespace Tarmac64_Library
             return newObject;
         }
 
+        public List<OK64F3DObject> CreateF3DObjectsByMaterial(Assimp.Scene fbx, Assimp.Node objectNode, TM64_Texture.OK64Texture[] textureArray, bool ForceFlatUV = false, bool AlphaChannelTwo = false, bool DisregardOrigin = false, float AnimeScale = 1.0f)
+        {
+            List<OK64F3DObject> splitObjects = new List<OK64F3DObject>();
+            if (objectNode.MeshIndices.Count == 0)
+            {
+                OK64F3DObject emptyObject = CreateF3DObject(fbx, objectNode, textureArray, ForceFlatUV, AlphaChannelTwo, DisregardOrigin, AnimeScale);
+                if (emptyObject != null)
+                {
+                    splitObjects.Add(emptyObject);
+                }
+                return splitObjects;
+            }
+
+            List<int> materialIds = new List<int>();
+            foreach (var childMesh in objectNode.MeshIndices)
+            {
+                int materialId = fbx.Meshes[childMesh].MaterialIndex;
+                if (!materialIds.Contains(materialId))
+                {
+                    materialIds.Add(materialId);
+                }
+            }
+
+            bool splitByMaterial = materialIds.Count > 1;
+            foreach (int materialId in materialIds)
+            {
+                OK64F3DObject newObject = CreateF3DObject(fbx, objectNode, textureArray, ForceFlatUV, AlphaChannelTwo, DisregardOrigin, AnimeScale, materialId);
+                if (newObject == null)
+                {
+                    continue;
+                }
+                if (splitByMaterial)
+                {
+                    string materialName = "";
+                    if (textureArray != null && materialId >= 0 && materialId < textureArray.Length)
+                    {
+                        if (textureArray[materialId].TexelData != null && textureArray[materialId].TexelData.Count > 0)
+                        {
+                            materialName = textureArray[materialId].TexelData[0].textureName;
+                        }
+                    }
+                    if (string.IsNullOrEmpty(materialName) && fbx.Materials != null && materialId >= 0 && materialId < fbx.Materials.Count)
+                    {
+                        materialName = fbx.Materials[materialId].Name;
+                    }
+                    if (string.IsNullOrEmpty(materialName))
+                    {
+                        materialName = "m" + materialId.ToString();
+                    }
+                    newObject.objectName = objectNode.Name + "_" + materialName;
+                }
+                splitObjects.Add(newObject);
+            }
+            return splitObjects;
+        }
+
+        byte ParseSurfaceMaterialFromName(string objectName)
+        {
+            string[] surfaceID = objectName.Split('_');
+            byte SurfaceStorageByte = 0;
+            if (surfaceID[0].Length != 0)
+            {
+                bool TestResult = byte.TryParse(surfaceID[0], out SurfaceStorageByte);
+                if (!TestResult)
+                {
+                    MessageBox.Show("ERROR- Bad Surface Index - " + objectName);
+                }
+            }
+            else
+            {
+                bool TestResult = byte.TryParse(surfaceID[1], out SurfaceStorageByte);
+                if (!TestResult)
+                {
+                    MessageBox.Show("ERROR- Bad Surface Index - " + objectName);
+                }
+            }
+            return SurfaceStorageByte;
+        }
+
 
         public bool CheckST(OK64F3DObject Object, TM64_Texture.OK64Texture textureObject)
         {
@@ -1710,18 +1809,27 @@ namespace Tarmac64_Library
                     groupList.Add(new OK64F3DGroup());
                     int groupCount = groupList.Count - 1;
                     groupList[groupCount].groupName = groupParent.Name;
-                    groupList[groupCount].subIndexes = new int[groupParent.Children.Count];
+                    List<int> groupIndexes = new List<int>();
                     for (int currentGrandchild = 0; currentGrandchild < grandparentCount; currentGrandchild++)
                     {
-                        groupList[groupCount].subIndexes[currentGrandchild] = masterCount;
-                        masterList.Add(CreateF3DObject(fbx, groupParent.Children[currentGrandchild],textureArray, false, AlphaCH));
-                        masterCount++;
+                        List<OK64F3DObject> splitObjects = CreateF3DObjectsByMaterial(fbx, groupParent.Children[currentGrandchild], textureArray, false, AlphaCH);
+                        for (int splitIndex = 0; splitIndex < splitObjects.Count; splitIndex++)
+                        {
+                            groupIndexes.Add(masterCount);
+                            masterList.Add(splitObjects[splitIndex]);
+                            masterCount++;
+                        }
                     }
+                    groupList[groupCount].subIndexes = groupIndexes.ToArray();
                 }
                 else
                 {
-                    masterList.Add(CreateF3DObject(fbx, masterNode.Children[currentChild], textureArray, false, AlphaCH));
-                    masterCount++;
+                    List<OK64F3DObject> splitObjects = CreateF3DObjectsByMaterial(fbx, masterNode.Children[currentChild], textureArray, false, AlphaCH);
+                    for (int splitIndex = 0; splitIndex < splitObjects.Count; splitIndex++)
+                    {
+                        masterList.Add(splitObjects[splitIndex]);
+                        masterCount++;
+                    }
                 }
             }
             
@@ -1752,7 +1860,7 @@ namespace Tarmac64_Library
             }
             for (int childObject = 0; childObject < BaseNode.Children.Count; childObject++)
             {
-                masterObjects.Add(CreateF3DObject(fbx, BaseNode.Children[childObject], textureArray, false, TarmacSettings.AlphaCH2, DisregardOrigin));
+                masterObjects.AddRange(CreateF3DObjectsByMaterial(fbx, BaseNode.Children[childObject], textureArray, false, TarmacSettings.AlphaCH2, DisregardOrigin));
             }
             List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
             OK64F3DObject[] outputObjects = NaturalSort(masterObjects).ToArray();
@@ -1769,7 +1877,7 @@ namespace Tarmac64_Library
                 
                 for (int childObject = 0; childObject < surfaceNode.Children.Count; childObject++)
                 {
-                    masterObjects.Add(CreateF3DObject(fbx,surfaceNode.Children[childObject], textureArray, false, AlphaCH));
+                    masterObjects.AddRange(CreateF3DObjectsByMaterial(fbx, surfaceNode.Children[childObject], textureArray, false, AlphaCH));
                     currentObject++;
                 }
                 List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
@@ -1790,7 +1898,7 @@ namespace Tarmac64_Library
 
                 for (int childObject = 0; childObject < surfaceNode.Children.Count; childObject++)
                 {
-                    masterObjects.Add(CreateF3DObject(fbx, surfaceNode.Children[childObject], textureArray, false, AlphaCH));
+                    masterObjects.AddRange(CreateF3DObjectsByMaterial(fbx, surfaceNode.Children[childObject], textureArray, false, AlphaCH));
                     currentObject++;
                 }
                 List<TM64_Geometry.OK64F3DObject> masterList = new List<TM64_Geometry.OK64F3DObject>(masterObjects);
@@ -1807,7 +1915,7 @@ namespace Tarmac64_Library
             int currentObject = 0;
             for (int TargetOBJ = 0; TargetOBJ < fbx.RootNode.ChildCount; TargetOBJ++)
             {
-                masterObjects.Add(CreateF3DObject(fbx, fbx.RootNode.Children[TargetOBJ], textureArray, false, false));
+                masterObjects.AddRange(CreateF3DObjectsByMaterial(fbx, fbx.RootNode.Children[TargetOBJ], textureArray, false, false));
                 currentObject++;
             }
             OK64F3DObject[] outputObjects = NaturalSort(masterObjects).ToArray();
@@ -1834,32 +1942,18 @@ namespace Tarmac64_Library
                 totalIndexCount = totalIndexCount + surfaceNode.Children.Count;
                 for (int currentsubObject = 0; currentsubObject < subobjectCount; currentsubObject++)
                 {
-                    surfaceObjects.Add(CreateF3DObject(fbx,surfaceNode.Children[currentsubObject], textureArray, true));
-                    int currentObject = surfaceObjects.Count - 1;
-                    surfaceObjects[currentObject].surfaceID = currentSection + 1;
-                    surfaceObjects[currentObject].objectColor = new float[3] { colorValues[0], colorValues[1], colorValues[2] };
-                    string[] surfaceID = surfaceObjects[currentObject].objectName.Split('_');
-                    byte SurfaceStorageByte = 0;
-                    if (surfaceID[0].Length != 0)
+                    Assimp.Node childNode = surfaceNode.Children[currentsubObject];
+                    byte SurfaceStorageByte = ParseSurfaceMaterialFromName(childNode.Name);
+                    int startIndex = surfaceObjects.Count;
+                    surfaceObjects.AddRange(CreateF3DObjectsByMaterial(fbx, childNode, textureArray, true));
+                    for (int currentObject = startIndex; currentObject < surfaceObjects.Count; currentObject++)
                     {
-                        bool TestResult = byte.TryParse(surfaceID[0], out SurfaceStorageByte);
-                        if (!TestResult)
-                        {
-                            MessageBox.Show("ERROR- Bad Surface Index - " + surfaceObjects[currentObject].objectName);                        
-                        }
+                        surfaceObjects[currentObject].surfaceID = currentSection + 1;
+                        surfaceObjects[currentObject].objectColor = new float[3] { colorValues[0], colorValues[1], colorValues[2] };
                         surfaceObjects[currentObject].surfaceMaterial = SurfaceStorageByte;
+                        surfaceObjects[currentObject].materialID = 0;
+                        totalIndex++;
                     }
-                    else
-                    {
-                        bool TestResult = byte.TryParse(surfaceID[1], out SurfaceStorageByte);
-                        if (!TestResult)
-                        {
-                            MessageBox.Show("ERROR- Bad Surface Index - " + surfaceObjects[currentObject].objectName);
-                        }
-                        surfaceObjects[currentObject].surfaceMaterial = SurfaceStorageByte;
-                    }
-                    surfaceObjects[currentObject].materialID = 0;
-                    totalIndex++;
                 }
             }
             return surfaceObjects.ToArray();
@@ -1908,32 +2002,18 @@ namespace Tarmac64_Library
                 int subobjectCount = fbx.RootNode.ChildCount;
                 for (int currentsubObject = 0; currentsubObject < subobjectCount; currentsubObject++)
                 {
-                    surfaceObjects.Add(CreateF3DObject(fbx, surfaceNode.Children[currentsubObject], textureArray, true));
-                    int currentObject = surfaceObjects.Count - 1;
-                    surfaceObjects[currentObject].surfaceID = currentSection + 1;
-                    surfaceObjects[currentObject].objectColor = colorValues;
-                    string[] surfaceID = surfaceObjects[currentObject].objectName.Split('_');
-                    byte SurfaceStorageByte = 0;
-                    if (surfaceID[0].Length != 0)
+                    Assimp.Node childNode = surfaceNode.Children[currentsubObject];
+                    byte SurfaceStorageByte = ParseSurfaceMaterialFromName(childNode.Name);
+                    int startIndex = surfaceObjects.Count;
+                    surfaceObjects.AddRange(CreateF3DObjectsByMaterial(fbx, childNode, textureArray, true));
+                    for (int currentObject = startIndex; currentObject < surfaceObjects.Count; currentObject++)
                     {
-                        bool TestResult = byte.TryParse(surfaceID[0], out SurfaceStorageByte);
-                        if (!TestResult)
-                        {
-                            MessageBox.Show("ERROR- Bad Surface Index - " + surfaceObjects[currentObject].objectName);
-                        }
+                        surfaceObjects[currentObject].surfaceID = currentSection + 1;
+                        surfaceObjects[currentObject].objectColor = colorValues;
                         surfaceObjects[currentObject].surfaceMaterial = SurfaceStorageByte;
+                        surfaceObjects[currentObject].materialID = 0;
+                        totalIndex++;
                     }
-                    else
-                    {
-                        bool TestResult = byte.TryParse(surfaceID[1], out SurfaceStorageByte);
-                        if (!TestResult)
-                        {
-                            MessageBox.Show("ERROR- Bad Surface Index - " + surfaceObjects[currentObject].objectName);
-                        }
-                        surfaceObjects[currentObject].surfaceMaterial = SurfaceStorageByte;
-                    }
-                    surfaceObjects[currentObject].materialID = 0;
-                    totalIndex++;
                 }
             }
             return surfaceObjects.ToArray();
@@ -3240,6 +3320,62 @@ namespace Tarmac64_Library
             }
         }
 
+        struct CrunchVertKey : IEquatable<CrunchVertKey>
+        {
+            public short X;
+            public short Y;
+            public short Z;
+            public float S;
+            public float T;
+            public byte R;
+            public byte G;
+            public byte B;
+            public byte A;
+
+            public CrunchVertKey(Vertex Vert)
+            {
+                X = Vert.position.x;
+                Y = Vert.position.y;
+                Z = Vert.position.z;
+                S = Vert.position.sBase;
+                T = Vert.position.tBase;
+                R = Vert.color.R;
+                G = Vert.color.G;
+                B = Vert.color.B;
+                A = Vert.color.A;
+            }
+
+            public bool Equals(CrunchVertKey other)
+            {
+                return X == other.X && Y == other.Y && Z == other.Z
+                    && S == other.S && T == other.T
+                    && R == other.R && G == other.G && B == other.B && A == other.A;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is CrunchVertKey && Equals((CrunchVertKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 17;
+                    hash = hash * 31 + X;
+                    hash = hash * 31 + Y;
+                    hash = hash * 31 + Z;
+                    hash = hash * 31 + S.GetHashCode();
+                    hash = hash * 31 + T.GetHashCode();
+                    hash = hash * 31 + R;
+                    hash = hash * 31 + G;
+                    hash = hash * 31 + B;
+                    hash = hash * 31 + A;
+                    return hash;
+                }
+            }
+        }
+
 
         private void UpdateMatchCount(List<int[]> IndexArray, List<CrunchF3DVertCache> VCache)
         {
@@ -3414,6 +3550,318 @@ namespace Tarmac64_Library
             return OutputModel.ToArray();
 
 
+        }
+
+        // Triangle-greedy F3DEX packer. Each OK64F3DModel is one full gsSPVertex (dest 0, max 32).
+        // Prefer triangles that need the fewest new verts so a load draws as many faces as possible
+        // before the next DMA. Leftover slots can take a disconnected island; unused slots are not padded.
+        public OK64F3DModel[] CrunchF3DModelPacked(OK64F3DObject TargetObject)
+        {
+            const int CacheLimit = 32;
+
+            List<Vertex> UniqueVerts = new List<Vertex>();
+            List<int[]> Faces = new List<int[]>();
+            Dictionary<CrunchVertKey, int> VertMap = new Dictionary<CrunchVertKey, int>();
+
+            for (int ThisFace = 0; ThisFace < TargetObject.faceCount; ThisFace++)
+            {
+                if (TargetObject.modelGeometry[ThisFace].VertData.Length != 3)
+                {
+                    MessageBox.Show("Index count error with object " + TargetObject.objectName + "- wrong vert count");
+                    return new OK64F3DModel[0];
+                }
+
+                int[] FaceIndex = new int[3];
+                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                {
+                    Vertex TargetVert = TargetObject.modelGeometry[ThisFace].VertData[ThisVert];
+                    CrunchVertKey VertKey = new CrunchVertKey(TargetVert);
+                    int VertIndex;
+                    if (!VertMap.TryGetValue(VertKey, out VertIndex))
+                    {
+                        VertIndex = UniqueVerts.Count;
+                        VertMap.Add(VertKey, VertIndex);
+                        UniqueVerts.Add(TargetVert);
+                    }
+                    FaceIndex[ThisVert] = VertIndex;
+                }
+                Faces.Add(FaceIndex);
+            }
+
+            int FaceCount = Faces.Count;
+            int VertCount = UniqueVerts.Count;
+            if (FaceCount == 0)
+            {
+                return new OK64F3DModel[0];
+            }
+
+            List<int>[] VertFaces = new List<int>[VertCount];
+            int[] VertUse = new int[VertCount];
+            for (int ThisVert = 0; ThisVert < VertCount; ThisVert++)
+            {
+                VertFaces[ThisVert] = new List<int>();
+            }
+
+            for (int ThisFace = 0; ThisFace < FaceCount; ThisFace++)
+            {
+                int[] FaceIndex = Faces[ThisFace];
+                for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                {
+                    int VertIndex = FaceIndex[ThisVert];
+                    bool Listed = false;
+                    for (int CheckVert = 0; CheckVert < ThisVert; CheckVert++)
+                    {
+                        if (FaceIndex[CheckVert] == VertIndex)
+                        {
+                            Listed = true;
+                            break;
+                        }
+                    }
+                    if (!Listed)
+                    {
+                        VertFaces[VertIndex].Add(ThisFace);
+                        VertUse[VertIndex]++;
+                    }
+                }
+            }
+
+            bool[] FaceDone = new bool[FaceCount];
+            bool[] InCache = new bool[VertCount];
+            int[] CacheSlot = new int[VertCount];
+            int Remaining = FaceCount;
+            int[] NewVerts = new int[3];
+            HashSet<int> UnlockScratch = new HashSet<int>();
+            List<OK64F3DModel> OutputModel = new List<OK64F3DModel>();
+
+            while (Remaining > 0)
+            {
+                Array.Clear(InCache, 0, VertCount);
+                for (int ThisVert = 0; ThisVert < VertCount; ThisVert++)
+                {
+                    CacheSlot[ThisVert] = -1;
+                }
+
+                OK64F3DModel NewF3DCall = new OK64F3DModel();
+                NewF3DCall.VertexCache = new List<Vertex>();
+                NewF3DCall.Indexes = new List<int[]>();
+
+                while (true)
+                {
+                    Remaining -= DrainPackedCacheFaces(NewF3DCall, Faces, FaceDone, InCache, CacheSlot, VertUse);
+
+                    if (Remaining == 0)
+                    {
+                        break;
+                    }
+
+                    int BestFace = FindPackedTriangle(Faces, FaceDone, InCache, NewF3DCall.VertexCache.Count, CacheLimit, VertFaces, VertUse, UnlockScratch, NewVerts);
+                    if (BestFace < 0)
+                    {
+                        break;
+                    }
+
+                    int NewCount = CollectNewPackedVerts(Faces[BestFace], InCache, NewVerts);
+                    for (int ThisNew = 0; ThisNew < NewCount; ThisNew++)
+                    {
+                        int VertIndex = NewVerts[ThisNew];
+                        CacheSlot[VertIndex] = NewF3DCall.VertexCache.Count;
+                        InCache[VertIndex] = true;
+                        NewF3DCall.VertexCache.Add(UniqueVerts[VertIndex]);
+                    }
+
+                    EmitPackedTriangle(NewF3DCall, Faces[BestFace], CacheSlot);
+                    ReleasePackedFace(Faces[BestFace], VertUse, FaceDone, BestFace);
+                    Remaining--;
+                }
+
+                if (NewF3DCall.VertexCache.Count == 0)
+                {
+                    break;
+                }
+
+                OutputModel.Add(NewF3DCall);
+            }
+
+            return OutputModel.ToArray();
+        }
+
+        private int CollectNewPackedVerts(int[] FaceIndex, bool[] InCache, int[] NewVerts)
+        {
+            int NewCount = 0;
+            for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+            {
+                int VertIndex = FaceIndex[ThisVert];
+                if (InCache[VertIndex])
+                {
+                    continue;
+                }
+
+                bool Already = false;
+                for (int CheckNew = 0; CheckNew < NewCount; CheckNew++)
+                {
+                    if (NewVerts[CheckNew] == VertIndex)
+                    {
+                        Already = true;
+                        break;
+                    }
+                }
+                if (!Already)
+                {
+                    NewVerts[NewCount] = VertIndex;
+                    NewCount++;
+                }
+            }
+            return NewCount;
+        }
+
+        private int CountUnlockedPackedFaces(int FaceIndex, List<int[]> Faces, bool[] FaceDone, bool[] InCache, int[] NewVerts, int NewCount, List<int>[] VertFaces, HashSet<int> UnlockScratch)
+        {
+            UnlockScratch.Clear();
+            int Unlocked = 0;
+
+            for (int ThisNew = 0; ThisNew < NewCount; ThisNew++)
+            {
+                List<int> Incident = VertFaces[NewVerts[ThisNew]];
+                for (int ThisHit = 0; ThisHit < Incident.Count; ThisHit++)
+                {
+                    int OtherFace = Incident[ThisHit];
+                    if (OtherFace == FaceIndex || FaceDone[OtherFace] || !UnlockScratch.Add(OtherFace))
+                    {
+                        continue;
+                    }
+
+                    int[] OtherIndex = Faces[OtherFace];
+                    bool Covered = true;
+                    for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+                    {
+                        int OtherVert = OtherIndex[ThisVert];
+                        if (InCache[OtherVert])
+                        {
+                            continue;
+                        }
+
+                        bool InNew = false;
+                        for (int CheckNew = 0; CheckNew < NewCount; CheckNew++)
+                        {
+                            if (NewVerts[CheckNew] == OtherVert)
+                            {
+                                InNew = true;
+                                break;
+                            }
+                        }
+                        if (!InNew)
+                        {
+                            Covered = false;
+                            break;
+                        }
+                    }
+                    if (Covered)
+                    {
+                        Unlocked++;
+                    }
+                }
+            }
+
+            return Unlocked;
+        }
+
+        private int FindPackedTriangle(List<int[]> Faces, bool[] FaceDone, bool[] InCache, int CacheCount, int CacheLimit, List<int>[] VertFaces, int[] VertUse, HashSet<int> UnlockScratch, int[] NewVerts)
+        {
+            int BestFace = -1;
+            int BestK = 4;
+            int BestUnlocked = -1;
+            int BestValence = -1;
+            int FreeSlots = CacheLimit - CacheCount;
+            if (FreeSlots <= 0)
+            {
+                return -1;
+            }
+
+            for (int ThisFace = 0; ThisFace < Faces.Count; ThisFace++)
+            {
+                if (FaceDone[ThisFace])
+                {
+                    continue;
+                }
+
+                int NewCount = CollectNewPackedVerts(Faces[ThisFace], InCache, NewVerts);
+                if (NewCount == 0 || NewCount > FreeSlots)
+                {
+                    continue;
+                }
+
+                int Unlocked = CountUnlockedPackedFaces(ThisFace, Faces, FaceDone, InCache, NewVerts, NewCount, VertFaces, UnlockScratch);
+                int Valence = 0;
+                for (int ThisNew = 0; ThisNew < NewCount; ThisNew++)
+                {
+                    Valence += VertUse[NewVerts[ThisNew]];
+                }
+
+                if (NewCount < BestK
+                    || (NewCount == BestK && Unlocked > BestUnlocked)
+                    || (NewCount == BestK && Unlocked == BestUnlocked && Valence > BestValence))
+                {
+                    BestK = NewCount;
+                    BestUnlocked = Unlocked;
+                    BestValence = Valence;
+                    BestFace = ThisFace;
+                }
+            }
+
+            return BestFace;
+        }
+
+        private int DrainPackedCacheFaces(OK64F3DModel Batch, List<int[]> Faces, bool[] FaceDone, bool[] InCache, int[] CacheSlot, int[] VertUse)
+        {
+            int Drained = 0;
+            for (int ThisFace = 0; ThisFace < Faces.Count; ThisFace++)
+            {
+                if (FaceDone[ThisFace])
+                {
+                    continue;
+                }
+
+                int[] FaceIndex = Faces[ThisFace];
+                if (InCache[FaceIndex[0]] && InCache[FaceIndex[1]] && InCache[FaceIndex[2]])
+                {
+                    EmitPackedTriangle(Batch, FaceIndex, CacheSlot);
+                    ReleasePackedFace(FaceIndex, VertUse, FaceDone, ThisFace);
+                    Drained++;
+                }
+            }
+            return Drained;
+        }
+
+        private void EmitPackedTriangle(OK64F3DModel Batch, int[] FaceIndex, int[] CacheSlot)
+        {
+            Batch.Indexes.Add(new int[3]
+            {
+                CacheSlot[FaceIndex[0]],
+                CacheSlot[FaceIndex[1]],
+                CacheSlot[FaceIndex[2]]
+            });
+        }
+
+        private void ReleasePackedFace(int[] FaceIndex, int[] VertUse, bool[] FaceDone, int FaceNumber)
+        {
+            FaceDone[FaceNumber] = true;
+            for (int ThisVert = 0; ThisVert < 3; ThisVert++)
+            {
+                int VertIndex = FaceIndex[ThisVert];
+                bool Duplicate = false;
+                for (int CheckVert = 0; CheckVert < ThisVert; CheckVert++)
+                {
+                    if (FaceIndex[CheckVert] == VertIndex)
+                    {
+                        Duplicate = true;
+                        break;
+                    }
+                }
+                if (!Duplicate)
+                {
+                    VertUse[VertIndex]--;
+                }
+            }
         }
 
 

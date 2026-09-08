@@ -323,7 +323,7 @@
             // 
             this.pathSettings1.Location = new System.Drawing.Point(890, 12);
             this.pathSettings1.Name = "pathSettings1";
-            this.pathSettings1.Size = new System.Drawing.Size(289, 435);
+            this.pathSettings1.Size = new System.Drawing.Size(289, 485);
             this.pathSettings1.TabIndex = 31;
             // 
             // courseSettings1
@@ -349,7 +349,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 461);
+            this.ClientSize = new System.Drawing.Size(1184, 510);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.pathSettings1);
             this.Controls.Add(this.courseSettings1);
