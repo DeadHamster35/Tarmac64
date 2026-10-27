@@ -16,7 +16,7 @@ using static Tarmac64_Library.TM64_Course;
 using static System.Net.Mime.MediaTypeNames;
 using Cereal64.Common.Utils;
 using static Tarmac64_Library.TM64_Geometry;
-using OverKart64_Retail.Windows;
+using Tarmac64_Retail.Windows;
 
 namespace Tarmac64_Retail
 {
@@ -550,17 +550,16 @@ namespace Tarmac64_Retail
             CourseData.ObjectTypeData = TarmacCourse.SaveObjectTypeRaw(TypeList.ToArray());
             CourseData.ObjectListData = TarmacCourse.SaveOKObjectListRaw(CustomObjectList.ToArray());
             
-            if (CourseData.OK64SongPath.Length > 0)
+            if ((!string.IsNullOrEmpty(CourseData.OK64SongPath)) && (!TM64_Course.Course.IsInternalAssetPath(CourseData.OK64SongPath)))
             {
                 TM64_Sound TarmacSound = new TM64_Sound();
                 CourseData.SongData = TarmacSound.LoadSong(CourseData.OK64SongPath);
             }
-            else
+            else if ((CourseData.SongData == null) || (CourseData.SongData.SequenceData == null) || (CourseData.SongData.SequenceData.Length == 0))
             {
                 CourseData.SongData = new TM64_Sound.OK64Song();
                 CourseData.SongData.SequenceData = new byte[0];
                 CourseData.SongData.InstrumentData = new byte[0];
-
             }
 
 
@@ -1079,11 +1078,13 @@ namespace Tarmac64_Retail
             surfsectionBox.Items.Clear();
             sectionBox.Items.Clear();
             CopySectionIndexBox.Items.Clear();
+            comboBox3.Items.Clear();
             for (int currentSection = 0; currentSection < sectionCount; currentSection++)
             {
                 CopySectionIndexBox.Items.Add("Section " + (currentSection + 1).ToString());
                 surfsectionBox.Items.Add("Section " + (currentSection + 1).ToString());
                 sectionBox.Items.Add("Section " + (currentSection + 1).ToString());
+                comboBox3.Items.Add("Section " + (currentSection + 1).ToString());
 
             }
             surfmaterialBox.Items.Clear();
@@ -1265,6 +1266,8 @@ namespace Tarmac64_Retail
             PathArray = PathControl.LoadedPaths;
             GLControl.PathMarker = PathArray;
             GLControl.SelectedPath = PathControl.SelectedPathIndex;
+            GLControl.PathFXStart = PathControl.SelectedPathFXStart;
+            GLControl.PathFXEnd = PathControl.SelectedPathFXEnd;
             GLControl.UpdateDraw = true;
         }
         public void GLRequestUpdate(object sender, EventArgs e)
@@ -1482,6 +1485,26 @@ namespace Tarmac64_Retail
 
                     RenderMaterialBox.SelectedIndex = masterObjects[objectIndex].materialID;
 
+                    int sectionIndex = masterObjects[objectIndex].surfaceID - 1;
+                    if ((sectionIndex >= 0) && (sectionIndex < comboBox3.Items.Count))
+                    {
+                        comboBox3.SelectedIndex = sectionIndex;
+                    }
+                    else
+                    {
+                        comboBox3.SelectedIndex = -1;
+                    }
+
+                    int propertyIndex = masterObjects[objectIndex].surfaceProperty;
+                    if ((propertyIndex >= 0) && (propertyIndex < comboBox1.Items.Count))
+                    {
+                        comboBox1.SelectedIndex = propertyIndex;
+                    }
+                    else
+                    {
+                        comboBox1.SelectedIndex = -1;
+                    }
+
                     CheckStop = false;
                     int Index = RenderMeshListBox.SelectedIndex;
                     GPBoxR.Checked = masterObjects[Index].KillDisplayList[0];
@@ -1628,6 +1651,8 @@ namespace Tarmac64_Retail
                             GLControl.SectionList = new int[0];
                             GLControl.TargetingMode = GLViewer.ControlMode.Path;
                             GLControl.SelectedPath = PathControl.SelectedPathIndex;
+                            GLControl.PathFXStart = PathControl.SelectedPathFXStart;
+                            GLControl.PathFXEnd = PathControl.SelectedPathFXEnd;
                             break;
                         }
                     case 0:
@@ -1945,6 +1970,61 @@ namespace Tarmac64_Retail
 
         }
 
+        private void userGuideToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HelpWindow.ShowTopic("start");
+        }
+
+        private void Main_HelpRequested(object sender, HelpEventArgs hlpevent)
+        {
+            Control focused = this.ActiveControl;
+            while (focused is ContainerControl)
+            {
+                ContainerControl container = (ContainerControl)focused;
+                if (container.ActiveControl == null)
+                {
+                    break;
+                }
+                focused = container.ActiveControl;
+            }
+
+            string rootTopicId = "course.surface";
+            if (focused != null && (focused == this.GLControl || this.GLControl.Contains(focused)))
+            {
+                rootTopicId = "viewer";
+            }
+            else if (this.tabControl1.SelectedTab != null)
+            {
+                switch (this.tabControl1.SelectedTab.Name)
+                {
+                    case "SurfaceMap":
+                        rootTopicId = "course.surface";
+                        break;
+                    case "SectionViews":
+                        rootTopicId = "course.sections";
+                        break;
+                    case "TextureData":
+                        rootTopicId = "course.textures";
+                        break;
+                    case "Settings":
+                        rootTopicId = "course.settings";
+                        break;
+                    case "PathTab":
+                        rootTopicId = "course.paths";
+                        break;
+                    case "Object":
+                        rootTopicId = "course.objects";
+                        break;
+                    case "tabPage1":
+                        rootTopicId = "course.render";
+                        break;
+                }
+            }
+
+            HelpWindow.ShowForControl(rootTopicId, focused);
+            hlpevent.Handled = true;
+        }
+
         private void aboutToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             TarmacAbout About = new TarmacAbout();
@@ -1993,6 +2073,7 @@ namespace Tarmac64_Retail
         private void rOMBuiderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GameBuilderPro GB = new GameBuilderPro();
+            GB.HelpRequested += GameBuilderPro_HelpRequested;
             GB.Show();
         }
 
@@ -2015,6 +2096,18 @@ namespace Tarmac64_Retail
                 masterObjects[RenderMeshListBox.SelectedIndex].materialID = RenderMaterialBox.SelectedIndex;
                 GLControl.UpdateDraw = true;
             }
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if ((loaded) && (RenderMeshListBox.SelectedIndex != -1))
+                masterObjects[RenderMeshListBox.SelectedIndex].surfaceID = comboBox3.SelectedIndex + 1;
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if ((loaded) && (RenderMeshListBox.SelectedIndex != -1) && (comboBox1.SelectedIndex != -1))
+                masterObjects[RenderMeshListBox.SelectedIndex].surfaceProperty = comboBox1.SelectedIndex;
         }
 
         private void createToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2185,7 +2278,29 @@ namespace Tarmac64_Retail
         private void proToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GameBuilderPro f2 = new GameBuilderPro();
+            f2.HelpRequested += GameBuilderPro_HelpRequested;
             f2.Show();
+        }
+
+        private void GameBuilderPro_HelpRequested(object sender, HelpEventArgs hlpevent)
+        {
+            Form form = sender as Form;
+            Control focused = null;
+            if (form != null)
+            {
+                focused = form.ActiveControl;
+                while (focused is ContainerControl)
+                {
+                    ContainerControl container = (ContainerControl)focused;
+                    if (container.ActiveControl == null)
+                    {
+                        break;
+                    }
+                    focused = container.ActiveControl;
+                }
+            }
+            HelpWindow.ShowForControl("tools.gamebuilder", focused);
+            hlpevent.Handled = true;
         }
     }
 }

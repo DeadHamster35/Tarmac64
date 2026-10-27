@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using F3DSharp;
 
-namespace OverKart64_Retail.Windows
+namespace Tarmac64_Retail.Windows
 {
     public partial class ColorCombineEditor : Form
     {
@@ -89,6 +89,22 @@ namespace OverKart64_Retail.Windows
         private void button2_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void ColorCombineEditor_HelpRequested(object sender, HelpEventArgs hlpevent)
+        {
+            Control focused = this.ActiveControl;
+            while (focused is ContainerControl)
+            {
+                ContainerControl container = (ContainerControl)focused;
+                if (container.ActiveControl == null)
+                {
+                    break;
+                }
+                focused = container.ActiveControl;
+            }
+            Tarmac64_Retail.HelpWindow.ShowForControl("course.textures.combine", focused);
+            hlpevent.Handled = true;
         }
 
         private void label1_Click(object sender, EventArgs e)

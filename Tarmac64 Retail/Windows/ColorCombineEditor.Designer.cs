@@ -1,4 +1,4 @@
-﻿namespace OverKart64_Retail.Windows
+﻿namespace Tarmac64_Retail.Windows
 {
     partial class ColorCombineEditor
     {
@@ -240,6 +240,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "ColorCombineEditor";
             this.Text = "Color Combiner";
+            this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.ColorCombineEditor_HelpRequested);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

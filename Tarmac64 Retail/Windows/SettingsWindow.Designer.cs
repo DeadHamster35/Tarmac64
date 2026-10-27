@@ -211,6 +211,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "SettingsWindow";
             this.Text = "Tarmac64 Settings";
+            this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.SettingsWindow_HelpRequested);
             this.Load += new System.EventHandler(this.SettingsWindow_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

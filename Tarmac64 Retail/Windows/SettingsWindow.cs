@@ -125,5 +125,21 @@ namespace Tarmac64_Retail
         {
 
         }
+
+        private void SettingsWindow_HelpRequested(object sender, HelpEventArgs hlpevent)
+        {
+            Control focused = this.ActiveControl;
+            while (focused is ContainerControl)
+            {
+                ContainerControl container = (ContainerControl)focused;
+                if (container.ActiveControl == null)
+                {
+                    break;
+                }
+                focused = container.ActiveControl;
+            }
+            HelpWindow.ShowForControl("start.settings", focused);
+            hlpevent.Handled = true;
+        }
     }
 }

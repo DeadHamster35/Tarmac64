@@ -112,6 +112,7 @@
             this.createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.applyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.userGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.GLControl = new Tarmac64_Retail.GLViewer();
@@ -771,6 +772,7 @@
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(75, 21);
             this.comboBox1.TabIndex = 2;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // RenderMaterialBox
             // 
@@ -838,6 +840,7 @@
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(75, 21);
             this.comboBox3.TabIndex = 0;
+            this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -1035,12 +1038,21 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.userGuideToolStripMenuItem,
             this.aboutToolStripMenuItem1,
             this.aboutToolStripMenuItem2});
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.aboutToolStripMenuItem.Text = "Help";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // userGuideToolStripMenuItem
+            // 
+            this.userGuideToolStripMenuItem.Name = "userGuideToolStripMenuItem";
+            this.userGuideToolStripMenuItem.ShortcutKeyDisplayString = "F1";
+            this.userGuideToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.userGuideToolStripMenuItem.Text = "User Guide";
+            this.userGuideToolStripMenuItem.Click += new System.EventHandler(this.userGuideToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem1
             // 
@@ -1080,6 +1092,7 @@
             this.MinimumSize = new System.Drawing.Size(640, 480);
             this.Name = "Main";
             this.Text = "Tarmac 64";
+            this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.Main_HelpRequested);
             this.Load += new System.EventHandler(this.FormLoad);
             this.SurfaceMap.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
@@ -1155,6 +1168,7 @@
         private System.Windows.Forms.ToolStripMenuItem replaceModelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem userGuideToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem replacePathsToolStripMenuItem;

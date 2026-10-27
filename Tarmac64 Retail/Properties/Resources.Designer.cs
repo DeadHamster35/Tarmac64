@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OverKart64_Retail.Properties {
+namespace Tarmac64_Retail.Properties {
     using System;
     
     

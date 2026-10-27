@@ -97,17 +97,21 @@ namespace Tarmac64_Retail
         TM64_Course.OKObjectType NewType = new TM64_Course.OKObjectType();
         public bool PrepCurrentObject()
         {
-            NewType = new TM64_Course.OKObjectType();
-            NewType.Name = NameBox.Text;
-            NewType.TextureData = TextureControl.textureArray;
-            NewType.Flag = Convert.ToInt16(FlagBox.Text);
-            NewType.ObjectHitbox = HitboxArray;
+            TM64_Course.OKObjectType Prepared = new TM64_Course.OKObjectType();
+            Prepared.Name = NameBox.Text;
+            Prepared.TextureData = TextureControl.textureArray;
+            Prepared.Flag = Convert.ToInt16(FlagBox.Text);
+            if (HitboxArray == null)
+            {
+                HitboxArray = new TM64_Objects.OK64Collide[0];
+            }
+            Prepared.ObjectHitbox = HitboxArray;
 
 
             float TempFloat;
             if (Single.TryParse(ScaleBox.Text, out TempFloat))
             {
-                NewType.ModelScale = TempFloat;
+                Prepared.ModelScale = TempFloat;
             }
             else
             {
@@ -123,114 +127,150 @@ namespace Tarmac64_Retail
             }
 
 
+            if (File.Exists(ModelBox.Text))
+            {
+                SceneData = importer.ImportFile(ModelBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
+                Prepared.Path = ModelBox.Text;
 
+                if (SceneData.HasAnimations)
+                {
+                    //ha okay fuck me guess we just completely rewrite my asset import pipeline for fucking blender.
 
-            if (!File.Exists(ModelBox.Text)) 
+                    Prepared.ObjectAnimations = new TM64_Course.OKObjectAnimations();
+                    Prepared.ObjectAnimations.Animation = TarmacAnime.LoadSkeleton(SceneData, AnimeScale * Prepared.ModelScale);
+
+                    if (Prepared.ObjectAnimations.Animation == null)
+                    {
+                        MessageBox.Show("Error - Could not find \"Base\" named Root-Bone in Animation FBX." + Environment.NewLine +
+                            "Tarmac requires the Root-Bone to build animation data.");
+                        return false;
+                    }
+
+                    if (BlenderBox.Checked)
+                    {
+                        //listen, fuck you. if you can fix this do it better.
+                        //I spent like 12 hours on this shit.
+                        TM64_Animation.OK64Bone RootBone = Prepared.ObjectAnimations.Animation;
+                        if (RootBone.Animation != null)
+                        {
+                            RootBone.Animation.RotationFloat[0][0] -= 90;
+                            RootBone.Animation.RotationData[0][0] -= 16380;
+                        }
+                    }
+                    ModelData = TarmacAnime.GetMeshes(SceneData, TextureControl.textureArray, AnimeScale);
+                }
+                else
+                {
+                    ModelData = TarmacGeometry.CreateObjects(SceneData, Prepared.TextureData, true);
+                }
+                Prepared.ModelData = ModelData;
+            }
+            else if ((NewType.ModelData != null) && (NewType.ModelData.Length > 0))
+            {
+                Prepared.ModelData = NewType.ModelData;
+                Prepared.ObjectAnimations = NewType.ObjectAnimations;
+                Prepared.Path = NewType.Path;
+                if ((Prepared.TextureData == null) || (Prepared.TextureData.Length == 0))
+                {
+                    Prepared.TextureData = NewType.TextureData;
+                }
+            }
+            else
             {
                 MessageBox.Show("Objects need a valid model");
                 return false;
             }
-
-            SceneData = importer.ImportFile(ModelBox.Text, PostProcessPreset.TargetRealTimeMaximumQuality);
-
-            if (SceneData.HasAnimations)
-            {
-                //ha okay fuck me guess we just completely rewrite my asset import pipeline for fucking blender.
-
-                NewType.ObjectAnimations = new TM64_Course.OKObjectAnimations();
-                NewType.ObjectAnimations.Animation = TarmacAnime.LoadSkeleton(SceneData, AnimeScale * NewType.ModelScale);
-
-                if (BlenderBox.Checked)
-                {
-                    //listen, fuck you. if you can fix this do it better.
-                    //I spent like 12 hours on this shit.
-                    NewType.ObjectAnimations.Animation.Animation.RotationFloat[0][0] -= 90;
-                    NewType.ObjectAnimations.Animation.Animation.RotationData[0][0] -= 16380;
-                }
-
-                if (NewType.ObjectAnimations.Animation == null)
-                {
-                    MessageBox.Show("Error - Could not find \"Base\" named Root-Bone in Animation FBX." + Environment.NewLine +
-                        "Tarmac requires the Root-Bone to build animation data.");
-                    return false;
-                }
-                ModelData = TarmacAnime.GetMeshes(SceneData, TextureControl.textureArray, AnimeScale);
-            }
-            else
-            {
-                ModelData = TarmacGeometry.CreateObjects(SceneData, NewType.TextureData, true);
-            }
             
 
 
-            NewType.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex);
-            NewType.Behavior = BehaviorArray[NewType.BehaviorClass];
+            Prepared.BehaviorClass = Convert.ToInt16(BehaviorBox.SelectedIndex);
+            Prepared.Behavior = BehaviorArray[Prepared.BehaviorClass];
 
             List<TM64_Objects.OK64Parameter> ParameterList = (List<TM64_Objects.OK64Parameter>)ParameterView.Items;
 
-            for (int ThisParameter = 0; ThisParameter < NewType.Behavior.Parameters.Length; ThisParameter++)
+            for (int ThisParameter = 0; ThisParameter < Prepared.Behavior.Parameters.Length; ThisParameter++)
             {
-                NewType.Behavior.Parameters[ThisParameter].Value = ParameterList[ThisParameter].Value;
+                Prepared.Behavior.Parameters[ThisParameter].Value = ParameterList[ThisParameter].Value;
             }
-
-            NewType.ModelData = ModelData;
 
             
 
 
 
 
-            NewType.BumpRadius = Convert.ToInt16(Convert.ToInt16(LevelBump.Text));
-            NewType.SoundID = SoundIDs[SoundNameBox.SelectedIndex];
-            NewType.SoundRadius = Convert.ToInt16(SoundRangeBox.Text);
-            NewType.SoundType = Convert.ToInt16(SoundTypeBox.SelectedIndex);
-            NewType.RenderRadius = Convert.ToInt16(RenderBox.Text);
+            Prepared.BumpRadius = Convert.ToInt16(Convert.ToInt16(LevelBump.Text));
+            if (SoundNameBox.SelectedIndex >= 0)
+            {
+                Prepared.SoundID = SoundIDs[SoundNameBox.SelectedIndex];
+            }
+            Prepared.SoundRadius = Convert.ToInt16(SoundRangeBox.Text);
+            if (SoundTypeBox.SelectedIndex >= 0)
+            {
+                Prepared.SoundType = Convert.ToInt16(SoundTypeBox.SelectedIndex);
+            }
+            Prepared.RenderRadius = Convert.ToInt16(RenderBox.Text);
             if (GravityBox.Checked)
             {
-                NewType.GravityToggle = 1;
+                Prepared.GravityToggle = 1;
             }
             else
             {
-                NewType.GravityToggle = 0;
+                Prepared.GravityToggle = 0;
             }
             //
             if (CameraAlignBox.Checked)
             {
-                NewType.CameraAlligned = 1;
+                Prepared.CameraAlligned = 1;
             }
             else
             {
-                NewType.CameraAlligned = 0;
+                Prepared.CameraAlligned = 0;
             }
             //
             if (ZSortBox.Checked)
             {
-                NewType.ZSortToggle = 1;
+                Prepared.ZSortToggle = 1;
             }
             else
             {
-                NewType.ZSortToggle = 0;
+                Prepared.ZSortToggle = 0;
             }
 
-
+            NewType = Prepared;
+            ModelData = Prepared.ModelData;
             return true;
         }
 
         public void ReloadUI()
         {
+            ReloadingUI = true;
             
             NameBox.Text = NewType.Name;
-            ModelBox.Text = null;
+            ModelBox.Text = NewType.Path;
             FlagBox.Text = NewType.Flag.ToString();
 
             ScaleBox.Text = NewType.ModelScale.ToString();
-            BehaviorBox.SelectedIndex = NewType.BehaviorClass;
+            if ((NewType.BehaviorClass >= 0) && (NewType.BehaviorClass < BehaviorBox.Items.Count))
+            {
+                BehaviorBox.SelectedIndex = NewType.BehaviorClass;
+            }
 
 
             LevelBump.Text = NewType.BumpRadius.ToString();
-            SoundNameBox.SelectedIndex = NewType.SoundID;
+            int SoundIndex = Array.IndexOf(SoundIDs, NewType.SoundID);
+            if (SoundIndex >= 0)
+            {
+                SoundNameBox.SelectedIndex = SoundIndex;
+            }
+            else
+            {
+                SoundNameBox.SelectedIndex = 0;
+            }
             SoundRangeBox.Text = NewType.SoundRadius.ToString();
-            SoundTypeBox.SelectedIndex = NewType.SoundType;
+            if ((NewType.SoundType >= 0) && (NewType.SoundType < SoundTypeBox.Items.Count))
+            {
+                SoundTypeBox.SelectedIndex = NewType.SoundType;
+            }
             RenderBox.Text = NewType.RenderRadius.ToString();
 
             GravityBox.Checked = Convert.ToBoolean(NewType.GravityToggle);
@@ -238,20 +278,45 @@ namespace Tarmac64_Retail
             ZSortBox.Checked = Convert.ToBoolean(NewType.ZSortToggle);
 
             HitboxArray = NewType.ObjectHitbox;
+            if (HitboxArray == null)
+            {
+                HitboxArray = new TM64_Objects.OK64Collide[0];
+            }
+            AddingHB = true;
+            IndexBox.Items.Clear();
             for (int ThisHitbox = 0; ThisHitbox < HitboxArray.Length; ThisHitbox++)
             {
                 IndexBox.Items.Add("CollisionSphere " + ThisHitbox.ToString());
             }
             if (HitboxArray.Length > 0)
             {
-                AddingHB = true;
                 IndexBox.SelectedIndex = 0;
                 UpdateHBUI();
-                AddingHB = false;
             }
-            
-            
+            AddingHB = false;
 
+            ReloadingUI = false;
+            ResetParameterView();
+            ApplyLoadedParameters();
+        }
+
+        private void ApplyLoadedParameters()
+        {
+            if ((NewType.Behavior == null) || (NewType.Behavior.Parameters == null) || (ParameterView.Items == null))
+            {
+                return;
+            }
+            List<TM64_Objects.OK64Parameter> ParameterList = ParameterView.Items as List<TM64_Objects.OK64Parameter>;
+            if (ParameterList == null)
+            {
+                return;
+            }
+            int Count = Math.Min(ParameterList.Count, NewType.Behavior.Parameters.Length);
+            for (int ThisParameter = 0; ThisParameter < Count; ThisParameter++)
+            {
+                ParameterList[ThisParameter].Value = NewType.Behavior.Parameters[ThisParameter].Value;
+            }
+            ParameterView.Redraw();
         }
         private void UpdateHitbox()
         {
@@ -261,6 +326,10 @@ namespace Tarmac64_Retail
             }
 
             int Index = IndexBox.SelectedIndex;
+            if ((Index < 0) || (Index >= HitboxArray.Length))
+            {
+                return;
+            }
             Int16 Parse;
             Single ParseS;
             if (Int16.TryParse(OriginXBox.Text, out Parse))
@@ -291,7 +360,7 @@ namespace Tarmac64_Retail
             {
                 HitboxArray[Index].BoxAngle = Parse;
             }
-            if (Single.TryParse(ScaleBox.Text, out ParseS))
+            if (Single.TryParse(HitScaleBox.Text, out ParseS))
             {
                 HitboxArray[Index].Scale = ParseS;
             }
@@ -447,6 +516,10 @@ namespace Tarmac64_Retail
 
         private void BehaviorBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (ReloadingUI)
+            {
+                return;
+            }
             ResetParameterView();
         }
 
@@ -478,6 +551,7 @@ namespace Tarmac64_Retail
 
 
         bool AddingHB = false;
+        bool ReloadingUI = false;
         private void AddBtn_Click(object sender, EventArgs e)
         {
             AddingHB = true;
@@ -500,7 +574,7 @@ namespace Tarmac64_Retail
             StatusBox.SelectedIndex = Array.IndexOf(StatusValues, HitboxArray[Index].Status);
             EffectBox.SelectedIndex = Array.IndexOf(EffectValues, HitboxArray[Index].Effect);
             TypeBox.SelectedIndex = HitboxArray[Index].Type;
-            ScaleBox.Text = Convert.ToString(HitboxArray[Index].Scale);
+            HitScaleBox.Text = Convert.ToString(HitboxArray[Index].Scale);
             solidBox.Checked = HitboxArray[Index].SolidObject;
             switch (HitboxArray[Index].Type)
             {
@@ -569,7 +643,26 @@ namespace Tarmac64_Retail
 
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
-
+            int Index = IndexBox.SelectedIndex;
+            if ((Index < 0) || (HitboxArray == null) || (HitboxArray.Length == 0))
+            {
+                return;
+            }
+            AddingHB = true;
+            List<TM64_Objects.OK64Collide> CurrentList = HitboxArray.ToList();
+            CurrentList.RemoveAt(Index);
+            HitboxArray = CurrentList.ToArray();
+            IndexBox.Items.RemoveAt(Index);
+            if (HitboxArray.Length > 0)
+            {
+                if (Index >= HitboxArray.Length)
+                {
+                    Index = HitboxArray.Length - 1;
+                }
+                IndexBox.SelectedIndex = Index;
+                UpdateHBUI();
+            }
+            AddingHB = false;
         }
 
         private void SaveXMLClick(object sender, EventArgs e)
@@ -620,18 +713,36 @@ namespace Tarmac64_Retail
                     NewType = new TM64_Course.OKObjectType(XMLDoc, "SaveFile", 0);
 
                     TextureControl.textureArray = NewType.TextureData;
-                    TextureControl.AddNewTextures(TextureControl.textureArray.Length);
+                    if (TextureControl.textureArray != null)
+                    {
+                        TextureControl.AddNewTextures(TextureControl.textureArray.Length);
+                    }
                     TextureControl.Loaded = true;
+                    ReloadUI();
                 }
 
             }
-
-            ReloadUI();
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void ObjectTypeCompiler_HelpRequested(object sender, HelpEventArgs hlpevent)
+        {
+            Control focused = this.ActiveControl;
+            while (focused is ContainerControl)
+            {
+                ContainerControl container = (ContainerControl)focused;
+                if (container.ActiveControl == null)
+                {
+                    break;
+                }
+                focused = container.ActiveControl;
+            }
+            HelpWindow.ShowForControl("tools.objcompiler", focused);
+            hlpevent.Handled = true;
         }
     }
 }

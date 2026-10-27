@@ -128,5 +128,21 @@ namespace Tarmac64_Retail
                 File.WriteAllBytes(saveFile.FileName, memoryStream.ToArray());
             }
         }
+
+        private void GhostExtractor_HelpRequested(object sender, HelpEventArgs hlpevent)
+        {
+            Control focused = this.ActiveControl;
+            while (focused is ContainerControl)
+            {
+                ContainerControl container = (ContainerControl)focused;
+                if (container.ActiveControl == null)
+                {
+                    break;
+                }
+                focused = container.ActiveControl;
+            }
+            HelpWindow.ShowForControl("tools.ghost", focused);
+            hlpevent.Handled = true;
+        }
     }
 }

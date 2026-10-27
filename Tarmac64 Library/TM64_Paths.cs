@@ -555,6 +555,39 @@ namespace Tarmac64_Library
 
         }
 
+        public Pathlist LoadPathList(byte[] segment6, int offset)
+        {
+            Pathlist list = new Pathlist();
+            list.pathmarker = new List<Marker>();
+            if ((segment6 == null) || (offset < 0) || ((offset + 8) > segment6.Length))
+            {
+                return list;
+            }
+            while ((offset + 8) <= segment6.Length)
+            {
+                short x = unchecked((short)((segment6[offset] << 8) | segment6[offset + 1]));
+                short z = unchecked((short)((segment6[offset + 2] << 8) | segment6[offset + 3]));
+                short yNeg = unchecked((short)((segment6[offset + 4] << 8) | segment6[offset + 5]));
+                ushort flag = unchecked((ushort)((segment6[offset + 6] << 8) | segment6[offset + 7]));
+                if ((unchecked((ushort)x) == 0x8000) && (unchecked((ushort)z) == 0x8000))
+                {
+                    break;
+                }
+                Marker mark = new Marker();
+                mark.X = x;
+                mark.Z = z;
+                mark.Y = -1 * yNeg;
+                mark.Flag = flag;
+                list.pathmarker.Add(mark);
+                offset += 8;
+                if (list.pathmarker.Count > 600)
+                {
+                    break;
+                }
+            }
+            return list;
+        }
+
 
 
     }

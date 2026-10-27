@@ -210,6 +210,14 @@
     <Compile Include="Windows\SettingsWindow.Designer.cs">
       <DependentUpon>SettingsWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Windows\HelpTopic.cs" />
+    <Compile Include="Windows\HelpContent.cs" />
+    <Compile Include="Windows\HelpWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\HelpWindow.Designer.cs">
+      <DependentUpon>HelpWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SongExtractor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -282,6 +290,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\SettingsWindow.resx">
       <DependentUpon>SettingsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\HelpWindow.resx">
+      <DependentUpon>HelpWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\SongExtractor.resx">
       <DependentUpon>SongExtractor.cs</DependentUpon>

@@ -143,6 +143,7 @@ namespace Tarmac64_Retail
             this.MinimumSize = new System.Drawing.Size(295, 150);
             this.Name = "GhostExtractor";
             this.Text = "Boo - Ghost Extractor";
+            this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.GhostExtractor_HelpRequested);
             this.Load += new System.EventHandler(this.GhostExtractor_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

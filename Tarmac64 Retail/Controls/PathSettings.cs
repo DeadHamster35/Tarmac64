@@ -51,6 +51,40 @@ namespace Tarmac64_Retail
             }
         }
 
+        public int SelectedPathFXStart
+        {
+            get
+            {
+                int FXIndex = PathIndexBox.SelectedIndex;
+                if ((FXIndex < 0) || (FXIndex >= PathFX.Count))
+                {
+                    return -1;
+                }
+                return PathFX[FXIndex].StartIndex;
+            }
+        }
+
+        public int SelectedPathFXEnd
+        {
+            get
+            {
+                int FXIndex = PathIndexBox.SelectedIndex;
+                if ((FXIndex < 0) || (FXIndex >= PathFX.Count))
+                {
+                    return -1;
+                }
+                return PathFX[FXIndex].EndIndex;
+            }
+        }
+
+        private void NotifyParent()
+        {
+            if (UpdateParent != null)
+            {
+                UpdateParent(this, EventArgs.Empty);
+            }
+        }
+
         public void ReloadLoadedPaths(TM64_Paths.Pathlist[] paths)
         {
             LoadedPaths = paths;
@@ -229,6 +263,7 @@ namespace Tarmac64_Retail
         public TM64_Course.Course UpdateCourse(TM64_Course.Course ThisCourse)
         {
             UpdatePaths();
+            CourseData.PathSettings.PathEffects = PathFX.ToArray();
             ThisCourse.GoalBannerBool = CourseData.GoalBannerBool;
             ThisCourse.PathSettings.PathEffects = CourseData.PathSettings.PathEffects;
             ThisCourse.LapCount = CourseData.LapCount;
@@ -237,6 +272,77 @@ namespace Tarmac64_Retail
             ThisCourse.BombArray = CourseData.BombArray;
 
             return ThisCourse;
+        }
+
+        public void LoadCourse(TM64_Course.Course course)
+        {
+            if (course == null)
+            {
+                return;
+            }
+
+            loaded = true;
+            blocked = true;
+
+            CourseData.GoalBannerBool = course.GoalBannerBool;
+            CourseData.LapCount = course.LapCount;
+            CourseData.PathCount = course.PathCount;
+            CourseData.DistributeBool = course.DistributeBool;
+
+            if ((course.BombArray != null) && (course.BombArray.Length == 7))
+            {
+                CourseData.BombArray = course.BombArray;
+            }
+            else if (CourseData.BombArray == null)
+            {
+                CourseData.BombArray = new TM64_Course.VSBomb[7];
+                for (int currentBomb = 0; currentBomb < 7; currentBomb++)
+                {
+                    CourseData.BombArray[currentBomb] = new TM64_Course.VSBomb();
+                    CourseData.BombArray[currentBomb].Point = Convert.ToInt16(bombPoints[currentBomb]);
+                    CourseData.BombArray[currentBomb].Type = Convert.ToInt16(bompTypeIDs[currentBomb]);
+                }
+            }
+
+            PathFX = new List<TM64_Course.PathEffect>();
+            PathIndexBox.Items.Clear();
+            if ((course.PathSettings != null) && (course.PathSettings.PathEffects != null))
+            {
+                for (int ThisFX = 0; ThisFX < course.PathSettings.PathEffects.Length; ThisFX++)
+                {
+                    TM64_Course.PathEffect effect = course.PathSettings.PathEffects[ThisFX];
+                    if (effect.BodyColor == null)
+                    {
+                        effect.BodyColor = new TM64_Geometry.OK64Color();
+                    }
+                    if (effect.AdjColor == null)
+                    {
+                        effect.AdjColor = new TM64_Geometry.OK64Color();
+                    }
+                    if ((effect.Type < 0) || (effect.Type >= pathTypes.Length))
+                    {
+                        effect.Type = 0;
+                    }
+                    PathFX.Add(effect);
+                    PathIndexBox.Items.Add(ThisFX);
+                }
+            }
+            CourseData.PathSettings.PathEffects = PathFX.ToArray();
+            if (PathIndexBox.Items.Count > 0)
+            {
+                PathIndexBox.SelectedIndex = 0;
+            }
+            else
+            {
+                PathIndexBox.SelectedIndex = -1;
+            }
+            if (BombIndexBox.SelectedIndex < 0)
+            {
+                BombIndexBox.SelectedIndex = 0;
+            }
+
+            blocked = false;
+            UpdateUI();
         }
 
         private void PathSettings_Load(object sender, EventArgs e)
@@ -384,15 +490,38 @@ namespace Tarmac64_Retail
                     AdjR.Text = PathFX[PFXID].AdjColor.R.ToString();
                     AdjG.Text = PathFX[PFXID].AdjColor.G.ToString();
                     AdjB.Text = PathFX[PFXID].AdjColor.B.ToString();
-                    PathTypeBox.SelectedIndex = PathFX[PFXID].Type;
+                    if ((PathFX[PFXID].Type >= 0) && (PathFX[PFXID].Type < PathTypeBox.Items.Count))
+                    {
+                        PathTypeBox.SelectedIndex = PathFX[PFXID].Type;
+                    }
+                }
+                else
+                {
+                    EchoStartBox.Text = "";
+                    EchoStopBox.Text = "";
+                    EchoPowerBox.Text = "";
+                    BaseR.Text = "";
+                    BaseG.Text = "";
+                    BaseB.Text = "";
+                    AdjR.Text = "";
+                    AdjG.Text = "";
+                    AdjB.Text = "";
+                    PathTypeBox.SelectedIndex = -1;
                 }
 
                 ApplyLapCountUI();
                 
 
                 PathCountBox.Text = CourseData.PathCount.ToString();
-                BombPointBox.Text = CourseData.BombArray[BombIndexBox.SelectedIndex].Point.ToString();
-                BombTypeBox.SelectedIndex = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;
+                if ((BombIndexBox.SelectedIndex >= 0) && (CourseData.BombArray != null) && (BombIndexBox.SelectedIndex < CourseData.BombArray.Length))
+                {
+                    BombPointBox.Text = CourseData.BombArray[BombIndexBox.SelectedIndex].Point.ToString();
+                    int bombType = CourseData.BombArray[BombIndexBox.SelectedIndex].Type;
+                    if ((bombType >= 0) && (bombType < BombTypeBox.Items.Count))
+                    {
+                        BombTypeBox.SelectedIndex = bombType;
+                    }
+                }
                 blocked = false;
             }
             
@@ -439,6 +568,7 @@ namespace Tarmac64_Retail
 
             UpdatePaths();
             loaded = Backup;
+            NotifyParent();
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -449,17 +579,23 @@ namespace Tarmac64_Retail
 
             UpdatePaths();
             loaded = Backup;
+            NotifyParent();
         }
 
         private void PathIndexBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateUI();
+            if (!blocked)
+            {
+                NotifyParent();
+            }
         }
 
         private void PathFXUpdate(object sender, KeyEventArgs e)
         {
             UpdatePaths();
             UpdateUI();
+            NotifyParent();
         }
 
         private void LapFinishLine_Enter(object sender, EventArgs e)

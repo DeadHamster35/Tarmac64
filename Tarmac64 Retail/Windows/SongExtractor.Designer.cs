@@ -97,6 +97,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SongExtractor";
             this.Text = "♫";
+            this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.SongExtractor_HelpRequested);
             this.Load += new System.EventHandler(this.SongExtractor_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

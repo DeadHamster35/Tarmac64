@@ -27,14 +27,43 @@ namespace Tarmac64_Retail
         OpenFileDialog FileOpen = new OpenFileDialog();
         ColorDialog ColorPick = new ColorDialog();
         public bool loaded, blocked = false;
+        bool courseBound = false;
 
         TM64 Tarmac = new TM64();
         TM64_Course TarmacCourse = new TM64_Course();
         TM64.OK64Settings okSettings = new TM64.OK64Settings();
         public TM64_Course.Course CourseData = new TM64_Course.Course();
 
+        private void EnsureComboItems()
+        {
+            if (songBox.Items.Count == 0)
+            {
+                for (int songIndex = 0; songIndex < songNames.Length; songIndex++)
+                {
+                    songBox.Items.Add(songNames[songIndex]);
+                }
+            }
+            if (WaterTypeBox.Items.Count == 0)
+            {
+                for (int waterIndex = 0; waterIndex < waterTypes.Length; waterIndex++)
+                {
+                    WaterTypeBox.Items.Add(waterTypes[waterIndex]);
+                }
+            }
+        }
+
         private void CourseSettings_Load(object sender, EventArgs e)
         {
+            EnsureComboItems();
+            if (courseBound)
+            {
+                loaded = true;
+                blocked = true;
+                UpdateUI();
+                blocked = false;
+                return;
+            }
+
             CourseData.OK64HeaderData = new TM64_Course.OK64Header();
             CourseData.Gametype = 0;
 
@@ -92,20 +121,7 @@ namespace Tarmac64_Retail
 
             skyBox.SelectedIndex = 0;
             GameTypeBox.SelectedIndex = 0;
-
-
-            for (int songIndex = 0; songIndex < songNames.Length; songIndex++)
-            {
-                songBox.Items.Add(songNames[songIndex]);
-            }
-
-
-            for (int waterIndex = 0; waterIndex < waterTypes.Length; waterIndex++)
-            {
-                WaterTypeBox.Items.Add(waterTypes[waterIndex]);
-            }
             WaterTypeBox.SelectedIndex = 0;
-
             songBox.SelectedIndex = 3;
 
 
@@ -167,6 +183,12 @@ namespace Tarmac64_Retail
             ThisCourse.MapData.MapColor.B = CourseData.MapData.MapColor.B;
 
             ThisCourse.MapData.MinimapPath = CourseData.MapData.MinimapPath;
+            ThisCourse.MapData.Width = CourseData.MapData.Width;
+            ThisCourse.MapData.Height = CourseData.MapData.Height;
+            if ((CourseData.RadarData != null) && (CourseData.RadarData.Length > 0))
+            {
+                ThisCourse.RadarData = CourseData.RadarData;
+            }
 
 
             ThisCourse.SkyboxBool = CourseData.SkyboxBool;
@@ -192,9 +214,173 @@ namespace Tarmac64_Retail
             return ThisCourse;
         }
 
+        public void LoadCourse(TM64_Course.Course course)
+        {
+            if (course == null)
+            {
+                return;
+            }
+
+            EnsureComboItems();
+            courseBound = true;
+            blocked = true;
+            loaded = true;
+
+            if (CourseData.Settings == null)
+            {
+                CourseData.Settings = new TM64_Course.CourseSettings();
+            }
+            CourseData.Settings.Credits = course.Settings.Credits ?? "";
+            CourseData.Settings.Name = course.Settings.Name ?? "";
+            CourseData.Settings.PreviewPath = course.Settings.PreviewPath ?? "";
+            CourseData.Settings.BannerPath = course.Settings.BannerPath ?? "";
+            if (string.IsNullOrEmpty(CourseData.Settings.PreviewPath) && (course.PreviewData != null) && (course.PreviewData.Length > 0))
+            {
+                CourseData.Settings.PreviewPath = TM64_Course.Course.InternalDataPath;
+            }
+            if (string.IsNullOrEmpty(CourseData.Settings.BannerPath) && (course.BannerData != null) && (course.BannerData.Length > 0))
+            {
+                CourseData.Settings.BannerPath = TM64_Course.Course.InternalDataPath;
+            }
+            CourseData.GhostPath = course.GhostPath ?? "";
+            CourseData.OK64SongPath = course.OK64SongPath ?? "";
+            if (string.IsNullOrEmpty(CourseData.OK64SongPath) && (course.SongData != null) && (course.SongData.SequenceData != null) && (course.SongData.SequenceData.Length > 0))
+            {
+                CourseData.OK64SongPath = TM64_Course.Course.InternalDataPath;
+            }
+            CourseData.Gametype = course.Gametype;
+            CourseData.ManualTempo = course.ManualTempo;
+            CourseData.SkyboxBool = course.SkyboxBool;
+            CourseData.MusicID = course.MusicID;
+
+            if (CourseData.OK64HeaderData == null)
+            {
+                CourseData.OK64HeaderData = new TM64_Course.OK64Header();
+            }
+            if (course.OK64HeaderData != null)
+            {
+                CourseData.OK64HeaderData.WaterType = course.OK64HeaderData.WaterType;
+                CourseData.OK64HeaderData.WaterLevel = course.OK64HeaderData.WaterLevel;
+            }
+
+            if (CourseData.Fog == null)
+            {
+                CourseData.Fog = new TM64_Course.OKFog();
+            }
+            if (CourseData.Fog.FogColor == null)
+            {
+                CourseData.Fog.FogColor = new TM64_Geometry.OK64Color();
+            }
+            if (course.Fog != null)
+            {
+                CourseData.Fog.FogToggle = course.Fog.FogToggle;
+                CourseData.Fog.StartDistance = course.Fog.StartDistance;
+                CourseData.Fog.StopDistance = course.Fog.StopDistance;
+                if (course.Fog.FogColor != null)
+                {
+                    CourseData.Fog.FogColor.R = course.Fog.FogColor.R;
+                    CourseData.Fog.FogColor.G = course.Fog.FogColor.G;
+                    CourseData.Fog.FogColor.B = course.Fog.FogColor.B;
+                    CourseData.Fog.FogColor.A = course.Fog.FogColor.A;
+                }
+            }
+
+            if (CourseData.MapData == null)
+            {
+                CourseData.MapData = new TM64_Course.MiniMap();
+            }
+            if (CourseData.MapData.MapColor == null)
+            {
+                CourseData.MapData.MapColor = new TM64_Geometry.OK64Color();
+            }
+            if (course.MapData != null)
+            {
+                CourseData.MapData.MapCoord = course.MapData.MapCoord;
+                CourseData.MapData.StartCoord = course.MapData.StartCoord;
+                CourseData.MapData.LineCoord = course.MapData.LineCoord;
+                CourseData.MapData.MapScale = course.MapData.MapScale;
+                if (course.MapData.MapColor != null)
+                {
+                    CourseData.MapData.MapColor.R = course.MapData.MapColor.R;
+                    CourseData.MapData.MapColor.G = course.MapData.MapColor.G;
+                    CourseData.MapData.MapColor.B = course.MapData.MapColor.B;
+                }
+                CourseData.MapData.MinimapPath = course.MapData.MinimapPath ?? "";
+                if (string.IsNullOrEmpty(CourseData.MapData.MinimapPath) && (course.RadarData != null) && (course.RadarData.Length > 0))
+                {
+                    CourseData.MapData.MinimapPath = TM64_Course.Course.InternalDataPath;
+                }
+                CourseData.MapData.Width = course.MapData.Width;
+                CourseData.MapData.Height = course.MapData.Height;
+            }
+            if ((course.RadarData != null) && (course.RadarData.Length > 0))
+            {
+                CourseData.RadarData = course.RadarData;
+            }
+
+            if (CourseData.SkyColors == null)
+            {
+                CourseData.SkyColors = new TM64_Course.Sky();
+            }
+            if (CourseData.SkyColors.TopColor == null)
+            {
+                CourseData.SkyColors.TopColor = new TM64_Geometry.OK64Color();
+            }
+            if (CourseData.SkyColors.MidColor == null)
+            {
+                CourseData.SkyColors.MidColor = new TM64_Geometry.OK64Color();
+            }
+            if (CourseData.SkyColors.BotColor == null)
+            {
+                CourseData.SkyColors.BotColor = new TM64_Geometry.OK64Color();
+            }
+            if (course.SkyColors != null)
+            {
+                if (course.SkyColors.TopColor != null)
+                {
+                    CourseData.SkyColors.TopColor.R = course.SkyColors.TopColor.R;
+                    CourseData.SkyColors.TopColor.G = course.SkyColors.TopColor.G;
+                    CourseData.SkyColors.TopColor.B = course.SkyColors.TopColor.B;
+                    CourseData.SkyColors.TopColor.A = 255;
+                }
+                if (course.SkyColors.MidColor != null)
+                {
+                    CourseData.SkyColors.MidColor.R = course.SkyColors.MidColor.R;
+                    CourseData.SkyColors.MidColor.G = course.SkyColors.MidColor.G;
+                    CourseData.SkyColors.MidColor.B = course.SkyColors.MidColor.B;
+                    CourseData.SkyColors.MidColor.A = 255;
+                }
+                if (course.SkyColors.BotColor != null)
+                {
+                    CourseData.SkyColors.BotColor.R = course.SkyColors.BotColor.R;
+                    CourseData.SkyColors.BotColor.G = course.SkyColors.BotColor.G;
+                    CourseData.SkyColors.BotColor.B = course.SkyColors.BotColor.B;
+                    CourseData.SkyColors.BotColor.A = 255;
+                }
+                CourseData.SkyColors.SkyType = course.SkyColors.SkyType;
+                CourseData.SkyColors.WeatherType = course.SkyColors.WeatherType;
+            }
+
+            if (CourseData.PathSettings == null)
+            {
+                CourseData.PathSettings = new TM64_Course.PathSettings();
+            }
+            if (CourseData.PathSettings.PathEffects == null)
+            {
+                CourseData.PathSettings.PathEffects = new TM64_Course.PathEffect[0];
+            }
+
+            UpdateUI();
+            blocked = false;
+        }
+
 
         public void LoadCourseXML(XmlDocument XMLDoc)
         {
+            EnsureComboItems();
+            courseBound = true;
+            loaded = true;
+            blocked = true;
             string ParentPath = "/SaveFile/CourseSettings";
             TM64 Tarmac = new TM64();
             CourseData.Settings.Credits = Tarmac.LoadElement(XMLDoc, ParentPath, "Credits");
@@ -268,6 +454,7 @@ namespace Tarmac64_Retail
 
 
             UpdateUI();
+            blocked = false;
         }
 
         public void SaveCourseXML(XmlDocument XMLDoc, XmlElement Parent)
@@ -512,7 +699,14 @@ namespace Tarmac64_Retail
                 return;
             }
 
-            PathFX = CourseData.PathSettings.PathEffects.ToList();
+            if ((CourseData.PathSettings == null) || (CourseData.PathSettings.PathEffects == null))
+            {
+                PathFX = new List<TM64_Course.PathEffect>();
+            }
+            else
+            {
+                PathFX = CourseData.PathSettings.PathEffects.ToList();
+            }
             int ParseInt, ParseInt2 = 0;
             float ParseFloat, ParseFloat2 = 0;
 
@@ -521,9 +715,16 @@ namespace Tarmac64_Retail
             previewBox.Text = CourseData.Settings.PreviewPath;
             bannerBox.Text = CourseData.Settings.BannerPath;
             ghostBox.Text = CourseData.GhostPath;
-            GameTypeBox.SelectedIndex = CourseData.Gametype;
-            WaterTypeBox.SelectedIndex = CourseData.OK64HeaderData.WaterType;
+            if ((CourseData.Gametype >= 0) && (CourseData.Gametype < GameTypeBox.Items.Count))
+            {
+                GameTypeBox.SelectedIndex = CourseData.Gametype;
+            }
+            if ((CourseData.OK64HeaderData.WaterType >= 0) && (CourseData.OK64HeaderData.WaterType < WaterTypeBox.Items.Count))
+            {
+                WaterTypeBox.SelectedIndex = CourseData.OK64HeaderData.WaterType;
+            }
             waterBox.Text = CourseData.OK64HeaderData.WaterLevel.ToString();
+            TempoTTBox.Text = CourseData.ManualTempo.ToString();
 
             FogToggleBox.Checked = Convert.ToBoolean(CourseData.Fog.FogToggle);
             FogStartBox.Text = CourseData.Fog.StartDistance.ToString();
@@ -567,13 +768,29 @@ namespace Tarmac64_Retail
             SkyRB.Text = CourseData.SkyColors.BotColor.R.ToString();
             SkyGB.Text = CourseData.SkyColors.BotColor.G.ToString();
             SkyBB.Text = CourseData.SkyColors.BotColor.B.ToString();
-            skyBox.SelectedIndex = CourseData.SkyColors.SkyType;
-            weatherBox.SelectedIndex = CourseData.SkyColors.WeatherType;
+            if ((CourseData.SkyColors.SkyType >= 0) && (CourseData.SkyColors.SkyType < skyBox.Items.Count))
+            {
+                skyBox.SelectedIndex = CourseData.SkyColors.SkyType;
+            }
+            if ((CourseData.SkyColors.WeatherType >= 0) && (CourseData.SkyColors.WeatherType < weatherBox.Items.Count))
+            {
+                weatherBox.SelectedIndex = CourseData.SkyColors.WeatherType;
+            }
 
             ColorUpdate();
 
-            songBox.SelectedIndex = CourseData.MusicID;
-            oksongBox.Text = CourseData.OK64SongPath;
+            if (songBox.Items.Count > 0)
+            {
+                if ((CourseData.MusicID >= 0) && (CourseData.MusicID < songBox.Items.Count))
+                {
+                    songBox.SelectedIndex = CourseData.MusicID;
+                }
+                else
+                {
+                    songBox.SelectedIndex = 0;
+                }
+            }
+            oksongBox.Text = CourseData.OK64SongPath ?? "";
 
 
         }

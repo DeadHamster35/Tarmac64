@@ -216,6 +216,22 @@ namespace Tarmac64_Library
                                 }
 
 
+                                if ((LocalCourse.RadarData == null) || (LocalCourse.RadarData.Length == 0))
+                                {
+                                    bool expectsMap = false;
+                                    if (LocalCourse.MapData != null)
+                                    {
+                                        if ((LocalCourse.MapData.Width > 0) || (LocalCourse.MapData.Height > 0) || TM64_Course.Course.IsInternalAssetPath(LocalCourse.MapData.MinimapPath))
+                                        {
+                                            expectsMap = true;
+                                        }
+                                    }
+                                    if (expectsMap)
+                                    {
+                                        MessageBox.Show(LocalCourse.Settings.Name + " has minimap settings but no RadarData. Minimap will not be compiled.");
+                                    }
+                                }
+
                                 rom = TarmacCourse.CompileOverKart(LocalCourse, rom, ThisCourse + (4 * ThisCup), ThisSet, HeaderAddress);
 
 
@@ -226,7 +242,11 @@ namespace Tarmac64_Library
                                     File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment5.bin", LocalCourse.Segment5);
                                     File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment6.bin", LocalCourse.Segment6);
                                     File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment7.bin", LocalCourse.Segment7);
-                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment9.bin", LocalCourse.Segment9);                                    
+                                    File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " Segment9.bin", LocalCourse.Segment9);
+                                    if (LocalCourse.RadarData != null)
+                                    {
+                                        File.WriteAllBytes(outputDirectory + LocalCourse.Settings.Name + " - Course " + ThisCourse.ToString() + " RadarData.bin", LocalCourse.RadarData);
+                                    }
                                 }
 
 
@@ -316,12 +336,24 @@ namespace Tarmac64_Library
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            byte[] Data = new byte[0];
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            okSettings.LoadSettings();
+
+            SaveFileDialog FileSave = new SaveFileDialog();
+            FileSave.Filter = "Tarmac Cup Layout|*.ok64.Layout|All Files (*.*)|*.*";
+            FileSave.DefaultExt = "ok64.Layout";
+            FileSave.InitialDirectory = okSettings.ProjectDirectory;
+            if (FileSave.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
 
             MemoryStream memoryStream = new MemoryStream();
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            TM64 Tarmac = new TM64();
             TM64_Course TarmacCourse = new TM64_Course();
+
+            binaryWriter.Write("OK64.LAYOUT");
+            binaryWriter.Write(1);
 
             for (int ThisSet = 0; ThisSet < 5; ThisSet++)
             {
@@ -332,60 +364,91 @@ namespace Tarmac64_Library
                         TM64_Course.Course LocalCourse = CourseArray[ThisSet][ThisCup][ThisCourse];
                         if (LocalCourse != null)
                         {
-                            binaryWriter.Write(TarmacCourse.SaveOK64Course(LocalCourse));
+                            byte[] CourseBlob = TarmacCourse.SaveOK64Course(LocalCourse);
+                            binaryWriter.Write(CourseBlob.Length);
+                            binaryWriter.Write(CourseBlob);
                         }
                         else
                         {
-                            binaryWriter.Write("NULL");
+                            binaryWriter.Write(0);
                         }
                     }
                 }
             }
 
-            SaveFileDialog FileSave = new SaveFileDialog();
-            if (FileSave.ShowDialog() == DialogResult.OK)
-            {
-                File.WriteAllBytes(FileSave.FileName, memoryStream.ToArray());
-            }
+            File.WriteAllBytes(FileSave.FileName, memoryStream.ToArray());
         }
 
         private void LoadButton_Click(object sender, EventArgs e)
         {
+            TM64.OK64Settings okSettings = new TM64.OK64Settings();
+            okSettings.LoadSettings();
+
             OpenFileDialog FileOpen = new OpenFileDialog();
-            if (FileOpen.ShowDialog() == DialogResult.OK)
+            FileOpen.Filter = "Tarmac Cup Layout|*.ok64.Layout|All Files (*.*)|*.*";
+            FileOpen.InitialDirectory = okSettings.ProjectDirectory;
+            if (FileOpen.ShowDialog() != DialogResult.OK)
             {
-                byte[] Data = File.ReadAllBytes(FileOpen.FileName);
+                return;
+            }
 
-                MemoryStream memoryStream = new MemoryStream();
-                BinaryReader binaryReader = new BinaryReader(memoryStream);
-                memoryStream.Write(Data, 0, Data.Length);
-                memoryStream.Position = 0;
+            byte[] Data = File.ReadAllBytes(FileOpen.FileName);
+            MemoryStream memoryStream = new MemoryStream(Data);
+            BinaryReader binaryReader = new BinaryReader(memoryStream);
+            TM64_Course TarmacCourse = new TM64_Course();
 
-                TM64 Tarmac = new TM64();
-                TM64_Course TarmacCourse = new TM64_Course();
-                long Index = 0;
+            TM64_Course.Course[][][] Loaded = new TM64_Course.Course[5][][];
+            for (int This = 0; This < 5; This++)
+            {
+                Loaded[This] = new TM64_Course.Course[5][];
+                for (int That = 0; That < 5; That++)
+                {
+                    Loaded[This][That] = new TM64_Course.Course[4];
+                }
+            }
+
+            try
+            {
+                if (binaryReader.ReadString() != "OK64.LAYOUT")
+                {
+                    MessageBox.Show("Error Loading Layout");
+                    return;
+                }
+                if (binaryReader.ReadInt32() != 1)
+                {
+                    MessageBox.Show("Error Loading Layout");
+                    return;
+                }
+
                 for (int ThisSet = 0; ThisSet < 5; ThisSet++)
                 {
                     for (int ThisCup = 0; ThisCup < 5; ThisCup++)
                     {
                         for (int ThisCourse = 0; ThisCourse < 4; ThisCourse++)
                         {
-                            Index = binaryReader.BaseStream.Position;
-                            if (binaryReader.ReadString() == "NULL")
+                            int Length = binaryReader.ReadInt32();
+                            if (Length < 0 || binaryReader.BaseStream.Position + Length > binaryReader.BaseStream.Length)
+                            {
+                                MessageBox.Show("Error Loading Layout");
+                                return;
+                            }
+                            if (Length == 0)
                             {
                                 continue;
                             }
-
-
-                            byte[] Buffer = new byte[memoryStream.Length - memoryStream.Position];
-                            memoryStream.Read(Buffer, 0, Buffer.Length);
-                            CourseArray[ThisSet][ThisCup][ThisCourse] = TarmacCourse.LoadOK64Course(Buffer);
+                            Loaded[ThisSet][ThisCup][ThisCourse] = TarmacCourse.LoadOK64Course(binaryReader.ReadBytes(Length));
                         }
                     }
                 }
-
             }
-            
+            catch
+            {
+                MessageBox.Show("Error Loading Layout");
+                return;
+            }
+
+            CourseArray = Loaded;
+            RefreshNames();
         }
         bool Expand = false;
         private void button1_Click(object sender, EventArgs e)

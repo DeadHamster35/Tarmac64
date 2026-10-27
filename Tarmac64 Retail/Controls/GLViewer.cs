@@ -59,6 +59,10 @@ namespace Tarmac64_Retail
         public TM64_Paths.Pathlist DraftPath = null;
         bool PathSurfaceHit = false;
         float[] DraftPathColor = new float[3] { 1.0f, 1.0f, 0.0f };
+        public int PathFXStart = -1;
+        public int PathFXEnd = -1;
+        float[] PathFXBaseColor = new float[3] { 0.15f, 0.45f, 1.0f };
+        float[] PathFXHighlightColor = new float[3] { 1.0f, 0.12f, 0.12f };
         const float PathMarkerLift = 1.0f;
         Bitmap[] ScreenRenders = new Bitmap[6];
         public TM64_Geometry.OK64F3DObject[] CourseModel = new TM64_Geometry.OK64F3DObject[0];
@@ -160,6 +164,19 @@ namespace Tarmac64_Retail
             }
             DraftPath.pathmarker.Add(CreateMarkerAtHit());
             UpdateDraw = true;
+        }
+
+        private bool PathFXRangeContains(int markerIndex, int markerCount)
+        {
+            if ((PathFXStart < 0) || (PathFXEnd < 0) || (markerCount <= 0))
+            {
+                return false;
+            }
+            if (PathFXStart <= PathFXEnd)
+            {
+                return (markerIndex >= PathFXStart) && (markerIndex <= PathFXEnd);
+            }
+            return (markerIndex >= PathFXStart) || (markerIndex <= PathFXEnd);
         }
 
         public void RefreshView()
@@ -924,11 +941,29 @@ namespace Tarmac64_Retail
                     {
                         continue;
                     }
-                    foreach (var ThisMark in PathMarker[PathIndex].pathmarker)
+                    int MarkerCount = PathMarker[PathIndex].pathmarker.Count;
+                    for (int MarkIndex = 0; MarkIndex < MarkerCount; MarkIndex++)
                     {
+                        TM64_Paths.Marker ThisMark = PathMarker[PathIndex].pathmarker[MarkIndex];
+                        float[] DrawColor = ThisMark.Color;
+                        if (TargetingMode == ControlMode.Path)
+                        {
+                            if (PathFXRangeContains(MarkIndex, MarkerCount))
+                            {
+                                DrawColor = PathFXHighlightColor;
+                            }
+                            else
+                            {
+                                DrawColor = PathFXBaseColor;
+                            }
+                        }
+                        if (DrawColor == null)
+                        {
+                            continue;
+                        }
                         foreach (var ThisFace in Marker)
                         {
-                            TarmacGL.DrawMarker(GL, GLTexture[GLShadeIndex], ThisFace, ThisMark.Color, ThisMark);
+                            TarmacGL.DrawMarker(GL, GLTexture[GLShadeIndex], ThisFace, DrawColor, ThisMark);
                         }
                     }
                 }

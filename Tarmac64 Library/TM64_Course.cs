@@ -217,6 +217,7 @@ namespace Tarmac64_Library
 
 
                 Name = Convert.ToString(Tarmac.LoadElement(XMLDoc, HeaderName, "Name", ""));
+                Path = Convert.ToString(Tarmac.LoadElement(XMLDoc, HeaderName, "Path", ""));
 
                 BehaviorClass = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "BehaviorClass", "0"));
                 RenderRadius = Convert.ToInt16(Tarmac.LoadElement(XMLDoc, HeaderName, "RenderRadius", "700"));
@@ -280,6 +281,7 @@ namespace Tarmac64_Library
 
 
                 Tarmac.GenerateElement(XMLDoc, ObjectXML, "Name", Name);
+                Tarmac.GenerateElement(XMLDoc, ObjectXML, "Path", Path);
                 Tarmac.GenerateElement(XMLDoc, ObjectXML, "BehaviorClass", BehaviorClass);
                 Tarmac.GenerateElement(XMLDoc, ObjectXML, "RenderRadius", RenderRadius);
                 Tarmac.GenerateElement(XMLDoc, ObjectXML, "BumpRadius", BumpRadius);
@@ -424,6 +426,11 @@ namespace Tarmac64_Library
             public int EchoEndOffset { get; set; }
             public TM64_Geometry.OK64Color EchoColor { get; set; }
             public TM64_Geometry.OK64Color EchoAdjustColor { get; set; }
+            public const string InternalDataPath = "Internal Data";
+            public static bool IsInternalAssetPath(string path)
+            {
+                return (path == InternalDataPath);
+            }
             public int MusicID { get; set; }
             public string OK64SongPath { get; set; }
             public TM64_Sound.OK64Song SongData { get; set; }
@@ -1089,8 +1096,6 @@ namespace Tarmac64_Library
                 CourseData.RadarData = new byte[0];
             }
 
-
-
             CourseData.MapData = new MiniMap();
 
             CourseData.MapData.MapCoord = new Vector2D(binaryReader.ReadSingle(), binaryReader.ReadSingle());            
@@ -1105,6 +1110,10 @@ namespace Tarmac64_Library
             CourseData.MapData.MapScale = binaryReader.ReadSingle();
             CourseData.MapData.Height = binaryReader.ReadInt32();
             CourseData.MapData.Width = binaryReader.ReadInt32();
+            if (CourseData.RadarData.Length > 0)
+            {
+                CourseData.MapData.MinimapPath = Course.InternalDataPath;
+            }
 
             DataLength = binaryReader.ReadInt32();
             CourseData.PathSettings.PathEffects = new PathEffect[DataLength];
@@ -1238,6 +1247,15 @@ namespace Tarmac64_Library
             CourseData.PathSettings.PathOffsets[3] = binaryReader.ReadUInt32();
             CourseData.ManualTempo = binaryReader.ReadInt32();
 
+            if ((binaryReader.BaseStream.Position + 4) <= binaryReader.BaseStream.Length)
+            {
+                CourseData.OK64HeaderData.Version = binaryReader.ReadInt32();
+            }
+            if (CourseData.OK64HeaderData.Version == 0)
+            {
+                CourseData.OK64HeaderData.Version = 8;
+            }
+
 
             return CourseData;
         }
@@ -1271,7 +1289,7 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.Settings.Credits);            
             binaryWriter.Write(CourseData.Settings.Name);
             binaryWriter.Write(CourseData.SerialNumber);
-            if (CourseData.Settings.BannerPath.Length > 0)
+            if ((!string.IsNullOrEmpty(CourseData.Settings.BannerPath)) && (!Course.IsInternalAssetPath(CourseData.Settings.BannerPath)))
             {
                 N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
                 byte[] imageData = null;
@@ -1304,12 +1322,17 @@ namespace Tarmac64_Library
                     }
                 }
             }
+            else if ((CourseData.BannerData != null) && (CourseData.BannerData.Length > 0))
+            {
+                binaryWriter.Write(CourseData.BannerData.Length);
+                binaryWriter.Write(CourseData.BannerData);
+            }
             else
             {
                 binaryWriter.Write(0);
             }
 
-            if (CourseData.Settings.PreviewPath.Length > 0)
+            if ((!string.IsNullOrEmpty(CourseData.Settings.PreviewPath)) && (!Course.IsInternalAssetPath(CourseData.Settings.PreviewPath)))
             {
                 N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
                 byte[] imageData = null;
@@ -1343,12 +1366,22 @@ namespace Tarmac64_Library
                     }
                 }
             }
+            else if ((CourseData.PreviewData != null) && (CourseData.PreviewData.Length > 0))
+            {
+                binaryWriter.Write(CourseData.PreviewData.Length);
+                binaryWriter.Write(CourseData.PreviewData);
+            }
             else
             {
                 binaryWriter.Write(0);
             }
 
-            if (CourseData.MapData.MinimapPath.Length > 0)
+            if ((CourseData.RadarData != null) && (CourseData.RadarData.Length > 0))
+            {
+                binaryWriter.Write(CourseData.RadarData.Length);
+                binaryWriter.Write(CourseData.RadarData);
+            }
+            else if ((!string.IsNullOrEmpty(CourseData.MapData.MinimapPath)) && (!Course.IsInternalAssetPath(CourseData.MapData.MinimapPath)))
             {
                 N64Codec[] n64Codec = new N64Codec[] { N64Codec.RGBA16, N64Codec.CI8 };
                 byte[] imageData = null;
@@ -1532,10 +1565,82 @@ namespace Tarmac64_Library
             binaryWriter.Write(CourseData.PathSettings.PathOffsets[2]);
             binaryWriter.Write(CourseData.PathSettings.PathOffsets[3]);
             binaryWriter.Write(CourseData.ManualTempo);
+            binaryWriter.Write(CourseData.OK64HeaderData.Version);
             return Tarmac.CompressMIO0(memoryStream.ToArray());
 
 
         }
+        private void WriteCourseMinimap(BinaryWriter binaryWriter, Course courseData)
+        {
+            int addressAlign = 0;
+            if ((courseData.RadarData == null) || (courseData.RadarData.Length == 0))
+            {
+                courseData.OK64HeaderData.Maps = Convert.ToInt32(0);
+                return;
+            }
+            if (courseData.MapData == null)
+            {
+                courseData.MapData = new MiniMap();
+            }
+            if (courseData.MapData.MapColor == null)
+            {
+                courseData.MapData.MapColor = new TM64_Geometry.OK64Color();
+                courseData.MapData.MapColor.R = 255;
+                courseData.MapData.MapColor.G = 255;
+                courseData.MapData.MapColor.B = 255;
+                courseData.MapData.MapColor.A = 255;
+            }
+            if (courseData.MapData.Height <= 0)
+            {
+                courseData.MapData.Height = 64;
+            }
+            if (courseData.MapData.Width <= 0)
+            {
+                courseData.MapData.Width = 64;
+            }
+            if ((courseData.MapData.MapScale == 0) || float.IsNaN(courseData.MapData.MapScale) || float.IsInfinity(courseData.MapData.MapScale))
+            {
+                courseData.MapData.MapScale = 1.55f;
+            }
+
+            addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
+            if (addressAlign == 16)
+            {
+                addressAlign = 0;
+            }
+            for (int align = 0; align < addressAlign; align++)
+            {
+                binaryWriter.Write(Convert.ToByte(0x00));
+            }
+
+            courseData.OK64HeaderData.Maps = Convert.ToInt32(binaryWriter.BaseStream.Position);
+
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord[0])));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord[1])));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord[0])));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord[1])));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord[0])));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord[1])));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Height)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Width)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.R)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.G)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.B)));
+            binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
+            binaryWriter.Write(F3D.BigEndian((courseData.MapData.MapScale)));
+
+            byte[] compressedData = courseData.RadarData;
+            binaryWriter.Write(compressedData);
+            int used = 28 + compressedData.Length;
+            if (used < 0x1000)
+            {
+                for (int pad = 0; pad < (0x1000 - used); pad++)
+                {
+                    binaryWriter.Write(Convert.ToByte(0x00));
+                }
+            }
+        }
+
         public byte[] CompileOverKart(Course courseData, byte[] fileData, int cID, int setID, uint HeaderAddress = 0xBE9178)
         {
             //HOTSWAP
@@ -1601,7 +1706,7 @@ namespace Tarmac64_Library
 
 
             //Write Course Banner Texture
-            if (courseData.BannerData.Length > 0)
+            if ((courseData.BannerData != null) && (courseData.BannerData.Length > 0))
             {
 
                 byte[] compressedData = courseData.BannerData;
@@ -1623,7 +1728,7 @@ namespace Tarmac64_Library
 
 
             //Course Preview Texture
-            if (courseData.PreviewData.Length > 0)
+            if ((courseData.PreviewData != null) && (courseData.PreviewData.Length > 0))
             {
                 byte[] compressedData = courseData.PreviewData;
                 courseData.MenuHeaderData.Preview = Convert.ToInt32(binaryWriter.BaseStream.Position);
@@ -1655,7 +1760,10 @@ namespace Tarmac64_Library
             //begin writing header info
 
 
-            courseData.OK64HeaderData.Version = 8;
+            if (courseData.OK64HeaderData.Version == 0)
+            {
+                courseData.OK64HeaderData.Version = 8;
+            }
 
             //add sky colors
 
@@ -1784,7 +1892,7 @@ namespace Tarmac64_Library
 
 
             //Staff Ghost
-            if (courseData.GhostData.Length > 0)
+            if ((courseData.GhostData != null) && (courseData.GhostData.Length > 0))
             {
                 courseData.OK64HeaderData.Ghost = Convert.ToInt32(binaryWriter.BaseStream.Position);
                 
@@ -1810,41 +1918,7 @@ namespace Tarmac64_Library
 
 
             //Write Course Map Texture
-            if (courseData.RadarData.Length > 0)
-            {
-                courseData.OK64HeaderData.Maps = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-                byte[] compressedData = courseData.RadarData;
-
-
-
-                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
-                if (addressAlign == 16)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-
-
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord.X)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord.Y)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord.X)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord.Y)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord.X)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord.Y)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Height)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Width)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.R)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.G)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.B)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
-                binaryWriter.Write(F3D.BigEndian((courseData.MapData.MapScale)));
-
-
-
-                binaryWriter.Write(compressedData);
-            }
+            WriteCourseMinimap(binaryWriter, courseData);
 
 
 
@@ -2429,7 +2503,7 @@ namespace Tarmac64_Library
 
 
             //Write Course Banner Texture
-            if (courseData.BannerData.Length > 0)
+            if ((courseData.BannerData != null) && (courseData.BannerData.Length > 0))
             {
 
                 byte[] compressedData = courseData.BannerData;
@@ -2451,7 +2525,7 @@ namespace Tarmac64_Library
 
 
             //Course Preview Texture
-            if (courseData.PreviewData.Length > 0)
+            if ((courseData.PreviewData != null) && (courseData.PreviewData.Length > 0))
             {
                 byte[] compressedData = courseData.PreviewData;
                 courseData.MenuHeaderData.Preview = Convert.ToInt32(binaryWriter.BaseStream.Position);
@@ -2483,7 +2557,10 @@ namespace Tarmac64_Library
             //begin writing header info
 
 
-            courseData.OK64HeaderData.Version = 8;
+            if (courseData.OK64HeaderData.Version == 0)
+            {
+                courseData.OK64HeaderData.Version = 8;
+            }
 
             //add sky colors
 
@@ -2612,7 +2689,7 @@ namespace Tarmac64_Library
 
 
             //Staff Ghost
-            if (courseData.GhostData.Length > 0)
+            if ((courseData.GhostData != null) && (courseData.GhostData.Length > 0))
             {
                 courseData.OK64HeaderData.Ghost = Convert.ToInt32(binaryWriter.BaseStream.Position);
 
@@ -2638,41 +2715,7 @@ namespace Tarmac64_Library
 
 
             //Write Course Map Texture
-            if (courseData.RadarData.Length > 0)
-            {
-                courseData.OK64HeaderData.Maps = Convert.ToInt32(binaryWriter.BaseStream.Position);
-
-                byte[] compressedData = courseData.RadarData;
-
-
-
-                addressAlign = 16 - (Convert.ToInt32(binaryWriter.BaseStream.Position) % 16);
-                if (addressAlign == 16)
-                    addressAlign = 0;
-                for (int align = 0; align < addressAlign; align++)
-                {
-                    binaryWriter.Write(Convert.ToByte(0x00));
-                }
-
-
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord.X)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapCoord.Y)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord.X)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.StartCoord.Y)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord.X)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.LineCoord.Y)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Height)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.Width)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.R)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.G)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(courseData.MapData.MapColor.B)));
-                binaryWriter.Write(F3D.BigEndian(Convert.ToInt16(0)));
-                binaryWriter.Write(F3D.BigEndian((courseData.MapData.MapScale)));
-
-
-
-                binaryWriter.Write(compressedData);
-            }
+            WriteCourseMinimap(binaryWriter, courseData);
 
 
 
